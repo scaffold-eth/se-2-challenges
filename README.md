@@ -1,65 +1,46 @@
-# 🏗 Scaffold-ETH 2 Challenges
+# 🚩 Challenge {challengeNum}: {challengeEmoji} {challengeTitle}
 
-⚠️ This is a work in progress. Check the [dev notes](#dev-notes) if you want to contribute.
+A {challengeDescription}.
 
-> learn how to use 🏗 Scaffold-ETH 2 to create decentralized applications on Ethereum. 🚀
+🌟 The final deliverable is an app that {challengeDeliverable}. 
+Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
----
+💬 Meet other builders working on this challenge and get help in the {challengeTelegramLink}
 
-## 🚩 Challenge 0: 🎟 Simple NFT Example
+## Checkpoint 0: 📦 Install 📚
 
-🎫 Create a simple NFT to learn basics of 🏗 scaffold-eth. You'll use 👷‍♀️ HardHat to compile and deploy smart contracts. Then, you'll use a template React app full of important Ethereum components and hooks. Finally, you'll deploy an NFT to a public network to share with friends! 🚀
+Before you begin, you need to install the following tools:
 
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-0-simple-nft
+- [Node (v18 LTS)](https://nodejs.org/en/download/)
+- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+- [Git](https://git-scm.com/downloads)
 
----
+Then run:
+```sh
+git clone https://github.com/scaffold-eth/se-2-challenges.git {challengeName}
+```
 
-## 🚩 Challenge 1: 🥩 Decentralized Staking App
+```sh
+cd {challengeName}
+git checkout {challengeName}
+yarn install
+yarn chain
+```
 
-🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code.
+> in a second terminal window, 🛰 deploy your contract:
 
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-1-decentralized-staking
+```sh
+yarn deploy 
+```
 
----
+> in a third terminal window, start your 📱 frontend:
 
-## 🚩 Challenge 2: 🏵 Token Vendor
+```sh
+yarn start
+```
 
-🤖 Smart contracts are kind of like "always on" vending machines that anyone can access. Let's make a decentralized, digital currency. Then, let's build an unstoppable vending machine that will buy and sell the currency. We'll learn about the "approve" pattern for ERC20s and how contract to contract interactions work.
+📱 Open http://localhost:3000 to see the app
 
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-2-token-vendor
+## Checkpoint {num}: Create all the required Checkpoints for the challenge
 
----
-
-## 🚩 Challenge 3: 🎲 Dice Game
-
-🎰 Randomness is tricky on a public deterministic blockchain.  In this challenge you will explore creating random numbers using block hash and how that may be exploitable.  Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
-
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-3-dice-game
-
----
-
-## 🎉 Checkpoint: Eligible to join 🏰️ BuidlGuidl
-
-The BuidlGuidl is a curated group of Ethereum builders creating products, prototypes, and tutorials to enrich the web3 ecosystem. A place to show off your builds and meet other builders. Start crafting your Web3 portfolio by submitting your DEX, Multisig or SVG NFT build.
-
-https://buidlguidl.com/
-
----
-
-## ⚖️ Build a DEX Challenge
-
-💵 Build an exchange that swaps ETH to tokens and tokens to ETH. 💰 This is possible because the smart contract holds reserves of both assets and has a price function based on the ratio of the reserves. Liquidity providers are issued a token that represents their share of the reserves and fees...
-
-DEX Telegram Channel: https://t.me/+_NeUIJ664Tc1MzIx
-
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-4-dex
-
----
-
-## Dev Notes:
-
-- We'd use the [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template) as a starting point for each challenge.
-
-- UI wise, we'll try to use the https://speedrunethereum.com/ design vibe.
-
-- Open an issue if you are interested in contributing with a given challenge.
+## ⚔️ Side Quests
