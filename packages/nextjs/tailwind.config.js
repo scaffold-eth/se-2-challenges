@@ -8,19 +8,19 @@ module.exports = {
     themes: [
       {
         scaffoldEth: {
-          primary: "#93BBFB",
-          "primary-content": "#212638",
-          secondary: "#DAE8FF",
-          "secondary-content": "#212638",
-          accent: "#93BBFB",
-          "accent-content": "#212638",
-          neutral: "#212638",
-          "neutral-content": "#ffffff",
-          "base-100": "#ffffff",
-          "base-200": "#F9FBFF",
-          "base-300": "#DAE8FF",
-          "base-content": "#212638",
-          info: "#93BBFB",
+          primary: "#C8F5FF",
+          "primary-content": "#026262",
+          secondary: "#89d7e9",
+          "secondary-content": "#088484",
+          accent: "#026262",
+          "accent-content": "#E9FBFF",
+          neutral: "#088484",
+          "neutral-content": "#F0FCFF",
+          "base-100": "#F0FCFF",
+          "base-200": "#E9FBFF",
+          "base-300": "#C8F5FF",
+          "base-content": "#088484",
+          info: "#026262",
           success: "#34EEB6",
           warning: "#FFCF72",
           error: "#FF8863",
@@ -34,19 +34,19 @@ module.exports = {
       },
       {
         scaffoldEthDark: {
-          primary: "#212638",
-          "primary-content": "#F9FBFF",
-          secondary: "#2A3655",
-          "secondary-content": "#F9FBFF",
-          accent: "#4969A6",
-          "accent-content": "#F9FBFF",
-          neutral: "#F9FBFF",
-          "neutral-content": "#385183",
-          "base-100": "#385183",
-          "base-200": "#2A3655",
-          "base-300": "#212638",
-          "base-content": "#F9FBFF",
-          info: "#385183",
+          primary: "#026262",
+          "primary-content": "#C8F5FF",
+          secondary: "#107575",
+          "secondary-content": "#E9FBFF",
+          accent: "#C8F5FF",
+          "accent-content": "#088484",
+          neutral: "#E9FBFF",
+          "neutral-content": "#11ACAC",
+          "base-100": "#11ACAC",
+          "base-200": "#088484",
+          "base-300": "#026262",
+          "base-content": "#E9FBFF",
+          info: "#C8F5FF",
           success: "#34EEB6",
           warning: "#FFCF72",
           error: "#FF8863",
@@ -55,7 +55,7 @@ module.exports = {
 
           ".tooltip": {
             "--tooltip-tail": "6px",
-            "--tooltip-color": "hsl(var(--p))",
+            "--tooltip-color": "hsl(var(--s))",
           },
         },
       },
@@ -88,10 +88,10 @@ module.exports = {
     ],
   },
   theme: {
-    // Extend Tailwind classes (e.g. font-bai-jamjuree, animate-grow)
+    // Extend Tailwind classes (e.g. font-space-grotesk, animate-grow)
     extend: {
       fontFamily: {
-        "bai-jamjuree": ["Bai Jamjuree", "sans-serif"],
+        "space-grotesk": ["Space Grotesk", "sans-serif"],
       },
       keyframes: {
         grow: {
