@@ -1,19 +1,15 @@
-import Head from "next/head";
 import type { NextPage } from "next";
+import { MetaHeader } from "~~/components/MetaHeader";
 
 const Home: NextPage = () => {
   return (
     <>
-      <Head>
-        <title>Scaffold-ETH 2 App</title>
-        <meta name="description" content="Created with 🏗 scaffold-eth-2" />
-      </Head>
-
+      <MetaHeader />
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center mb-8">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
+            <span className="block text-2xl mb-2">SpeedRunEthereum</span>
+            <span className="block text-4xl font-bold">Challenge #X: Challenge Title </span>
           </h1>
           <p className="text-center text-lg">
             Get started by editing{" "}
