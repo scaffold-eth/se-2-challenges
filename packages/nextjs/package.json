@@ -21,6 +21,7 @@
     "@uniswap/sdk": "^3.0.3",
     "daisyui": "^2.31.0",
     "ethers": "^5.0.0",
+    "kubo-rpc-client": "^3.0.1",
     "next": "^13.1.6",
     "nextjs-progressbar": "^0.0.16",
     "react": "^18.2.0",
