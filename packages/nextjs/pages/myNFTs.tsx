@@ -29,13 +29,13 @@ const MyNFTs: NextPage = () => {
 
       // First remove previous loading notification and then show success notification
       notification.remove(loadingNotificatioId);
-      notification.success("Uploaded to IPFS successfully");
-
-      setCurrentTokenMintCount(prevCount => prevCount + 1);
+      notification.success("Metadata uploaded to IPFS");
 
       await mintItem({
         args: [connectedAddress, uploadedItem.path],
       });
+
+      setCurrentTokenMintCount(prevCount => prevCount + 1);
     } catch (error) {
       notification.remove(loadingNotificatioId);
       console.error(error);

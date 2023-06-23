@@ -30,7 +30,7 @@ export const MyHoldings = () => {
   });
 
   useEffect(() => {
-    const updateYourCollectibles = async (): Promise<void> => {
+    const updateMyCollectibles = async (): Promise<void> => {
       if (myTotalBalance === undefined || yourCollectibleContract === null || connectedAddress === undefined) return;
 
       setAllCollectiblesLoading(true);
@@ -68,7 +68,7 @@ export const MyHoldings = () => {
       setAllCollectiblesLoading(false);
     };
 
-    updateYourCollectibles();
+    updateMyCollectibles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectedAddress, myTotalBalance]);
 
@@ -86,7 +86,7 @@ export const MyHoldings = () => {
           <div className="text-2xl text-primary-content">No NFTs found</div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-5 mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-5 mt-6">
           {myAllCollectibles.map(item => (
             <NFTCard nft={item} key={item.id} />
           ))}
