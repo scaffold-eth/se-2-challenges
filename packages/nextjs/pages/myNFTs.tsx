@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { NextPage } from "next";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { MyHoldings } from "~~/components/simpleNFT";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -9,7 +10,7 @@ import { ipfsClient } from "~~/utils/simpleNFT";
 import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
 
 const MyNFTs: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
+  const { address: connectedAddress, isConnected, isConnecting } = useAccount();
   const [currentTokenMintCount, setCurrentTokenMintCount] = useState(0);
 
   const { writeAsync: mintItem } = useScaffoldContractWrite({
@@ -52,9 +53,13 @@ const MyNFTs: NextPage = () => {
         </div>
       </div>
       <div className="flex justify-center">
-        <button className="btn btn-primary" onClick={handleMintItem}>
-          Mint Item
-        </button>
+        {!isConnected || isConnecting ? (
+          <RainbowKitCustomConnectButton />
+        ) : (
+          <button className="btn btn-primary" onClick={handleMintItem}>
+            Mint Item
+          </button>
+        )}
       </div>
       <MyHoldings />
     </>
