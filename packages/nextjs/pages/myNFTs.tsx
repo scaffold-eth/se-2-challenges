@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { MyHoldings } from "~~/components/simpleNFT";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { ipfsClient } from "~~/utils/simpleNFT";
@@ -21,6 +22,7 @@ const MyNFTs: NextPage = () => {
     // circel back to the zeroitem if we've reached the end of the array
     const currentTokenMetaData = nftsMetadata[currentTokenMintCount % nftsMetadata.length];
     const loadingNotificatioId = notification.loading("Uploading to IPFS");
+    console.log("Minting token object ---------", currentTokenMetaData, currentTokenMintCount % nftsMetadata.length);
     try {
       const uploadedItem = await ipfsClient.add(JSON.stringify(currentTokenMetaData));
 
@@ -28,7 +30,7 @@ const MyNFTs: NextPage = () => {
       notification.remove(loadingNotificatioId);
       notification.success("Uploaded to IPFS successfully");
 
-      setCurrentTokenMintCount(currentTokenMintCount + 1);
+      setCurrentTokenMintCount(prevCount => prevCount + 1);
 
       await mintItem({
         args: [connectedAddress, uploadedItem.path],
@@ -54,6 +56,7 @@ const MyNFTs: NextPage = () => {
           Mint Item
         </button>
       </div>
+      <MyHoldings />
     </>
   );
 };
