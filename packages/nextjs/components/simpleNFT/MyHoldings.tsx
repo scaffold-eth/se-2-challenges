@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "../Spinner";
 import { NFTCard } from "./NFTCard";
-import { BigNumber, utils } from "ethers";
+import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
