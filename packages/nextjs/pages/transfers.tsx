@@ -27,7 +27,7 @@ const Transfers: NextPage = () => {
             <span className="block text-4xl font-bold">All Transfers Events</span>
           </h1>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto shadow-lg">
           <table className="table table-zebra w-full">
             {/* head */}
             <thead>
