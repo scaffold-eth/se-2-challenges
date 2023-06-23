@@ -30,7 +30,10 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
           <span className="text-lg font-semibold">Desc : </span>
           <p className="my-0">{nft.description}</p>
         </div>
-        <div className="flex space-x-3 mt-1">
+        <div
+          className="flex space-x-3 mt-1 items-center
+          "
+        >
           <span className="text-lg font-semibold">Owner : </span>
           <Address address={nft.owner} />
         </div>

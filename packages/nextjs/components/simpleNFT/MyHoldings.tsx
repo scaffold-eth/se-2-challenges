@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Spinner } from "../Spinner";
 import { NFTCard } from "./NFTCard";
 import { BigNumber, utils } from "ethers";
 import { useAccount } from "wagmi";
@@ -68,14 +69,13 @@ export const MyHoldings = () => {
     };
 
     updateYourCollectibles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectedAddress, myTotalBalance]);
-
-  console.log("myAllCollectibles ---------------------------", myAllCollectibles);
 
   if (allCollectiblesLoading)
     return (
-      <div className="flex justify-center items-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-content mt-10"></div>
+      <div className="flex justify-center items-center mt-10">
+        <Spinner width="75" height="75" />
       </div>
     );
 
