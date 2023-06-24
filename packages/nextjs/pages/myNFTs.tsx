@@ -20,15 +20,14 @@ const MyNFTs: NextPage = () => {
   });
 
   const handleMintItem = async () => {
-    // circel back to the zeroitem if we've reached the end of the array
+    // circle back to the zero item if we've reached the end of the array
     const currentTokenMetaData = nftsMetadata[currentTokenMintCount % nftsMetadata.length];
-    const loadingNotificatioId = notification.loading("Uploading to IPFS");
-    console.log("Minting token object ---------", currentTokenMetaData, currentTokenMintCount % nftsMetadata.length);
+    const notificationId = notification.loading("Uploading to IPFS");
     try {
       const uploadedItem = await ipfsClient.add(JSON.stringify(currentTokenMetaData));
 
       // First remove previous loading notification and then show success notification
-      notification.remove(loadingNotificatioId);
+      notification.remove(notificationId);
       notification.success("Metadata uploaded to IPFS");
 
       await mintItem({
@@ -37,7 +36,7 @@ const MyNFTs: NextPage = () => {
 
       setCurrentTokenMintCount(prevCount => prevCount + 1);
     } catch (error) {
-      notification.remove(loadingNotificatioId);
+      notification.remove(notificationId);
       console.error(error);
     }
   };

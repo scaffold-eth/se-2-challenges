@@ -38,25 +38,21 @@ export const MyHoldings = () => {
       const totalBalance = parseInt(myTotalBalance.toString());
       for (let tokenIndex = 0; tokenIndex < totalBalance; tokenIndex++) {
         try {
-          console.log("Getting token index", tokenIndex);
           const tokenId = await yourCollectibleContract.tokenOfOwnerByIndex(
             connectedAddress,
             BigNumber.from(tokenIndex.toString()),
           );
-          console.log("tokenId", tokenId);
           const tokenURI = await yourCollectibleContract.tokenURI(tokenId);
-          console.log("tokenURI", tokenURI);
 
           const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
-          console.log("ipfsHash", ipfsHash);
 
-          const nftMetada: NFTMetaData = await getNFTMetadataFromIPFS(ipfsHash);
+          const nftMetadata: NFTMetaData = await getNFTMetadataFromIPFS(ipfsHash);
 
           collectibleUpdate.push({
             id: parseInt(tokenId.toString()),
             uri: tokenURI,
             owner: connectedAddress,
-            ...nftMetada,
+            ...nftMetadata,
           });
         } catch (e) {
           notification.error("Error fetching all collectibles");

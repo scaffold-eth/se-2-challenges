@@ -1,35 +1,33 @@
-
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { useState } from "react";
-import { getNFTMetadataFromIPFS } from "~~/utils/simpleNFT";
-import dynamic from "next/dynamic";
 import { notification } from "~~/utils/scaffold-eth";
+import { getNFTMetadataFromIPFS } from "~~/utils/simpleNFT";
 
 const IpfsDownload: NextPage = () => {
-  const [yourJSON, setYourJSON] = useState({})
-  const [ipfsPath, setIpfsPath] = useState("")
-  const [loading, setLoading] = useState(false)
-  const DynamicReactJson = dynamic(import('react-json-view'), { ssr: false });
+  const [yourJSON, setYourJSON] = useState({});
+  const [ipfsPath, setIpfsPath] = useState("");
+  const [loading, setLoading] = useState(false);
+  const DynamicReactJson = dynamic(import("react-json-view"), { ssr: false });
 
   const handleIpfsDownload = async () => {
-    setLoading(true)
+    setLoading(true);
     const notificationId = notification.loading("Getting data from IPFS");
     try {
       const metaData = await getNFTMetadataFromIPFS(ipfsPath);
       notification.remove(notificationId);
       notification.success("Downloaded from IPFS");
 
-      setYourJSON(metaData)
+      setYourJSON(metaData);
     } catch (error) {
       notification.remove(notificationId);
       notification.error("Error downloading from IPFS");
-      console.log(error)
+      console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-
-  }
+  };
 
   return (
     <>
@@ -43,23 +41,29 @@ const IpfsDownload: NextPage = () => {
             className="input input-ghost focus:outline-none focus:bg-transparent focus:text-secondary-content h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-secondary-content/75"
             placeholder="IPFS CID"
             value={ipfsPath}
-            onChange={(e) => setIpfsPath(e.target.value)}
+            onChange={e => setIpfsPath(e.target.value)}
             autoComplete="off"
           />
         </div>
-        <button className={`btn btn-secondary my-6 ${loading ? "loading" : ""}`} disabled={loading} onClick={handleIpfsDownload}>Download from IPFS</button>
+        <button
+          className={`btn btn-secondary my-6 ${loading ? "loading" : ""}`}
+          disabled={loading}
+          onClick={handleIpfsDownload}
+        >
+          Download from IPFS
+        </button>
         <DynamicReactJson
           style={{ padding: "1rem", borderRadius: "0.75rem" }}
           src={yourJSON}
           theme="solarized"
           enableClipboard={false}
-          onEdit={(edit) => {
+          onEdit={edit => {
             setYourJSON(edit.updated_src);
           }}
-          onAdd={(add) => {
+          onAdd={add => {
             setYourJSON(add.updated_src);
           }}
-          onDelete={(del) => {
+          onDelete={del => {
             setYourJSON(del.updated_src);
           }}
         />
