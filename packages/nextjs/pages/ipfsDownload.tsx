@@ -47,7 +47,7 @@ const IpfsDownload: NextPage = () => {
             autoComplete="off"
           />
         </div>
-        <button className={`btn btn-primary my-6 ${loading ? "loading" : ""}`} disabled={loading} onClick={handleIpfsDownload}>Download from IPFS</button>
+        <button className={`btn btn-secondary my-6 ${loading ? "loading" : ""}`} disabled={loading} onClick={handleIpfsDownload}>Download from IPFS</button>
         <DynamicReactJson
           style={{ padding: "1rem", borderRadius: "0.75rem" }}
           src={yourJSON}
