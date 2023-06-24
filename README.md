@@ -82,7 +82,9 @@ yarn start
 👛 Open an incognito window and navigate to http://localhost:3000
 
 🎟 Transfer an NFT to the incognito window address using the UI:
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/d425381f-eda2-4568-831f-55de292d3a69)
+
+![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/3b92fb50-d43f-48a8-838c-c45c443b0b71)
+
 
 👛 Try to mint an NFT from the incognito window.
 
