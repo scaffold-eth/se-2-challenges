@@ -30,7 +30,7 @@ export async function getNFTMetadataFromIPFS(ipfsHash: string) {
     const jsonObjectString = trimmedContent.slice(startIndex, endIndex);
 
     try {
-      const jsonObject: NFTMetaData = JSON.parse(jsonObjectString);
+      const jsonObject = JSON.parse(jsonObjectString);
       return jsonObject;
     } catch (error) {
       console.log("Error parsing JSON:", error);

@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ArrowPathIcon, Bars3Icon, BugAntIcon, MagnifyingGlassIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, ArrowPathIcon, ArrowUpTrayIcon, Bars3Icon, BugAntIcon, MagnifyingGlassIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
@@ -14,9 +14,8 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
     <Link
       href={href}
       passHref
-      className={`${
-        isActive ? "bg-secondary shadow-md" : ""
-      } hover:bg-secondary hover:shadow-md focus:bg-secondary py-1.5 px-3 text-sm rounded-full gap-2`}
+      className={`${isActive ? "bg-secondary shadow-md" : ""
+        } hover:bg-secondary hover:shadow-md focus:bg-secondary py-1.5 px-3 text-sm rounded-full gap-2`}
     >
       {children}
     </Link>
@@ -49,6 +48,18 @@ export const Header = () => {
         <NavLink href="/transfers">
           <ArrowPathIcon className="h-4 w-4" />
           Transfers
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/ipfsUpload">
+          <ArrowUpTrayIcon className="h-4 w-4" />
+          IPFS Upload
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/ipfsDownload">
+          <ArrowDownTrayIcon className="h-4 w-4" />
+          IPFS Download
         </NavLink>
       </li>
       <li>
