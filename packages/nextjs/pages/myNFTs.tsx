@@ -56,7 +56,7 @@ const MyNFTs: NextPage = () => {
         {!isConnected || isConnecting ? (
           <RainbowKitCustomConnectButton />
         ) : (
-          <button className="btn btn-primary" onClick={handleMintItem}>
+          <button className="btn btn-secondary" onClick={handleMintItem}>
             Mint Item
           </button>
         )}
