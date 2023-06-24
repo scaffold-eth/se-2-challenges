@@ -14,7 +14,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
   });
 
   return (
-    <div className="card card-compact bg-base-100 shadow-xl w-86">
+    <div className="card card-compact bg-base-100 shadow-lg w-86 shadow-secondary">
       <figure className="relative">
         {/* eslint-disable-next-line  */}
         <img src={nft.image} alt="NFT Image" className="h-60 min-w-full" />
@@ -49,7 +49,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
           />
         </div>
         <div className="card-actions justify-end">
-          <button className="btn btn-primary btn-md px-8 tracking-wide" onClick={() => transferNFT()}>
+          <button className="btn btn-secondary btn-md px-8 tracking-wide" onClick={() => transferNFT()}>
             Send
           </button>
         </div>

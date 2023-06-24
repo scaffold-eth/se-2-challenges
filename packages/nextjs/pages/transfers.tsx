@@ -29,7 +29,6 @@ const Transfers: NextPage = () => {
         </div>
         <div className="overflow-x-auto shadow-lg">
           <table className="table table-zebra w-full">
-            {/* head */}
             <thead>
               <tr>
                 <th className="bg-primary">Token Id</th>

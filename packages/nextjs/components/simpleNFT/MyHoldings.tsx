@@ -50,7 +50,7 @@ export const MyHoldings = () => {
           const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
           console.log("ipfsHash", ipfsHash);
 
-          const nftMetada = await getNFTMetadataFromIPFS(ipfsHash);
+          const nftMetada: NFTMetaData = await getNFTMetadataFromIPFS(ipfsHash);
 
           collectibleUpdate.push({
             id: parseInt(tokenId.toString()),
