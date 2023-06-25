@@ -104,7 +104,7 @@ yarn start
 
 🛰 Ready to deploy to a public testnet?!?
 
-> Change the defaultNetwork in packages/hardhat/hardhat.config.ts to `sepolia`
+> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/9ac9e2be-86cb-4421-96f3-6065925987ed)
 
@@ -116,7 +116,7 @@ yarn start
 👛 View your deployer address using the `yarn account`
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/e743816b-f587-424d-a21d-96088cb3925b)
 
-⛽️ Use a faucet like allthatnode.com/faucet/ethereum.dsrv or web.getlaika.app/faucets to fund your deployer address.
+⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
 
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
 
