@@ -201,7 +201,7 @@ yarn verify --network sepolia
 
 ---
 
-🏃 Head to your next challenge [here]([https://speedrunethereum.com/](https://github.com/scaffold-eth/se-2-challenges).
+🏃 Head to your next challenge [here](https://github.com/scaffold-eth/se-2-challenges).
 
 💬 Meet other builders working on this challenge in the [Challenge 0 telegram channel](https://t.me/+Y2vqXZZ_pEFhMGMx)!!!
 
