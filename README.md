@@ -15,6 +15,7 @@ Before you begin, you need to install the following tools:
 - [Git](https://git-scm.com/downloads)
 
 Then run:
+
 ```sh
 git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-0-simple-nft
 ```
@@ -30,7 +31,7 @@ yarn chain
 
 ```sh
 cd challenge-0-simple-nft
-yarn deploy 
+yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
@@ -59,23 +60,21 @@ yarn start
 
 > 🔥 We'll use burner wallets on localhost...
 
-
-> 👛 Explore how burner wallets work in 🏗 scaffold-eth by opening a new incognito window and navigate to http://localhost:3000. You'll notice it has a new wallet address in the top right. Copy the incognito browser's address and send localhost test funds to it from your first browser:
+> 👛 Explore how burner wallets work in 🏗 scaffold-eth by opening a new incognito window and navigate to http://localhost:3000. You'll notice it has a new wallet address in the top right. Copy the incognito browser's address and send localhost test funds to it from your first browser (using the Faucet button in the bottom left):
 
 ![icognito&webBrowser](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/fd191447-a31f-4c03-a36f-936bfb70c2a1)
 
 > 👨🏻‍🚒 When you close the incognito window, the account is gone forever. Burner wallets are great for local development but you'll move to more permanent wallets when you interact with public networks.
 
-
 ---
 
 ## Checkpoint 2: 🖨 Minting
 
-> ✏️ Mint some NFTs! Click the MINT NFT button in the YourCollectables tab.
+> ✏️ Mint some NFTs! Click the MINT NFT button in the `My NFTs` tab.
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/74cf02f2-4c1b-4278-9841-f19f668e0b1e)
 
-👀 You should see your collectibles start to show up:
+👀 You should see your NFTs start to show up:
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/63dabceb-ad42-4c09-8e5d-a0139939e32d)
 
@@ -84,7 +83,6 @@ yarn start
 🎟 Transfer an NFT to the incognito window address using the UI:
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/3b92fb50-d43f-48a8-838c-c45c443b0b71)
-
 
 👛 Try to mint an NFT from the incognito window.
 
@@ -108,10 +106,8 @@ yarn start
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/9ac9e2be-86cb-4421-96f3-6065925987ed)
 
-
 🔐 Generate a deployer address with `yarn generate`
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/e836ce34-c8c2-4029-831a-dfc82fe6f26b)
-
 
 👛 View your deployer address using the `yarn account`
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/e743816b-f587-424d-a21d-96088cb3925b)
@@ -119,7 +115,6 @@ yarn start
 ⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
 
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
-
 
 🚀 Deploy your NFT smart contract:
 
@@ -141,7 +136,7 @@ yarn deploy
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
 
-> 🦊 You will need to connect your wallet, by default  🔥 `buner wallet` are only available on `hardhat` network but you can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` 
+> 🦊 You will need to connect your wallet, by default 🔥 `buner wallet` are only available on `hardhat` network but you can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/f582d311-9b57-4503-8143-bac60346ea33)
 
@@ -152,22 +147,25 @@ yarn deploy
 ```shell
 yarn vercel
 ```
+
 > Follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
 
 > If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
 
-
 ⚠️ Run the automated testing function to make sure your app passes
+
 ```shell
 yarn test
 ```
+
 ---
 
 ## Checkpoint 5: 📜 Contract Verification
 
-**SHULD WE TELL PEOPLE TO ADD etherscan api key in .env ?***
+**SHULD WE TELL PEOPLE TO ADD etherscan api key in .env ?\***
 
 You can verify your smart contract on Etherscan by running (`yarn verify --network network_name`) :
+
 ```shell
 yarn verify --network sepolia
 ```
@@ -175,13 +173,13 @@ yarn verify --network sepolia
 > It is okay if it says your contract is already verified. Copy the address of YourCollectable.sol and search it on sepolia Etherscan to find the correct URL you need to submit this challenge.
 
 ## Checkpoint 6: 💪 Flex!
+
 👩‍❤️‍👨 Share your public url with a friend and ask them for their address to send them a collectible :)
 
 ![gif](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/547612f6-97b9-4eb3-ab6d-9b6d2c0ac769)
 
-
-
 ## ⚔️ Side Quests
+
 ### 🐟 Open Sea
 
 > 🐃 Want to see your new NFTs on Opensea? Head to [Testnets Opensea](https://testnets.opensea.io/)
@@ -194,7 +192,7 @@ yarn verify --network sepolia
 
 (It can take a while before they show up, but here is an example:) https://testnets.opensea.io/assets/0xc2839329166d3d004aaedb94dde4173651babccf/1
 
---- 
+---
 
 ## 🔶 Infura
 
