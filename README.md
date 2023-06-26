@@ -1,11 +1,12 @@
 # 🚩 Challenge #0: 🎟 Simple NFT Example - SpeedRunEthereum
+
 ![readme-0](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/375b7797-6839-43cd-abe5-fca94d88e300)
 
 🎫 Create a simple NFT to learn basics of 🏗 Scaffold-ETH 2. You'll use [👷‍♀️ HardHat](https://hardhat.org/getting-started/) to compile and deploy smart contracts. Then, you'll use a template React app full of important Ethereum components and hooks. Finally, you'll deploy an NFT to a public network to share with friends! 🚀
 
-🌟 The final deliverable is an app that lets users purchase and transfer NFTs. Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
+🌟 The final deliverable is an app that lets users purchase and transfer NFTs. Deploy your contracts to a testnet, then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx) or our [Challenge 0 Discord](https://discord.com/channels/778001331091800065/908425500643455046)
+💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)
 
 ## Checkpoint 0: 📦 Install 📚
 
@@ -44,7 +45,7 @@ cd challenge-0-simple-nft
 yarn start
 ```
 
-📱 Open http://localhost:3000 to see the app
+📱 Open http://localhost:3000 to see the app.
 
 ---
 
@@ -54,16 +55,16 @@ yarn start
 
 ![gas&wallet](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/912d0d4b-db34-49d3-bd7d-7ca0ab18eb66)
 
-> 🦊 At first, please **don't** connect MetaMask. If you already connected, please click **logout**:
+> 🦊 At first, please **don't** connect MetaMask. If you already connected, please click **Disconnect**:
 
 <p>
   <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/2c7a1e40-50ad-4c20-ba3e-a56eff4b892b" width="33%" />
   <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/1bcf9752-e8ae-4db6-a0a6-5dc774abe46c" width="33%" />
 </p>
 
-> 🔥 We'll use burner wallets on localhost...
+> 🔥 We'll use burner wallets on localhost.
 
-> 👛 Explore how burner wallets work in 🏗 Scaffold-ETH 2 by opening a new incognito window and navigate to http://localhost:3000. You'll notice it has a new wallet address in the top right. Copy the incognito browser's address and send localhost test funds to it from your first browser (using the Faucet button in the bottom left):
+> 👛 Explore how burner wallets work in 🏗 Scaffold-ETH 2 by opening a new incognito window and navigate to http://localhost:3000. You'll notice it has a new wallet address in the top right. Copy the incognito browser's address and send localhost test funds to it from your first browser (using the **Faucet** button in the bottom left):
 
 ![icognito&webBrowser](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/fd191447-a31f-4c03-a36f-936bfb70c2a1)
 
@@ -73,7 +74,7 @@ yarn start
 
 ## Checkpoint 2: 🖨 Minting
 
-> ✏️ Mint some NFTs! Click the MINT NFT button in the `My NFTs` tab.
+> ✏️ Mint some NFTs! Click the **MINT NFT** button in the `My NFTs` tab.
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/74cf02f2-4c1b-4278-9841-f19f668e0b1e)
 
@@ -97,7 +98,7 @@ yarn start
 
 💼 Take a quick look at your deploy script `00_deploy_your_contract.js` in `packages/hardhat/deploy`.
 
-📝 If you want to make frontend edits, Open and look for the page you want to edit in `packages/nextjs/pages` example `myNFTs.tsx`.
+📝 If you want to edit the frontend, navigate to `packages/nextjs/pages` and open the specific page you want to modify. For instance: `myNFTs.tsx`.
 
 ---
 
@@ -105,14 +106,14 @@ yarn start
 
 🛰 Ready to deploy to a public testnet?!?
 
-> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`
+> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/9ac9e2be-86cb-4421-96f3-6065925987ed)
 
-🔐 Generate a deployer address with `yarn generate`
+🔐 Generate a deployer address with `yarn generate`.
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/e836ce34-c8c2-4029-831a-dfc82fe6f26b)
 
-👛 View your deployer address using the `yarn account`
+👛 View your deployer address using `yarn account`.
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/e743816b-f587-424d-a21d-96088cb3925b)
 
 ⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
@@ -131,7 +132,7 @@ yarn deploy
 
 ## Checkpoint 4: 🚢 Ship it! 🚁
 
-> ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.seplolia` :
+> ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/34de5be1-8cf1-4564-ba4b-358824d94547)
 
@@ -139,7 +140,7 @@ yarn deploy
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
 
-> 🦊 You will need to connect your wallet, by default 🔥 `buner wallet` are only available on `hardhat` network but you can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`
+> 🦊 You will need to connect your wallet, by default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/f582d311-9b57-4503-8143-bac60346ea33)
 
@@ -187,13 +188,13 @@ yarn verify --network sepolia
 
 > 🐃 Want to see your new NFTs on Opensea? Head to [Testnets Opensea](https://testnets.opensea.io/)
 
-> 🎫 Make sure you have minted some NFTs on your Surge page, then connect to Opensea using that same wallet.
+> 🎫 Make sure you have minted some NFTs on your Vercel page, then connect to Opensea using that same wallet.
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/c752b365-b801-4a02-ba2e-62e0270b3795)
 
 > You can see your collection of shiny new NFTs on a testnet!
 
-(It can take a while before they show up, but here is an example:) https://testnets.opensea.io/assets/0xc2839329166d3d004aaedb94dde4173651babccf/1
+(It can take a while before they show up, but here is an example:) https://testnets.opensea.io/assets/sepolia/0x17ed03686653917efa2194a5252c5f0a4f3dc49c/2
 
 ---
 
