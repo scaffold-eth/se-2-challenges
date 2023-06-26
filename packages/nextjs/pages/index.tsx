@@ -7,14 +7,14 @@ const Home: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5 w-[90%] md:w-[65%]">
-          <h1 className="text-center mb-4">
+        <div className="px-5 w-[90%] md:w-[75%]">
+          <h1 className="text-center mb-6">
             <span className="block text-2xl mb-2">SpeedRunEthereum</span>
             <span className="block text-4xl font-bold">Challenge #0: Simple NFT</span>
           </h1>
           <div className="flex flex-col items-center justify-center">
-            <div className="w-full h-80 relative mb-4">
-              <Image src="/thumbnail.png" fill alt="challenge banner" />
+            <div className="w-full h-80 relative mb-4 rounded-xl">
+              <Image src="/hero.png" fill alt="challenge banner" className="rounded-xl" />
             </div>
             <p className="text-center text-lg">
               🎫 Create a simple NFT to learn basics of 🏗️ Scaffold-ETH 2. You&apos;ll use 👷‍♀️
