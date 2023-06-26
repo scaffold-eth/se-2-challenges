@@ -32,18 +32,16 @@ export const Footer = () => {
         <ul className="menu menu-horizontal w-full">
           <div className="flex justify-center items-center gap-2 text-sm w-full">
             <div>
+              Built with 🏗{" "}
               <a
-                href="https://github.com/scaffold-eth/se-2"
+                href="https://github.com/scaffold-eth/scaffold-eth-2/"
                 target="_blank"
                 rel="noreferrer"
                 className="underline underline-offset-2"
               >
-                Fork me
-              </a>
-            </div>
-            <span>·</span>
-            <div>
-              Built with <HeartIcon className="inline-block h-4 w-4" /> at 🏰{" "}
+                Scaffold-ETH 2
+              </a>{" "}
+              at 🏰{" "}
               <a
                 href="https://buidlguidl.com/"
                 target="_blank"
