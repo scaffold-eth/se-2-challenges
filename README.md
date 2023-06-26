@@ -14,20 +14,22 @@ Before you begin, you need to install the following tools:
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
 
-Then run:
+Then download the challenge to your computer and install dependencies by running:
 
 ```sh
 git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-0-simple-nft
-```
-
-```sh
 cd challenge-0-simple-nft
 git checkout challenge-0-simple-nft
 yarn install
+```
+
+> in the same terminal, start your local network (a blockchain emulator in your computer):
+
+```sh
 yarn chain
 ```
 
-> in a second terminal window, 🛰 deploy your contract:
+> in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
 cd challenge-0-simple-nft
