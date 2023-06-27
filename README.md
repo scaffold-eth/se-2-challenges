@@ -112,11 +112,11 @@ yarn start
 
 🔐 Generate a deployer address with `yarn generate`.
 
-![chall-0-yarn-generate](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3751534f-a38d-4a8d-ae4b-084e406ab2c5)
+![chall-0-yarn-generate](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/133f5701-e575-4cc2-904f-cdc83ae86d94)
 
 👛 View your deployer address using `yarn account`.
 
-![chall-0-yarn-account](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/65ed331f-9915-49ec-af20-9162011f26fd)
+![chall-0-yarn-account](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/c34df8c9-9793-4a76-849b-170fae7fd0f0)
 
 ⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
 
