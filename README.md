@@ -108,13 +108,15 @@ yarn start
 
 > Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
 
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/9ac9e2be-86cb-4421-96f3-6065925987ed)
+![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/816b103f-383d-42dc-be71-2d18354e6b96)
 
 🔐 Generate a deployer address with `yarn generate`.
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/e836ce34-c8c2-4029-831a-dfc82fe6f26b)
+
+![chall-0-yarn-generate](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3751534f-a38d-4a8d-ae4b-084e406ab2c5)
 
 👛 View your deployer address using `yarn account`.
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/e743816b-f587-424d-a21d-96088cb3925b)
+
+![chall-0-yarn-account](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/65ed331f-9915-49ec-af20-9162011f26fd)
 
 ⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
 
@@ -134,7 +136,7 @@ yarn deploy
 
 > ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
 
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/34de5be1-8cf1-4564-ba4b-358824d94547)
+![chall-0-scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/0388e770-4e26-427c-bf5d-a44636b8fac4)
 
 > You should see the correct network in the frontend (http://localhost:3000):
 
