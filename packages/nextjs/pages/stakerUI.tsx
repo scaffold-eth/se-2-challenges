@@ -10,9 +10,6 @@ import {
   useScaffoldContractRead,
   useScaffoldContractWrite,
 } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
-
-type FunctionToBeCalled = ReturnType<typeof useScaffoldContractWrite>["writeAsync"];
 
 const StakerUI: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -51,14 +48,6 @@ const StakerUI: NextPage = () => {
     functionName: "withdraw",
   });
 
-  const handleClick = async (functioToBeCalled: FunctionToBeCalled) => {
-    if (!StakerContract) {
-      notification.error("Staker contract not deployed on this network");
-      return;
-    }
-    functioToBeCalled();
-  };
-
   return (
     <>
       <MetaHeader />
@@ -71,7 +60,7 @@ const StakerUI: NextPage = () => {
           <div className="flex space-x-6 items-start justify-center">
             <div className="flex flex-col items-center">
               <p className="block text-xl mt-0 mb-1 font-semibold">Time Left</p>
-              <span>{timeLeft ? humanizeDuration(timeLeft.toNumber() * 1000) : 0} left</span>
+              <span>{timeLeft ? humanizeDuration((timeLeft as any).toNumber() * 1000) : 0} left</span>
             </div>
             <div className="flex flex-col items-center shrink-0">
               <p className="block text-xl mt-0 mb-1 font-semibold">Total Staked</p>
@@ -86,14 +75,14 @@ const StakerUI: NextPage = () => {
           </div>
           <div className="flex flex-col space-y-5">
             <div className="flex space-x-6">
-              <button className="btn btn-primary" onClick={() => handleClick(execute)}>
+              <button className="btn btn-primary" onClick={() => execute()}>
                 Execute!
               </button>
-              <button className="btn btn-primary" onClick={() => handleClick(withdrawETH)}>
+              <button className="btn btn-primary" onClick={() => withdrawETH()}>
                 Withdraw
               </button>
             </div>
-            <button className="btn btn-primary" onClick={() => handleClick(stakeETH)}>
+            <button className="btn btn-primary" onClick={() => stakeETH()}>
               🥩 Stake 0.5 ether!
             </button>
           </div>
