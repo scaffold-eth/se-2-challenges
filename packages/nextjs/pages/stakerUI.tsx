@@ -1,4 +1,4 @@
-import { ethers, utils } from "ethers";
+import { utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
