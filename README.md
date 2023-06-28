@@ -1,4 +1,5 @@
 # 🚩 Challenge 1: 🥩 Decentralized Staking App
+![readme-1](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/a620999a-a1ff-462d-9ae3-5b49ab0e023a)
 
 > 🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code.
 
@@ -181,7 +182,7 @@ If the balance is less than the `threshold`, you want to set a `openForWithdraw`
 
 📡 When you are ready to ship the frontend app...
 
-📦 Run `yarn vercel` to package up your frontend.
+📦 Run `yarn vercel` to package up your frontend and deploy.
 
 > Follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
 
@@ -193,7 +194,7 @@ If the balance is less than the `threshold`, you want to set a `openForWithdraw`
 
 ### Checkpoint 7: 📜 Contract Verification
 
-> Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
+Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
 ---
 
