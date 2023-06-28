@@ -108,7 +108,8 @@ yarn start
 
 > Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
 
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/816b103f-383d-42dc-be71-2d18354e6b96)
+![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
+
 
 🔐 Generate a deployer address with `yarn generate`.
 
@@ -136,7 +137,8 @@ yarn deploy
 
 > ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
 
-![chall-0-scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/0388e770-4e26-427c-bf5d-a44636b8fac4)
+![chall-0-scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3b50c7a7-b9cc-4af3-ab2a-11be4f5d2235)
+
 
 > You should see the correct network in the frontend (http://localhost:3000):
 
