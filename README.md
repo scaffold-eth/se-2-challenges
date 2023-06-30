@@ -173,7 +173,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 - 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃`ETHERSCAN_API_KEY` variable in `packagest/nextjs.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
