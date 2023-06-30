@@ -16,7 +16,7 @@ const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT
 export const MetaHeader = ({
   title = "Challenge #0 | SpeedRunEthereum",
   description = "Challenge #0: 🎟 Simple NFT Example of SpeedRunEthereum. Built with 🏗 Scaffold-ETH 2",
-  image = "thumbnail.jpg",
+  image = "thumbnail.png",
   twitterCard = "summary_large_image",
   children,
 }: MetaHeaderProps) => {
