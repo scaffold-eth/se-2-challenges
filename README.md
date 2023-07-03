@@ -110,7 +110,7 @@ yarn start
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
-🔐 Generate a deployer address with `yarn generate`.
+🔐 Generate a deployer address with `yarn generate`. The "yarn generate" command automates the process of creating a unique deployer address, which is needed to deploy your smart contracts onto a blockchain network.
 
 ![chall-0-yarn-generate](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/133f5701-e575-4cc2-904f-cdc83ae86d94)
 
