@@ -58,14 +58,15 @@ export const Header = () => {
     <div className="sticky lg:static top-0 navbar bg-primary min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary">
       <div className="navbar-start w-auto lg:w-1/2">
         <div className="lg:hidden dropdown" ref={burgerMenuRef}>
-          <button
+          <label
+            tabIndex={0}
             className={`ml-1 btn btn-ghost ${isDrawerOpen ? "hover:bg-secondary" : "hover:bg-transparent"}`}
             onClick={() => {
               setIsDrawerOpen(prevIsOpenState => !prevIsOpenState);
             }}
           >
             <Bars3Icon className="h-1/2" />
-          </button>
+          </label>
           {isDrawerOpen && (
             <ul
               tabIndex={0}
@@ -78,12 +79,12 @@ export const Header = () => {
             </ul>
           )}
         </div>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6">
+        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">SE-2 Challenges</span>
+            <span className="font-bold leading-tight">SRE Challenges</span>
             <span className="text-xs">#X: Challenge Title</span>
           </div>
         </Link>
