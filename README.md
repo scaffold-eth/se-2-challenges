@@ -55,7 +55,7 @@ yarn start
 
 ![gas&wallet](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/912d0d4b-db34-49d3-bd7d-7ca0ab18eb66)
 
-> 🦊 At first, please **don't** connect MetaMask. If you already connected, please click **Disconnect**:
+> 🦊 At first, **don't** connect MetaMask. If you are already connected, click **Disconnect**:
 
 <p>
   <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/2c7a1e40-50ad-4c20-ba3e-a56eff4b892b" width="33%" />
@@ -148,7 +148,7 @@ yarn deploy
 
 > 💬 Hint: For faster loading of your transfer page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/trasfer.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/c18ed9bd202b8614da6775a189937b4facb58929/packages/nextjs/pages/transfers.tsx#L11) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
-🚀 Deploying your NextJS App
+🚀 Deploy your NextJS App
 
 ```shell
 yarn vercel
