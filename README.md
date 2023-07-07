@@ -148,8 +148,6 @@ yarn deploy
 
 > 💬 Hint: For faster loading of your transfer page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/transfers.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/c18ed9bd202b8614da6775a189937b4facb58929/packages/nextjs/pages/transfers.tsx#L11) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
-> 👀 You can view the current block number in the `yarn chain` terminal.
-
 🚀 Deploy your NextJS App
 
 ```shell
