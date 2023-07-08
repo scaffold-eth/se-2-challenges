@@ -59,4 +59,78 @@ Below is what your front-end will look like with no implementation code within y
 
 ⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of hardhat/deploy/00_deploy_your_contract.ts.
 
+### ⛳️ **Checkpoint 2: Reserves** ⚖️
+
+We want to create an automatic market where our contract will hold reserves of both ETH and 🎈 Balloons. These reserves will provide liquidity that allows anyone to swap between the assets.
+
+Add a couple new variables to `DEX.sol` for `totalLiquidity` and `liquidity`:
+
+<details markdown='1'><summary>👩🏽‍🏫 Solution Code</summary>
+
+```
+uint256 public totalLiquidity;
+mapping (address => uint256) public liquidity;
+```
+
+</details>
+
+These variables track the total liquidity, but also by individual addresses too.
+Now, let's create an `init()` function in `DEX.sol` that is payable and then we can define an amount of tokens that it will transfer to itself.
+
+<details markdown='1'><summary> 👨🏻‍🏫 Solution Code</summary>
+
+```
+    function init(uint256 tokens) public payable returns (uint256) {
+        require(totalLiquidity == 0, "DEX: init - already has liquidity");
+        totalLiquidity = address(this).balance;
+        liquidity[msg.sender] = totalLiquidity;
+        require(token.transferFrom(msg.sender, address(this), tokens), "DEX: init - transfer did not transact");
+        return totalLiquidity;
+    }
+```
+
+</details>
+
+Calling `init()` will load our contract up with both ETH and 🎈 Balloons.
+
+We can see that the DEX starts empty. We want to be able to call `init()` to start it off with liquidity, but we don’t have any funds or tokens yet. Add some ETH to your local account using the faucet and then find the `00_deploy_your_contract.ts` file. Find and uncomment the line below and add your front-end address:
+
+```
+  // // paste in your front-end address here to get 10 balloons on deploy:
+  // await balloons.transfer(
+  //   "0xe64bAAA0F6012A0F320a262cFe39289bA6cBd0f2",
+  //   "" + 10 * 10 ** 18
+  // );
+```
+
+Run `yarn deploy`. The front end should show you that you have balloon tokens. We can’t just call `init()` yet because the DEX contract isn’t allowed to transfer tokens from our account. We need to `approve()` the DEX contract with the Balloons UI.
+
+🤓 Copy and paste the DEX address and then set the amount to 5000000000000000000 (5 _ 10¹⁸). You can confirm this worked using the `allowance()` function. Now we are ready to call `init()` on the DEX. We will tell it to take (5 _ 10¹⁸) of our tokens and we will also send 0.01 ETH with the transaction. You can see the DEX contract's value update and you can check the DEX token balance using the balanceOf function on the Balloons UI.
+
+This works pretty well, but it will be a lot easier if we just call the `init()` function as we deploy the contract. In the `00_deploy_your_contract.ts` script try uncommenting the init section so our DEX will start with 5 ETH and 5 Balloons of liquidity:
+
+```
+  // // uncomment to init DEX on deploy:
+  // console.log(
+  //   "Approving DEX (" + dex.address + ") to take Balloons from main account..."
+  // );
+  // // If you are going to the testnet make sure your deployer account has enough ETH
+  // await balloons.approve(dex.address, ethers.utils.parseEther("100"));
+  // console.log("INIT exchange...");
+  // await dex.init(ethers.utils.parseEther("5"), {
+  //   value: ethers.utils.parseEther("5"),
+  //   gasLimit: 200000,
+  // });
+```
+
+Now when we `yarn deploy --reset` then our contract should be initialized as soon as it deploys and we should have equal reserves of ETH and tokens.
+
+### 🥅 Goals / Checks
+
+- [ ] 🎈 Under the debug tab, does your DEX show 5 ETH and 5 Balloons of liquidity?
+- [ ] ❗ If you are planning to submit the challenge make sure to implement the `getLiqudity` getter function.
+
+---
+
+
 ## ⚔️ Side Quests
