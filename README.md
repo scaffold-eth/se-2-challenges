@@ -58,8 +58,7 @@ Balloons.sol is just an example ERC20 contract that mints 1000 $BAL to whatever 
 Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
 ⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of `hardhat/deploy/00_deploy_your_contract.ts`.
-
-
+![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/9397a9ea-c682-4015-9d03-308a5a867e0d)
 
 ### ⛳️ **Checkpoint 2: Reserves** ⚖️ 
 
