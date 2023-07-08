@@ -58,6 +58,7 @@ Balloons.sol is just an example ERC20 contract that mints 1000 $BAL to whatever 
 Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
 ⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of `hardhat/deploy/00_deploy_your_contract.ts`.
+
 ![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/9397a9ea-c682-4015-9d03-308a5a867e0d)
 
 ### ⛳️ **Checkpoint 2: Reserves** ⚖️ 
@@ -185,16 +186,19 @@ yarn run deploy
 
 Let’s say we have 1 million ETH and 1 million tokens, if we put this into our price formula and ask it the price of 1000 ETH it will be an almost 1:1 ratio:
 
-![image](https://user-images.githubusercontent.com/12072395/205342200-a97af0d8-3366-494b-8b4d-5215de61eb69.png)
+![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/77bac7a8-36c6-4d89-b60c-b0a0e14f706f)
+
 
 If we put in 1000 ETH we will receive 996 tokens. If we’re paying a 0.3% fee it should be 997 if everything was perfect. BUT, there is a tiny bit of slippage as our contract moves away from the original ratio. Let’s dig in more to really understand what is going on here.
 Let’s say there is 5 million ETH and only 1 million tokens. Then, we want to put 1000 tokens in. That means we should receive about 5000 ETH:
 
-![image](https://user-images.githubusercontent.com/12072395/205341997-7b284786-8f4a-4dde-85e3-eb5bdfc955ce.png)
+![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/a4f3754c-4362-45c4-90c6-2baccfe8a03e)
+
 
 Finally, let’s say the ratio is the same but we want to swap 100,000 tokens instead of just 1000. We’ll notice that the amount of slippage is much bigger. Instead of 498,000 back we will only get 453,305 because we are making such a big dent in the reserves.
 
-![image](https://user-images.githubusercontent.com/12072395/205341547-c38ec805-74fc-4925-8f7e-48fcef1065d7.png)
+![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/f32642c1-b612-40ae-a9d2-01ddabc55239)
+
 
 ❗️ The contract automatically adjusts the price as the ratio of reserves shifts away from the equilibrium. It’s called an 🤖 _Automated Market Maker (AMM)._
 
