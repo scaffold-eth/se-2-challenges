@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Address, Balance, EtherInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { Curve } from "~~/components/Curve";
+import { useBalance } from "wagmi";
 
 const Home: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -66,6 +68,16 @@ const Home: NextPage = () => {
     args: [accountBalanceOf]
   });
 
+  const {data: contractBalance} = useScaffoldContractRead({
+    contractName:"Balloons",
+    functionName:"balanceOf",
+    args: [DEXInfo?.address]
+  });
+
+  const { data: contractETHBalance } = useBalance({
+    address: DEXInfo?.address,
+  })
+
   return (
     <>
       <MetaHeader />
@@ -86,11 +98,11 @@ const Home: NextPage = () => {
               </div>
               <div className="border rounded-3xl py-3 px-4">
               <div className="flex mb-4">
-                <span>ethToToken  <EtherInput value={ethToTokenAmount} onChange={(value) => setEthToTokenAmount(value)}/></span>
+                <span>ethToToken  <EtherInput value={ethToTokenAmount} onChange={(value) => setEthToTokenAmount(value)} name="ethToToken"/></span>
                 <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5" onClick={ethToTokenWrite}>Send</button>
               </div>
               <div className="flex">
-                <span>tokenToETH  <EtherInput value={tokenToETHAmount} onChange={(value) => setTokenToETHAmount(value)}/></span>
+                <span>tokenToETH  <EtherInput value={tokenToETHAmount} onChange={(value) => setTokenToETHAmount(value)} name="tokenToETH"/></span>
                 <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5" onClick={tokenToEthWrite}>Send</button>
               </div>
             </div>
@@ -151,17 +163,15 @@ const Home: NextPage = () => {
         </div>
 
 
-
-
-        <div className="px-5">
-          <h1 className="text-center mb-8">
-            <span className="block text-2xl mb-2">SpeedRunEthereum</span>
-            <span className="block text-4xl font-bold">Challenge 4: Minimum Viable Exchange </span>
-          </h1>
-          <p className="text-center text-lg">
-            PLOT WILL BE HERE!
-          </p>
-          
+        <div className="px-5 mx-auto">
+          <Curve
+            addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount) : 0}
+            addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount) : 0}
+            ethReserve={parseFloat(ethers.utils.formatEther(contractETHBalance?.value || BigNumber.from("0")))}
+            tokenReserve={parseFloat(ethers.utils.formatEther(contractBalance || BigNumber.from("0") ))}
+            width={500}
+            height={500}
+          />
         </div>
       </div>
     </>
