@@ -15,11 +15,8 @@ const Home: NextPage = () => {
   const [approveAmount, setApproveAmount] = useState("");
   const [accountBalanceOf, setAccountBalanceOf] = useState("");
 
-
-
   const {data: DEXInfo} = useDeployedContractInfo("DEX");
   const {data: BalloonsInfo} = useDeployedContractInfo("Balloons");
-
   
   const {data: DEXBalloonBalance} = useScaffoldContractRead({
     contractName:"Balloons",
@@ -68,7 +65,6 @@ const Home: NextPage = () => {
     functionName:"balanceOf",
     args: [accountBalanceOf]
   });
-  console.log("hey",balanceOfWrite);
 
   return (
     <>
@@ -105,14 +101,15 @@ const Home: NextPage = () => {
             </div>
 
             <div className="border rounded-3xl px-4 py-3">
+
               <div className="flex mb-4">
                 <span>Deposit  <EtherInput value={depositAmount} onChange={(value) => setDepositAmount(value)}/></span>
                 <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5" onClick={depositWrite}>Send</button>
               </div>
+
               <div className="flex">
                 <span>Withdraw  <EtherInput value={withdrawAmount} onChange={(value) => setWithdrawAmount(value)}/></span>
                 <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5" onClick={withdrawWrite}>Send</button>
-
               </div>
             </div>
 
@@ -127,34 +124,31 @@ const Home: NextPage = () => {
             </div>
 
             <div className="border rounded-3xl px-4 py-3 grid grid-cols-2">
-
               <div className="flex flex-col gap-4 mb-4">
-                <span>Approve  <EtherInput value={approveSpender} onChange={(value) => setApproveSpender(value)} placeholder="Address Spender"/></span>
+                <span className="flex flex-col">Approve  <input className="pl-4 py-4 px-8 text-accent bg-transparent border border-blue-100 rounded-2xl h-[2.2rem] min-h-[2.2rem]" value={approveSpender} onChange={(event) => setApproveSpender(event.target.value)} placeholder="Address Spender"/></span>
                 <EtherInput value={approveAmount} onChange={(value) => setApproveAmount(value)} placeholder="uint256 Amount"/>
               </div>
 
               <div className=" my-auto">
               <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-auto ml-5" onClick={approveWrite}>Send</button>
-              </div>
-  
+              </div> 
             </div>
 
             <div className="border rounded-3xl px-4 py-3 mt-6">
               <div className="flex mb-4">
-                <span className="flex flex-col mt-2">balanceOf <input className="pl-4 py-4 px-8 text-accent self-center bg-transparent border border-blue-100 rounded-2xl h-[2.2rem] min-h-[2.2rem]" value={accountBalanceOf} onChange={(event) => setAccountBalanceOf(event.target.value)} placeholder="address Account"/></span>                
-              </div>
+                <span className="flex flex-col mt-2">balanceOf <input className="pl-4 py-4 px-8 text-accent bg-transparent border border-blue-100 rounded-2xl h-[2.2rem] min-h-[2.2rem]" value={accountBalanceOf} onChange={(event) => setAccountBalanceOf(event.target.value)} placeholder="address Account"/></span>                
+            </div>
               {balanceOfWrite === undefined
                 ? (
                   <h1></h1>
                 ):
                 (
-                  <span>{ethers.utils.formatEther(balanceOfWrite || BigNumber.from("0"))}</span>
+                  <span className="font-bold bg-primary px-3 rounded-2xl">BAL Balance:  {ethers.utils.formatEther(balanceOfWrite || BigNumber.from("0"))}</span>
                 )
                 }
             </div>
         </div>
 
-        
 
 
 
@@ -164,13 +158,9 @@ const Home: NextPage = () => {
             <span className="block text-4xl font-bold">Challenge 4: Minimum Viable Exchange </span>
           </h1>
           <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold">packages/nextjs/pages/index.tsx</code>
+            PLOT WILL BE HERE!
           </p>
-          <p className="text-center text-lg">
-            Edit your smart contract <code className="italic bg-base-300 text-base font-bold">YourContract.sol</code> in{" "}
-            <code className="italic bg-base-300 text-base font-bold">packages/hardhat/contracts</code>
-          </p>
+          
         </div>
       </div>
     </>
