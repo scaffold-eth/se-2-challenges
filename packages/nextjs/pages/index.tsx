@@ -103,6 +103,7 @@ const Home: NextPage = () => {
             <div className="border rounded-3xl px-4 py-3">
 
               <div className="flex mb-4">
+                
                 <span>Deposit  <EtherInput value={depositAmount} onChange={(value) => setDepositAmount(value)}/></span>
                 <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5" onClick={depositWrite}>Send</button>
               </div>
