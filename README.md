@@ -58,10 +58,55 @@ DEX Telegram Channel: https://t.me/+_NeUIJ664Tc1MzIx
 
 ---
 
-## Dev Notes:
+## 💡 Guide and Hints to create New Challenges
 
 - We'd use the [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template) as a starting point for each challenge.
-
 - UI wise, we'll try to use the https://speedrunethereum.com/ design vibe.
 
-- Open an issue if you are interested in contributing with a given challenge.
+Checkout already migrated Challenges to get a better idea of the structure and how to create new ones.
+
+A quickstart guide.
+
+### 1. Branch from [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template)
+
+At `base-challenge-template` branch we will be adding the latest updates from Scaffold ETH 2. We'll also include the learnings we acquire during the Challenges we are adding, as well as the code that may be common to all the Challenges.
+
+### 2. Edit `pages/index.tsx`
+
+The main page should have a banner image (ask for it!) + the Challenge description.
+
+> {challengeHeroImage}
+>
+> A {challengeDescription}.
+>
+> 🌟 The final deliverable is an app that {challengeDeliverable}.
+> Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
+
+
+### 3. Implement the Challenge
+
+- Add the contract(s)
+- Add pages / components as you need (UI following the [SpeedRunEthereum.com](https://speedrunethereum.com/) design vibe)
+- Create the test for the Smart Contract(s). Best starting point is to copy the tests from the SE1 Challenge you are migrating. The "envvar" logic there is used by the autograder, so don't remove them.
+
+### 4. Adapt Header / MetaHeader component
+
+Update the site title on `Header.tsx` and title and description of your challenge in `MetaHeader.tsx`.
+
+### 5. Image assets for your Challenge
+
+You will need to add the following image assets in `packages/nextjs/public` folder (ask the designers for it):
+
+- **Thumbnail.** `thumbnail.png`
+  Will be shown in your link previews when shared to others in chat or in social media.
+- **Hero image.** `hero.png`
+  It's a wider version of the Thumbnail with SRE logo at the bottom right. Used as README header, and as `pages/index.tsx` hero image.
+
+### 6. Edit README adapting the [base template](#readme-base-template)
+
+Adapt the base template README using the SE-1 version as a reference.
+
+
+### 7. Create a PR against the challenge branch
+
+We can iterate and test there.
