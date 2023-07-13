@@ -2,7 +2,7 @@
 
 > Migrating [scaffold-eth challenges](https://github.com/scaffold-eth/scaffold-eth-challenges) to Scaffold-ETH 2.
 
-⚠️ This is a work in progress. Check the [dev notes](#dev-notes) if you want to contribute.
+⚠️ This is a work in progress. Check the [💡 Guide and Hints to create New Challenges](#💡-guide-and-hints-to-create-new-challenges) if you want to contribute.
 
 **Learn how to use 🏗 Scaffold-ETH 2 to create decentralized applications on Ethereum. 🚀**
 
@@ -34,7 +34,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-0-simple-nft
 
 ## 🚩 Challenge 3: 🎲 Dice Game
 
-🎰 Randomness is tricky on a public deterministic blockchain.  In this challenge you will explore creating random numbers using block hash and how that may be exploitable.  Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
+🎰 Randomness is tricky on a public deterministic blockchain. In this challenge you will explore creating random numbers using block hash and how that may be exploitable. Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
 
 (Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-3-dice-game
 
@@ -82,7 +82,6 @@ The main page should have a banner image (ask for it!) + the Challenge descripti
 > 🌟 The final deliverable is an app that {challengeDeliverable}.
 > Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-
 ### 3. Implement the Challenge
 
 - Add the contract(s)
@@ -105,7 +104,6 @@ You will need to add the following image assets in `packages/nextjs/public` fold
 ### 6. Edit README adapting the [base template](#readme-base-template)
 
 Adapt the base template README using the SE-1 version as a reference.
-
 
 ### 7. Create a PR against the challenge branch
 
