@@ -28,23 +28,36 @@ git checkout {challengeName}
 yarn install
 ```
 
-🔏 Edit your smart contract {smartContractFileName} in `packages/hardhat/contracts`
+Then download the challenge to your computer and install dependencies by running:
 
----
-
-## Checkpoint 1: 🔭 Environment 📺
-
-You'll have three terminals up for:
-
-```bash
-yarn start   (Next app frontend)
-yarn chain   (hardhat backend)
-yarn deploy  (to compile, deploy, and publish your contracts to the frontend)
+```sh
+git clone <challeng_repo_url> <challenge_folder_name>
+cd <challenge_folder_name>
+git checkout <challenge_repo_branch>
+yarn install
 ```
 
-> 💻 View your frontend at http://localhost:3000/
+> in the same terminal, start your local network (a blockchain emulator in your computer):
 
-> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend.
+```sh
+yarn chain
+```
+
+> in a second terminal window, 🛰 deploy your contract (locally):
+
+```sh
+cd <challenge_folder_name>
+yarn deploy
+```
+
+> in a third terminal window, start your 📱 frontend:
+
+```sh
+cd <challenge_folder_name>
+yarn start
+```
+
+📱 Open http://localhost:3000 to see the app.
 
 ---
 
