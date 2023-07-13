@@ -59,7 +59,8 @@ Below is what your front-end will look like with no implementation code within y
 
 ⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of `hardhat/deploy/00_deploy_your_contract.ts`.
 
-![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/9397a9ea-c682-4015-9d03-308a5a867e0d)
+![2023-07-13 (2)](https://github.com/mertcanciy/se-2-challenges/assets/59885513/1b6e8f59-c549-40b8-982e-e0bec0239117)
+
 
 ### ⛳️ **Checkpoint 2: Reserves** ⚖️ 
 
@@ -325,7 +326,8 @@ Remember that you will need to call `approve()` from the `Balloons.sol` contract
 
 Cool beans! Your front-end should be showing something like this now!
 
-![image](https://user-images.githubusercontent.com/12072395/205334649-faca4ada-e3a4-4fbe-8c14-65d707535f7b.png)
+![2023-07-13 (4)](https://github.com/mertcanciy/se-2-challenges/assets/59885513/dcfc16fa-6309-41f3-abff-748d8b45d61a)
+
 
 Now, a user can just enter the amount of ETH or tokens they want to swap and the chart will display how the price is calculated. The user can also visualize how larger swaps result in more slippage and less output asset.
 
@@ -423,6 +425,3 @@ yarn verify --network sepolia
 
 👩‍❤️‍👨 Send some BAL and share your public url with a friend and ask them to swap their tokens :)
 
-
-
-## ⚔️ Side Quests
