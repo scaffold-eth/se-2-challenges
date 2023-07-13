@@ -14,8 +14,6 @@
 
 > 💬 Meet other builders working on this challenge and get help in the [Challenge 2 Telegram](https://t.me/joinchat/IfARhZFc5bfPwpjq) or the [Challenge 2 Discord](https://discord.com/channels/778001331091800065/859867436957171732)!
 
-🧫 Everything starts by ✏️ Editing `YourToken.sol` in `packages/hardhat/contracts`
-
 ---
 
 ## Checkpoint 0: 📦 Install 📚
@@ -24,28 +22,38 @@ Want a fresh cloud environment? Click this to open a gitpod workspace, then skip
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor)
 
-```bash
-git clone https://github.com/scaffold-eth/se-2-challenges challenge-2-token-vendor
+```sh
+git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-2-token-vendor
 cd challenge-2-token-vendor
 git checkout challenge-2-token-vendor
 yarn install
 ```
 
-🔏 Edit your smart contract `YourToken.sol` in `packages/hardhat/contracts`
-
 ---
 
 ## Checkpoint 1: 🔭 Environment 📺
 
-You'll have three terminals up for:
+> in the same terminal, start your local network (a blockchain emulator in your computer):
 
-```bash
-yarn start   (Next app frontend)
-yarn chain   (hardhat backend)
-yarn deploy  (to compile, deploy, and publish your contracts to the frontend)
+```sh
+yarn chain
 ```
 
-> 💻 View your frontend at http://localhost:3000/
+> in a second terminal window, 🛰 deploy your contract (locally):
+
+```sh
+cd challenge-2-token-vendor
+yarn deploy
+```
+
+> in a third terminal window, start your 📱 frontend:
+
+```sh
+cd challenge-2-token-vendor
+yarn start
+```
+
+📱 Open http://localhost:3000 to see the app.
 
 > 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend.
 
