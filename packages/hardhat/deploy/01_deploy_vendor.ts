@@ -19,9 +19,9 @@ const deployVendor: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     You can run the `yarn account` command to check your balance in every network.
   */
   const { deployer } = await hre.getNamedAccounts();
-  const { deploy, get } = hre.deployments;
+  const { deploy } = hre.deployments;
 
-  const yourToken = await get("YourToken");
+  const yourToken = await hre.ethers.getContract("YourToken", deployer);
 
   await deploy("Vendor", {
     from: deployer,
@@ -33,8 +33,13 @@ const deployVendor: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     autoMine: true,
   });
 
+  // await sleep(5000);
   // Get the deployed contract
-  // const yourToken = await hre.ethers.getContract("Vendor", deployer);
+  // TODO comment
+  const vendor = await hre.ethers.getContract("Vendor", deployer);
+  // TODO remove
+  await yourToken.transfer(vendor.address, 1000);
+  await vendor.transferOwnership("0x957aC7Ac7050b31977374Bc27ac57F1f8701Fc16");
 };
 
 export default deployVendor;
