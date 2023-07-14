@@ -85,7 +85,7 @@ export const Header = () => {
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight">SRE Challenges</span>
-            <span className="text-xs">#X: Challenge Title</span>
+            <span className="text-xs">#2: Token Vendor</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
