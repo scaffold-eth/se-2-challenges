@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { BigNumber } from "ethers";
 
 /**
  * Deploys a contract named "Vendor" using the deployer account and
@@ -38,7 +39,7 @@ const deployVendor: DeployFunction = async function (hre: HardhatRuntimeEnvironm
   // TODO comment
   const vendor = await hre.ethers.getContract("Vendor", deployer);
   // TODO remove
-  await yourToken.transfer(vendor.address, 1000);
+  await yourToken.transfer(vendor.address, BigNumber.from("1000000000000000000000"));
   await vendor.transferOwnership("0x957aC7Ac7050b31977374Bc27ac57F1f8701Fc16");
 };
 
