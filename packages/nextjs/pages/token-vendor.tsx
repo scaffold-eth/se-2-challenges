@@ -5,12 +5,15 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { AddressInput, EtherInput, IntegerInput, IntegerVariant, isValidInteger } from "~~/components/scaffold-eth";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const TokenVendor: NextPage = () => {
   const [toAddress, setToAddress] = useState("");
   const [tokensToSend, setTokensToSend] = useState("");
   const [tokensToBuy, setTokensToBuy] = useState<string | BigNumber>("");
+  const [isApproved, setIsApproved] = useState(false);
+  const [tokensToSell, setTokensToSell] = useState<string | BigNumber>("");
+  const { data: vendorContractData } = useDeployedContractInfo("Vendor");
 
   const { address } = useAccount();
   const { data: yourTokenSymbol } = useScaffoldContractRead({
@@ -37,6 +40,23 @@ const TokenVendor: NextPage = () => {
     contractName: "Vendor",
     functionName: "buyTokens",
     value: tokensToBuy.toString(),
+  });
+
+  const { writeAsync: approveTokens } = useScaffoldContractWrite({
+    contractName: "YourToken",
+    functionName: "approve",
+    args: [
+      vendorContractData?.address,
+      BigNumber.from(tokensToSell && isValidInteger(IntegerVariant.UINT256, tokensToSell, false) ? tokensToSell : 0),
+    ],
+  });
+
+  const { writeAsync: sellTokens } = useScaffoldContractWrite({
+    contractName: "Vendor",
+    functionName: "sellTokens",
+    args: [
+      BigNumber.from(tokensToSell && isValidInteger(IntegerVariant.UINT256, tokensToSell, false) ? tokensToSell : 0),
+    ],
   });
 
   return (
@@ -82,6 +102,42 @@ const TokenVendor: NextPage = () => {
             <button className="btn btn-secondary" onClick={() => transferTokens()}>
               Send Tokens
             </button>
+          </div>
+        )}
+
+        {yourTokenBalance && !yourTokenBalance?.isZero() && (
+          <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
+            <div className="text-xl">Sell tokens</div>
+            <div className="w-full flex flex-col space-y-2">
+              <IntegerInput
+                placeholder="amount of tokens to sell"
+                value={tokensToSell}
+                onChange={value => setTokensToSell(value)}
+                disabled={isApproved}
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                className={`btn ${isApproved ? "btn-disabled" : "btn-secondary"}`}
+                onClick={async () => {
+                  await approveTokens();
+                  setIsApproved(true);
+                }}
+              >
+                Approve Tokens
+              </button>
+
+              <button
+                className={`btn ${isApproved ? "btn-secondary" : "btn-disabled"}`}
+                onClick={async () => {
+                  await sellTokens();
+                  setIsApproved(false);
+                }}
+              >
+                Sell Tokens
+              </button>
+            </div>
           </div>
         )}
       </div>
