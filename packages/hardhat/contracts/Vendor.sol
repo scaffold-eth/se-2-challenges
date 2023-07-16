@@ -7,6 +7,8 @@ import "./YourToken.sol";
 contract Vendor is Ownable {
   // TODO: comment
   event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
+  // TODO: remove
+  event SellTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
 
   YourToken public yourToken;
 
@@ -22,6 +24,7 @@ contract Vendor is Ownable {
   function buyTokens() external payable {
     uint256 tokens = (msg.value * tokensPerEth);
     yourToken.transfer(msg.sender, tokens);
+
     emit BuyTokens(msg.sender, msg.value, tokens);
   }
 
@@ -36,8 +39,12 @@ contract Vendor is Ownable {
   function sellTokens(uint256 _amount) external {
     uint256 ethValue = (_amount / tokensPerEth);
     require(ethValue <= address(this).balance, "Inusfficient funds");
+
     yourToken.transferFrom(msg.sender, address(this), _amount);
+
     (bool success, ) = msg.sender.call{value: ethValue}("");
     require(success, "Something went wrong Sell");
+
+    emit SellTokens(msg.sender, ethValue, _amount);
   }
 }
