@@ -29,8 +29,6 @@ git checkout challenge-2-token-vendor
 yarn install
 ```
 
----
-
 ## Checkpoint 1: 🔭 Environment 📺
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
@@ -42,20 +40,18 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd challenge-2-token-vendor
+cd <challenge_folder_name>
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd challenge-2-token-vendor
+cd <challenge_folder_name>
 yarn start
 ```
 
 📱 Open http://localhost:3000 to see the app.
-
-> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend.
 
 > ignore any warnings, we'll get to that...
 
