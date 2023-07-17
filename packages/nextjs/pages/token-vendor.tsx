@@ -4,21 +4,27 @@ import { formatEther } from "ethers/lib/utils.js";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { AddressInput, EtherInput, IntegerInput, IntegerVariant, isValidInteger } from "~~/components/scaffold-eth";
+import { AddressInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { getTokenPriceInWei, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
 
 const TokenVendor: NextPage = () => {
   const [toAddress, setToAddress] = useState("");
   const [tokensToSend, setTokensToSend] = useState("");
   const [tokensToBuy, setTokensToBuy] = useState<string | BigNumber>("");
   const [isApproved, setIsApproved] = useState(false);
-  const [tokensToSell, setTokensToSell] = useState<string | BigNumber>("");
+  const [tokensToSell, setTokensToSell] = useState<string>("");
   const { data: vendorContractData } = useDeployedContractInfo("Vendor");
 
   const { address } = useAccount();
   const { data: yourTokenSymbol } = useScaffoldContractRead({
     contractName: "YourToken",
     functionName: "symbol",
+  });
+
+  const { data: tokensPerEth } = useScaffoldContractRead({
+    contractName: "Vendor",
+    functionName: "tokensPerEth",
   });
 
   const { data: yourTokenBalance } = useScaffoldContractRead({
@@ -30,33 +36,28 @@ const TokenVendor: NextPage = () => {
   const { writeAsync: transferTokens } = useScaffoldContractWrite({
     contractName: "YourToken",
     functionName: "transfer",
-    args: [
-      toAddress,
-      BigNumber.from(tokensToSend && isValidInteger(IntegerVariant.UINT256, tokensToSend, false) ? tokensToSend : 0),
-    ],
+    args: [toAddress, multiplyTo1e18(tokensToSend)],
   });
 
+  console.log(tokensToBuy, tokensPerEth?.toString(), getTokenPriceInWei(tokensToBuy, tokensPerEth).toString(), "<<<<<");
   const { writeAsync: buyTokens } = useScaffoldContractWrite({
     contractName: "Vendor",
     functionName: "buyTokens",
-    value: tokensToBuy.toString(),
+    overrides: {
+      value: getTokenPriceInWei(tokensToBuy, tokensPerEth),
+    },
   });
 
   const { writeAsync: approveTokens } = useScaffoldContractWrite({
     contractName: "YourToken",
     functionName: "approve",
-    args: [
-      vendorContractData?.address,
-      BigNumber.from(tokensToSell && isValidInteger(IntegerVariant.UINT256, tokensToSell, false) ? tokensToSell : 0),
-    ],
+    args: [vendorContractData?.address, multiplyTo1e18(tokensToSell)],
   });
 
   const { writeAsync: sellTokens } = useScaffoldContractWrite({
     contractName: "Vendor",
     functionName: "sellTokens",
-    args: [
-      BigNumber.from(tokensToSell && isValidInteger(IntegerVariant.UINT256, tokensToSell, false) ? tokensToSell : 0),
-    ],
+    args: [multiplyTo1e18(tokensToSell)],
   });
 
   return (
@@ -74,9 +75,8 @@ const TokenVendor: NextPage = () => {
         <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
           <div className="text-xl">Buy tokens</div>
           <div className="w-full flex flex-col space-y-2">
-            <EtherInput
-              // placeholder="amount of tokens to buy"
-              placeholder="amount of ETH or USD payed"
+            <IntegerInput
+              placeholder="amount of tokens to buy"
               value={tokensToBuy.toString()}
               onChange={value => setTokensToBuy(value)}
             />
@@ -112,7 +112,7 @@ const TokenVendor: NextPage = () => {
               <IntegerInput
                 placeholder="amount of tokens to sell"
                 value={tokensToSell}
-                onChange={value => setTokensToSell(value)}
+                onChange={value => setTokensToSell(value as string)}
                 disabled={isApproved}
               />
             </div>
