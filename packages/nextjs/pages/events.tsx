@@ -12,6 +12,7 @@ const Events: NextPage = () => {
     fromBlock: 0,
   });
 
+  //   TODO: remove or comment sell events
   const { data: sellTokenEvents, isLoading: isSellEventsLoading } = useScaffoldEventHistory({
     contractName: "Vendor",
     eventName: "SellTokens",

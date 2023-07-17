@@ -179,12 +179,9 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 ### ⚔️ Side Quests
 
 - [ ] Should we disable the `owner` withdraw to keep liquidity in the `Vendor`?
-<!-- TODO update after frontend completed -->
 - [ ] It would be a good idea to display Sell Token Events. Create the `event` and `emit` it in your `Vendor.sol` and look at `buyTokensEvents` in your `App.tsx` for an example of how to update your frontend.
 
 ### ⚠️ Test it!
-
-<!-- TODO check test -->
 
 - Now is a good time to run `yarn test` to run the automated testing function. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
 
@@ -192,9 +189,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ## Checkpoint 5: 💾 Deploy it! 🛰
 
-<!-- TODO change react part -->
-
-📡 Edit the `defaultNetwork` in `packages/hardhat/hardhat.config.js`, as well as `targetNetwork` in `packages/react-app/src/App.jsx`, to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/)
+📡 Edit the `defaultNetwork` in `packages/hardhat/hardhat.config.js`, as well as `targetNetwork` in `packages/nextjs/scaffold.config.ts`, to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/)
 
 👩‍🚀 You will want to run `yarn account` to see if you have a **deployer address**.
 
