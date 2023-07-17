@@ -39,7 +39,6 @@ const TokenVendor: NextPage = () => {
     args: [toAddress, multiplyTo1e18(tokensToSend)],
   });
 
-  console.log(tokensToBuy, tokensPerEth?.toString(), getTokenPriceInWei(tokensToBuy, tokensPerEth).toString(), "<<<<<");
   const { writeAsync: buyTokens } = useScaffoldContractWrite({
     contractName: "Vendor",
     functionName: "buyTokens",
