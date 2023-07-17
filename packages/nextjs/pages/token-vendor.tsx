@@ -78,6 +78,7 @@ const TokenVendor: NextPage = () => {
               placeholder="amount of tokens to buy"
               value={tokensToBuy.toString()}
               onChange={value => setTokensToBuy(value)}
+              hideSuffix
             />
           </div>
 
@@ -95,6 +96,7 @@ const TokenVendor: NextPage = () => {
                 placeholder="amount of tokens to send"
                 value={tokensToSend}
                 onChange={value => setTokensToSend(value as string)}
+                hideSuffix
               />
             </div>
 
@@ -113,6 +115,7 @@ const TokenVendor: NextPage = () => {
                 value={tokensToSell}
                 onChange={value => setTokensToSell(value as string)}
                 disabled={isApproved}
+                hideSuffix
               />
             </div>
 
