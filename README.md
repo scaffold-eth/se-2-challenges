@@ -205,17 +205,13 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ## Checkpoint 6: 🚢 Ship it! 🚁
 
-<!-- TODO change to vercel -->
+🪢 **Hint**: We recommend connecting your GitHub repo to Vercel (through the Vercel UI) so it gets automatically deployed when pushing to `main`.
 
-📦 Run `yarn build` to package up your frontend.
+👩‍💻 If you want to deploy directly from the CLI, run `yarn vercel` and follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
 
-💽 Upload your app to surge with `yarn surge` (you could also `yarn s3` or maybe even `yarn ipfs`?)
+⚙ If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
 
-> 😬 Windows users beware! You may have to change the surge code in `packages/react-app/package.json` to just `"surge": "surge ./build",`
-
-⚙ If you get a permissions error `yarn surge` again until you get a unique URL, or customize it in the command line.
-
-🚔 Traffic to your url might break the [Infura](https://infura.io/) rate limit, edit your key: `constants.js` in `packages/react-app/src`.
+⚠️ **Make sure your `packages/nextjs/scaffold.config.ts` file has the values you need.**
 
 ---
 
