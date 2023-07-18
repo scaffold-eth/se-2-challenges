@@ -136,7 +136,8 @@ const TokenVendor: NextPage = () => {
           </div>
         )}
 
-        {yourTokenBalance && !yourTokenBalance?.isZero() && (
+        {/* Sell tokens block */}
+        {/* {yourTokenBalance && !yourTokenBalance?.isZero() && (
           <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
             <div className="text-xl">Sell tokens</div>
             <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
@@ -173,7 +174,7 @@ const TokenVendor: NextPage = () => {
               </button>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </>
   );
