@@ -94,9 +94,7 @@ uint256 public constant tokensPerEth = 100;
 
 > 📟 Emit **event** `BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens)` when tokens are purchased.
 
-<!-- TODO: comment deploy_vendor -->
-
-Edit `deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncomment Vendor deploy lines).
+Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncomment Vendor deploy lines).
 
 ### 🥅 Goals
 
