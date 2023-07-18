@@ -2,7 +2,13 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  BugAntIcon,
+  CircleStackIcon,
+  InboxStackIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
@@ -38,6 +44,18 @@ export const Header = () => {
     <>
       <li>
         <NavLink href="/">Home</NavLink>
+      </li>
+      <li>
+        <NavLink href="/stakerUI">
+          <CircleStackIcon className="h-4 w-4" />
+          Staker UI
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/stakings">
+          <InboxStackIcon className="h-4 w-4" />
+          All Stakings
+        </NavLink>
       </li>
       <li>
         <NavLink href="/debug">
@@ -78,13 +96,13 @@ export const Header = () => {
             </ul>
           )}
         </div>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6">
+        <Link href="/" passHref className="hidden lg:flex items-center gap-1 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight">SE-2 Challenges</span>
-            <span className="text-xs">#X: Challenge Title</span>
+            <span className="text-xs">#1: Decentralized Staking App</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
