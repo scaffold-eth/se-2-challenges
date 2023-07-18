@@ -6,23 +6,22 @@ import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Events: NextPage = () => {
-  const { data: buyTokenEvents, isLoading: isBuyEventsLoading } = useScaffoldEventHistory({
-    contractName: "Vendor",
-    eventName: "BuyTokens",
-    fromBlock: 0,
-  });
+  // const { data: buyTokenEvents, isLoading: isBuyEventsLoading } = useScaffoldEventHistory({
+  //   contractName: "Vendor",
+  //   eventName: "BuyTokens",
+  //   fromBlock: 0,
+  // });
 
-  //   TODO: remove or comment sell events
-  const { data: sellTokenEvents, isLoading: isSellEventsLoading } = useScaffoldEventHistory({
-    contractName: "Vendor",
-    eventName: "SellTokens",
-    fromBlock: 0,
-  });
+  // const { data: sellTokenEvents, isLoading: isSellEventsLoading } = useScaffoldEventHistory({
+  //   contractName: "Vendor",
+  //   eventName: "SellTokens",
+  //   fromBlock: 0,
+  // });
 
   return (
     <>
       <MetaHeader />
-      <div className="flex items-center flex-col flex-grow pt-10">
+      {/* <div className="flex items-center flex-col flex-grow pt-10">
         {isBuyEventsLoading ? (
           <div className="flex justify-center items-center mt-10">
             <Spinner width="75" height="75" />
@@ -110,7 +109,7 @@ const Events: NextPage = () => {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
     </>
   );
 };
