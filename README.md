@@ -18,9 +18,13 @@
 
 ## Checkpoint 0: 📦 Install 📚
 
-Want a fresh cloud environment? Click this to open a gitpod workspace, then skip to Checkpoint 1 after the tasks are complete.
+Before you begin, you need to install the following tools:
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor)
+- [Node (v18 LTS)](https://nodejs.org/en/download/)
+- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+- [Git](https://git-scm.com/downloads)
+
+Then download the challenge to your computer and install dependencies by running:
 
 ```sh
 git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-2-token-vendor
@@ -28,6 +32,8 @@ cd challenge-2-token-vendor
 git checkout challenge-2-token-vendor
 yarn install
 ```
+
+---
 
 ## Checkpoint 1: 🔭 Environment 📺
 
@@ -40,14 +46,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd <challenge_folder_name>
+cd challenge-2-token-vendor
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd <challenge_folder_name>
+cd challenge-2-token-vendor
 yarn start
 ```
 
