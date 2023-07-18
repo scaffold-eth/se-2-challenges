@@ -10,7 +10,7 @@
 
 ## 🚩 Challenge 0: 🎟 Simple NFT Example
 
-🎫 Create a simple NFT to learn basics of 🏗 scaffold-eth. You'll use 👷‍♀️ HardHat to compile and deploy smart contracts. Then, you'll use a template React app full of important Ethereum components and hooks. Finally, you'll deploy an NFT to a public network to share with friends! 🚀
+🎫 Create a simple NFT to learn the basics of 🏗 scaffold-eth. You'll use 👷‍♀️ HardHat to compile and deploy smart contracts. Then, you'll use a template React app full of important Ethereum components and hooks. Finally, you'll deploy an NFT to a public network to share with friends! 🚀
 
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-0-simple-nft
 
@@ -20,8 +20,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-0-simple-nft
 
 🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code.
 
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-1-decentralized-staking
-
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-1-decentralized-staking
 ---
 
 ## 🚩 Challenge 2: 🏵 Token Vendor
@@ -63,9 +62,9 @@ DEX Telegram Channel: https://t.me/+_NeUIJ664Tc1MzIx
 - We'd use the [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template) as a starting point for each challenge.
 - UI wise, we'll try to use the https://speedrunethereum.com/ design vibe.
 
-Checkout already migrated Challenges to get a better idea of the structure and how to create new ones.
+Check out already migrated Challenges to get a better idea of the structure and how to create new ones.
 
-A quickstart guide.
+A quick start guide.
 
 ### 1. Branch from [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template)
 
@@ -86,7 +85,7 @@ The main page should have a banner image (ask for it!) + the Challenge descripti
 
 - Add the contract(s)
 - Add pages / components as you need (UI following the [SpeedRunEthereum.com](https://speedrunethereum.com/) design vibe)
-- Create the test for the Smart Contract(s). Best starting point is to copy the tests from the SE1 Challenge you are migrating. The "envvar" logic there is used by the autograder, so don't remove them.
+- Create the test for the Smart Contract(s). The best starting point is to copy the tests from the SE1 Challenge you are migrating. The "envvar" logic there is used by the autograder, so don't remove them.
 
 ### 4. Adapt Header / MetaHeader component
 
