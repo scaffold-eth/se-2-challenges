@@ -5,7 +5,12 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { AddressInput, IntegerInput } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import {
+  useAccountBalance,
+  useDeployedContractInfo,
+  useScaffoldContractRead,
+  useScaffoldContractWrite,
+} from "~~/hooks/scaffold-eth";
 import { getTokenPriceInWei, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
 
 const TokenVendor: NextPage = () => {
@@ -32,6 +37,14 @@ const TokenVendor: NextPage = () => {
     functionName: "balanceOf",
     args: [address],
   });
+
+  const { data: vendorTokenBalance } = useScaffoldContractRead({
+    contractName: "YourToken",
+    functionName: "balanceOf",
+    args: [vendorContractData?.address],
+  });
+
+  const { balance: vendorEthBalance } = useAccountBalance(vendorContractData?.address);
 
   const { writeAsync: transferTokens } = useScaffoldContractWrite({
     contractName: "YourToken",
@@ -63,11 +76,26 @@ const TokenVendor: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="flex flex-col items-center space-y-2 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
-          <div className="text-xl">Your tokens</div>
-          <div className="w-full flex items-center justify-center text-xl">
-            {parseFloat(formatEther(yourTokenBalance || "0")).toFixed(4)}
-            <span className="font-bold ml-1">{yourTokenSymbol}</span>
+        <div className="flex flex-col bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
+          <div className="text-xl">
+            Your token balance:{" "}
+            <div className="inline-flex items-center justify-center">
+              {parseFloat(formatEther(yourTokenBalance || "0")).toFixed(4)}
+              <span className="font-bold ml-1">{yourTokenSymbol}</span>
+            </div>
+          </div>
+
+          <hr className="w-full border-secondary my-3" />
+          <div>
+            Vendor token balance:{" "}
+            <div className="inline-flex items-center justify-center">
+              {parseFloat(formatEther(vendorTokenBalance || "0")).toFixed(4)}
+              <span className="font-bold ml-1">{yourTokenSymbol}</span>
+            </div>
+          </div>
+          <div>
+            Vendor eth balance: {vendorEthBalance?.toFixed(4)}
+            <span className="font-bold ml-1">ETH</span>
           </div>
         </div>
 
