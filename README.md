@@ -118,7 +118,7 @@ await yourToken.transfer(vendor.address, ethers.utils.parseEther("1000"));
 
 > You can `yarn deploy --reset` to deploy your contract until you get it right.
 
-(You will use the `YourToken` UI tab and the frontend for most of your testing. Most of the UI is already built for you for this challenge.)
+(You will use the `Token Vendor` UI tab and the frontend for most of your testing. Most of the UI is already built for you for this challenge.)
 
 ### 🥅 Goals
 
@@ -169,7 +169,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 🔨 Use the `Debug Contracts` tab to call the approve and sellTokens() at first but then...
 
-🔍 Look in the `App.jsx` for the extra approve/sell UI to uncomment!
+🔍 Look in the `packages/nextjs/pages/token-vendor.tsx` for the extra approve/sell UI to uncomment!
 
 ### 🥅 Goal
 
@@ -179,7 +179,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 ### ⚔️ Side Quests
 
 - [ ] Should we disable the `owner` withdraw to keep liquidity in the `Vendor`?
-- [ ] It would be a good idea to display Sell Token Events. Create the `event` and `emit` it in your `Vendor.sol` and look at `buyTokensEvents` in your `App.tsx` for an example of how to update your frontend.
+- [ ] It would be a good idea to display Sell Token Events. Create the `event` and `emit` it in your `Vendor.sol` and look at `buyTokensEvents` in your `packages/nextjs/pages/token-vendor.tsx` for an example of how to update your frontend.
 
 ### ⚠️ Test it!
 
@@ -216,8 +216,6 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 ---
 
 ## Checkpoint 7: 📜 Contract Verification
-
-<!-- TODO api key -->
 
 Update the `api-key` in `packages/hardhat/package.json`. You can get your key [here](https://etherscan.io/myapikey).
 
