@@ -127,8 +127,8 @@ Your `Staker UI` tab should be almost done and working at this point.
 #### 🥅 Goals
 
 - [ ] Can you see `timeLeft` counting down in the `Staker UI` tab when you trigger a transaction with the faucet button?
-- [ ] If you `stake()` enough ETH before the `deadline`, does it call `complete()`?
-- [ ] If you don't `stake()` enough can you `withdraw()` your funds?
+- [ ] If enough Eth is staked by the deadline, does your `execute()` function correctly call `complete()` and stake the Eth?
+- [ ] If the threshold isn't met by the deadline, are you able to `withdraw()` your funds?
 
 ---
 
