@@ -11,7 +11,6 @@ const Stakings: NextPage = () => {
     eventName: "Stake",
     fromBlock: 0,
   });
-  console.log("Stakevents", stakeEvents);
 
   if (isLoading)
     return (
