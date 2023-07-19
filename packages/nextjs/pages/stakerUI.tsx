@@ -1,7 +1,7 @@
 import { utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import type { NextPage } from "next";
-import { useAccount } from "wagmi";
+import { useAccount, useBlockNumber } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Address } from "~~/components/scaffold-eth";
 import { ETHToPrice } from "~~/components/stake";
@@ -20,19 +20,26 @@ const StakerUI: NextPage = () => {
   const configuredNetwork = getTargetNetwork();
 
   // Contract Read Actions
-  const { data: threshold } = useScaffoldContractRead({
+  const { data: threshold, refetch: refetchThreshold } = useScaffoldContractRead({
     contractName: "Staker",
     functionName: "threshold",
+    watch: true,
   });
-  const { data: timeLeft } = useScaffoldContractRead({
+  const { data: timeLeft, refetch: refetchTimeLeft } = useScaffoldContractRead({
     contractName: "Staker",
     functionName: "timeLeft",
     watch: true,
   });
-  const { data: myStake } = useScaffoldContractRead({
+  const { data: myStake, refetch: refetchMyStake } = useScaffoldContractRead({
     contractName: "Staker",
     functionName: "balances",
     args: [connectedAddress],
+    watch: true,
+  });
+  useBlockNumber({
+    onBlock: async () => {
+      await Promise.all([refetchTimeLeft(), refetchMyStake(), refetchThreshold()]);
+    },
     watch: true,
   });
 
