@@ -40,9 +40,9 @@ yarn install
 You'll have three terminals up for:
 
 ```bash
-yarn start   (Next app frontend)
 yarn chain   (hardhat backend)
 yarn deploy  (to compile, deploy, and publish your contracts to the frontend)
+yarn start   (Next app frontend)
 ```
 
 > 💻 View your frontend at http://localhost:3000/
@@ -103,7 +103,7 @@ uint256 public deadline = block.timestamp + 30 seconds;
 
 If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `exampleExternalContract.complete{value: address(this).balance}()`
 
-If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` and allow users to `withdraw()` their funds.
+If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
 
 (You'll have 30 seconds after deploying until the deadline is reached, you can adjust this in the contract.)
 
@@ -113,7 +113,7 @@ If the balance is less than the `threshold`, you want to set a `openForWithdraw`
 
 ⏳ _"Time Left"_ will only update if a transaction occurs. You can see the time update by getting funds from the faucet button in navbar just to trigger a new block.
 
-If the `Staker UI` tab _"Time Left"_ does not update correctly when a transaction occurs, try switching to other tab and come back to it.
+If the `Staker UI` tab _"Time Left"_ does not update correctly when a transaction occurs, try switching to another tab and come back.
 
 ![stakerUI](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7d85badb-3ea3-4f3c-b5f8-43d5b64f6714)
 
@@ -142,7 +142,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 #### 🥅 Goals
 
-- [ ] If you send ETH directly to the contract address does it update your `balance`?
+- [ ] If you send ETH directly to the contract address does it update your `balance` and the `balance` of the contract?
 
 ---
 
@@ -169,11 +169,11 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
-👩‍🚀 You will want to run `yarn account` to see if you have a **deployer address**
+🔐 You will need to generate a **deployer address** using `yarn generate`  This creates a mnemonic and saves it locally.
 
-🔐 If you don't have one, run `yarn generate` to create a mnemonic and save it locally for deploying.
+👩‍🚀 Use `yarn account` to view your deployer account balances.
 
-⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
+⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
 
 > 📝 If you plan on submitting this challenge, be sure to set your `deadline` to at least `block.timestamp + 72 hours`
 
