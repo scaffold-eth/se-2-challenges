@@ -14,7 +14,7 @@
 
 ---
 
-### Checkpoint 0: 📦 Install 📚
+### Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -30,28 +30,35 @@ cd challenge-1-decentralized-staking
 git checkout challenge-1-decentralized-staking
 yarn install
 ```
+> in the same terminal, start your local network (a blockchain emulator in your computer):
+
+```sh
+yarn chain
+```
+
+> in a second terminal window, 🛰 deploy your contract (locally):
+
+```sh
+cd challenge-1-decentralized-staking
+yarn deploy
+```
+
+> in a third terminal window, start your 📱 frontend:
+
+```sh
+cd challenge-1-decentralized-staking
+yarn start
+```
+
+📱 Open http://localhost:3000 to see the app.
+
+> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
 
 🔏 Now you are ready to edit your smart contract `Staker.sol` in `packages/hardhat/contracts`
 
 ---
 
-### Checkpoint 1: 🔭 Environment 📺
-
-You'll have three terminals up for:
-
-```bash
-yarn chain   (hardhat backend)
-yarn deploy  (to compile, deploy, and publish your contracts to the frontend)
-yarn start   (Next app frontend)
-```
-
-> 💻 View your frontend at http://localhost:3000/
-
-> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
-
----
-
-### Checkpoint 2: 🥩 Staking 💵
+### Checkpoint 1: 🥩 Staking 💵
 
 You'll need to track individual `balances` using a mapping:
 
@@ -85,7 +92,7 @@ uint256 public constant threshold = 1 ether;
 
 ---
 
-### Checkpoint 3: 🔬 State Machine / Timing ⏱
+### Checkpoint 2: 🔬 State Machine / Timing ⏱
 
 > ⚙️ Think of your smart contract like a _state machine_. First, there is a **stake** period. Then, if you have gathered the `threshold` worth of ETH, there is a **success** state. Or, we go into a **withdraw** state to let users withdraw their funds.
 
@@ -132,7 +139,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 4: 💵 Receive Function / UX 🙎
+### Checkpoint 3: 💵 Receive Function / UX 🙎
 
 🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `stake()`. You will use what is called the `receive()` function.
 
@@ -165,7 +172,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 5: 🚢 Ship it 🚁
+### Checkpoint 4: 🚢 Ship it 🚁
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
@@ -181,7 +188,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 6: 🎚 Frontend 🧘‍♀️
+### Checkpoint 5: 🎚 Frontend 🧘‍♀️
 
 > ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
@@ -210,7 +217,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-### Checkpoint 7: 📜 Contract Verification
+### Checkpoint 6: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
