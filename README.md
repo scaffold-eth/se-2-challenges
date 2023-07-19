@@ -120,8 +120,6 @@ If the balance is less than the `threshold`, you want to set a `openForWithdraw`
 
 ⏳ _"Time Left"_ will only update if a transaction occurs. You can see the time update by getting funds from the faucet button in navbar just to trigger a new block.
 
-If the `Staker UI` tab _"Time Left"_ does not update correctly when a transaction occurs, try switching to another tab and come back.
-
 ![stakerUI](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7d85badb-3ea3-4f3c-b5f8-43d5b64f6714)
 
 > 👩‍💻 You can call `yarn deploy --reset` any time you want a fresh contract, it will get re-deployed even if there are no changes on it.  
@@ -134,7 +132,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 #### 🥅 Goals
 
 - [ ] Can you see `timeLeft` counting down in the `Staker UI` tab when you trigger a transaction with the faucet button?
-- [ ] If enough Eth is staked by the deadline, does your `execute()` function correctly call `complete()` and stake the Eth?
+- [ ] If enough ETH is staked by the deadline, does your `execute()` function correctly call `complete()` and stake the ETH?
 - [ ] If the threshold isn't met by the deadline, are you able to `withdraw()` your funds?
 
 ---
