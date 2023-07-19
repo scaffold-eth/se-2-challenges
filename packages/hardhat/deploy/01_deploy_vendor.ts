@@ -1,6 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-// import { BigNumber } from "ethers";
 
 /**
  * Deploys a contract named "Vendor" using the deployer account and
@@ -33,8 +32,9 @@ const deployVendor: DeployFunction = async function (hre: HardhatRuntimeEnvironm
   //   autoMine: true,
   // });
   // const vendor = await hre.ethers.getContract("Vendor", deployer);
-  // // TODO remove
-  // await yourToken.transfer(vendor.address, BigNumber.from("1000000000000000000000"));
+  // // TODO transfer the tokens to the vendor
+  // await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
+  // // TODO transfer contract ownership to your frontend address 
   // await vendor.transferOwnership("0x957aC7Ac7050b31977374Bc27ac57F1f8701Fc16");
 };
 
