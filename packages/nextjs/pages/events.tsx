@@ -12,12 +12,6 @@ const Events: NextPage = () => {
   //   fromBlock: 0,
   // });
 
-  // const { data: sellTokenEvents, isLoading: isSellEventsLoading } = useScaffoldEventHistory({
-  //   contractName: "Vendor",
-  //   eventName: "SellTokens",
-  //   fromBlock: 0,
-  // });
-
   return (
     <>
       <MetaHeader />
@@ -49,50 +43,6 @@ const Events: NextPage = () => {
                     </tr>
                   ) : (
                     buyTokenEvents?.map((event, index) => {
-                      return (
-                        <tr key={index}>
-                          <td className="text-center">
-                            <Address address={event.args.buyer} />
-                          </td>
-                          <td>{utils.formatEther(event.args.amountOfETH).toString()}</td>
-                          <td>{utils.formatEther(event.args.amountOfTokens).toString()}</td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {isSellEventsLoading ? (
-          <div className="flex justify-center items-center mt-10">
-            <Spinner width="75" height="75" />
-          </div>
-        ) : (
-          <div className="mt-8">
-            <div className="text-center mb-4">
-              <span className="block text-2xl font-bold">Sell Token Events</span>
-            </div>
-            <div className="overflow-x-auto shadow-lg">
-              <table className="table table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th className="bg-primary">Seller</th>
-                    <th className="bg-primary">Amount of ETH</th>
-                    <th className="bg-primary">Amount of Token</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!sellTokenEvents || sellTokenEvents.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="text-center">
-                        No events found
-                      </td>
-                    </tr>
-                  ) : (
-                    sellTokenEvents?.map((event, index) => {
                       return (
                         <tr key={index}>
                           <td className="text-center">
