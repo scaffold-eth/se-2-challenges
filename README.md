@@ -79,7 +79,7 @@ uint256 public constant threshold = 1 ether;
 
 - [ ] Do you see the balance of the `Staker` contract go up when you `stake()`?
 - [ ] Is your `balance` correctly tracked?
-- [ ] Do you see the events in the `All Stakings` tab?
+- [ ] Do you see the events in the `Stake Events` tab?
 
   ![allStakings](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/80bcc843-034c-4547-8535-129ed494a204)
 
@@ -185,7 +185,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ![allStakings-blockFrom](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/04725dc8-4a8d-4089-ba82-90f9b94bfbda)
 
-> 💬 Hint: For faster loading of your _"All Stakings"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/stakings.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-1-decentralized-staking/packages/nextjs/pages/stakings.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
+> 💬 Hint: For faster loading of your _"Staking Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/stakings.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-1-decentralized-staking/packages/nextjs/pages/stakings.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
 ---
 

@@ -60,7 +60,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
         <div className="flex items-start justify-around w-full">
           <div className="flex flex-col items-center justify-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">Time Left</p>
-            <p className="m-0 p-0">{timeLeft ? `${humanizeDuration(timeLeft.toNumber() * 1000)} left` : 0}</p>
+            <p className="m-0 p-0">{timeLeft ? `${humanizeDuration(timeLeft.toNumber() * 1000)}` : 0}</p>
           </div>
           <div className="flex flex-col items-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">You Staked</p>
