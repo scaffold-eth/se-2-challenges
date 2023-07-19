@@ -11,6 +11,7 @@ const Stakings: NextPage = () => {
     eventName: "Stake",
     fromBlock: 0,
   });
+  console.log("Stakevents", stakeEvents);
 
   if (isLoading)
     return (
@@ -47,9 +48,9 @@ const Stakings: NextPage = () => {
                   return (
                     <tr key={index}>
                       <td>
-                        <Address address={event.args.staker} />
+                        <Address address={event.args[0]} />
                       </td>
-                      <td>{event.args.amount && utils.formatEther(event.args.amount.toString())} ETH</td>
+                      <td>{event.args[1] && utils.formatEther(event.args[1].toString())} ETH</td>
                     </tr>
                   );
                 })
