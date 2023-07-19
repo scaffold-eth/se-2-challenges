@@ -1,6 +1,6 @@
 # 🚩 Challenge 2: 🏵 Token Vendor 🤖
 
-![readme-2](./assets/readme-2.png)
+![readme-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/b427171f-3f20-41a5-b76f-05d67e2b9959)
 
 > 🤖 Smart contracts are kind of like "always on" _vending machines_ that **anyone** can access. Let's make a decentralized, digital currency. Then, let's build an unstoppable vending machine that will buy and sell the currency. We'll learn about the "approve" pattern for ERC20s and how contract to contract interactions work.
 
@@ -73,10 +73,12 @@ yarn start
 
 ### 🥅 Goals
 
-- [ ] Can you check the `balanceOf()` your frontend address in the **YourToken** of the `Debug Contracts` tab?
+- [ ] Can you check the `balanceOf()` your frontend address in the `Debug Contracts` tab? (**YourToken** contract)
 - [ ] Can you `transfer()` your token to another account and check _that_ account's `balanceOf`?
 
-(Use an incognito window to create a new address and try sending to that new address. Use the `transfer()` function in the `Debug Contracts` tab.)
+![debugContractsYourToken](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/5fb4daeb-5d05-4522-96b3-76f052a68418)
+
+> 💬 Hint: Use an incognito window to create a new address and try sending to that new address. Can use the `transfer()` function in the `Debug Contracts` tab.
 
 ---
 
@@ -111,12 +113,14 @@ Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncom
 > ✏️ Then, edit `deploy/01_deploy_vendor.js` to transfer 1000 tokens to `vendor.address`.
 
 ```js
-await yourToken.transfer(vendor.address, ethers.utils.parseEther("1000"));
+await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
 ```
 
 > You can `yarn deploy --reset` to deploy your contract until you get it right.
 
 (You will use the `Token Vendor` UI tab and the frontend for most of your testing. Most of the UI is already built for you for this challenge.)
+
+![TokenVendorBuy](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7669cc68-e942-4630-95c8-91cd21af5ba0)
 
 ### 🥅 Goals
 
@@ -169,6 +173,8 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 🔍 Look in the `packages/nextjs/pages/token-vendor.tsx` for the extra approve/sell UI to uncomment!
 
+![VendorBuyBack](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/99063aaa-368d-4156-997d-08dff99af11b)
+
 ### 🥅 Goal
 
 - [ ] Can you sell tokens back to the vendor?
@@ -179,45 +185,66 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 - [ ] Should we disable the `owner` withdraw to keep liquidity in the `Vendor`?
 - [ ] It would be a good idea to display Sell Token Events. Create the `event` and `emit` it in your `Vendor.sol` and look at `buyTokensEvents` in your `packages/nextjs/pages/token-vendor.tsx` for an example of how to update your frontend.
 
+  ![Events](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/662c96b5-d53f-4efa-af4a-d3106bfd47f0)
+
 ### ⚠️ Test it!
 
 - Now is a good time to run `yarn test` to run the automated testing function. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
 
 ---
 
-## Checkpoint 5: 💾 Deploy it! 🛰
+## Checkpoint 5: 💾 Deploy your contracts! 🛰
 
-📡 Edit the `defaultNetwork` in `packages/hardhat/hardhat.config.js`, as well as `targetNetwork` in `packages/nextjs/scaffold.config.ts`, to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/)
+📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
-👩‍🚀 You will want to run `yarn account` to see if you have a **deployer address**.
+👩‍🚀 You will want to run `yarn account` to see if you have a **deployer address**
 
 🔐 If you don't have one, run `yarn generate` to create a mnemonic and save it locally for deploying.
 
-🛰 Use a faucet like [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your **deployer address** (run `yarn account` again to view balances)
+⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
-> 🚀 Run `yarn deploy` to deploy to your public network of choice (😅 wherever you can get ⛽️ gas)
+🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
 
-🔬 Inspect the block explorer for the network you deployed to... make sure your contract is there.
+> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
 ---
 
-## Checkpoint 6: 🚢 Ship it! 🚁
+## Checkpoint 6: 🚢 Ship your frontend! 🚁
 
-🪢 **Hint**: We recommend connecting your GitHub repo to Vercel (through the Vercel UI) so it gets automatically deployed when pushing to `main`.
+> ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to the network of your choice (for example `chains.sepolia`) :
 
-👩‍💻 If you want to deploy directly from the CLI, run `yarn vercel` and follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
+![scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3b50c7a7-b9cc-4af3-ab2a-11be4f5d2235)
 
-⚙ If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
+> You should see the correct network in the frontend (http://localhost:3000):
 
-⚠️ **Make sure your `packages/nextjs/scaffold.config.ts` file has the values you need.**
+![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
+
+📡 When you are ready to ship the frontend app...
+
+📦 Run `yarn vercel` to package up your frontend and deploy.
+
+> Follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
+
+> If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
+
+#### Configuration of Third-Party Services for Production-Grade Apps.
+
+By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.  
+This is great to complete your **SpeedRunEthereum**.
+
+For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
+
+- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+
+- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+> 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
 ---
 
 ## Checkpoint 7: 📜 Contract Verification
 
-Update the `api-key` in `packages/hardhat/package.json`. You can get your key [here](https://etherscan.io/myapikey).
-
-> Now you are ready to run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
+Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
 👀 You may see an address for both YouToken and Vendor. You will want the Vendor address.
 
@@ -225,4 +252,6 @@ Update the `api-key` in `packages/hardhat/package.json`. You can get your key [h
 
 ---
 
-💬 Problems, questions, comments on the stack? Post them to the [Challenge 2 telegram channel](https://t.me/joinchat/IfARhZFc5bfPwpjq)
+> 🏃 Head to your next challenge [here](https://speedrunethereum.com).
+
+💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
