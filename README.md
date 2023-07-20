@@ -22,7 +22,7 @@ Before you begin, you need to install the following tools:
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
 
-Then run:
+Then download the challenge to your computer and install dependencies by running:
 
 ```sh
 git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-1-decentralized-staking
@@ -76,23 +76,25 @@ uint256 public constant threshold = 1 ether;
 
 ![debugContracts](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1a888e31-a79b-49ef-9848-357c5cee445a)
 
-💸 Need more funds from the faucet? Click on _"Grab funds from faucet"_, or use the Faucet feature at the bottom left of the page to get as much as you need!
+> 💸 Need more funds from the faucet? Click on _"Grab funds from faucet"_, or use the Faucet feature at the bottom left of the page to get as much as you need!
 
 ![Faucet](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e82e3100-20fb-4886-a6bf-4113c3729f53)
 
-✏ Need to troubleshoot your code? If you import `hardhat/console.sol` to your contract, you can call `console.log()` right in your Solidity code. The output will appear in your `yarn chain` terminal.
+> ✏ Need to troubleshoot your code? If you import `hardhat/console.sol` to your contract, you can call `console.log()` right in your Solidity code. The output will appear in your `yarn chain` terminal.
 
 #### 🥅 Goals
 
 - [ ] Do you see the balance of the `Staker` contract go up when you `stake()`?
 - [ ] Is your `balance` correctly tracked?
-- [ ] Do you see the events in the `All Stakings` tab?
+- [ ] Do you see the events in the `Stake Events` tab?
 
   ![allStakings](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/80bcc843-034c-4547-8535-129ed494a204)
 
 ---
 
 ### Checkpoint 2: 🔬 State Machine / Timing ⏱
+
+#### State Machine
 
 > ⚙️ Think of your smart contract like a _state machine_. First, there is a **stake** period. Then, if you have gathered the `threshold` worth of ETH, there is a **success** state. Or, we go into a **withdraw** state to let users withdraw their funds.
 
@@ -106,17 +108,19 @@ uint256 public deadline = block.timestamp + 30 seconds;
 
 > 👩‍💻 Write your `execute()` function and test it with the `Debug Contracts` tab
 
-> Check the ExampleExternalContract.sol for the bool you can use to test if it has been completed or not. But do not edit the ExampleExternalContract.sol as it can slow the auto grading.
+> Check the `ExampleExternalContract.sol` for the bool you can use to test if it has been completed or not. But do not edit the `ExampleExternalContract.sol` as it can slow the auto grading.
 
 If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `exampleExternalContract.complete{value: address(this).balance}()`
 
 If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
 
-(You'll have 30 seconds after deploying until the deadline is reached, you can adjust this in the contract.)
+#### Timing
+
+You'll have 30 seconds after deploying until the deadline is reached, you can adjust this in the contract.
 
 > 👩‍💻 Create a `timeLeft()` function including `public view returns (uint256)` that returns how much time is left.
 
-⚠️ Be careful! if `block.timestamp >= deadline` you want to `return 0;`
+⚠️ Be careful! If `block.timestamp >= deadline` you want to `return 0;`
 
 ⏳ _"Time Left"_ will only update if a transaction occurs. You can see the time update by getting funds from the faucet button in navbar just to trigger a new block.
 
@@ -183,6 +187,10 @@ Your `Staker UI` tab should be almost done and working at this point.
 > 📝 If you plan on submitting this challenge, be sure to set your `deadline` to at least `block.timestamp + 72 hours`
 
 > 🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
+
+![allStakings-blockFrom](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/04725dc8-4a8d-4089-ba82-90f9b94bfbda)
+
+> 💬 Hint: For faster loading of your _"Stake Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/stakings.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-1-decentralized-staking/packages/nextjs/pages/stakings.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
 ---
 

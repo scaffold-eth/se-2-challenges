@@ -54,7 +54,7 @@ export const Header = () => {
       <li>
         <NavLink href="/stakings">
           <InboxStackIcon className="h-4 w-4" />
-          All Stakings
+          Stake Events
         </NavLink>
       </li>
       <li>
