@@ -8,7 +8,7 @@
 
 💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)
 
-## Checkpoint 0: 📦 Install 📚
+## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -102,7 +102,7 @@ yarn start
 
 ---
 
-## Checkpoint 3: 💾 Deploy it! 🛰
+## Checkpoint 3: 💾 Deploy your contract! 🛰
 
 🛰 Ready to deploy to a public testnet?!?
 
@@ -132,7 +132,7 @@ yarn deploy
 
 ---
 
-## Checkpoint 4: 🚢 Ship it! 🚁
+## Checkpoint 4: 🚢 Ship your frontend! 🚁
 
 > ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
 
