@@ -16,7 +16,7 @@
 
 ---
 
-## Checkpoint 0: 📦 Install 📚
+## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -32,10 +32,6 @@ cd challenge-2-token-vendor
 git checkout challenge-2-token-vendor
 yarn install
 ```
-
----
-
-## Checkpoint 1: 🔭 Environment 📺
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -59,9 +55,11 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
+> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
+
 ---
 
-## Checkpoint 2: 🏵Your Token 💵
+## Checkpoint 1: 🏵Your Token 💵
 
 > 👩‍💻 Edit `YourToken.sol` to inherit the **ERC20** token standard from OpenZeppelin
 
@@ -82,7 +80,7 @@ yarn start
 
 ---
 
-## Checkpoint 3: ⚖️ Vendor 🤖
+## Checkpoint 2: ⚖️ Vendor 🤖
 
 > 👩‍💻 Edit the `Vendor.sol` contract with a **payable** `buyTokens()` function
 
@@ -153,7 +151,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ---
 
-## Checkpoint 4: 🤔 Vendor Buyback 🤯
+## Checkpoint 3: 🤔 Vendor Buyback 🤯
 
 👩‍🏫 The hardest part of this challenge is to build your `Vendor` to buy the tokens back.
 
@@ -193,7 +191,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ---
 
-## Checkpoint 5: 💾 Deploy your contracts! 🛰
+## Checkpoint 4: 💾 Deploy your contracts! 🛰
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
@@ -209,7 +207,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ---
 
-## Checkpoint 6: 🚢 Ship your frontend! 🚁
+## Checkpoint 5: 🚢 Ship your frontend! 🚁
 
 > ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to the network of your choice (for example `chains.sepolia`) :
 
@@ -242,7 +240,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-## Checkpoint 7: 📜 Contract Verification
+## Checkpoint 6: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
