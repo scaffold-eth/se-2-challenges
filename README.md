@@ -14,7 +14,7 @@
 
 ---
 
-### Checkpoint 0: 📦 Install 📚
+### Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -30,28 +30,35 @@ cd challenge-1-decentralized-staking
 git checkout challenge-1-decentralized-staking
 yarn install
 ```
+> in the same terminal, start your local network (a blockchain emulator in your computer):
+
+```sh
+yarn chain
+```
+
+> in a second terminal window, 🛰 deploy your contract (locally):
+
+```sh
+cd challenge-1-decentralized-staking
+yarn deploy
+```
+
+> in a third terminal window, start your 📱 frontend:
+
+```sh
+cd challenge-1-decentralized-staking
+yarn start
+```
+
+📱 Open http://localhost:3000 to see the app.
+
+> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
 
 🔏 Now you are ready to edit your smart contract `Staker.sol` in `packages/hardhat/contracts`
 
 ---
 
-### Checkpoint 1: 🔭 Environment 📺
-
-You'll have three terminals up for:
-
-```bash
-yarn start   (Next app frontend)
-yarn chain   (hardhat backend)
-yarn deploy  (to compile, deploy, and publish your contracts to the frontend)
-```
-
-> 💻 View your frontend at http://localhost:3000/
-
-> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
-
----
-
-### Checkpoint 2: 🥩 Staking 💵
+### Checkpoint 1: 🥩 Staking 💵
 
 You'll need to track individual `balances` using a mapping:
 
@@ -85,7 +92,7 @@ uint256 public constant threshold = 1 ether;
 
 ---
 
-### Checkpoint 3: 🔬 State Machine / Timing ⏱
+### Checkpoint 2: 🔬 State Machine / Timing ⏱
 
 #### State Machine
 
@@ -105,7 +112,7 @@ uint256 public deadline = block.timestamp + 30 seconds;
 
 If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `exampleExternalContract.complete{value: address(this).balance}()`
 
-If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` and allow users to `withdraw()` their funds.
+If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
 
 #### Timing
 
@@ -117,12 +124,10 @@ You'll have 30 seconds after deploying until the deadline is reached, you can ad
 
 ⏳ _"Time Left"_ will only update if a transaction occurs. You can see the time update by getting funds from the faucet button in navbar just to trigger a new block.
 
-> 👩‍💻 You can call `yarn deploy --reset` any time you want a fresh contract, it will get re-deployed even if there are no changes on it.  
-> You may need it when you want to reload the _"Time Left"_ for your tests.
-
-If the `Staker UI` tab is open when you `yarn deploy --reset`, _"Time Left"_ and the rest of the contract values might not update after a transaction occurs. You may need to refresh the browser or try switching to other tab and come back to it.
-
 ![stakerUI](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7d85badb-3ea3-4f3c-b5f8-43d5b64f6714)
+
+> 👩‍💻 You can call `yarn deploy --reset` any time you want a fresh contract, it will get re-deployed even if there are no changes on it.  
+> You may need it when you want to reload the _"Time Left"_ of your tests.
 
 Your `Staker UI` tab should be almost done and working at this point.
 
@@ -131,12 +136,12 @@ Your `Staker UI` tab should be almost done and working at this point.
 #### 🥅 Goals
 
 - [ ] Can you see `timeLeft` counting down in the `Staker UI` tab when you trigger a transaction with the faucet button?
-- [ ] If you `stake()` enough ETH before the `deadline`, does it call `complete()`?
-- [ ] If you don't `stake()` enough can you `withdraw()` your funds?
+- [ ] If enough ETH is staked by the deadline, does your `execute()` function correctly call `complete()` and stake the ETH?
+- [ ] If the threshold isn't met by the deadline, are you able to `withdraw()` your funds?
 
 ---
 
-### Checkpoint 4: 💵 Receive Function / UX 🙎
+### Checkpoint 3: 💵 Receive Function / UX 🙎
 
 🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `stake()`. You will use what is called the `receive()` function.
 
@@ -146,7 +151,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 #### 🥅 Goals
 
-- [ ] If you send ETH directly to the contract address does it update your `balance`?
+- [ ] If you send ETH directly to the contract address does it update your `balance` and the `balance` of the contract?
 
 ---
 
@@ -169,15 +174,15 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 5: 🚢 Ship it 🚁
+### Checkpoint 4: 🚢 Ship it 🚁
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
-👩‍🚀 You will want to run `yarn account` to see if you have a **deployer address**
+🔐 You will need to generate a **deployer address** using `yarn generate`  This creates a mnemonic and saves it locally.
 
-🔐 If you don't have one, run `yarn generate` to create a mnemonic and save it locally for deploying.
+👩‍🚀 Use `yarn account` to view your deployer account balances.
 
-⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
+⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
 
 > 📝 If you plan on submitting this challenge, be sure to set your `deadline` to at least `block.timestamp + 72 hours`
 
@@ -189,7 +194,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 6: 🎚 Frontend 🧘‍♀️
+### Checkpoint 5: 🎚 Frontend 🧘‍♀️
 
 > ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
@@ -218,7 +223,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-### Checkpoint 7: 📜 Contract Verification
+### Checkpoint 6: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
