@@ -47,12 +47,14 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const dex = await hre.ethers.getContract("DEX", deployer);
 
     // paste in your front-end address here to get 10 balloons on deploy:
-    await balloons.transfer(
-        "0xF27559E71Fe82A011a37a76e03f733d3052f12f9",
-        "" + 10 * 10 ** 18
-    );
+    // await balloons.transfer(
+    //     "YOUR_FRONTEND_ADDRESS",
+    //     "" + 10 * 10 ** 18
+    // );
+
 
     // uncomment to init DEX on deploy:
+
     // console.log(
     //   "Approving DEX (" + dex.address + ") to take Balloons from main account..."
     // );
@@ -64,11 +66,10 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     //   gasLimit: 200000,
     // });
 
-  
 };
 
 export default deployYourContract;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["Balloons"];
+deployYourContract.tags = ["Balloons", "DEX"];

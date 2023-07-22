@@ -1,11 +1,11 @@
 # 🚩 Challenge 4: Minimum Viable Exchange
 
-This challenge will help you build/understand a simple decentralized exchange, with one token-pair (ERC20 BALLOONS ($BAL) and ETH). This repo is an updated version of the original tutorial and challenge repos before it. Please read the intro for a background on what we are building first!
+This challenge will help you build/understand a simple decentralized exchange, with one token-pair (ERC20 BALLOONS ($BAL) and ETH). This repo is an updated version of the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) and challenge repos before it. Please read the intro for a background on what we are building first!
 
-🌟 The final deliverable is an app that {challengeDeliverable}.
+🌟 The final deliverable is an app that allows users to seamlessly trade ERC20 BALLOONS ($BAL) with ETH in a decentralized manner. Users will be able to connect their wallets, view their token balances, and buy or sell their tokens according to a price formula!
 Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-There is also a 🎥 [Youtube video](https://www.youtube.com/watch?v=eP5w6Ger1EQ&t=364s&ab_channel=SimplyExplained) that may help you understand the concepts covered within this challenge too:
+There is also a 🎥 [Youtube video](https://www.youtube.com/watch?v=eP5w6Ger1EQ) that may help you understand the concepts covered within this challenge too:
 
 💬 Meet other builders working on this challenge and get help in the [Challenge 4 Telegram](https://t.me/+_NeUIJ664Tc1MzIx)
 
@@ -51,16 +51,21 @@ yarn start
 ## ⛳️ Checkpoint 1: 🔭 The Structure 📺
 Navigate to the Debug Contracts tab and you should see two smart contracts displayed called DEX and Balloons.
 
-👩‍💻 Rerun yarn deploy whenever you want to deploy new contracts to the frontend (run yarn deploy --reset for a completely fresh deploy if you have made no contract changes).
+👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend (run `yarn deploy --reset` for a completely fresh deploy if you have made no contract changes).
 
-Balloons.sol is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it. DEX.sol is what we will build in this challenge and you can see it starts with a SafeMath library to help us prevent overflows and underflows and also tracks a token (ERC20 interface) that we set in the constructor (on deploy).
+`packages/hardhat/contracts/Baloons.sol` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it. `packages/hardhat/contracts/DEX.sol` is what we will build in this challenge and you can see it starts with a SafeMath library to help us prevent overflows and underflows and also tracks a token (ERC20 interface) that we set in the constructor (on deploy).
 
-Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
+> Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
-⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of `hardhat/deploy/00_deploy_your_contract.ts`.
+> ⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of `hardhat/deploy/00_deploy_your_contract.ts`.
 
 ![2023-07-13 (2)](https://github.com/mertcanciy/se-2-challenges/assets/59885513/1b6e8f59-c549-40b8-982e-e0bec0239117)
 
+> 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first! Check out the empty DEXTemplate.sol file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
+
+> 🚨 🚨 🦖 **The code blobs within the toggles are some examples of what you can use, but try writing the implementation code for the functions first!**
+
+---
 
 ### ⛳️ **Checkpoint 2: Reserves** ⚖️ 
 
@@ -158,7 +163,7 @@ The `k` is called an invariant because it doesn’t change during trades. (The `
 
 When we call `init()` we passed in ETH and $BAL tokens at a ratio of 1:1. As the reserves of one asset changes, the other asset must also change inversely in order to maintain the constant product formula (invariant k).
 
-Now, try to edit your DEX.sol smart contract and bring in a price function!
+Now, try to edit your `DEX.sol` smart contract and bring in a price function!
 
 <details markdown='1'><summary>👩🏽‍🏫 Solution Code</summary>
 
@@ -168,7 +173,7 @@ Now, try to edit your DEX.sol smart contract and bring in a price function!
         uint256 xInput,
         uint256 xReserves,
         uint256 yReserves
-    ) public view returns (uint256 yOutput) {
+    ) public pure returns (uint256 yOutput) {
         uint256 xInputWithFee = xInput * 997;
         uint256 numerator = xInputWithFee * yReserves;
         uint256 denominator = (xReserves * 1000) + xInputWithFee;
@@ -216,7 +221,7 @@ Finally, let’s say the ratio is the same but we want to swap 100,000 tokens in
 
 ### ⛳️ **Checkpoint 4: Trading** 🤝
 
-Let’s edit the DEX.sol smart contract and add two new functions for swapping from each asset to the other, `ethToToken()` and `tokenToEth()`!
+Let’s edit the `DEX.sol` smart contract and add two new functions for swapping from each asset to the other, `ethToToken()` and `tokenToEth()`!
 
 <details markdown='1'><summary>👨🏻‍🏫 Solution Code </summary>
 
@@ -313,7 +318,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 
 Remember that you will need to call `approve()` from the `Balloons.sol` contract approving the DEX to handle a specific number of your $BAL tokens. To keep things simple, you can just do that when interacting with the UI or debug tab with your contract.
 
-🚨 Take a second to understand what these functions are doing if you pasted them into your DEX.sol file in packages/hardhat/contracts:
+🚨 Take a second to understand what these functions are doing if you pasted them into your `DEX.sol` file in packages/hardhat/contracts:
 
 ### 🥅 Goals / Checks
 
@@ -334,6 +339,10 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 ### 🥅 Extra Challenge:
 
 - [ ] `approve()` event emission: can you implement this into the event tabs so that it is clear when `approve()` from the `Balloons.sol` contract has been executed?
+
+---
+
+> ❗ ❗  Note that the testing file is a work in progress, so \packages\hardhat-ts\test\challenge-4.ts is incomplete.  You can run `yarn test` if you like, but may have some failed tests, even with working code.
 
 ---
 
@@ -419,7 +428,7 @@ You can verify your smart contract on Etherscan by running (`yarn verify --netwo
 yarn verify --network sepolia
 ```
 
-> It is okay if it says your contract is already verified. Copy the addresses of BAL.sol and DEX.sol and search them on sepolia Etherscan to find the correct URL you need to submit this challenge.
+> It is okay if it says your contract is already verified. Copy the addresses of `BAL.sol` and `DEX.sol` and search them on sepolia Etherscan to find the correct URL you need to submit this challenge.
 
 ## Checkpoint 10: 💪 Flex!
 

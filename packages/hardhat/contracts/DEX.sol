@@ -3,7 +3,6 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /**
  * @title DEX Template
@@ -15,7 +14,6 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 contract DEX {
     /* ========== GLOBAL VARIABLES ========== */
 
-    using SafeMath for uint256; //outlines use of SafeMath for uint256 variables
     IERC20 token; //instantiates the imported contract
 
     /* ========== EVENTS ========== */
@@ -64,12 +62,13 @@ contract DEX {
         uint256 xInput,
         uint256 xReserves,
         uint256 yReserves
-    ) public view returns (uint256 yOutput) {}
+    ) public pure returns (uint256 yOutput) {}
 
     /**
-     * @notice returns liquidity for a user. Note this is not needed typically due to the `liquidity()` mapping variable being public and having a getter as a result. This is left though as it is used within the front end code (App.jsx).
-     * if you are using a mapping liquidity, then you can use `return liquidity[lp]` to get the liquidity for a user.
-     *
+     * @notice returns liquidity for a user.
+     * NOTE: this is not needed typically due to the `liquidity()` mapping variable being public and having a getter as a result. This is left though as it is used within the front end code (App.jsx).
+     * NOTE: if you are using a mapping liquidity, then you can use `return liquidity[lp]` to get the liquidity for a user.
+     * NOTE: if you will be submitting the challenge make sure to implement this function as it is used in the tests.
      */
     function getLiquidity(address lp) public view returns (uint256) {}
 

@@ -2,9 +2,10 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, EyeIcon, KeyIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { PhoneIcon } from "@heroicons/react/20/solid";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const router = useRouter();
@@ -38,6 +39,12 @@ export const Header = () => {
     <>
       <li>
         <NavLink href="/">Home</NavLink>
+      </li>
+      <li>
+        <NavLink href="/dex">
+          <KeyIcon className="h-4 w-4" />
+          DEX
+        </NavLink>
       </li>
       <li>
         <NavLink href="/debug">
