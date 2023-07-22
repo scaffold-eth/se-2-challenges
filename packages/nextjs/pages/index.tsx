@@ -28,8 +28,8 @@ const Home: NextPage = () => {
                 </a>{" "} and challenge repos before it. Please read the intro for a background on what we are building first!
               </p>
               <p className="text-center text-lg">
-                🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and stake if the
-                conditions are met, then deploy your app to a public webserver. Submit the url on{" "}
+              🌟 The final deliverable is an app that allows users to seamlessly trade ERC20 BALLOONS ($BAL) with ETH in a decentralized manner. Users will be able to connect their wallets, view their token balances, and buy or sell their tokens according to a price formula!
+                Submit the url on{" "}
                 <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
                   SpeedRunEthereum.com
                 </a>{" "}
