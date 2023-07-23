@@ -53,7 +53,7 @@ Navigate to the Debug Contracts tab and you should see two smart contracts displ
 
 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend (run `yarn deploy --reset` for a completely fresh deploy if you have made no contract changes).
 
-`packages/hardhat/contracts/Baloons.sol` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it. `packages/hardhat/contracts/DEX.sol` is what we will build in this challenge and you can see it starts with a SafeMath library to help us prevent overflows and underflows and also tracks a token (ERC20 interface) that we set in the constructor (on deploy).
+`packages/hardhat/contracts/Balloons.sol` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it. `packages/hardhat/contracts/DEX.sol` is what we will build in this challenge and you can see it starts with a SafeMath library to help us prevent overflows and underflows and also tracks a token (ERC20 interface) that we set in the constructor (on deploy).
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
