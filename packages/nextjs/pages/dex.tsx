@@ -102,7 +102,7 @@ const Dex: NextPage = () => {
         <span className="block text-2xl mb-2">SpeedRunEthereum</span>
         <span className="block text-4xl font-bold">Challenge 4: Minimum Viable Exchange </span>
       </h1>
-      <div className="flex flex-col flex-grow items-center pt-10 grid grid-cols-2 content-start">
+      <div className="flex flex-col flex-grow items-start pt-10 grid grid-cols-2 content-start">
         <div className="px-5 py-5">
           <div className="space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl py-7">
             <div className="flex flex-col text-center">
@@ -246,7 +246,7 @@ const Dex: NextPage = () => {
           </div>
         </div>
 
-        <div className="px-5 mx-auto">
+        <div className="sticky top-0 px-5 mx-auto">
           <Curve
             addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
             addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
