@@ -29,7 +29,7 @@ const newDefaultWallet = ethers.Wallet.createRandom();
  */
 export const saveBurnerSK = (wallet: Wallet): void => {
   if (typeof window != "undefined" && window != null) {
-    window?.localStorage?.setItem(burnerStorageKey, wallet.privateKey);
+    window?.sessionStorage?.setItem(burnerStorageKey, wallet.privateKey);
   }
 };
 
@@ -42,7 +42,7 @@ export const saveBurnerSK = (wallet: Wallet): void => {
 export const loadBurnerSK = (): string => {
   let currentSk = "";
   if (typeof window != "undefined" && window != null) {
-    currentSk = window?.localStorage?.getItem?.(burnerStorageKey)?.replaceAll('"', "") ?? "";
+    currentSk = window?.sessionStorage?.getItem?.(burnerStorageKey)?.replaceAll('"', "") ?? "";
   }
 
   if (!!currentSk && isValidSk(currentSk)) {
