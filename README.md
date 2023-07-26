@@ -1,4 +1,6 @@
-# 🚩 Challenge 4: Minimum Viable Exchange
+# 🚩 Challenge 4: ⚖️ Build a DEX
+
+![readme-4](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/a4807ee8-555a-4466-8216-0d91e0e76c33)
 
 This challenge will help you build/understand a simple decentralized exchange, with one token-pair (ERC20 BALLOONS ($BAL) and ETH). This repo is an updated version of the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) and challenge repos before it. Please read the intro for a background on what we are building first!
 
@@ -49,11 +51,12 @@ yarn start
 📱 Open http://localhost:3000 to see the app.
 
 ## ⛳️ Checkpoint 1: 🔭 The Structure 📺
+
 Navigate to the Debug Contracts tab and you should see two smart contracts displayed called DEX and Balloons.
 
 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend (run `yarn deploy --reset` for a completely fresh deploy if you have made no contract changes).
 
-`packages/hardhat/contracts/Balloons.sol` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it. `packages/hardhat/contracts/DEX.sol` is what we will build in this challenge and you can see it starts with a SafeMath library to help us prevent overflows and underflows and also tracks a token (ERC20 interface) that we set in the constructor (on deploy).
+`packages/hardhat/contracts/Balloons.sol` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it. `packages/hardhat/contracts/DEX.sol` is what we will build in this challenge and you can see it starts instantiating a token (ERC20 interface) that we set in the constructor (on deploy).
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
@@ -61,13 +64,13 @@ Navigate to the Debug Contracts tab and you should see two smart contracts displ
 
 ![2023-07-13 (2)](https://github.com/mertcanciy/se-2-challenges/assets/59885513/1b6e8f59-c549-40b8-982e-e0bec0239117)
 
-> 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first! Check out the empty DEXTemplate.sol file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
+> 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first! Check out the empty DEX.sol file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
 
 > 🚨 🚨 🦖 **The code blobs within the toggles are some examples of what you can use, but try writing the implementation code for the functions first!**
 
 ---
 
-### ⛳️ **Checkpoint 2: Reserves** ⚖️ 
+### ⛳️ **Checkpoint 2: Reserves** ⚖️
 
 We want to create an automatic market where our contract will hold reserves of both ETH and 🎈 Balloons. These reserves will provide liquidity that allows anyone to swap between the assets.
 
@@ -144,7 +147,7 @@ Now when we `yarn deploy --reset` then our contract should be initialized as soo
 
 This section is directly from the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) "Price" section. It outlines the general details of the DEX's pricing model.
 
-If you need some more clarity on how the price in a pool is calculated, [this video](https://youtu.be/IL7cRj5vzEU) by Smart Contract Programmer has a more in-depth explination.
+If you need some more clarity on how the price in a pool is calculated, [this video](https://youtu.be/IL7cRj5vzEU) by Smart Contract Programmer has a more in-depth explanation.
 
 Now that our contract holds reserves of both ETH and tokens, we want to use a simple formula to determine the exchange rate between the two.
 Let’s start with the formula `x * y = k` where `x` and `y` are the reserves:
@@ -194,17 +197,14 @@ Let’s say we have 1 million ETH and 1 million tokens, if we put this into our 
 
 ![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/77bac7a8-36c6-4d89-b60c-b0a0e14f706f)
 
-
 If we put in 1000 ETH we will receive 996 tokens. If we’re paying a 0.3% fee it should be 997 if everything was perfect. BUT, there is a tiny bit of slippage as our contract moves away from the original ratio. Let’s dig in more to really understand what is going on here.
 Let’s say there is 5 million ETH and only 1 million tokens. Then, we want to put 1000 tokens in. That means we should receive about 5000 ETH:
 
 ![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/a4f3754c-4362-45c4-90c6-2baccfe8a03e)
 
-
 Finally, let’s say the ratio is the same but we want to swap 100,000 tokens instead of just 1000. We’ll notice that the amount of slippage is much bigger. Instead of 498,000 back we will only get 453,305 because we are making such a big dent in the reserves.
 
 ![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/f32642c1-b612-40ae-a9d2-01ddabc55239)
-
 
 ❗️ The contract automatically adjusts the price as the ratio of reserves shifts away from the equilibrium. It’s called an 🤖 _Automated Market Maker (AMM)._
 
@@ -333,7 +333,6 @@ Cool beans! Your front-end should be showing something like this now!
 
 ![2023-07-13 (4)](https://github.com/mertcanciy/se-2-challenges/assets/59885513/dcfc16fa-6309-41f3-abff-748d8b45d61a)
 
-
 Now, a user can just enter the amount of ETH or tokens they want to swap and the chart will display how the price is calculated. The user can also visualize how larger swaps result in more slippage and less output asset.
 
 ### 🥅 Extra Challenge:
@@ -342,11 +341,11 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ---
 
-> ❗ ❗  Note that the testing file is a work in progress, so \packages\hardhat-ts\test\challenge-4.ts is incomplete.  You can run `yarn test` if you like, but may have some failed tests, even with working code.
+> ❗ ❗ Note that the testing file is a work in progress, so \packages\hardhat-ts\test\challenge-4.ts is incomplete. You can run `yarn test` if you like, but may have some failed tests, even with working code.
 
 ---
 
-## Checkpoint 7: 💾 Deploy it! 🛰
+## Checkpoint 7: 💾 Deploy your contracts! 🛰
 
 🛰 Ready to deploy to a public testnet?!?
 
@@ -376,7 +375,7 @@ yarn deploy
 
 ---
 
-## Checkpoint 8: 🚢 Ship it! 🚁
+## Checkpoint 8: 🚢 Ship your frontend! 🚁
 
 > ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
 
@@ -387,7 +386,6 @@ yarn deploy
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
 
 > 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
-
 
 🚀 Deploy your NextJS App
 
@@ -432,5 +430,4 @@ yarn verify --network sepolia
 
 ## Checkpoint 10: 💪 Flex!
 
-👩‍❤️‍👨 Send some BAL and share your public url with a friend and ask them to swap their tokens :)
-
+👩‍❤️‍👨 Send some $BAL and share your public url with a friend and ask them to swap their tokens :)
