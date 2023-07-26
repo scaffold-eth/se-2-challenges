@@ -2,10 +2,10 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { PhoneIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BugAntIcon, EyeIcon, KeyIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
-import { PhoneIcon } from "@heroicons/react/20/solid";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const router = useRouter();
@@ -92,7 +92,7 @@ export const Header = () => {
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight">SRE Challenges</span>
-            <span className="text-xs">#4: Minimum Viable Exchange</span>
+            <span className="text-xs">#4: Build a DEX</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
