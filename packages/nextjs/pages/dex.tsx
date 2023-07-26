@@ -102,9 +102,9 @@ const Dex: NextPage = () => {
         <span className="block text-2xl mb-2">SpeedRunEthereum</span>
         <span className="block text-4xl font-bold">Challenge 4: Minimum Viable Exchange </span>
       </h1>
-      <div className="flex flex-col flex-grow items-start pt-10 grid grid-cols-2 content-start">
+      <div className="flex flex-col flex-grow items-start pt-10 grid grid-cols-1 md:grid-cols-2 content-start">
         <div className="px-5 py-5">
-          <div className="space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl py-7">
+          <div className="space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-8 m-8">
             <div className="flex flex-col text-center">
               <span className="text-3xl font-semibold mb-2">DEX Contract</span>
               <span className="block text-2xl mb-2 mx-auto">
@@ -122,8 +122,8 @@ const Dex: NextPage = () => {
                 )}
               </span>
             </div>
-            <div className=" py-3 px-4">
-              <div className="flex mb-4">
+            <div className="py-3 px-4">
+              <div className="flex mb-4 justify-center items-center">
                 <span className="w-1/2">
                   ethToToken{" "}
                   <EtherInput
@@ -139,7 +139,7 @@ const Dex: NextPage = () => {
                   Send
                 </button>
               </div>
-              <div className="flex">
+              <div className="flex justify-center items-center">
                 <span className="w-1/2">
                   tokenToETH{" "}
                   <IntegerInput
@@ -168,7 +168,7 @@ const Dex: NextPage = () => {
             </div>
 
             <div className="px-4 py-3">
-              <div className="flex mb-4">
+              <div className="flex mb-4 justify-center items-center">
                 <span className="w-1/2">
                   Deposit <EtherInput value={depositAmount} onChange={value => setDepositAmount(value)} />
                 </span>
@@ -177,7 +177,7 @@ const Dex: NextPage = () => {
                 </button>
               </div>
 
-              <div className="flex">
+              <div className="flex justify-center items-center">
                 <span className="w-1/2">
                   Withdraw <EtherInput value={withdrawAmount} onChange={value => setWithdrawAmount(value)} />
                 </span>
@@ -188,8 +188,7 @@ const Dex: NextPage = () => {
             </div>
           </div>
 
-          <div className="relative flex pt-8 items-center"></div>
-          <div className="space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl py-5">
+          <div className="space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl py-5 p-8 m-8">
             <div className="flex flex-col text-center mt-2 mb-4 px-4">
               <span className="block text-3xl font-semibold mb-2">Balloons</span>
               <span className="mx-auto">
@@ -198,7 +197,7 @@ const Dex: NextPage = () => {
             </div>
 
             <div className=" px-4 py-3">
-              <div className="flex flex-col gap-4 mb-4">
+              <div className="flex flex-col gap-4 mb-4 justify-center items-center">
                 <span className="w-1/2">
                   Approve{" "}
                   <AddressInput
@@ -215,18 +214,10 @@ const Dex: NextPage = () => {
                     hideSuffix={true}
                   />
                 </span>
-              </div>
-
-              <div className=" my-auto">
                 <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-auto" onClick={() => approveWrite()}>
                   Send
                 </button>
-              </div>
-            </div>
-
-            <div className=" px-4 py-3 mt-6">
-              <div className="flex mb-4">
-                <span className="flex flex-col mt-2">
+                <span className="w-1/2">
                   balanceOf{" "}
                   <AddressInput
                     value={accountBalanceOf}
@@ -234,19 +225,19 @@ const Dex: NextPage = () => {
                     placeholder="address Account"
                   />
                 </span>
+                {balanceOfWrite === undefined ? (
+                  <h1></h1>
+                ) : (
+                  <span className="font-bold bg-primary px-3 rounded-2xl">
+                    BAL Balance: {parseFloat(ethers.utils.formatEther(balanceOfWrite?.toString() || 0)).toFixed(4)}
+                  </span>
+                )}
               </div>
-              {balanceOfWrite === undefined ? (
-                <h1></h1>
-              ) : (
-                <span className="font-bold bg-primary px-3 rounded-2xl">
-                  BAL Balance: {parseFloat(ethers.utils.formatEther(balanceOfWrite?.toString() || 0)).toFixed(4)}
-                </span>
-              )}
             </div>
           </div>
         </div>
 
-        <div className="sticky top-0 px-5 mx-auto">
+        <div className="mx-auto p-8 m-8 md:sticky md:top-0">
           <Curve
             addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
             addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
