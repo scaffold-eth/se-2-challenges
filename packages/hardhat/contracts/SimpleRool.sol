@@ -1,9 +1,12 @@
-pragma solidity >=0.8.0 <0.9.0;  //Do not change the solidity version as it negativly impacts submission grading
+pragma solidity >=0.8.0 <0.9.0;  //Do not change the solidity version as it negatively impacts submission grading
+
 //SPDX-License-Identifier: MIT
 
 import "hardhat/console.sol";
 import "./DiceGame.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+
+// The simple roll contract illustrate how  you can do a simple roll of the dice using the DiceGame contract 
 
 contract SimpleRoll is Ownable {
 
@@ -13,12 +16,9 @@ contract SimpleRoll is Ownable {
         diceGame = DiceGame(diceGameAddress);
     }
 
-    //Add withdraw function to transfer ether from the rigged contract to an address
+    // Implement a withdraw function in the SimpleRoll Contract that allows transferring a specified amount of Ether to a given address
 
+    // Create the `simpleRoll()` function in the contract, which interacts with the DiceGame Contract to perform a basic dice roll, aiming to achieve a straightforward roll mechanism with the DiceRoll Contracts.
 
-    //Add simpleRoll() function to predict the randomness in the DiceGame contract and only roll when it's going to be a winner
-
-
-    //Add receive() function so contract can receive Eth
-    
+    // Include a `receive()` function in the contract to enable it to accept incoming Ether  
 }

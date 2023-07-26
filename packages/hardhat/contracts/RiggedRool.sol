@@ -13,12 +13,11 @@ contract RiggedRoll is Ownable {
         diceGame = DiceGame(diceGameAddress);
     }
 
-    //Add withdraw function to transfer ether from the rigged contract to an address
 
+    // Implement the `withdraw` function to transfer Ether from the rigged contract to a specified address.
 
-    //Add riggedRoll() function to predict the randomness in the DiceGame contract and only roll when it's going to be a winner
+    // Create the `riggedRoll()` function to predict the randomness in the DiceGame contract and only initiate a roll when it guarantees a win.
 
+    // Include the `receive()` function to enable the contract to receive incoming Ether.
 
-    //Add receive() function so contract can receive Eth
-    
 }

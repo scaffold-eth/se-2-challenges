@@ -7,14 +7,14 @@ contract DiceGame {
 
     uint256 public nonce = 0;
     uint256 public prize = 0;
-    ether public entryFee = 
 
     error NotEnoughEther();
+
 
     event Roll(address indexed player, uint256 roll);
     event Winner(address winner, uint256 amount);
 
-    constructor(uint min) payable {
+    constructor() payable {
         resetPrize();
     }
 
@@ -23,13 +23,9 @@ contract DiceGame {
     }
 
     function rollTheDice() public payable {
-
-      if (msg.value <= 0.002) {
-        
-      } else {
-        
-      }
-        require(msg.value >= 0.002 ether, "Failed to send enough value");
+        if(msg.value < 0.002 ether) {
+          revert NotEnoughEther();
+        }
 
         bytes32 prevHash = blockhash(block.number - 1);
         bytes32 hash = keccak256(abi.encodePacked(prevHash, address(this), nonce));
@@ -49,6 +45,7 @@ contract DiceGame {
         uint256 amount = prize;
         (bool sent, ) = msg.sender.call{value: amount}("");
         require(sent, "Failed to send Ether");
+        
 
         resetPrize();
         emit Winner(msg.sender, amount);
