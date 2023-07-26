@@ -8,12 +8,9 @@
 // yarn test && echo "PASSED" || echo "FAILED"
 //
 import { ethers, network, deployments } from 'hardhat';
-import { use, expect } from 'chai';
-import { solidity } from "ethereum-waffle";
+import { expect } from 'chai';
 import { Contract } from 'ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
-
-use(solidity);
 
 describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
 

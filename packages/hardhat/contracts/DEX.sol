@@ -21,22 +21,27 @@ contract DEX {
     /**
      * @notice Emitted when ethToToken() swap transacted
      */
-    event EthToTokenSwap();
+    event EthToTokenSwap(address swapper, uint256 ethInput, uint256 tokenOutput);
 
     /**
      * @notice Emitted when tokenToEth() swap transacted
      */
-    event TokenToEthSwap();
+    event TokenToEthSwap(address swapper, uint256 tokensInput, uint256 ethOutput);
 
     /**
      * @notice Emitted when liquidity provided to DEX and mints LPTs.
      */
-    event LiquidityProvided();
+    event LiquidityProvided(address liquidityProvider, uint256 tokensInput, uint256 ethInput, uint256 liquidityMinted);
 
     /**
      * @notice Emitted when liquidity removed from DEX and decreases LPT count within DEX.
      */
-    event LiquidityRemoved();
+    event LiquidityRemoved(
+        address liquidityRemover,
+        uint256 tokensOutput,
+        uint256 ethOutput,
+        uint256 liquidityWithdrawn
+    );
 
     /* ========== CONSTRUCTOR ========== */
 
