@@ -5,12 +5,7 @@ import { useAccount, useBalance } from "wagmi";
 import { Curve } from "~~/components/Curve";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Address, AddressInput, Balance, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
-import {
-  useDeployedContractInfo,
-  useScaffoldContract,
-  useScaffoldContractRead,
-  useScaffoldContractWrite,
-} from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const Dex: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -95,13 +90,13 @@ const Dex: NextPage = () => {
   const { data: userBalloons } = useScaffoldContractRead({
     contractName: "Balloons",
     functionName: "balanceOf",
-    args: [connectedAccount]
+    args: [connectedAccount],
   });
 
   const { data: userLiquidity } = useScaffoldContractRead({
     contractName: "DEX",
     functionName: "getLiquidity",
-    args: [connectedAccount]
+    args: [connectedAccount],
   });
 
   const { data: contractETHBalance } = useBalance({
@@ -116,12 +111,12 @@ const Dex: NextPage = () => {
           🎈: {parseFloat(ethers.utils.formatEther(userBalloons?.toString() || 0)).toFixed(4)}
         </span>
         <span className="block text-xl text-right mr-7">
-        💦💦: {parseFloat(ethers.utils.formatEther(userLiquidity?.toString() || 0)).toFixed(4)}
+          💦💦: {parseFloat(ethers.utils.formatEther(userLiquidity?.toString() || 0)).toFixed(4)}
         </span>
         <span className="block text-2xl mb-2">SpeedRunEthereum</span>
         <span className="block text-4xl font-bold">Challenge 4: Minimum Viable Exchange </span>
       </h1>
-      <div className="flex flex-col flex-grow items-start pt-10 grid grid-cols-1 md:grid-cols-2 content-start">
+      <div className="items-start pt-10 grid grid-cols-1 md:grid-cols-2 content-start">
         <div className="px-5 py-5">
           <div className="space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-8 m-8">
             <div className="flex flex-col text-center">
