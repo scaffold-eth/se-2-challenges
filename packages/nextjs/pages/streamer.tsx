@@ -59,6 +59,12 @@ const Streamer: NextPage = () => {
 
   const [vouchers, setVouchers] = useState<{ [key: AddressType]: Voucher }>({});
 
+  const { writeAsync: fundChannel } = useScaffoldContractWrite({
+    contractName: "Streamer",
+    functionName: "fundChannel",
+    value: "0.5",
+  });
+
   return (
     <div>
       {userIsOwner ? (
@@ -167,8 +173,8 @@ const Streamer: NextPage = () => {
         <div>
           <h1>Hello Rube!</h1>
 
-          {hasOpenChannel() ? (
-            <div style={{ padding: 8 }}>
+          {userAddress && opened.includes(userAddress) ? (
+            <div className="p-2">
               <Row align="middle">
                 <Col span={3}>
                   <Checkbox
@@ -230,21 +236,14 @@ const Streamer: NextPage = () => {
                 </Col>
               </Row>
             </div>
-          ) : hasClosedChannel() ? (
+          ) : userAddress && closed.includes(userAddress) ? (
             <div>
-              <p>Thanks for stopping by - we hope you have enjoyed the guru's advice.</p>
+              <p>Thanks for stopping by - we hope you have enjoyed the guru&apos;s advice.</p>
               <p> This UI obstructs you from opening a second channel. Why? Is it safe to open another channel?</p>
             </div>
           ) : (
-            <div style={{ padding: 8 }}>
-              <Button
-                type="primary"
-                onClick={() => {
-                  tx(writeContracts.Streamer.fundChannel({ value: ethers.utils.parseEther("0.5") }));
-                }}
-              >
-                Open a 0.5 ETH channel for advice from the Guru.
-              </Button>
+            <div className="p-2">
+              <button onClick={() => fundChannel()}>Open a 0.5 ETH channel for advice from the Guru.</button>
             </div>
           )}
         </div>
