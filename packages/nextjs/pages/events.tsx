@@ -41,7 +41,7 @@ const Events: NextPage = () => {
         ) : (
           <div>
             <div className="text-center mb-4">
-              <span className="block text-2xl font-bold">ETH To Token Events</span>
+              <span className="block text-2xl font-bold">ETH To Balloons Events</span>
             </div>
             <div className="overflow-x-auto shadow-lg">
               <table className="table table-zebra w-full">
@@ -49,7 +49,7 @@ const Events: NextPage = () => {
                   <tr>
                     <th className="bg-primary">Address</th>
                     <th className="bg-primary">Amount of ETH in</th>
-                    <th className="bg-primary">Amount of Token out</th>
+                    <th className="bg-primary">Amount of Balloons out</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -85,14 +85,14 @@ const Events: NextPage = () => {
         ) : (
           <div className="mt-8">
             <div className="text-center mb-4">
-              <span className="block text-2xl font-bold">Token To ETH Events</span>
+              <span className="block text-2xl font-bold">Balloons To ETH Events</span>
             </div>
             <div className="overflow-x-auto shadow-lg">
               <table className="table table-zebra w-full">
                 <thead>
                   <tr>
                     <th className="bg-primary">Address</th>
-                    <th className="bg-primary">Amount of Token In</th>
+                    <th className="bg-primary">Amount of Balloons In</th>
                     <th className="bg-primary">Amount of ETH Out</th>
                   </tr>
                 </thead>
@@ -110,7 +110,7 @@ const Events: NextPage = () => {
                           <td className="text-center">
                             <Address address={event.args.swapper} />
                           </td>
-                          <td>{utils.formatEther(event.args.tokensInput).toString()}</td>
+                          <td>{parseFloat(utils.formatEther(event.args.tokensInput).toString()).toFixed(4)}</td>
                           <td>{parseFloat(utils.formatEther(event.args.ethOutput).toString()).toFixed(4)}</td>
                         </tr>
                       );
@@ -137,7 +137,7 @@ const Events: NextPage = () => {
                   <tr>
                     <th className="bg-primary">Address</th>
                     <th className="bg-primary">Amount of ETH In</th>
-                    <th className="bg-primary">Amount of Balloons Out</th>
+                    <th className="bg-primary">Amount of Balloons In</th>
                     <th className="bg-primary">Lİquidity Minted</th>
                   </tr>
                 </thead>
