@@ -114,7 +114,7 @@ const Dex: NextPage = () => {
           💦💦: {parseFloat(ethers.utils.formatEther(userLiquidity?.toString() || 0)).toFixed(4)}
         </span>
         <span className="block text-2xl mb-2">SpeedRunEthereum</span>
-        <span className="block text-4xl font-bold">Challenge 4: Minimum Viable Exchange </span>
+        <span className="block text-4xl font-bold">Challenge 4: ⚖️ Build a DEX </span>
       </h1>
       <div className="items-start pt-10 grid grid-cols-1 md:grid-cols-2 content-start">
         <div className="px-5 py-5">
@@ -142,7 +142,10 @@ const Dex: NextPage = () => {
                   ethToToken{" "}
                   <EtherInput
                     value={ethToTokenAmount}
-                    onChange={value => setEthToTokenAmount(value)}
+                    onChange={value => {
+                      setTokenToETHAmount("");
+                      setEthToTokenAmount(value);
+                    }}
                     name="ethToToken"
                   />
                 </span>
@@ -158,7 +161,10 @@ const Dex: NextPage = () => {
                   tokenToETH{" "}
                   <IntegerInput
                     value={tokenToETHAmount}
-                    onChange={value => setTokenToETHAmount(value.toString())}
+                    onChange={value => {
+                      setEthToTokenAmount("");
+                      setTokenToETHAmount(value.toString());
+                    }}
                     name="tokenToETH"
                     hideSuffix={true}
                   />
