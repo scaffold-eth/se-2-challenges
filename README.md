@@ -62,7 +62,7 @@ Navigate to the Debug Contracts tab and you should see two smart contracts displ
 
 > ⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of `hardhat/deploy/00_deploy_your_contract.ts`.
 
-![2023-07-13 (2)](https://github.com/mertcanciy/se-2-challenges/assets/59885513/1b6e8f59-c549-40b8-982e-e0bec0239117)
+![ch-4-main](https://github.com/scaffold-eth/se-2-challenges/assets/59885513/930ec64c-d185-4a33-8941-43f44a611231)
 
 > 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first! Check out the empty DEX.sol file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
 
