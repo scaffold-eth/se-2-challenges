@@ -1,26 +1,32 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import { ethers } from "hardhat";
+import { ethers } from "hardhat/";
+import { DiceGame, RiggedRoll } from "../typechain-types/";
 
-const deployRiggedRoll: DeployFunction = async function(
+const deployRiggedRoll: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment,
 ) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
-  // const DiceGame = await
 
-  // await deploy("RiggedRoll", {
-  //   from: deployer,
-  //   // Contract constructor arguments
-  //   args: [deployer],
-  //   log: true,
-  //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-  //   // automatically mining the contract deployment transaction. There is no effect on live networks.
-  //   autoMine: true,
-  // });
+  const diceGame: DiceGame = await ethers.getContract("DiceGame");
 
-  // Get the deployed contract
-  // const yourContract  = await hr e. ethers.getContract("YourContract", deployer);
+  await deploy("RiggedRoll", {
+    from: deployer,
+    log: true,
+    args: [diceGame.address],
+    autoMine: true,
+  });
+
+  const riggedRoll: RiggedRoll = await ethers.getContract(
+    "RiggedRoll",
+    deployer,
+  );
+
+  // Please replace the text "Your Address" with your own address.
+  // const ownershipTransaction = await riggedRoll.transferOwnership(
+  //   "Your Address",
+  // );
 };
 
 export default deployRiggedRoll;
