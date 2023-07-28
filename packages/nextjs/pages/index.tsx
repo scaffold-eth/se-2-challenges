@@ -22,10 +22,10 @@ const Home: NextPage = () => {
             />
             <div className="max-w-3xl">
               <p className="text-center text-lg mt-8">
-                🤖 Smart contracts are kind of like "always on" vending machines that anyone can access. Let's make a
-                decentralized, digital currency. Then, let's build an unstoppable vending machine that will buy and sell
-                the currency. We'll learn about the "approve" pattern for ERC20s and how contract to contract
-                interactions work.
+                🤖 Smart contracts are kind of like &quot;always on&quot; vending machines that anyone can access.
+                Let&apos;s make a decentralized, digital currency. Then, let&apos;s build an unstoppable vending machine
+                that will buy and sell the currency. We&apos;ll learn about the &quot;approve&quot; pattern for ERC20s
+                and how contract to contract interactions work.
               </p>
               <p className="text-center text-lg">
                 🌟 The final deliverable is an app that lets users purchase your ERC20 token, transfer it, and sell it
