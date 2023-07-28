@@ -236,7 +236,7 @@ Let’s edit the `DEX.sol` smart contract and add two new functions for swapping
         uint256 tokenOutput = price(msg.value, ethReserve, token_reserve);
 
         require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
-        emit EthToTokenSwap(msg.sender, "Eth to Balloons", msg.value, tokenOutput);
+        emit EthToTokenSwap(msg.sender, msg.value, tokenOutput);
         return tokenOutput;
     }
 
@@ -250,7 +250,7 @@ Let’s edit the `DEX.sol` smart contract and add two new functions for swapping
         require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
         (bool sent, ) = msg.sender.call{ value: ethOutput }("");
         require(sent, "tokenToEth: revert in transferring eth to you!");
-        emit TokenToEthSwap(msg.sender, "Balloons to ETH", ethOutput, tokenInput);
+        emit TokenToEthSwap(msg.sender, tokenInput, ethOutput);
         return ethOutput;
     }
 ```
@@ -290,7 +290,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
         totalLiquidity += liquidityMinted;
 
         require(token.transferFrom(msg.sender, address(this), tokenDeposit));
-        emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
+        emit LiquidityProvided(msg.sender, tokenDeposit, msg.value, liquidityMinted);
         return tokenDeposit;
     }
 
@@ -308,7 +308,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
         (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
         require(sent, "withdraw(): revert in transferring eth to you!");
         require(token.transfer(msg.sender, tokenAmount));
-        emit LiquidityRemoved(msg.sender, amount, ethWithdrawn, tokenAmount);
+        emit LiquidityRemoved(msg.sender, tokenAmount, ethWithdrawn, amount);
         return (ethWithdrawn, tokenAmount);
     }
 
