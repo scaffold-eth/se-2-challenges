@@ -11,7 +11,7 @@ There is also a 🎥 [Youtube video](https://www.youtube.com/watch?v=eP5w6Ger1EQ
 
 💬 Meet other builders working on this challenge and get help in the [Challenge 4 Telegram](https://t.me/+_NeUIJ664Tc1MzIx)
 
-## Checkpoint 0: 📦 Install 📚
+## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -50,13 +50,15 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
+> 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend (run `yarn deploy --reset` for a completely fresh deploy if you have made no contract changes).
+
 ## ⛳️ Checkpoint 1: 🔭 The Structure 📺
 
-Navigate to the Debug Contracts tab and you should see two smart contracts displayed called DEX and Balloons.
+Navigate to the `Debug Contracts` tab, you should see two smart contracts displayed called `DEX` and `Balloons`.
 
-👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend (run `yarn deploy --reset` for a completely fresh deploy if you have made no contract changes).
+`packages/hardhat/contracts/Balloons.sol` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it.
 
-`packages/hardhat/contracts/Balloons.sol` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it. `packages/hardhat/contracts/DEX.sol` is what we will build in this challenge and you can see it starts instantiating a token (ERC20 interface) that we set in the constructor (on deploy).
+`packages/hardhat/contracts/DEX.sol` is what we will build in this challenge and you can see it starts instantiating a token (ERC20 interface) that we set in the constructor (on deploy).
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
@@ -64,13 +66,14 @@ Navigate to the Debug Contracts tab and you should see two smart contracts displ
 
 ![ch-4-main](https://github.com/scaffold-eth/se-2-challenges/assets/59885513/930ec64c-d185-4a33-8941-43f44a611231)
 
-> 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first! Check out the empty DEX.sol file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
+> 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first!  
+> Check out the empty `DEX.sol` file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
 
 > 🚨 🚨 🦖 **The code blobs within the toggles are some examples of what you can use, but try writing the implementation code for the functions first!**
 
 ---
 
-### ⛳️ **Checkpoint 2: Reserves** ⚖️
+## ⛳️ **Checkpoint 2: Reserves** ⚖️
 
 We want to create an automatic market where our contract will hold reserves of both ETH and 🎈 Balloons. These reserves will provide liquidity that allows anyone to swap between the assets.
 
@@ -104,7 +107,7 @@ Now, let's create an `init()` function in `DEX.sol` that is payable and then we 
 
 Calling `init()` will load our contract up with both ETH and 🎈 Balloons.
 
-We can see that the DEX starts empty. We want to be able to call `init()` to start it off with liquidity, but we don’t have any funds or tokens yet. Add some ETH to your local account using the faucet and then find the `00_deploy_your_contract.ts` file. Find and uncomment the line below and add your front-end address:
+We can see that the DEX starts empty. We want to be able to call `init()` to start it off with liquidity, but we don’t have any funds or tokens yet. Add some ETH to your local account using the faucet and then find the `00_deploy_your_contract.ts` file. Find and uncomment the lines below and add your front-end address:
 
 ```
   // // paste in your front-end address here to get 10 balloons on deploy:
@@ -114,9 +117,24 @@ We can see that the DEX starts empty. We want to be able to call `init()` to sta
   // );
 ```
 
-Run `yarn deploy`. The front end should show you that you have balloon tokens. We can’t just call `init()` yet because the DEX contract isn’t allowed to transfer tokens from our account. We need to `approve()` the DEX contract with the Balloons UI.
+> Run `yarn deploy`.
 
-🤓 Copy and paste the DEX address and then set the amount to 5000000000000000000 (5 _ 10¹⁸). You can confirm this worked using the `allowance()` function. Now we are ready to call `init()` on the DEX. We will tell it to take (5 _ 10¹⁸) of our tokens and we will also send 0.01 ETH with the transaction. You can see the DEX contract's value update and you can check the DEX token balance using the balanceOf function on the Balloons UI.
+The front end should show you that you have balloon tokens. We can’t just call `init()` yet because the DEX contract isn’t allowed to transfer ERC20 tokens from our account.
+
+First, we have to call `approve()` on the Balloons contract, approving the DEX contract address to take some amount of tokens.
+
+![balloons-dex-tab](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/710f5c9a-d898-4012-9014-4c46f1de015f)
+
+> 🤓 Copy and paste the DEX address to the _Address Spender_ and then set the amount to 5.  
+> You can confirm this worked using the `allowance()` function in `Debug Contracts` tab.
+
+Now we are ready to call `init()` on the DEX, using `Debug Contracts` tab. We will tell it to take 5000000000000000000 (5 \* 10¹⁸) of our tokens and we will also send 0.01 (0.01 \* 10¹⁸) ETH with the transaction. We have to click the \* 10¹⁸ buttons in `Debug Contracts` because contracts use wei as units.
+
+![multiply-wei](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/531cab0b-2b37-4489-88c3-d36c0755d2d1)
+
+In `DEX` tab, to simplify user interactions, we run the conversion (_tokenAmount_ \* 10¹⁸) in the code, so they just have to input the token amount they want to swap or deposit/withdraw.
+
+You can see the DEX contract's value update and you can check the DEX token balance using the `balanceOf` function on the Balloons UI from `DEX` tab.
 
 This works pretty well, but it will be a lot easier if we just call the `init()` function as we deploy the contract. In the `00_deploy_your_contract.ts` script try uncommenting the init section so our DEX will start with 5 ETH and 5 Balloons of liquidity:
 
@@ -139,11 +157,11 @@ Now when we `yarn deploy --reset` then our contract should be initialized as soo
 ### 🥅 Goals / Checks
 
 - [ ] 🎈 Under the debug tab, does your DEX show 5 ETH and 5 Balloons of liquidity?
-- [ ] ❗ If you are planning to submit the challenge make sure to implement the `getLiqudity` getter function.
+- [ ] ❗ If you are planning to submit the challenge make sure to implement the `getLiquidity` getter function.
 
 ---
 
-### ⛳️ **Checkpoint 3: Price** 🤑
+## ⛳️ **Checkpoint 3: Price** 🤑
 
 This section is directly from the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) "Price" section. It outlines the general details of the DEX's pricing model.
 
@@ -164,7 +182,7 @@ The `k` is called an invariant because it doesn’t change during trades. (The `
 
 🤔 OH! A market based on a curve like this will always have liquidity, but as the ratio becomes more and more unbalanced, you will get less and less of the less-liquid asset from the same trade amount. Again, if the smart contract has too much ETH and not enough $BAL tokens, the price to swap $BAL tokens to ETH should be more desirable.
 
-When we call `init()` we passed in ETH and $BAL tokens at a ratio of 1:1. As the reserves of one asset changes, the other asset must also change inversely in order to maintain the constant product formula (invariant k).
+When we call `init()` we passed in ETH and $BAL tokens at a ratio of 1:1. As the reserves of one asset changes, the other asset must also change inversely in order to maintain the constant product formula (invariant `k`).
 
 Now, try to edit your `DEX.sol` smart contract and bring in a price function!
 
@@ -195,16 +213,16 @@ yarn run deploy
 
 Let’s say we have 1 million ETH and 1 million tokens, if we put this into our price formula and ask it the price of 1000 ETH it will be an almost 1:1 ratio:
 
-![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/77bac7a8-36c6-4d89-b60c-b0a0e14f706f)
+![price-example-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e2d725cc-91f3-454d-902f-b39e4b51f5e2)
 
 If we put in 1000 ETH we will receive 996 tokens. If we’re paying a 0.3% fee it should be 997 if everything was perfect. BUT, there is a tiny bit of slippage as our contract moves away from the original ratio. Let’s dig in more to really understand what is going on here.
 Let’s say there is 5 million ETH and only 1 million tokens. Then, we want to put 1000 tokens in. That means we should receive about 5000 ETH:
 
-![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/a4f3754c-4362-45c4-90c6-2baccfe8a03e)
+![price-example-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/349db3d8-e39e-4c94-8026-e01da2cefb8e)
 
 Finally, let’s say the ratio is the same but we want to swap 100,000 tokens instead of just 1000. We’ll notice that the amount of slippage is much bigger. Instead of 498,000 back we will only get 453,305 because we are making such a big dent in the reserves.
 
-![image](https://github.com/mertcanciy/se-2-challenges/assets/59885513/f32642c1-b612-40ae-a9d2-01ddabc55239)
+![price-example-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f479d7cd-0e04-4aa7-aa52-cef30d747af3)
 
 ❗️ The contract automatically adjusts the price as the ratio of reserves shifts away from the equilibrium. It’s called an 🤖 _Automated Market Maker (AMM)._
 
@@ -219,7 +237,7 @@ Finally, let’s say the ratio is the same but we want to swap 100,000 tokens in
 
 ---
 
-### ⛳️ **Checkpoint 4: Trading** 🤝
+## ⛳️ **Checkpoint 4: Trading** 🤝
 
 Let’s edit the `DEX.sol` smart contract and add two new functions for swapping from each asset to the other, `ethToToken()` and `tokenToEth()`!
 
@@ -261,16 +279,18 @@ Let’s edit the `DEX.sol` smart contract and add two new functions for swapping
 
 ---
 
-### ⛳️ **Checkpoint 5: Liquidity** 🌊
+## ⛳️ **Checkpoint 5: Liquidity** 🌊
 
 So far, only the `init()` function controls liquidity. To make this more decentralized, it would be better if anyone could add to the liquidity pool by sending the DEX both ETH and tokens at the correct ratio.
 
 Let’s create two new functions that let us deposit and withdraw liquidity. How would you write this function out? Try before taking a peak!
 
-> 💡 _Hints:_
+> 💬 _Hint:_
 > The `deposit()` function receives ETH and also transfers $BAL tokens from the caller to the contract at the right ratio. The contract also tracks the amount of liquidity (how many liquidity provider tokens (LPTs) minted) the depositing address owns vs the totalLiquidity.
 
-> 💡💡 _More Hints:_ The `withdraw()` function lets a user take both ETH and $BAL tokens out at the correct ratio. The actual amount of ETH and tokens a liquidity provider withdraws could be higher than what they deposited because of the 0.3% fees collected from each trade. It also could be lower depending on the price fluctuations of $BAL to ETH and vice versa (from token swaps taking place using your AMM!). The 0.3% fee incentivizes third parties to provide liquidity, but they must be cautious of [Impermanent Loss (IL)](https://www.youtube.com/watch?v=8XJ1MSTEuU0&t=2s&ab_channel=Finematics).
+> 💡 **Remember**: Everytime you perform actions with your $BAL tokens (deposit, exchange), you will need to call `approve()` from the `Balloons.sol` contract approving the DEX to handle a specific number of your $BAL tokens. To keep things simple, you can just do that from `Debug Contracts` tab.
+
+> 💬💬 _More Hints:_ The `withdraw()` function lets a user take both ETH and $BAL tokens out at the correct ratio. The actual amount of ETH and tokens a liquidity provider withdraws could be higher than what they deposited because of the 0.3% fees collected from each trade. It also could be lower depending on the price fluctuations of $BAL to ETH and vice versa (from token swaps taking place using your AMM!). The 0.3% fee incentivizes third parties to provide liquidity, but they must be cautious of [Impermanent Loss (IL)](https://www.youtube.com/watch?v=8XJ1MSTEuU0&t=2s&ab_channel=Finematics).
 
 <details markdown='1'><summary>👩🏽‍🏫 Solution Code </summary>
 
@@ -316,8 +336,6 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 
  </details>
 
-Remember that you will need to call `approve()` from the `Balloons.sol` contract approving the DEX to handle a specific number of your $BAL tokens. To keep things simple, you can just do that when interacting with the UI or debug tab with your contract.
-
 🚨 Take a second to understand what these functions are doing if you pasted them into your `DEX.sol` file in packages/hardhat/contracts:
 
 ### 🥅 Goals / Checks
@@ -327,11 +345,11 @@ Remember that you will need to call `approve()` from the `Balloons.sol` contract
 
 ---
 
-### ⛳️ **Checkpoint 6: UI** 🖼
+## ⛳️ **Checkpoint 6: UI** 🖼
 
 Cool beans! Your front-end should be showing something like this now!
 
-![2023-07-13 (4)](https://github.com/mertcanciy/se-2-challenges/assets/59885513/dcfc16fa-6309-41f3-abff-748d8b45d61a)
+![reserve-graph-updating](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/ef5ddc5f-2fc8-4bb6-910f-d6c17e579a74)
 
 Now, a user can just enter the amount of ETH or tokens they want to swap and the chart will display how the price is calculated. The user can also visualize how larger swaps result in more slippage and less output asset.
 
@@ -341,7 +359,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ---
 
-> ❗ ❗ Note that the testing file is a work in progress, so \packages\hardhat-ts\test\challenge-4.ts is incomplete. You can run `yarn test` if you like, but may have some failed tests, even with working code.
+> ❗ ❗ Note that the testing file is a work in progress, so `\packages\hardhat\test\Challenge4.ts` is incomplete. You can run `yarn test` if you like, but may have some failed tests, even with working code.
 
 ---
 
