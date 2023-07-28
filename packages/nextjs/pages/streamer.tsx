@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BigNumber, utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
-import { Address as AddressType, useAccount, useContractWrite } from "wagmi";
+import { Address as AddressType, useAccount, useSigner } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { CashOutVoucherButton } from "~~/components/streamer/CashOutVoucherButton";
 import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
 
 export type Voucher = { updatedBalance: BigNumber; signature: string };
+
+const STREAM_ETH_VALUE = "0.5";
+const ETH_PER_CHARACTER = "0.001";
 
 /**
  * sends the provided wisdom across the application channel
@@ -17,6 +20,7 @@ export type Voucher = { updatedBalance: BigNumber; signature: string };
 
 const Streamer: NextPage = () => {
   const { address: userAddress } = useAccount();
+  const { data: userSigner } = useSigner();
   const { data: ownerAddress } = useScaffoldContractRead({ contractName: "Streamer", functionName: "owner" });
   const { data: timeLeft } = useScaffoldContractRead({
     contractName: "Streamer",
@@ -27,6 +31,8 @@ const Streamer: NextPage = () => {
   const userIsOwner = ownerAddress === userAddress;
   const [autoPay, setAutoPay] = useState(true);
 
+  const [channels, setChannels] = useState<{ [key: AddressType]: BroadcastChannel }>({});
+
   const [opened, setOpened] = useState<AddressType[]>([]);
 
   useScaffoldEventSubscriber({
@@ -34,8 +40,48 @@ const Streamer: NextPage = () => {
     eventName: "Opened",
     listener: (addr, _) => {
       setOpened([...opened, addr]);
+
+      const newChannel = new BroadcastChannel(addr);
+      newChannel.onmessage = recieveVoucher(addr);
+
+      setChannels({ ...channels, [addr]: newChannel });
     },
   });
+
+  /**
+   * wraps a voucher processing function for each client.
+   */
+  function recieveVoucher(clientAddress: string) {
+    return processVoucher;
+
+    /**
+     * Handle incoming payments from the given client.
+     */
+    function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
+      // recreate a BigNumber object from the message. v.data.updatedBalance is
+      // a string representation of the BigNumber for transit over the network
+      const updatedBalance = BigNumber.from(data.updatedBalance);
+
+      /*
+       *  Checkpoint 4:
+       *
+       *  currently, this function recieves and stores vouchers uncritically.
+       *
+       *  recreate the packed, hashed, and arrayified message from reimburseService (above),
+       *  and then use utils.verifyMessage() to confirm that voucher signer was
+       *  `clientAddress`. (If it wasn't, log some error message and return).
+       */
+
+      const existingVoucher = vouchers[clientAddress];
+
+      // update our stored voucher if this new one is more valuable
+      if (existingVoucher === undefined || updatedBalance.lt(existingVoucher.updatedBalance)) {
+        setVouchers({ ...vouchers, [clientAddress]: { ...data, updatedBalance } });
+        // updateClaimable(clientAddress);
+        // logvouchers;
+      }
+    }
+  }
 
   const [challenged, setChallenged] = useState<AddressType[]>([]);
 
@@ -56,11 +102,16 @@ const Streamer: NextPage = () => {
       setClosed([...closed, addr]);
       setOpened(opened.filter(openedAddr => openedAddr !== addr));
       setChallenged(challenged.filter(challengedAddr => challengedAddr !== addr));
+
+      const channelsCopy = { ...channels };
+      delete channelsCopy[addr];
+      setChannels(channelsCopy);
     },
   });
 
   const [wisdoms, setWisdoms] = useState<{ [key: AddressType]: string }>({});
-  const [channels, setChannels] = useState<{ [key: AddressType]: BroadcastChannel }>({});
+
+  const userChannel = useMemo(() => new BroadcastChannel(userAddress || ""), [userAddress]);
 
   const provideWisdom = (client: AddressType, wisdom: string) => {
     setWisdoms({ ...wisdoms, [client]: wisdom });
@@ -72,7 +123,7 @@ const Streamer: NextPage = () => {
   const { writeAsync: fundChannel } = useScaffoldContractWrite({
     contractName: "Streamer",
     functionName: "fundChannel",
-    value: "0.5",
+    value: STREAM_ETH_VALUE,
   });
 
   const { writeAsync: challengeChannel } = useScaffoldContractWrite({
@@ -85,15 +136,15 @@ const Streamer: NextPage = () => {
     functionName: "defundChannel",
   });
 
+  const [recievedWisdom, setReceivedWisdom] = useState("");
+
   /**
    * reimburseService prepares, signs, and delivers a voucher for the service provider
    * that pays for the recieved wisdom.
-   *
-   * @param {string} wisdom
    */
   async function reimburseService(wisdom: string) {
-    const initialBalance = utils.parseEther("0.5");
-    const costPerCharacter = utils.parseEther("0.001");
+    const initialBalance = utils.parseEther(STREAM_ETH_VALUE);
+    const costPerCharacter = utils.parseEther(ETH_PER_CHARACTER);
     const duePayment = costPerCharacter.mul(BigNumber.from(wisdom.length));
 
     let updatedBalance = initialBalance.sub(duePayment);
@@ -121,9 +172,9 @@ const Streamer: NextPage = () => {
     //    rather than to arbitrary messages themselves. This way the encoding strategy for
     //    the fixed-length hash can be reused for any message format.
 
-    const signature = await userSigner.signMessage(arrayified);
+    const signature = await userSigner?.signMessage(arrayified);
 
-    channel.postMessage({
+    userChannel.postMessage({
       updatedBalance: updatedBalance.toHexString(),
       signature,
     });
@@ -137,18 +188,16 @@ const Streamer: NextPage = () => {
    *
    * @param {MessageEvent<string>} e
    */
-  channel.onmessage = e => {
+  userChannel.onmessage = e => {
     if (typeof e.data != "string") {
       console.warn(`recieved unexpected channel data: ${JSON.stringify(e.data)}`);
       return;
     }
 
-    console.log("Received: %s", e.data);
-    recievedWisdom = e.data;
-    document.getElementById("recievedWisdom-" + userAddress).innerText = recievedWisdom;
+    setReceivedWisdom(e.data);
 
     if (autoPay) {
-      reimburseService(recievedWisdom);
+      reimburseService(e.data);
     }
   };
 
@@ -193,7 +242,15 @@ const Streamer: NextPage = () => {
                   Served: <strong>{wisdoms[clientAddress]?.length || 0}</strong>&nbsp;chars
                 </div>
                 <div>
-                  Recieved: <strong id={`claimable-${clientAddress}`}>0</strong>&nbsp;ETH
+                  Recieved:{" "}
+                  <strong id={`claimable-${clientAddress}`}>
+                    {vouchers[clientAddress]
+                      ? utils.formatEther(
+                          utils.parseEther(STREAM_ETH_VALUE).sub(vouchers[clientAddress].updatedBalance),
+                        )
+                      : 0}
+                  </strong>
+                  &nbsp;ETH
                 </div>
               </div>
 
@@ -230,8 +287,7 @@ const Streamer: NextPage = () => {
                       setAutoPay(e.target.checked);
 
                       if (autoPay) {
-                        const wisdom = document.getElementById(`recievedWisdom-${userAddress}`).innerText;
-                        reimburseService(wisdom);
+                        reimburseService(recievedWisdom);
                       }
                     }}
                   >
@@ -241,7 +297,7 @@ const Streamer: NextPage = () => {
 
                 <div>
                   <p className="text-xl">Received Wisdom</p>
-                  <span id={"recievedWisdom-" + userAddress}></span>
+                  <span>{recievedWisdom}</span>
                 </div>
 
                 {/* Checkpoint 6: challenge & closure */}
