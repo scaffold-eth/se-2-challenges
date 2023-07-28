@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BigNumber, utils } from "ethers";
+import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
 import { Address as AddressType, useAccount, useContractWrite } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
@@ -17,7 +18,14 @@ export type Voucher = { updatedBalance: BigNumber; signature: string };
 const Streamer: NextPage = () => {
   const { address: userAddress } = useAccount();
   const { data: ownerAddress } = useScaffoldContractRead({ contractName: "Streamer", functionName: "owner" });
+  const { data: timeLeft } = useScaffoldContractRead({
+    contractName: "Streamer",
+    functionName: "timeLeft",
+    args: [userAddress],
+  });
+
   const userIsOwner = ownerAddress === userAddress;
+  const [autoPay, setAutoPay] = useState(true);
 
   const [opened, setOpened] = useState<AddressType[]>([]);
 
@@ -51,10 +59,12 @@ const Streamer: NextPage = () => {
     },
   });
 
-  const [channels, setChannels] = useState<{ [key: AddressType]: string }>({});
+  const [wisdoms, setWisdoms] = useState<{ [key: AddressType]: string }>({});
+  const [channels, setChannels] = useState<{ [key: AddressType]: BroadcastChannel }>({});
 
-  const setClientChannel = (client: AddressType, wisdom: string) => {
-    setChannels({ ...channels, [client]: wisdom });
+  const provideWisdom = (client: AddressType, wisdom: string) => {
+    setWisdoms({ ...wisdoms, [client]: wisdom });
+    channels[client].postMessage(wisdom);
   };
 
   const [vouchers, setVouchers] = useState<{ [key: AddressType]: Voucher }>({});
@@ -64,6 +74,83 @@ const Streamer: NextPage = () => {
     functionName: "fundChannel",
     value: "0.5",
   });
+
+  const { writeAsync: challengeChannel } = useScaffoldContractWrite({
+    contractName: "Streamer",
+    functionName: "challengeChannel",
+  });
+
+  const { writeAsync: defundChannel } = useScaffoldContractWrite({
+    contractName: "Streamer",
+    functionName: "defundChannel",
+  });
+
+  /**
+   * reimburseService prepares, signs, and delivers a voucher for the service provider
+   * that pays for the recieved wisdom.
+   *
+   * @param {string} wisdom
+   */
+  async function reimburseService(wisdom: string) {
+    const initialBalance = utils.parseEther("0.5");
+    const costPerCharacter = utils.parseEther("0.001");
+    const duePayment = costPerCharacter.mul(BigNumber.from(wisdom.length));
+
+    let updatedBalance = initialBalance.sub(duePayment);
+
+    if (updatedBalance.lt(BigNumber.from(0))) {
+      updatedBalance = BigNumber.from(0);
+    }
+
+    const packed = utils.solidityPack(["uint256"], [updatedBalance]);
+    const hashed = utils.keccak256(packed);
+    const arrayified = utils.arrayify(hashed);
+
+    // Why not just sign the updatedBalance string directly?
+    //
+    // Two considerations:
+    // 1) This signature is going to verified both off-chain (by the service provider)
+    //    and on-chain (by the Streamer contract). These are distinct runtime environments, so
+    //    care needs to be taken that signatures are applied to specific data encodings.
+    //
+    //    the arrayify call below encodes this data in an EVM compatible way
+    //
+    //    see: https://blog.ricmoo.com/verifying-messages-in-solidity-50a94f82b2ca for some
+    //         more on EVM verification of messages signed off-chain
+    // 2) Because of (1), it's useful to apply signatures to the hash of any given message
+    //    rather than to arbitrary messages themselves. This way the encoding strategy for
+    //    the fixed-length hash can be reused for any message format.
+
+    const signature = await userSigner.signMessage(arrayified);
+
+    channel.postMessage({
+      updatedBalance: updatedBalance.toHexString(),
+      signature,
+    });
+  }
+
+  /**
+   * Handle incoming service data from the service provider.
+   *
+   * If autoPay is turned on, instantly recalculate due payment
+   * and return to the service provider.
+   *
+   * @param {MessageEvent<string>} e
+   */
+  channel.onmessage = e => {
+    if (typeof e.data != "string") {
+      console.warn(`recieved unexpected channel data: ${JSON.stringify(e.data)}`);
+      return;
+    }
+
+    console.log("Received: %s", e.data);
+    recievedWisdom = e.data;
+    document.getElementById("recievedWisdom-" + userAddress).innerText = recievedWisdom;
+
+    if (autoPay) {
+      reimburseService(recievedWisdom);
+    }
+  };
 
   return (
     <div>
@@ -95,15 +182,15 @@ const Streamer: NextPage = () => {
                   e.stopPropagation();
                   // provideService(clientAddress);
                   const updatedWisdom = e.target.value;
-                  setClientChannel(clientAddress, updatedWisdom);
+                  provideWisdom(clientAddress, updatedWisdom);
                   // channels[clientAddress].postMessage(updatedWisdom);
                 }}
-                value={channels[clientAddress]}
+                value={wisdoms[clientAddress]}
               ></textarea>
 
               <div className="m-2" id={`status-${clientAddress}`}>
                 <div>
-                  Served: <strong>{channels[clientAddress]?.length || 0}</strong>&nbsp;chars
+                  Served: <strong>{wisdoms[clientAddress]?.length || 0}</strong>&nbsp;chars
                 </div>
                 <div>
                   Recieved: <strong id={`claimable-${clientAddress}`}>0</strong>&nbsp;ETH
@@ -120,47 +207,6 @@ const Streamer: NextPage = () => {
               />
             </div>
           ))}
-          {/* <List
-            const
-            dataSource={opened}
-            renderItem={clientAddress => (
-              <List.Item key={clientAddress}>
-                <Address value={clientAddress} ensProvider={mainnetProvider} fontSize={12} />
-                <TextArea
-                  style={{ margin: 5 }}
-                  rows={3}
-                  placeholder="Provide your wisdom here..."
-                  id={"input-" + clientAddress}
-                  onChange={e => {
-                    e.stopPropagation();
-                    provideService(clientAddress);
-                  }}
-                ></TextArea>
-
-                <Card style={{ margin: 5 }} id={`status-${clientAddress}`}>
-                  <div>
-                    Served: <strong id={`provided-${clientAddress}`}>0</strong>&nbsp;chars
-                  </div>
-                  <div>
-                    Recieved: <strong id={`claimable-${clientAddress}`}>0</strong>&nbsp;ETH
-                  </div>
-                </Card>
-
-                {/* Checkpoint 5: 
-                <Button
-                  style={{ margin: 5 }}
-                  type="primary"
-                  danger={challenged.includes(clientAddress)}
-                  disabled={closed.includes(clientAddress)}
-                  onClick={() => {
-                    claimPaymentOnChain(clientAddress);
-                  }}
-                >
-                  Cash out latest voucher
-                </Button>
-              </List.Item>
-            )}
-          ></List> */}
           <div className="p-2">
             <div>Total ETH locked:</div>
             {/* add contract balance */}
@@ -175,13 +221,13 @@ const Streamer: NextPage = () => {
 
           {userAddress && opened.includes(userAddress) ? (
             <div className="p-2">
-              <Row align="middle">
-                <Col span={3}>
-                  <Checkbox
+              <div className="items-center">
+                <div className="flex flex-col items-center">
+                  <input
+                    type="checkbox"
                     defaultChecked={autoPay}
                     onChange={e => {
-                      autoPay = e.target.checked;
-                      console.log("AutoPay: " + autoPay);
+                      setAutoPay(e.target.checked);
 
                       if (autoPay) {
                         const wisdom = document.getElementById(`recievedWisdom-${userAddress}`).innerText;
@@ -190,51 +236,48 @@ const Streamer: NextPage = () => {
                     }}
                   >
                     AutoPay
-                  </Checkbox>
-                </Col>
+                  </input>
+                </div>
 
-                <Col span={16}>
-                  <Card title="Received Wisdom">
-                    <span id={"recievedWisdom-" + userAddress}></span>
-                  </Card>
-                </Col>
+                <div>
+                  <p className="text-xl">Received Wisdom</p>
+                  <span id={"recievedWisdom-" + userAddress}></span>
+                </div>
 
                 {/* Checkpoint 6: challenge & closure */}
 
-                <Col span={5}>
-                  <Button
-                    disabled={hasClosingChannel()}
-                    type="primary"
+                <div className="gap-3">
+                  <button
+                    disabled={closed.includes(userAddress)}
+                    className="btn btn-primary"
                     onClick={() => {
                       // disable the production of further voucher signatures
-                      autoPay = false;
-                      tx(writeContracts.Streamer.challengeChannel());
+                      setAutoPay(false);
+                      challengeChannel();
                       try {
                         // ensure a 'ticking clock' for the UI without having
                         // to send new transactions & mine new blocks
-                        localProvider.send("evm_setIntervalMining", [5000]);
+                        // TODO do we need it?
+                        // localProvider.send("evm_setIntervalMining", [5000]);
                       } catch (e) {}
                     }}
                   >
                     Challenge this channel!
-                  </Button>
+                  </button>
 
-                  <div style={{ padding: 8, marginTop: 32 }}>
+                  <div className="p-2 mt-8">
                     <div>Timeleft:</div>
                     {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
                   </div>
-                  <Button
-                    style={{ padding: 5, margin: 5 }}
+                  <button
+                    className="btn btn-primary m-1.5 p-1.5"
                     disabled={timeLeft && timeLeft.toNumber() != 0}
-                    type="primary"
-                    onClick={() => {
-                      tx(writeContracts.Streamer.defundChannel());
-                    }}
+                    onClick={() => defundChannel()}
                   >
                     Close and withdraw funds
-                  </Button>
-                </Col>
-              </Row>
+                  </button>
+                </div>
+              </div>
             </div>
           ) : userAddress && closed.includes(userAddress) ? (
             <div>
