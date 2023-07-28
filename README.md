@@ -112,7 +112,7 @@ We can see that the DEX starts empty. We want to be able to call `init()` to sta
 ```
   // // paste in your front-end address here to get 10 balloons on deploy:
   // await balloons.transfer(
-  //   "0xe64bAAA0F6012A0F320a262cFe39289bA6cBd0f2",
+  //   "YOUR_FRONTEND_ADDRESS",
   //   "" + 10 * 10 ** 18
   // );
 ```
