@@ -25,7 +25,10 @@ contract Streamer is Ownable {
   }
 
   function timeLeft(address channel) public view returns (uint256) {
-    require(canCloseAt[channel] != 0, "channel is not closing");
+    if (canCloseAt[channel] == 0 || canCloseAt[channel] < block.timestamp) {
+      return 0;
+    }
+
     return canCloseAt[channel] - block.timestamp;
   }
 
