@@ -6,11 +6,12 @@ import { Address as AddressType, useAccount, useSigner } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { CashOutVoucherButton } from "~~/components/streamer/CashOutVoucherButton";
 import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
+import { getLocalProvider, getTargetNetwork } from "~~/utils/scaffold-eth";
 
 export type Voucher = { updatedBalance: BigNumber; signature: string };
 
 const STREAM_ETH_VALUE = "0.5";
-const ETH_PER_CHARACTER = "0.001";
+const ETH_PER_CHARACTER = "0.01";
 
 /**
  * sends the provided wisdom across the application channel
@@ -26,6 +27,7 @@ const Streamer: NextPage = () => {
     contractName: "Streamer",
     functionName: "timeLeft",
     args: [userAddress],
+    watch: true,
   });
 
   const userIsOwner = ownerAddress === userAddress;
@@ -40,13 +42,17 @@ const Streamer: NextPage = () => {
     eventName: "Opened",
     listener: (addr, _) => {
       setOpened([...opened, addr]);
-
-      const newChannel = new BroadcastChannel(addr);
-      newChannel.onmessage = recieveVoucher(addr);
-
-      setChannels({ ...channels, [addr]: newChannel });
+      if (userIsOwner) {
+        setChannels({ ...channels, [addr]: new BroadcastChannel(addr) });
+      }
     },
   });
+
+  if (userIsOwner) {
+    Object.keys(channels)?.forEach(clientAddress => {
+      channels[clientAddress].onmessage = recieveVoucher(clientAddress);
+    });
+  }
 
   /**
    * wraps a voucher processing function for each client.
@@ -102,16 +108,18 @@ const Streamer: NextPage = () => {
       setClosed([...closed, addr]);
       setOpened(opened.filter(openedAddr => openedAddr !== addr));
       setChallenged(challenged.filter(challengedAddr => challengedAddr !== addr));
-
-      const channelsCopy = { ...channels };
-      delete channelsCopy[addr];
-      setChannels(channelsCopy);
     },
   });
 
   const [wisdoms, setWisdoms] = useState<{ [key: AddressType]: string }>({});
 
-  const userChannel = useMemo(() => new BroadcastChannel(userAddress || ""), [userAddress]);
+  const userChannel = useMemo(() => {
+    try {
+      return new BroadcastChannel(userAddress || "");
+    } catch (err) {
+      return { postMessage: () => null, onmessage: () => null };
+    }
+  }, [userAddress]);
 
   const provideWisdom = (client: AddressType, wisdom: string) => {
     setWisdoms({ ...wisdoms, [client]: wisdom });
@@ -172,12 +180,17 @@ const Streamer: NextPage = () => {
     //    rather than to arbitrary messages themselves. This way the encoding strategy for
     //    the fixed-length hash can be reused for any message format.
 
+    // TODO: sometimes userSigner is undefinded here, it causes a bug that last sybols doesn't count
     const signature = await userSigner?.signMessage(arrayified);
 
-    userChannel.postMessage({
-      updatedBalance: updatedBalance.toHexString(),
-      signature,
-    });
+    const hexBalance = updatedBalance.toHexString();
+
+    if (hexBalance && signature) {
+      userChannel.postMessage({
+        updatedBalance: hexBalance,
+        signature,
+      });
+    }
   }
 
   /**
@@ -190,6 +203,7 @@ const Streamer: NextPage = () => {
    */
   userChannel.onmessage = e => {
     if (typeof e.data != "string") {
+      // TODO: fix warning for clients
       console.warn(`recieved unexpected channel data: ${JSON.stringify(e.data)}`);
       return;
     }
@@ -212,13 +226,6 @@ const Streamer: NextPage = () => {
           </h2>
           Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under challenge
           on-chain, and should be redeemed ASAP.
-          <div>
-            {opened.map(addr => (
-              <div key={addr}>
-                <Address address={addr} />
-              </div>
-            ))}
-          </div>
           {opened.map(clientAddress => (
             <div key={clientAddress}>
               <Address address={clientAddress} />
@@ -226,16 +233,13 @@ const Streamer: NextPage = () => {
                 className="m-1.5"
                 rows={3}
                 placeholder="Provide your wisdom here..."
-                // id={"input-" + clientAddress}
                 onChange={e => {
                   e.stopPropagation();
-                  // provideService(clientAddress);
                   const updatedWisdom = e.target.value;
                   provideWisdom(clientAddress, updatedWisdom);
-                  // channels[clientAddress].postMessage(updatedWisdom);
                 }}
                 value={wisdoms[clientAddress]}
-              ></textarea>
+              />
 
               <div className="m-2" id={`status-${clientAddress}`}>
                 <div>
@@ -255,13 +259,15 @@ const Streamer: NextPage = () => {
               </div>
 
               {/* Checkpoint 5: */}
-              <CashOutVoucherButton
-                key={clientAddress}
-                clientAddress={clientAddress}
-                challenged={challenged}
-                closed={closed}
-                voucher={vouchers[clientAddress]}
-              />
+              {vouchers[clientAddress]?.signature && (
+                <CashOutVoucherButton
+                  key={clientAddress}
+                  clientAddress={clientAddress}
+                  challenged={challenged}
+                  closed={closed}
+                  voucher={vouchers[clientAddress]}
+                />
+              )}
             </div>
           ))}
           <div className="p-2">
@@ -270,29 +276,27 @@ const Streamer: NextPage = () => {
           </div>
         </div>
       ) : (
-        //
         // UI for the service consumer
-        //
         <div>
           <h1>Hello Rube!</h1>
-
           {userAddress && opened.includes(userAddress) ? (
             <div className="p-2">
               <div className="items-center">
                 <div className="flex flex-col items-center">
                   <input
                     type="checkbox"
+                    className="toggle toggle-primary bg-primary"
                     defaultChecked={autoPay}
                     onChange={e => {
-                      setAutoPay(e.target.checked);
+                      const updatedAutoPay = e.target.checked;
+                      setAutoPay(updatedAutoPay);
 
-                      if (autoPay) {
+                      if (updatedAutoPay) {
                         reimburseService(recievedWisdom);
                       }
                     }}
-                  >
-                    AutoPay
-                  </input>
+                  />
+                  AutoPay
                 </div>
 
                 <div>
@@ -304,7 +308,7 @@ const Streamer: NextPage = () => {
 
                 <div className="gap-3">
                   <button
-                    disabled={closed.includes(userAddress)}
+                    disabled={challenged.includes(userAddress)}
                     className="btn btn-primary"
                     onClick={() => {
                       // disable the production of further voucher signatures
@@ -313,21 +317,21 @@ const Streamer: NextPage = () => {
                       try {
                         // ensure a 'ticking clock' for the UI without having
                         // to send new transactions & mine new blocks
-                        // TODO do we need it?
-                        // localProvider.send("evm_setIntervalMining", [5000]);
+                        getLocalProvider(getTargetNetwork())?.send("evm_setIntervalMining", [5000]);
                       } catch (e) {}
                     }}
                   >
                     Challenge this channel!
                   </button>
 
+                  {/* TODO: challenged.includes(userAddress) && */}
                   <div className="p-2 mt-8">
-                    <div>Timeleft:</div>
+                    <div>Time left:</div>
                     {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
                   </div>
                   <button
                     className="btn btn-primary m-1.5 p-1.5"
-                    disabled={timeLeft && timeLeft.toNumber() != 0}
+                    disabled={!challenged.includes(userAddress) || timeLeft?.toNumber() !== 0}
                     onClick={() => defundChannel()}
                   >
                     Close and withdraw funds
@@ -342,7 +346,9 @@ const Streamer: NextPage = () => {
             </div>
           ) : (
             <div className="p-2">
-              <button onClick={() => fundChannel()}>Open a 0.5 ETH channel for advice from the Guru.</button>
+              <button className="btn btn-primary" onClick={() => fundChannel()}>
+                Open a 0.5 ETH channel for advice from the Guru.
+              </button>
             </div>
           )}
         </div>
