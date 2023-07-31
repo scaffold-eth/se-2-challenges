@@ -228,11 +228,11 @@ const Streamer: NextPage = () => {
               You have {opened.length} channel{opened.length == 1 ? "" : "s"} open.
             </p>
             <p className="text-lg">
-              🚨 Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under
-              challenge on-chain, and should be redeemed ASAP.
+              Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under challenge
+              on-chain, and should be redeemed ASAP.
             </p>
             <div className="text-lg">
-              <span>Total ETH locked:</span>
+              {/* <span>Total ETH locked:</span> */}
               {/* TODO: add locked */}
               {/* add contract balance */}
             </div>
