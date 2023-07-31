@@ -14,7 +14,10 @@ import { getTargetNetwork } from "~~/utils/scaffold-eth";
 export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
   const { data: StakerContract } = useDeployedContractInfo("Staker");
+  const { data: ExampleExternalContact } = useDeployedContractInfo("ExampleExternalContract");
   const { balance: stakerContractBalance } = useAccountBalance(StakerContract?.address);
+  const { balance: exampleExternalContractBalance } = useAccountBalance(ExampleExternalContact?.address);
+
   const configuredNetwork = getTargetNetwork();
 
   // Contract Read Actions
@@ -34,6 +37,11 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
     args: [connectedAddress],
     watch: true,
   });
+  const { data: isStakingCompleted } = useScaffoldContractRead({
+    contractName: "ExampleExternalContract",
+    functionName: "completed",
+    watch: true,
+  });
 
   // Contract Write Actions
   const { writeAsync: stakeETH } = useScaffoldContractWrite({
@@ -51,8 +59,27 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
   });
 
   return (
-    <div className="flex items-center flex-col flex-grow w-full px-4">
-      <div className="flex flex-col items-center space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
+    <div className="flex items-center flex-col flex-grow w-full px-4 gap-12">
+      {isStakingCompleted && (
+        <div className="flex flex-col items-center gap-2 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-12 w-full max-w-lg">
+          <p className="block m-0 font-semibold">
+            {" "}
+            🎉 &nbsp; Staking App triggered `ExampleExternalContract` &nbsp; 🎉{" "}
+          </p>
+          <div className="flex items-center">
+            <ETHToPrice
+              value={exampleExternalContractBalance != null ? exampleExternalContractBalance.toString() : undefined}
+              className="text-[1rem]"
+            />
+            <p className="block m-0 text-lg -ml-1">staked !!</p>
+          </div>
+        </div>
+      )}
+      <div
+        className={`flex flex-col items-center space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full max-w-lg ${
+          !isStakingCompleted ? "mt-24" : ""
+        }`}
+      >
         <div className="flex flex-col w-full items-center">
           <p className="block text-2xl mt-0 mb-2 font-semibold">Staker Contract</p>
           <Address address={address} size="xl" />
