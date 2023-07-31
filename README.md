@@ -76,13 +76,7 @@ Like the [token vendor challenge](https://speedrunethereum.com/challenge/token-v
 
 You'll have to redeploy with `yarn deploy --reset`.
 
-We'll need another active address to act as the rube in our app. To do this,
-
-- Open `localhost:3000` in a new tab / window of the current browser
-- Click the wallet icon (top right) to open the wallet
-- `private key` -> `generate` will reload the page under a new address
-
-The wallet icon now lets you move between accounts. Eventually you'll probably want a few wallets & windows open simultaneously.
+We'll need another active address to act as the rube in our app. To do this just open new tab in your browser
 
 (**Note**: previous challenges created new addresses by opening an incognito window or a different browser. This will **not** work for this challenge, because the off-chain application uses a very simple communication pipe that doesn't work between different browsers or private windows.)
 
@@ -105,9 +99,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `fundChannel()` function
 
-<!-- TODO: recheck -->
-
-> 👁 Check `packages/nextjs/pages/streamer.tsx` to see the frontend hook for this function. (ctrl-f fundChannel)
+> 👁 Check `packages/nextjs/pages/streamer.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
 
 ### 🥅 Goals:
 
