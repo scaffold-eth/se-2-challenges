@@ -40,6 +40,7 @@ const Streamer: NextPage = () => {
   useScaffoldEventSubscriber({
     contractName: "Streamer",
     eventName: "Opened",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     listener: (addr, _) => {
       setOpened([...opened, addr]);
       if (userIsOwner) {
@@ -117,6 +118,7 @@ const Streamer: NextPage = () => {
     try {
       return new BroadcastChannel(userAddress || "");
     } catch (err) {
+      // ssr fix
       return { postMessage: () => null, onmessage: () => null };
     }
   }, [userAddress]);
@@ -216,76 +218,82 @@ const Streamer: NextPage = () => {
   };
 
   return (
-    <div>
-      {userIsOwner ? (
-        // UI for the service provider
-        <div>
-          <h1>Hello Guru!</h1>
-          <h2>
-            You have {opened.length} channel{opened.length == 1 ? "" : "s"} open.
-          </h2>
-          Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under challenge
-          on-chain, and should be redeemed ASAP.
-          {opened.map(clientAddress => (
-            <div key={clientAddress}>
-              <Address address={clientAddress} />
-              <textarea
-                className="m-1.5"
-                rows={3}
-                placeholder="Provide your wisdom here..."
-                onChange={e => {
-                  e.stopPropagation();
-                  const updatedWisdom = e.target.value;
-                  provideWisdom(clientAddress, updatedWisdom);
-                }}
-                value={wisdoms[clientAddress]}
-              />
-
-              <div className="m-2" id={`status-${clientAddress}`}>
-                <div>
-                  Served: <strong>{wisdoms[clientAddress]?.length || 0}</strong>&nbsp;chars
-                </div>
-                <div>
-                  Recieved:{" "}
-                  <strong id={`claimable-${clientAddress}`}>
-                    {vouchers[clientAddress]
-                      ? utils.formatEther(
-                          utils.parseEther(STREAM_ETH_VALUE).sub(vouchers[clientAddress].updatedBalance),
-                        )
-                      : 0}
-                  </strong>
-                  &nbsp;ETH
-                </div>
-              </div>
-
-              {/* Checkpoint 5: */}
-              {vouchers[clientAddress]?.signature && (
-                <CashOutVoucherButton
-                  key={clientAddress}
-                  clientAddress={clientAddress}
-                  challenged={challenged}
-                  closed={closed}
-                  voucher={vouchers[clientAddress]}
-                />
-              )}
+    <div className="flex items-center flex-col flex-grow w-full px-4">
+      <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
+        {userIsOwner ? (
+          // UI for the service provider
+          <>
+            <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Guru!</p>
+            <p className="block text-xl mt-0 mb-1 font-semibold">
+              You have {opened.length} channel{opened.length == 1 ? "" : "s"} open.
+            </p>
+            <p className="text-lg">
+              🚨 Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under
+              challenge on-chain, and should be redeemed ASAP.
+            </p>
+            <div className="text-lg">
+              <span>Total ETH locked:</span>
+              {/* TODO: add locked */}
+              {/* add contract balance */}
             </div>
-          ))}
-          <div className="p-2">
-            <div>Total ETH locked:</div>
-            {/* add contract balance */}
-          </div>
-        </div>
-      ) : (
-        // UI for the service consumer
-        <div>
-          <h1>Hello Rube!</h1>
-          {userAddress && opened.includes(userAddress) ? (
-            <div className="p-2">
-              <div className="items-center">
-                <div className="flex flex-col items-center">
+            <div className="mt-4 w-full flex flex-col">
+              {opened.map(clientAddress => (
+                <div key={clientAddress} className="w-full flex flex-col border-primary border-t py-6">
+                  <Address address={clientAddress} size="xl" />
+                  <textarea
+                    className="mt-3"
+                    rows={3}
+                    placeholder="Provide your wisdom here..."
+                    onChange={e => {
+                      e.stopPropagation();
+                      const updatedWisdom = e.target.value;
+                      provideWisdom(clientAddress, updatedWisdom);
+                    }}
+                    value={wisdoms[clientAddress]}
+                  />
+
+                  <div className="mt-2 flex justify-between">
+                    <div>
+                      Served: <strong>{wisdoms[clientAddress]?.length || 0}</strong>&nbsp;chars
+                    </div>
+                    <div>
+                      Recieved:{" "}
+                      <strong id={`claimable-${clientAddress}`}>
+                        {vouchers[clientAddress]
+                          ? utils.formatEther(
+                              utils.parseEther(STREAM_ETH_VALUE).sub(vouchers[clientAddress].updatedBalance),
+                            )
+                          : 0}
+                      </strong>
+                      &nbsp;ETH
+                    </div>
+                  </div>
+
+                  {/* Checkpoint 5: */}
+                  {vouchers[clientAddress]?.signature && (
+                    <CashOutVoucherButton
+                      key={clientAddress}
+                      clientAddress={clientAddress}
+                      challenged={challenged}
+                      closed={closed}
+                      voucher={vouchers[clientAddress]}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          // UI for the service consumer
+          <>
+            <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Rube!</p>
+
+            {userAddress && opened.includes(userAddress) ? (
+              <div className="w-full flex flex-col items-center">
+                <div className="flex items-center mt-8">
                   <input
                     type="checkbox"
-                    className="toggle toggle-primary bg-primary"
+                    className="toggle toggle-primary bg-primary mr-2"
                     defaultChecked={autoPay}
                     onChange={e => {
                       const updatedAutoPay = e.target.checked;
@@ -299,14 +307,14 @@ const Streamer: NextPage = () => {
                   AutoPay
                 </div>
 
-                <div>
-                  <p className="text-xl">Received Wisdom</p>
-                  <span>{recievedWisdom}</span>
+                <div className="text-center w-full">
+                  <p className="text-xl font-semibold">Received Wisdom</p>
+                  <p className="mb-3 text-lg min-h-[1.75rem] border-2 border-primary rounded">{recievedWisdom}</p>
                 </div>
 
                 {/* Checkpoint 6: challenge & closure */}
 
-                <div className="gap-3">
+                <div className="flex flex-col items-center">
                   <button
                     disabled={challenged.includes(userAddress)}
                     className="btn btn-primary"
@@ -321,16 +329,15 @@ const Streamer: NextPage = () => {
                       } catch (e) {}
                     }}
                   >
-                    Challenge this channel!
+                    Challenge this channel
                   </button>
 
                   {/* TODO: challenged.includes(userAddress) && */}
-                  <div className="p-2 mt-8">
-                    <div>Time left:</div>
-                    {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
+                  <div className="p-2 mt-6">
+                    <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
                   </div>
                   <button
-                    className="btn btn-primary m-1.5 p-1.5"
+                    className="btn btn-primary"
                     disabled={!challenged.includes(userAddress) || timeLeft?.toNumber() !== 0}
                     onClick={() => defundChannel()}
                   >
@@ -338,21 +345,23 @@ const Streamer: NextPage = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          ) : userAddress && closed.includes(userAddress) ? (
-            <div>
-              <p>Thanks for stopping by - we hope you have enjoyed the guru&apos;s advice.</p>
-              <p> This UI obstructs you from opening a second channel. Why? Is it safe to open another channel?</p>
-            </div>
-          ) : (
-            <div className="p-2">
-              <button className="btn btn-primary" onClick={() => fundChannel()}>
-                Open a 0.5 ETH channel for advice from the Guru.
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            ) : userAddress && closed.includes(userAddress) ? (
+              <div className="text-lg">
+                <p>Thanks for stopping by - we hope you have enjoyed the guru&apos;s advice.</p>
+                <p className="mt-8">
+                  This UI obstructs you from opening a second channel. Why? Is it safe to open another channel?
+                </p>
+              </div>
+            ) : (
+              <div className="p-2">
+                <button className="btn btn-primary" onClick={() => fundChannel()}>
+                  Open a 0.5 ETH channel for advice from the Guru
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

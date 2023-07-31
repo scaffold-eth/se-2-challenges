@@ -19,9 +19,10 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
 
   return (
     <button
-      className={`m-2 btn btn-primary${challenged.includes(clientAddress) ? " btn-error" : ""}${
+      className={`mt-3 self-center btn btn-primary${challenged.includes(clientAddress) ? " btn-error" : ""}${
         closed.includes(clientAddress) ? " btn-disabled" : ""
       }`}
+      disabled={closed.includes(clientAddress)}
       onClick={() => {
         writeAsync();
       }}
