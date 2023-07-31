@@ -245,7 +245,7 @@ const Streamer: NextPage = () => {
                 <div key={clientAddress} className="w-full flex flex-col border-primary border-t py-6">
                   <Address address={clientAddress} size="xl" />
                   <textarea
-                    className="mt-3"
+                    className="mt-3 bg-base-200"
                     rows={3}
                     placeholder="Provide your wisdom here..."
                     onChange={e => {
