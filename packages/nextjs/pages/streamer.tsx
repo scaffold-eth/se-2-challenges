@@ -22,7 +22,11 @@ const ETH_PER_CHARACTER = "0.01";
 const Streamer: NextPage = () => {
   const { address: userAddress } = useAccount();
   const { data: userSigner } = useSigner();
-  const { data: ownerAddress } = useScaffoldContractRead({ contractName: "Streamer", functionName: "owner" });
+  const { data: ownerAddress } = useScaffoldContractRead({
+    contractName: "Streamer",
+    functionName: "owner",
+  });
+
   const { data: timeLeft } = useScaffoldContractRead({
     contractName: "Streamer",
     functionName: "timeLeft",
@@ -30,7 +34,7 @@ const Streamer: NextPage = () => {
     watch: true,
   });
 
-  const userIsOwner = ownerAddress === userAddress;
+  const userIsOwner = !!ownerAddress && ownerAddress === userAddress;
   const [autoPay, setAutoPay] = useState(true);
 
   const [channels, setChannels] = useState<{ [key: AddressType]: BroadcastChannel }>({});
@@ -332,9 +336,12 @@ const Streamer: NextPage = () => {
                     Challenge this channel
                   </button>
 
-                  {/* TODO: challenged.includes(userAddress) && */}
-                  <div className="p-2 mt-6">
-                    <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
+                  <div className="p-2 mt-6 h-10">
+                    {challenged.includes(userAddress) && (
+                      <>
+                        <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
+                      </>
+                    )}
                   </div>
                   <button
                     className="btn btn-primary"
