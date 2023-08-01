@@ -71,7 +71,7 @@ const Streamer: NextPage = () => {
     function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
       // recreate a BigNumber object from the message. v.data.updatedBalance is
       // a string representation of the BigNumber for transit over the network
-      const updatedBalance = BigNumber.from(data.updatedBalance);
+      let updatedBalance = BigNumber.from(data.updatedBalance);
 
       /*
        *  Checkpoint 4:
@@ -82,6 +82,22 @@ const Streamer: NextPage = () => {
        *  and then use utils.verifyMessage() to confirm that voucher signer was
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
+
+      // TODO: Checkpoint 4. Remove
+      if (updatedBalance.lt(BigNumber.from(0))) {
+        updatedBalance = BigNumber.from(0);
+      }
+
+      const packed = utils.solidityPack(["uint256"], [updatedBalance]);
+      const hashed = utils.keccak256(packed);
+      const arrayified = utils.arrayify(hashed);
+
+      const senderAddress = utils.verifyMessage(arrayified, data.signature);
+
+      if (senderAddress !== clientAddress) {
+        return;
+      }
+      // TODO: end of remove block
 
       const existingVoucher = vouchers[clientAddress];
 
