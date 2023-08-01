@@ -100,7 +100,7 @@ Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncom
 
 - [ ] When you try to buy tokens from the vendor, you should get an error: **'ERC20: transfer amount exceeds balance'**
 
-⚠️ this is because the Vendor contract doesn't have any YourTokens yet!
+⚠️ This is because the Vendor contract doesn't have any YourTokens yet!
 
 ⚔️ Side Quest: send tokens from your frontend address to the Vendor contract address and _then_ try to buy them.
 
@@ -138,7 +138,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 - [ ] Is your frontend address the `owner` of the `Vendor`?
 
-> 📝 Finally, add a `withdraw()` function in `Vendor.sol` that lets the owner withdraw ETH from the vendor.
+> 📝 Finally, add a withdraw() function in Vendor.sol that lets the owner withdraw all the ETH from the vendor contract.
 
 ### 🥅 Goals
 
@@ -146,7 +146,6 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ### ⚔️ Side Quests
 
-- [ ] Can _anyone_ withdraw? Test _everything_!
 - [ ] What if you minted **2000** and only sent **1000** to the `Vendor`?
 
 ---
