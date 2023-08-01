@@ -116,6 +116,8 @@ Uncomment the `Buy Tokens` sections in `packages\nextjs\pages\token-vendor.tsx` 
 await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
 ```
 
+> 🔎 Look in `packages\nextjs\pages\token-vendor.tsx` for code to uncomment to display the Vendor ETH and Token balances.
+
 > You can `yarn deploy --reset` to deploy your contract until you get it right.
 
 ![TokenVendorBuy](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7669cc68-e942-4630-95c8-91cd21af5ba0)
