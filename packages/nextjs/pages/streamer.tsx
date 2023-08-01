@@ -5,7 +5,13 @@ import { NextPage } from "next";
 import { Address as AddressType, useAccount, useSigner } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { CashOutVoucherButton } from "~~/components/streamer/CashOutVoucherButton";
-import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
+import {
+  useAccountBalance,
+  useDeployedContractInfo,
+  useScaffoldContractRead,
+  useScaffoldContractWrite,
+  useScaffoldEventSubscriber,
+} from "~~/hooks/scaffold-eth";
 import { getLocalProvider, getTargetNetwork } from "~~/utils/scaffold-eth";
 
 export type Voucher = { updatedBalance: BigNumber; signature: string };
@@ -26,6 +32,9 @@ const Streamer: NextPage = () => {
     contractName: "Streamer",
     functionName: "owner",
   });
+
+  const { data: deployedContractData } = useDeployedContractInfo("Streamer");
+  const { balance } = useAccountBalance(deployedContractData?.address);
 
   const { data: timeLeft } = useScaffoldContractRead({
     contractName: "Streamer",
@@ -245,16 +254,13 @@ const Streamer: NextPage = () => {
           <>
             <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Guru!</p>
             <p className="block text-xl mt-0 mb-1 font-semibold">
-              You have {opened.length} channel{opened.length == 1 ? "" : "s"} open.
+              You have {opened.length} channel{opened.length == 1 ? "" : "s"} open
             </p>
-            <p className="text-lg">
+            <p className="mt-0 text-lg text-center font-semibold">Total ETH locked: {balance?.toFixed(4) || 0} ETH</p>
+
+            <div className="mt-4 text-lg">
               Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under challenge
               on-chain, and should be redeemed ASAP.
-            </p>
-            <div className="text-lg">
-              {/* <span>Total ETH locked:</span> */}
-              {/* TODO: add locked */}
-              {/* add contract balance */}
             </div>
             <div className="mt-4 w-full flex flex-col">
               {opened.map(clientAddress => (
