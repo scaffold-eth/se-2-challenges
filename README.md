@@ -138,7 +138,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 - [ ] Is your frontend address the `owner` of the `Vendor`?
 
-> 📝 Finally, add a withdraw() function in Vendor.sol that lets the owner withdraw all the ETH from the vendor contract.
+> 📝 Finally, add a `withdraw()` function in `Vendor.sol` that lets the owner withdraw all the ETH from the vendor contract.
 
 ### 🥅 Goals
 
