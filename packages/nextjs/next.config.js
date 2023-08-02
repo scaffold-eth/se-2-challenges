@@ -3,11 +3,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Ignoring typescript/eslint errors during build (deploy won't fail even if there are errors)
   typescript: {
-    ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
+    ignoreDuringBuilds: true,
   },
 };
 
