@@ -96,7 +96,9 @@ uint256 public constant tokensPerEth = 100;
 
 Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncomment Vendor deploy lines).
 
-Uncomment the `Buy Tokens` sections in `packages\nextjs\pages\token-vendor.tsx` to show the UI to buy tokens on the Token Vendor tab.
+Uncomment the `Buy Tokens` sections in `packages/nextjs/pages/token-vendor.tsx` to show the UI to buy tokens on the Token Vendor tab.
+
+Uncomment the `BuyTokens Events` sections in `packages/nextjs/pages/events.tsx` to show the UI to display the BuyTokens event.
 
 ### 🥅 Goals
 
@@ -116,7 +118,7 @@ Uncomment the `Buy Tokens` sections in `packages\nextjs\pages\token-vendor.tsx` 
 await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
 ```
 
-> 🔎 Look in `packages\nextjs\pages\token-vendor.tsx` for code to uncomment to display the Vendor ETH and Token balances.
+> 🔎 Look in `packages/nextjs/pages/token-vendor.tsx` for code to uncomment to display the Vendor ETH and Token balances.
 
 > You can `yarn deploy --reset` to deploy your contract until you get it right.
 
@@ -186,7 +188,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 ### ⚔️ Side Quests
 
 - [ ] Should we disable the `owner` withdraw to keep liquidity in the `Vendor`?
-- [ ] It would be a good idea to display Sell Token Events. Create the `event` and `emit` it in your `Vendor.sol` and look at `buyTokensEvents` in your `packages/nextjs/pages/token-vendor.tsx` for an example of how to update your frontend.
+- [ ] It would be a good idea to display Sell Token Events .Create an **event** `SellTokens(address seller, uint256  amountOfTokens, uint256 amountOfETH)` and `emit` it in your `Vendor.sol` and uncomment `SellTokens Events` section in your `packages/nextjs/pages/events.tsx` to update your frontend.
 
   ![Events](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/662c96b5-d53f-4efa-af4a-d3106bfd47f0)
 
