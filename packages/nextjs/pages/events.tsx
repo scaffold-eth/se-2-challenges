@@ -31,7 +31,7 @@ const Events: NextPage = () => {
                   <tr>
                     <th className="bg-primary">Buyer</th>
                     <th className="bg-primary">Amount of ETH</th>
-                    <th className="bg-primary">Amount of Token</th>
+                    <th className="bg-primary">Amount of Tokens</th>
                   </tr>
                 </thead>
                 <tbody>

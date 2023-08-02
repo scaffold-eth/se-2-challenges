@@ -38,7 +38,7 @@ const TokenVendor: NextPage = () => {
     args: [toAddress, multiplyTo1e18(tokensToSend)],
   });
 
-  // Vendor Balances
+  // // Vendor Balances
   // const { data: vendorContractData } = useDeployedContractInfo("Vendor");
   // const { data: vendorTokenBalance } = useScaffoldContractRead({
   //   contractName: "YourToken",
