@@ -6,16 +6,16 @@ import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Events: NextPage = () => {
-  // const { data: buyTokenEvents, isLoading: isBuyEventsLoading } = useScaffoldEventHistory({
-  //   contractName: "Vendor",
-  //   eventName: "BuyTokens",
-  //   fromBlock: 0,
-  // });
+  const { data: buyTokenEvents, isLoading: isBuyEventsLoading } = useScaffoldEventHistory({
+    contractName: "Vendor",
+    eventName: "BuyTokens",
+    fromBlock: 0,
+  });
 
   return (
     <>
       <MetaHeader />
-      {/* <div className="flex items-center flex-col flex-grow pt-10">
+      <div className="flex items-center flex-col flex-grow pt-10">
         {isBuyEventsLoading ? (
           <div className="flex justify-center items-center mt-10">
             <Spinner width="75" height="75" />
@@ -31,7 +31,7 @@ const Events: NextPage = () => {
                   <tr>
                     <th className="bg-primary">Buyer</th>
                     <th className="bg-primary">Amount of ETH</th>
-                    <th className="bg-primary">Amount of Token</th>
+                    <th className="bg-primary">Amount of Tokens</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -59,7 +59,7 @@ const Events: NextPage = () => {
             </div>
           </div>
         )}
-      </div> */}
+      </div>
     </>
   );
 };

@@ -96,6 +96,8 @@ uint256 public constant tokensPerEth = 100;
 
 Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncomment Vendor deploy lines).
 
+Uncomment the `Buy Tokens` sections in `packages\nextjs\pages\token-vendor.tsx` to show the UI to buy tokens on the Token Vendor tab.
+
 ### 🥅 Goals
 
 - [ ] When you try to buy tokens from the vendor, you should get an error: **'ERC20: transfer amount exceeds balance'**
@@ -114,9 +116,9 @@ Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncom
 await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
 ```
 
-> You can `yarn deploy --reset` to deploy your contract until you get it right.
+> 🔎 Look in `packages\nextjs\pages\token-vendor.tsx` for code to uncomment to display the Vendor ETH and Token balances.
 
-(You will use the `Token Vendor` UI tab and the frontend for most of your testing. Most of the UI is already built for you for this challenge.)
+> You can `yarn deploy --reset` to deploy your contract until you get it right.
 
 ![TokenVendorBuy](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7669cc68-e942-4630-95c8-91cd21af5ba0)
 
@@ -127,6 +129,10 @@ await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
 - [ ] Can you transfer tokens to a different account?
 
 > 📝 Edit `Vendor.sol` to inherit _Ownable_.
+
+`contract Vendor is Ownable {`
+
+⚠️ You will also need to import the Ownable.sol contract!
 
 In `deploy/01_deploy_vendor.js` you will need to call `transferOwnership()` on the `Vendor` to make _your frontend address_ the `owner`:
 

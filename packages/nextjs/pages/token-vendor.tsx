@@ -38,22 +38,22 @@ const TokenVendor: NextPage = () => {
     args: [toAddress, multiplyTo1e18(tokensToSend)],
   });
 
-  // Vendor code
+  // // Vendor Balances
   // const { data: vendorContractData } = useDeployedContractInfo("Vendor");
-
   // const { data: vendorTokenBalance } = useScaffoldContractRead({
   //   contractName: "YourToken",
   //   functionName: "balanceOf",
   //   args: [vendorContractData?.address],
   // });
-
   // const { balance: vendorEthBalance } = useAccountBalance(vendorContractData?.address);
 
+  // // tokenPerEth
   // const { data: tokensPerEth } = useScaffoldContractRead({
   //   contractName: "Vendor",
   //   functionName: "tokensPerEth",
   // });
 
+  // // Buy Tokens
   // const { writeAsync: buyTokens } = useScaffoldContractWrite({
   //   contractName: "Vendor",
   //   functionName: "buyTokens",
@@ -62,12 +62,14 @@ const TokenVendor: NextPage = () => {
   //   },
   // });
 
+  // // Approve Tokens
   // const { writeAsync: approveTokens } = useScaffoldContractWrite({
   //   contractName: "YourToken",
   //   functionName: "approve",
   //   args: [vendorContractData?.address, multiplyTo1e18(tokensToSell)],
   // });
 
+  // // Sell Tokens
   // const { writeAsync: sellTokens } = useScaffoldContractWrite({
   //   contractName: "Vendor",
   //   functionName: "sellTokens",
@@ -86,9 +88,8 @@ const TokenVendor: NextPage = () => {
               <span className="font-bold ml-1">{yourTokenSymbol}</span>
             </div>
           </div>
-          {/* Vendor balances */}
-          {/* 
-          <hr className="w-full border-secondary my-3" />
+          {/* Vendor Balances */}
+          {/* <hr className="w-full border-secondary my-3" />
           <div>
             Vendor token balance:{" "}
             <div className="inline-flex items-center justify-center">
@@ -102,7 +103,7 @@ const TokenVendor: NextPage = () => {
           </div> */}
         </div>
 
-        {/* Buy tokens */}
+        {/* Buy Tokens */}
         {/* <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
           <div className="text-xl">Buy tokens</div>
           <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
@@ -140,7 +141,7 @@ const TokenVendor: NextPage = () => {
           </div>
         )}
 
-        {/* Sell tokens block */}
+        {/* Sell Tokens */}
         {/* {yourTokenBalance && !yourTokenBalance?.isZero() && (
           <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
             <div className="text-xl">Sell tokens</div>
