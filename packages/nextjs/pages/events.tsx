@@ -6,12 +6,12 @@ import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Events: NextPage = () => {
-  // // BuyTokens Events
-  // const { data: buyTokenEvents, isLoading: isBuyEventsLoading } = useScaffoldEventHistory({
-  //   contractName: "Vendor",
-  //   eventName: "BuyTokens",
-  //   fromBlock: 0,
-  // });
+  // BuyTokens Events
+  const { data: buyTokenEvents, isLoading: isBuyEventsLoading } = useScaffoldEventHistory({
+    contractName: "Vendor",
+    eventName: "BuyTokens",
+    fromBlock: 0,
+  });
 
   // // SellTokens Events
   // const { data: sellTokenEvents, isLoading: isSellEventsLoading } = useScaffoldEventHistory({
@@ -25,7 +25,7 @@ const Events: NextPage = () => {
       <MetaHeader />
       <div className="flex items-center flex-col flex-grow pt-10">
         {/* BuyTokens Events */}
-        {/* <div>
+        <div>
           <div className="text-center mb-4">
             <span className="block text-2xl font-bold">Buy Token Events</span>
           </div>
@@ -67,7 +67,7 @@ const Events: NextPage = () => {
               </table>
             </div>
           )}
-        </div> */}
+        </div>
 
         {/* SellTokens Events */}
         {/* <div className="mt-14">
