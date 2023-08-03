@@ -98,8 +98,6 @@ Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncom
 
 Uncomment the `Buy Tokens` sections in `packages/nextjs/pages/token-vendor.tsx` to show the UI to buy tokens on the Token Vendor tab.
 
-Uncomment the `BuyTokens Events` sections in `packages/nextjs/pages/events.tsx` to show the UI to display the BuyTokens event.
-
 ### 🥅 Goals
 
 - [ ] When you try to buy tokens from the vendor, you should get an error: **'ERC20: transfer amount exceeds balance'**
