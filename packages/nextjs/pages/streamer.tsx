@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BigNumber, utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
@@ -114,8 +114,6 @@ const Streamer: NextPage = () => {
       // update our stored voucher if this new one is more valuable
       if (existingVoucher === undefined || updatedBalance.lt(existingVoucher.updatedBalance)) {
         setVouchers({ ...vouchers, [clientAddress]: { ...data, updatedBalance } });
-        // updateClaimable(clientAddress);
-        // logvouchers;
       }
     }
   }
@@ -144,12 +142,11 @@ const Streamer: NextPage = () => {
 
   const [wisdoms, setWisdoms] = useState<{ [key: AddressType]: string }>({});
 
-  const userChannel = useMemo(() => {
-    try {
-      return new BroadcastChannel(userAddress || "");
-    } catch (err) {
-      // ssr fix
-      return { postMessage: () => null, onmessage: () => null };
+  const userChannel = useRef<BroadcastChannel>();
+
+  useEffect(() => {
+    if (userAddress) {
+      userChannel.current = new BroadcastChannel(userAddress);
     }
   }, [userAddress]);
 
@@ -179,8 +176,8 @@ const Streamer: NextPage = () => {
   const [recievedWisdom, setReceivedWisdom] = useState("");
 
   /**
-   * reimburseService prepares, signs, and delivers a voucher for the service provider
-   * that pays for the recieved wisdom.
+   * reimburseService prepares, signs, and delivers a voucher that pays for the recieved wisdom
+   * to the service provider
    */
   async function reimburseService(wisdom: string) {
     const initialBalance = utils.parseEther(STREAM_ETH_VALUE);
@@ -218,34 +215,35 @@ const Streamer: NextPage = () => {
     const hexBalance = updatedBalance.toHexString();
 
     if (hexBalance && signature) {
-      userChannel.postMessage({
+      userChannel.current?.postMessage({
         updatedBalance: hexBalance,
         signature,
       });
     }
   }
 
-  /**
-   * Handle incoming service data from the service provider.
-   *
-   * If autoPay is turned on, instantly recalculate due payment
-   * and return to the service provider.
-   *
-   * @param {MessageEvent<string>} e
-   */
-  userChannel.onmessage = e => {
-    if (typeof e.data != "string") {
-      // TODO: fix warning for clients
-      console.warn(`recieved unexpected channel data: ${JSON.stringify(e.data)}`);
-      return;
-    }
+  if (userChannel.current) {
+    /**
+     * Handle incoming service data from the service provider.
+     *
+     * If autoPay is turned on, instantly recalculate due payment
+     * and return to the service provider.
+     *
+     * @param {MessageEvent<string>} e
+     */
+    userChannel.current.onmessage = e => {
+      if (typeof e.data != "string") {
+        console.warn(`recieved unexpected channel data: ${JSON.stringify(e.data)}`);
+        return;
+      }
 
-    setReceivedWisdom(e.data);
+      setReceivedWisdom(e.data);
 
-    if (autoPay) {
-      reimburseService(e.data);
-    }
-  };
+      if (autoPay) {
+        reimburseService(e.data);
+      }
+    };
+  }
 
   return (
     <>
