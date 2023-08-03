@@ -1,4 +1,6 @@
-# 🚩 Challenge 5: A State Channel Application
+# 🚩 Challenge 5: 📺 A State Channel Application
+
+![readme-5](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/a6ea79fe-3fa1-4a3b-96d0-e5c0d2286356)
 
 > 🐌 The Ethereum blockchain has great decentralization & security properties. These properties come at a price: transaction throughput is low, and transactions can be expensive (search term: blockchain trilemma). This makes many traditional web applications infeasible on a blockchain... or does it?
 
@@ -6,7 +8,7 @@
 
 > 🧑‍🤝‍🧑 State channels really excel as a scaling solution in cases where a fixed set of participants want to exchange value-for-service at high frequency. The canonical example is in file sharing or media streaming: the server exchanges chunks of a file in exchange for micropayments.
 
-> 🧙 In our case, the service provider is a `Guru` who provides off-the-cuff wisdom to each client `Rube` through a one-way chat box. Each character of text that is delivered is expected to be compensated with a payment of `0.001 ETH`.
+> 🧙 In our case, the service provider is a `Guru` who provides off-the-cuff wisdom to each client `Rube` through a one-way chat box. Each character of text that is delivered is expected to be compensated with a payment of `0.01 ETH`.
 
 > 📖 Read more about state channels in the [Ethereum Docs.](https://ethereum.org/en/developers/docs/scaling/state-channels/)
 
@@ -80,6 +82,8 @@ We'll need another active address to act as the rube in our app. To do this just
 
 (**Note**: previous challenges created new addresses by opening an incognito window or a different browser. This will **not** work for this challenge, because the off-chain application uses a very simple communication pipe that doesn't work between different browsers or private windows.)
 
+![wallets-setup](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1c0ede93-fd7d-4683-a3f0-803b52ca947c)
+
 ### 🥅 Goals
 
 - [ ] Does your original frontend address recieve the `Hello Guru` UI?
@@ -100,6 +104,8 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `fundChannel()` function
 
 > 👁 Check `packages/nextjs/pages/streamer.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
+
+![channel-open](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/69a30c45-d384-476f-8b7d-67bc23d21833)
 
 ### 🥅 Goals:
 
@@ -127,6 +133,9 @@ The first two functions are complete - we will work on `processVoucher`, where t
 
 - [ ] Secure your service! Validate the incoming voucher & signature according to instructions inside `processVoucher(v)`
 - [ ] With an open channel, start sending advice. Can you see the claimable balance update as service is rendered?
+
+![guru-advice](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/d1cc665a-6c44-4fff-b0ac-c4d8ff490a15)
+![rube-received-advice](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/70da22a2-0c3a-4e14-b6fa-f103c6eb2c9c)
 
 ### ⚔️ Side Quest:
 
@@ -156,6 +165,9 @@ Reminders:
 
 - [ ] Recover funds on-chain for services rendered! After the Guru submits a voucher to chain, you should be able to see the wallet's ETH balance increase.
 
+![eth-locked-updated](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/0d09a5d8-914b-4acd-b7ec-fb862df83144)
+![guru-balance-updated](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/02f9dc8a-5357-49e0-9112-e84df04f1ebd)
+
 ### ⚔️ Side Quest:
 
 - [ ] `withdrawEarnings` is a function that only the service provider would be interested in calling. Should it be marked `onlyOwner`? (the `onlyOwner` modifier makes a function accessible only to the contract owner - anyone else who tries to call it will be immediately rejected).
@@ -184,6 +196,8 @@ The `challengeChannel()` function should:
 
 The emitted event gives notice to the Guru that the channel will soon be emptied, so they should apply whatever vouchers they have before the timeout period ends.
 
+![guru-alert](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/671eed08-ff0c-4165-8147-0d91c339b217)
+
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to create a public `defundChannel()` function.
 
 The `defundChannel()` function should:
@@ -197,6 +211,8 @@ The `defundChannel()` function should:
 - [ ] Launch a challenge as a channel client. The Guru's UI should show an alert via their `Cash out latest voucher` button.
 - [ ] Recover the Guru's best voucher before the channel closes.
 - [ ] Close the channel and recover rube funds.
+
+![close-channel-button](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/8ecec2c3-9f4a-40d5-ac42-84d8e5500f23)
 
 ### ⚔️ Side Quests:
 
@@ -220,10 +236,6 @@ The `defundChannel()` function should:
 ⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
 🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
-
-<!-- TODO remove if don't needed -->
-
-> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
 ---
 
