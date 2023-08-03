@@ -3,6 +3,7 @@ import { BigNumber, utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
 import { Address as AddressType, useAccount, useSigner } from "wagmi";
+import { MetaHeader } from "~~/components/MetaHeader";
 import { Address } from "~~/components/scaffold-eth";
 import { CashOutVoucherButton } from "~~/components/streamer/CashOutVoucherButton";
 import {
@@ -247,151 +248,154 @@ const Streamer: NextPage = () => {
   };
 
   return (
-    <div className="flex items-center flex-col flex-grow w-full px-4">
-      <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
-        {userIsOwner ? (
-          // UI for the service provider
-          <>
-            <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Guru!</p>
-            <p className="block text-xl mt-0 mb-1 font-semibold">
-              You have {opened.length} channel{opened.length == 1 ? "" : "s"} open
-            </p>
-            <p className="mt-0 text-lg text-center font-semibold">Total ETH locked: {balance?.toFixed(4) || 0} ETH</p>
+    <>
+      <MetaHeader />
+      <div className="flex items-center flex-col flex-grow w-full px-4">
+        <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
+          {userIsOwner ? (
+            // UI for the service provider
+            <>
+              <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Guru!</p>
+              <p className="block text-xl mt-0 mb-1 font-semibold">
+                You have {opened.length} channel{opened.length == 1 ? "" : "s"} open
+              </p>
+              <p className="mt-0 text-lg text-center font-semibold">Total ETH locked: {balance?.toFixed(4) || 0} ETH</p>
 
-            <div className="mt-4 text-lg">
-              Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under challenge
-              on-chain, and should be redeemed ASAP.
-            </div>
-            <div className="mt-4 w-full flex flex-col">
-              {opened.map(clientAddress => (
-                <div key={clientAddress} className="w-full flex flex-col border-primary border-t py-6">
-                  <Address address={clientAddress} size="xl" />
-                  <textarea
-                    className="mt-3 bg-base-200"
-                    rows={3}
-                    placeholder="Provide your wisdom here..."
-                    onChange={e => {
-                      e.stopPropagation();
-                      const updatedWisdom = e.target.value;
-                      provideWisdom(clientAddress, updatedWisdom);
-                    }}
-                    value={wisdoms[clientAddress]}
-                  />
-
-                  <div className="mt-2 flex justify-between">
-                    <div>
-                      Served: <strong>{wisdoms[clientAddress]?.length || 0}</strong>&nbsp;chars
-                    </div>
-                    <div>
-                      Recieved:{" "}
-                      <strong id={`claimable-${clientAddress}`}>
-                        {vouchers[clientAddress]
-                          ? utils.formatEther(
-                              utils.parseEther(STREAM_ETH_VALUE).sub(vouchers[clientAddress].updatedBalance),
-                            )
-                          : 0}
-                      </strong>
-                      &nbsp;ETH
-                    </div>
-                  </div>
-
-                  {/* Checkpoint 5: */}
-                  {vouchers[clientAddress]?.signature && (
-                    <CashOutVoucherButton
-                      key={clientAddress}
-                      clientAddress={clientAddress}
-                      challenged={challenged}
-                      closed={closed}
-                      voucher={vouchers[clientAddress]}
+              <div className="mt-4 text-lg">
+                Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under
+                challenge on-chain, and should be redeemed ASAP.
+              </div>
+              <div className="mt-4 w-full flex flex-col">
+                {opened.map(clientAddress => (
+                  <div key={clientAddress} className="w-full flex flex-col border-primary border-t py-6">
+                    <Address address={clientAddress} size="xl" />
+                    <textarea
+                      className="mt-3 bg-base-200"
+                      rows={3}
+                      placeholder="Provide your wisdom here..."
+                      onChange={e => {
+                        e.stopPropagation();
+                        const updatedWisdom = e.target.value;
+                        provideWisdom(clientAddress, updatedWisdom);
+                      }}
+                      value={wisdoms[clientAddress]}
                     />
-                  )}
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          // UI for the service consumer
-          <>
-            <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Rube!</p>
 
-            {userAddress && opened.includes(userAddress) ? (
-              <div className="w-full flex flex-col items-center">
-                <div className="flex items-center mt-8">
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-primary bg-primary mr-2"
-                    defaultChecked={autoPay}
-                    onChange={e => {
-                      const updatedAutoPay = e.target.checked;
-                      setAutoPay(updatedAutoPay);
+                    <div className="mt-2 flex justify-between">
+                      <div>
+                        Served: <strong>{wisdoms[clientAddress]?.length || 0}</strong>&nbsp;chars
+                      </div>
+                      <div>
+                        Recieved:{" "}
+                        <strong id={`claimable-${clientAddress}`}>
+                          {vouchers[clientAddress]
+                            ? utils.formatEther(
+                                utils.parseEther(STREAM_ETH_VALUE).sub(vouchers[clientAddress].updatedBalance),
+                              )
+                            : 0}
+                        </strong>
+                        &nbsp;ETH
+                      </div>
+                    </div>
 
-                      if (updatedAutoPay) {
-                        reimburseService(recievedWisdom);
-                      }
-                    }}
-                  />
-                  AutoPay
-                </div>
-
-                <div className="text-center w-full">
-                  <p className="text-xl font-semibold">Received Wisdom</p>
-                  <p className="mb-3 text-lg min-h-[1.75rem] border-2 border-primary rounded">{recievedWisdom}</p>
-                </div>
-
-                {/* Checkpoint 6: challenge & closure */}
-
-                <div className="flex flex-col items-center">
-                  <button
-                    disabled={challenged.includes(userAddress)}
-                    className="btn btn-primary"
-                    onClick={() => {
-                      // disable the production of further voucher signatures
-                      setAutoPay(false);
-                      challengeChannel();
-                      try {
-                        // ensure a 'ticking clock' for the UI without having
-                        // to send new transactions & mine new blocks
-                        getLocalProvider(getTargetNetwork())?.send("evm_setIntervalMining", [5000]);
-                      } catch (e) {}
-                    }}
-                  >
-                    Challenge this channel
-                  </button>
-
-                  <div className="p-2 mt-6 h-10">
-                    {challenged.includes(userAddress) && (
-                      <>
-                        <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
-                      </>
+                    {/* Checkpoint 5: */}
+                    {vouchers[clientAddress]?.signature && (
+                      <CashOutVoucherButton
+                        key={clientAddress}
+                        clientAddress={clientAddress}
+                        challenged={challenged}
+                        closed={closed}
+                        voucher={vouchers[clientAddress]}
+                      />
                     )}
                   </div>
-                  <button
-                    className="btn btn-primary"
-                    disabled={!challenged.includes(userAddress) || timeLeft?.toNumber() !== 0}
-                    onClick={() => defundChannel()}
-                  >
-                    Close and withdraw funds
+                ))}
+              </div>
+            </>
+          ) : (
+            // UI for the service consumer
+            <>
+              <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Rube!</p>
+
+              {userAddress && opened.includes(userAddress) ? (
+                <div className="w-full flex flex-col items-center">
+                  <div className="flex items-center mt-8">
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-secondary bg-primary mr-2"
+                      defaultChecked={autoPay}
+                      onChange={e => {
+                        const updatedAutoPay = e.target.checked;
+                        setAutoPay(updatedAutoPay);
+
+                        if (updatedAutoPay) {
+                          reimburseService(recievedWisdom);
+                        }
+                      }}
+                    />
+                    AutoPay
+                  </div>
+
+                  <div className="text-center w-full">
+                    <p className="text-xl font-semibold">Received Wisdom</p>
+                    <p className="mb-3 text-lg min-h-[1.75rem] border-2 border-primary rounded">{recievedWisdom}</p>
+                  </div>
+
+                  {/* Checkpoint 6: challenge & closure */}
+
+                  <div className="flex flex-col items-center">
+                    <button
+                      disabled={challenged.includes(userAddress)}
+                      className="btn btn-primary"
+                      onClick={() => {
+                        // disable the production of further voucher signatures
+                        setAutoPay(false);
+                        challengeChannel();
+                        try {
+                          // ensure a 'ticking clock' for the UI without having
+                          // to send new transactions & mine new blocks
+                          getLocalProvider(getTargetNetwork())?.send("evm_setIntervalMining", [5000]);
+                        } catch (e) {}
+                      }}
+                    >
+                      Challenge this channel
+                    </button>
+
+                    <div className="p-2 mt-6 h-10">
+                      {challenged.includes(userAddress) && (
+                        <>
+                          <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
+                        </>
+                      )}
+                    </div>
+                    <button
+                      className="btn btn-primary"
+                      disabled={!challenged.includes(userAddress) || timeLeft?.toNumber() !== 0}
+                      onClick={() => defundChannel()}
+                    >
+                      Close and withdraw funds
+                    </button>
+                  </div>
+                </div>
+              ) : userAddress && closed.includes(userAddress) ? (
+                <div className="text-lg">
+                  <p>Thanks for stopping by - we hope you have enjoyed the guru&apos;s advice.</p>
+                  <p className="mt-8">
+                    This UI obstructs you from opening a second channel. Why? Is it safe to open another channel?
+                  </p>
+                </div>
+              ) : (
+                <div className="p-2">
+                  <button className="btn btn-primary" onClick={() => fundChannel()}>
+                    Open a 0.5 ETH channel for advice from the Guru
                   </button>
                 </div>
-              </div>
-            ) : userAddress && closed.includes(userAddress) ? (
-              <div className="text-lg">
-                <p>Thanks for stopping by - we hope you have enjoyed the guru&apos;s advice.</p>
-                <p className="mt-8">
-                  This UI obstructs you from opening a second channel. Why? Is it safe to open another channel?
-                </p>
-              </div>
-            ) : (
-              <div className="p-2">
-                <button className="btn btn-primary" onClick={() => fundChannel()}>
-                  Open a 0.5 ETH channel for advice from the Guru
-                </button>
-              </div>
-            )}
-          </>
-        )}
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
