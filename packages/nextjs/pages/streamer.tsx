@@ -164,13 +164,24 @@ const Streamer: NextPage = () => {
 
   const [closed, setClosed] = useState<AddressType[]>([]);
 
+  const { data: closedHistoryData, isLoading: isClosedHistoryLoading } = useScaffoldEventHistory({
+    contractName: "Streamer",
+    eventName: "Closed",
+    fromBlock: 0,
+  });
+
+  useEffect(() => {
+    if (closedHistoryData?.length && !isClosedHistoryLoading) {
+      const closedChannelsAddresses = closedHistoryData?.map(event => event.args[0]);
+      setClosed(closedChannelsAddresses);
+    }
+  }, [closedHistoryData, isClosedHistoryLoading]);
+
   useScaffoldEventSubscriber({
     contractName: "Streamer",
     eventName: "Closed",
     listener: addr => {
       setClosed([...closed, addr]);
-      setOpened(opened.filter(openedAddr => openedAddr !== addr));
-      setChallenged(challenged.filter(challengedAddr => challengedAddr !== addr));
     },
   });
 
@@ -279,6 +290,8 @@ const Streamer: NextPage = () => {
     };
   }
 
+  const writableChannels = opened.filter(addr => !closed.includes(addr));
+
   return (
     <>
       <MetaHeader />
@@ -289,7 +302,7 @@ const Streamer: NextPage = () => {
             <>
               <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Guru!</p>
               <p className="block text-xl mt-0 mb-1 font-semibold">
-                You have {opened.length} channel{opened.length == 1 ? "" : "s"} open
+                You have {writableChannels.length} channel{writableChannels.length == 1 ? "" : "s"} open
               </p>
               <p className="mt-0 text-lg text-center font-semibold">Total ETH locked: {balance?.toFixed(4) || 0} ETH</p>
 
@@ -298,7 +311,7 @@ const Streamer: NextPage = () => {
                 challenge on-chain, and should be redeemed ASAP.
               </div>
               <div className="mt-4 w-full flex flex-col">
-                {opened.map(clientAddress => (
+                {writableChannels.map(clientAddress => (
                   <div key={clientAddress} className="w-full flex flex-col border-primary border-t py-6">
                     <Address address={clientAddress} size="xl" />
                     <textarea
@@ -349,7 +362,7 @@ const Streamer: NextPage = () => {
             <>
               <p className="block text-2xl mt-0 mb-2 font-semibold">Hello Rube!</p>
 
-              {userAddress && opened.includes(userAddress) ? (
+              {userAddress && writableChannels.includes(userAddress) ? (
                 <div className="w-full flex flex-col items-center">
                   <span className="mt-6 text-lg font-semibold">Autopay</span>
                   <div className="flex items-center mt-2 gap-2">
