@@ -11,6 +11,7 @@ import {
   useDeployedContractInfo,
   useScaffoldContractRead,
   useScaffoldContractWrite,
+  useScaffoldEventHistory,
   useScaffoldEventSubscriber,
 } from "~~/hooks/scaffold-eth";
 import { getLocalProvider, getTargetNetwork } from "~~/utils/scaffold-eth";
@@ -50,6 +51,26 @@ const Streamer: NextPage = () => {
   const [channels, setChannels] = useState<{ [key: AddressType]: BroadcastChannel }>({});
 
   const [opened, setOpened] = useState<AddressType[]>([]);
+
+  const { data, isLoading: isOpenedHistoryLoading } = useScaffoldEventHistory({
+    contractName: "Streamer",
+    eventName: "Opened",
+    fromBlock: 0,
+  });
+
+  useEffect(() => {
+    if (data?.length && !isOpenedHistoryLoading) {
+      const openedChannelsAddresses = data?.map(event => event.args[0]).reverse();
+      setOpened(openedChannelsAddresses);
+      if (userIsOwner) {
+        setChannels(
+          openedChannelsAddresses.reduce((acc, curr) => {
+            return { ...acc, [curr]: new BroadcastChannel(curr) };
+          }, {}),
+        );
+      }
+    }
+  }, [data, isOpenedHistoryLoading, userIsOwner]);
 
   useScaffoldEventSubscriber({
     contractName: "Streamer",
