@@ -390,7 +390,7 @@ const Streamer: NextPage = () => {
 
                   {/* Checkpoint 6: challenge & closure */}
 
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center pb-6">
                     <button
                       disabled={challenged.includes(userAddress)}
                       className="btn btn-primary"
