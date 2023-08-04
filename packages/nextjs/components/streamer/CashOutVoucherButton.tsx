@@ -1,7 +1,7 @@
 import { utils } from "ethers";
 import humanizeDuration from "humanize-duration";
-import { Address } from "wagmi";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { Address, useSigner } from "wagmi";
+import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { Voucher } from "~~/pages/streamer";
 
 type CashOutVoucherButtonProps = {
@@ -12,6 +12,12 @@ type CashOutVoucherButtonProps = {
 };
 
 export const CashOutVoucherButton = ({ clientAddress, challenged, closed, voucher }: CashOutVoucherButtonProps) => {
+  const { data: userSigner } = useSigner();
+  const { data: streamerContract } = useScaffoldContract({
+    contractName: "Streamer",
+    signerOrProvider: userSigner || undefined,
+  });
+
   const { data: timeLeft } = useScaffoldContractRead({
     contractName: "Streamer",
     functionName: "timeLeft",
@@ -19,14 +25,8 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
     watch: true,
   });
 
-  const { writeAsync } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "withdrawEarnings",
-    args: [{ ...voucher, sig: utils.splitSignature(voucher.signature) as any }],
-  });
-
   const isButtonDisabled =
-    closed.includes(clientAddress) || (challenged.includes(clientAddress) && !timeLeft?.toNumber());
+    !voucher || closed.includes(clientAddress) || (challenged.includes(clientAddress) && !timeLeft?.toNumber());
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -43,7 +43,7 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
         }`}
         disabled={isButtonDisabled}
         onClick={() => {
-          writeAsync();
+          streamerContract?.withdrawEarnings({ ...voucher, sig: utils.splitSignature(voucher.signature) as any });
         }}
       >
         Cash out latest voucher

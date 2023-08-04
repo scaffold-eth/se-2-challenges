@@ -344,15 +344,13 @@ const Streamer: NextPage = () => {
                     </div>
 
                     {/* Checkpoint 5: */}
-                    {vouchers[clientAddress]?.signature && (
-                      <CashOutVoucherButton
-                        key={clientAddress}
-                        clientAddress={clientAddress}
-                        challenged={challenged}
-                        closed={closed}
-                        voucher={vouchers[clientAddress]}
-                      />
-                    )}
+                    <CashOutVoucherButton
+                      key={clientAddress}
+                      clientAddress={clientAddress}
+                      challenged={challenged}
+                      closed={closed}
+                      voucher={vouchers[clientAddress]}
+                    />
                   </div>
                 ))}
               </div>
