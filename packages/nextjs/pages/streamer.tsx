@@ -340,7 +340,7 @@ const Streamer: NextPage = () => {
                 <div className="w-full flex flex-col items-center">
                   <span className="mt-6 text-lg font-semibold">Autopay</span>
                   <div className="flex items-center mt-2 gap-2">
-                    <span>On</span>
+                    <span>Off</span>
                     <input
                       type="checkbox"
                       className="toggle toggle-secondary bg-secondary"
@@ -354,7 +354,7 @@ const Streamer: NextPage = () => {
                         }
                       }}
                     />
-                    <span>Off</span>
+                    <span>On</span>
                   </div>
 
                   <div className="text-center w-full mt-4">
