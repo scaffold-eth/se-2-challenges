@@ -31,11 +31,14 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
   return (
     <div className="w-full flex flex-col items-center">
       <div className="h-8 pt-2">
-        {challenged.includes(clientAddress) && (
-          <>
-            <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
-          </>
-        )}
+        {challenged.includes(clientAddress) &&
+          (timeLeft && timeLeft.toNumber() > 0 ? (
+            <>
+              <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
+            </>
+          ) : (
+            <>Challenged. Cash out timed out</>
+          ))}
       </div>
       <button
         className={`mt-3 btn btn-primary${challenged.includes(clientAddress) ? " btn-error" : ""}${
