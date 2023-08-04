@@ -105,7 +105,7 @@ const Streamer: NextPage = () => {
       let updatedBalance = BigNumber.from(data.updatedBalance);
 
       /*
-       *  Checkpoint 4:
+       *  Checkpoint 3:
        *
        *  currently, this function recieves and stores vouchers uncritically.
        *
@@ -114,7 +114,7 @@ const Streamer: NextPage = () => {
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
 
-      // TODO: Checkpoint 4. Remove
+      // TODO: Checkpoint 3. Remove
       if (updatedBalance.lt(BigNumber.from(0))) {
         updatedBalance = BigNumber.from(0);
       }
@@ -343,7 +343,7 @@ const Streamer: NextPage = () => {
                       </div>
                     </div>
 
-                    {/* Checkpoint 5: */}
+                    {/* Checkpoint 4: */}
                     <CashOutVoucherButton
                       key={clientAddress}
                       clientAddress={clientAddress}
@@ -386,7 +386,7 @@ const Streamer: NextPage = () => {
                     <p className="mb-3 text-lg min-h-[1.75rem] border-2 border-primary rounded">{recievedWisdom}</p>
                   </div>
 
-                  {/* Checkpoint 6: challenge & closure */}
+                  {/* Checkpoint 5: challenge & closure */}
 
                   <div className="flex flex-col items-center pb-6">
                     <button

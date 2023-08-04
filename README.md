@@ -70,17 +70,17 @@ yarn start
 
 ## Checkpoint 1: Configure Deployment & Wallets
 
-Like the [token vendor challenge](https://speedrunethereum.com/challenge/token-vendor), we'll be building an `Ownable` contract. The contract owner is the **Guru** - the service provider in this application, and you will use multiple browser windows or tabs to assume the roles of Guru and rube (service provider & client).
+Like the [token vendor challenge](https://speedrunethereum.com/challenge/token-vendor), we'll be building an `Ownable` contract. The contract owner is the **Guru** (the service provider in this application), and you will use multiple browser windows or tabs to assume the roles of Guru and rube (service provider & client).
 
 > 👁 `contract Streamer` inherits `Ownable` with the `is` keyword. `Ownable` comes from [openzeppelin-contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) - a collection of high quality smart contract library code.
 
-> 📝 In `packages/hardhat/deploy/00_deploy_streamer.js`, uncomment the lines of code that deploy the contract and transfer ownership. You will need to enter your own front end address.
+> 📝 In `packages/hardhat/deploy/00_deploy_streamer.js`, uncomment the lines of code that deploy the contract and transfer ownership. You will need to enter your own frontend address, to act as Guru.
 
 You'll have to redeploy with `yarn deploy --reset`.
 
-We'll need another active address to act as the rube in our app. To do this just open new tab in your browser
+We'll need another active address to act as the rube in our app. To do this just open new tab in your browser.
 
-(**Note**: previous challenges created new addresses by opening an incognito window or a different browser. This will **not** work for this challenge, because the off-chain application uses a very simple communication pipe that doesn't work between different browsers or private windows.)
+> ⚠️ **Note**: previous challenges created new addresses by opening an incognito window or a different browser. This will **not** work for this challenge, because the off-chain application uses a very simple communication pipe that doesn't work between different browsers or private windows.)
 
 ![wallets-setup](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1c0ede93-fd7d-4683-a3f0-803b52ca947c)
 
@@ -109,7 +109,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 ### 🥅 Goals:
 
-- [ ] Does opening a channel (from Rube's tab, you may need some funds from the faucet) cause a `Recieved Wisdom` box to appear?
+- [ ] Does opening a channel (from Rube's tab, you may need some funds from the faucet) cause a `Received Wisdom` box to appear?
 - [ ] Do opened channels appear on the Guru's UI as well?
 - [ ] Using the _Debug Contracts_ tab, does a repeated call to `fundChannel` fail?
 
@@ -131,15 +131,17 @@ The first two functions are complete - we will work on `processVoucher`, where t
 
 ### 🥅 Goals:
 
-- [ ] Secure your service! Validate the incoming voucher & signature according to instructions inside `processVoucher(v)`
-- [ ] With an open channel, start sending advice. Can you see the claimable balance update as service is rendered?
+- [ ] Secure your service! Validate the incoming voucher & signature according to instructions inside `processVoucher()`
+- [ ] With an open channel, start sending advice. Can you see the claimable balance update as service is rendered? This should happen only if rube has "Autopay" active.
 
 ![guru-advice](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/d1cc665a-6c44-4fff-b0ac-c4d8ff490a15)
 ![rube-received-advice](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/70da22a2-0c3a-4e14-b6fa-f103c6eb2c9c)
 
 ### ⚔️ Side Quest:
 
-- [ ] Can `provideService` be modified to prevent continued service to clients who don't keep up with their payments? (_hint_: you'll want to compare the size of your best voucher against the size of your provided wisdom. If there's too big a discrepency, cut them off!)
+- [ ] Can `provideService` be modified to prevent continued service to clients who don't keep up with their payments?
+
+> 💬 Hint: You'll want to compare the size of your best voucher against the size of your provided wisdom. If there's too big a discrepency, cut them off!
 
 ## Checkpoint 4: Recover Service Provider's Earnings
 
@@ -152,7 +154,7 @@ Now that we've collected some vouchers, we'd like to redeem them on-chain and mo
 - Update the channel balance.
 - Pay the contract owner.
 
-Reminders:
+💡 Reminders:
 
 - Changes to contracts must be redeployed to the local chain with `yarn deploy --reset`.
 - For troubleshooting / debugging, your contract can use hardhat's `console.log`, which will print to your console running the chain.
@@ -202,7 +204,7 @@ The emitted event gives notice to the Guru that the channel will soon be emptied
 
 The `defundChannel()` function should:
 
-- Check that `msg.sender` has a closed channel, by ensuring a non-zero `canCloseAt[msg.sender]` is before the current timestamp.
+- Check that `msg.sender` has a channel that can be closed, by ensuring a non-zero `canCloseAt[msg.sender]` is before the current timestamp.
 - Transfer `balances[msg.sender]` to the sender.
 - Emit a `Closed` event.
 

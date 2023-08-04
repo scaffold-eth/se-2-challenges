@@ -15,7 +15,7 @@ contract Streamer is Ownable {
 
   function fundChannel() public payable {
     /*
-        Checkpoint 3: fund a channel
+        Checkpoint 2: fund a channel
 
         complete this function so that it:
         - reverts if msg.sender already has a running channel (ie, if balances[msg.sender] != 0)
@@ -50,7 +50,7 @@ contract Streamer is Ownable {
     bytes32 prefixedHashed = keccak256(prefixed);
 
     /*
-        Checkpoint 5: Recover earnings
+        Checkpoint 4: Recover earnings
 
         The service provider would like to cash out their hard earned ether.
             - use ecrecover on prefixedHashed and the supplied signature
@@ -62,7 +62,7 @@ contract Streamer is Ownable {
   }
 
   /*
-    Checkpoint 6a: Challenge the channel
+    Checkpoint 5a: Challenge the channel
 
     create a public challengeChannel() function that:
     - checks that msg.sender has an open channel
@@ -71,7 +71,7 @@ contract Streamer is Ownable {
     */
 
   /*
-    Checkpoint 6b: Close the channel
+    Checkpoint 5b: Close the channel
 
     create a public defundChannel() function that:
     - checks that msg.sender has a closing channel
