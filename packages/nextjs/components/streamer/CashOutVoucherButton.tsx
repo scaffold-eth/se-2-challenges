@@ -1,8 +1,10 @@
+import { getParsedEthersError } from "../scaffold-eth";
 import { utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { Address, useSigner } from "wagmi";
 import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { Voucher } from "~~/pages/streamer";
+import { notification } from "~~/utils/scaffold-eth";
 
 type CashOutVoucherButtonProps = {
   clientAddress: Address;
@@ -45,8 +47,15 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
           isButtonDisabled ? " btn-disabled" : ""
         }`}
         disabled={isButtonDisabled}
-        onClick={() => {
-          streamerContract?.withdrawEarnings({ ...voucher, sig: utils.splitSignature(voucher.signature) as any });
+        onClick={async () => {
+          try {
+            await streamerContract?.withdrawEarnings({
+              ...voucher,
+              sig: utils.splitSignature(voucher.signature) as any,
+            });
+          } catch (err) {
+            notification.error(getParsedEthersError(err));
+          }
         }}
       >
         Cash out latest voucher
