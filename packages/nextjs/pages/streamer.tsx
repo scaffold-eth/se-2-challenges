@@ -52,15 +52,15 @@ const Streamer: NextPage = () => {
 
   const [opened, setOpened] = useState<AddressType[]>([]);
 
-  const { data, isLoading: isOpenedHistoryLoading } = useScaffoldEventHistory({
+  const { data: openedHistoryData, isLoading: isOpenedHistoryLoading } = useScaffoldEventHistory({
     contractName: "Streamer",
     eventName: "Opened",
     fromBlock: 0,
   });
 
   useEffect(() => {
-    if (data?.length && !isOpenedHistoryLoading) {
-      const openedChannelsAddresses = data?.map(event => event.args[0]).reverse();
+    if (openedHistoryData?.length && !isOpenedHistoryLoading) {
+      const openedChannelsAddresses = openedHistoryData?.map(event => event.args[0]).reverse();
       setOpened(openedChannelsAddresses);
       if (userIsOwner) {
         setChannels(
@@ -70,7 +70,7 @@ const Streamer: NextPage = () => {
         );
       }
     }
-  }, [data, isOpenedHistoryLoading, userIsOwner]);
+  }, [openedHistoryData, isOpenedHistoryLoading, userIsOwner]);
 
   useScaffoldEventSubscriber({
     contractName: "Streamer",
@@ -140,6 +140,19 @@ const Streamer: NextPage = () => {
   }
 
   const [challenged, setChallenged] = useState<AddressType[]>([]);
+
+  const { data: challengedHistoryData, isLoading: isChallengedHistoryLoading } = useScaffoldEventHistory({
+    contractName: "Streamer",
+    eventName: "Challenged",
+    fromBlock: 0,
+  });
+
+  useEffect(() => {
+    if (challengedHistoryData?.length && !isChallengedHistoryLoading) {
+      const challengedChannelsAddresses = challengedHistoryData?.map(event => event.args[0]);
+      setChallenged(challengedChannelsAddresses);
+    }
+  }, [challengedHistoryData, isChallengedHistoryLoading]);
 
   useScaffoldEventSubscriber({
     contractName: "Streamer",
