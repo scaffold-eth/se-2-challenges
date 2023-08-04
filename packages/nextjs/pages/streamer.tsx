@@ -317,10 +317,12 @@ const Streamer: NextPage = () => {
 
               {userAddress && opened.includes(userAddress) ? (
                 <div className="w-full flex flex-col items-center">
-                  <div className="flex items-center mt-8">
+                  <span className="mt-6 text-lg font-semibold">Autopay</span>
+                  <div className="flex items-center mt-2 gap-2">
+                    <span>On</span>
                     <input
                       type="checkbox"
-                      className="toggle toggle-secondary bg-primary mr-2"
+                      className="toggle toggle-secondary bg-secondary"
                       defaultChecked={autoPay}
                       onChange={e => {
                         const updatedAutoPay = e.target.checked;
@@ -331,10 +333,10 @@ const Streamer: NextPage = () => {
                         }
                       }}
                     />
-                    AutoPay
+                    <span>Off</span>
                   </div>
 
-                  <div className="text-center w-full">
+                  <div className="text-center w-full mt-4">
                     <p className="text-xl font-semibold">Received Wisdom</p>
                     <p className="mb-3 text-lg min-h-[1.75rem] border-2 border-primary rounded">{recievedWisdom}</p>
                   </div>
