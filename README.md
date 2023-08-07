@@ -30,6 +30,7 @@ cd challenge-1-decentralized-staking
 git checkout challenge-1-decentralized-staking
 yarn install
 ```
+
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
 ```sh
@@ -178,7 +179,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
-🔐 You will need to generate a **deployer address** using `yarn generate`  This creates a mnemonic and saves it locally.
+🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
 
 👩‍🚀 Use `yarn account` to view your deployer account balances.
 
