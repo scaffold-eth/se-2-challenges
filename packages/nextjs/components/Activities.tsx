@@ -1,31 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { ActivitiesItems, TActivityItemProps } from "./ActivitiesItem";
+import { ActivitiesItems, TActivityItemProps, TWinnerItemProps, WinnerItem } from "./ActivitiesItem";
 
 export type TActivitiesProps = {
   rolls: TActivityItemProps[];
+  winners: TWinnerItemProps[];
 };
 
-export const Activities = ({ rolls }: TActivitiesProps) => {
+export const Activities = ({ rolls, winners }: TActivitiesProps) => {
   const [currentRolls, setCurrentRolls] = useState<TActivityItemProps[]>([]);
   const [tabIndex, setTabIndex] = useState<number>(0);
-
-  useEffect(() => {
-    if (tabIndex == 0) return setCurrentRolls(rolls);
-    return setCurrentRolls(
-      rolls.filter(roll => {
-        const rollNumber = parseInt(roll.landedOn);
-        return !Number.isNaN(rollNumber) || rollNumber < 3;
-      }),
-    );
-  }, [tabIndex]);
 
   const handleActivityTab = (index: number) => {
     return setTabIndex(index);
   };
 
   return (
-    <div className="card bg-base-300 shadow-xl mx-10 p-3 h-full">
-      <div className="flex tabs drop-shadow-md w-auto ">
+    <div className="card bg-base-300 shadow-xl mx-10 p-1">
+      <div className="flex tabs drop-shadow-md w-auto  pt-3">
         <a onClick={() => handleActivityTab(0)} className={`tab tab-bordered ${tabIndex == 0 && "tab-active"}`}>
           Activities
         </a>
@@ -33,18 +24,40 @@ export const Activities = ({ rolls }: TActivitiesProps) => {
           Wins
         </a>
       </div>
-      <div className="card-body flex flex-row">
-        <div className="w-3/4">
-          <span> Dice rolled by:</span>
-        </div>
-        <div className="w-1/4">
-          <span> Landed on: </span>
-        </div>
-      </div>
-      <div>
-        {currentRolls.map(({ address, amount, landedOn }, i) => (
-          <ActivitiesItems key={i} address={address} amount={amount} landedOn={landedOn} />
-        ))}
+      <div className="card-body flex flex-col">
+        {tabIndex == 0 ? (
+          <>
+            <div className="flex flex-row">
+              <div className="w-3/4">
+                <span> Dice rolled by:</span>
+              </div>
+              <div className="w-1/4">
+                <span> Landed on: </span>
+              </div>
+            </div>
+            <div>
+              {rolls.map(({ address, amount, landedOn }, i) => (
+                <ActivitiesItems key={i} address={address} amount={amount} landedOn={landedOn} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-row">
+              <div className="w-3/4">
+                <span> Dice rolled by</span>
+              </div>
+              <div className="w-1/4">
+                <span> Won </span>
+              </div>
+            </div>
+            <div>
+              {winners.map(({ address, amount }, i) => (
+                <WinnerItem key={i} address={address} amount={amount} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

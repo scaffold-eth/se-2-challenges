@@ -36,7 +36,7 @@ const Home: NextPage = () => {
               </p>
               <p className="text-lg mt-2">
                 🧨 Your job is to attack the Dice Game contract! You will create a new contract that will predict the
-                randomness ahead of time and only roll the dice when you're guaranteed to be a winner!
+                randomness ahead of time and only roll the dice when you′re guaranteed to be a winner!
               </p>
               <p className="text-lg mt-2">
                 💬 Meet other builders working on this challenge and get help in the{" "}

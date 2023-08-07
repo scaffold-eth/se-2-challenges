@@ -66,10 +66,8 @@ export type TActivityItemProps = {
 };
 
 export const ActivitiesItems = ({ address, amount, landedOn }: TActivityItemProps) => {
-  const [ens, setEns] = useState<string | null>();
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
 
-  const { data: fetchedEns } = useEnsName({ address, enabled: isAddress(address ?? ""), chainId: 1 });
   const { data: fetchedEnsAvatar } = useEnsAvatar({
     address,
     enabled: isAddress(address ?? ""),
@@ -88,11 +86,6 @@ export const ActivitiesItems = ({ address, amount, landedOn }: TActivityItemProp
   };
 
   const size = "3xl";
-
-  // We need to apply this pattern to avoid Hydration errors.
-  useEffect(() => {
-    setEns(fetchedEns);
-  }, [fetchedEns]);
 
   useEffect(() => {
     setEnsAvatar(fetchedEnsAvatar);
@@ -114,39 +107,116 @@ export const ActivitiesItems = ({ address, amount, landedOn }: TActivityItemProp
     return <span className="text-error">Wrong address</span>;
   }
 
-  //   if (ens) {
-  //     displayAddress = ens;
-  //   } else if (format === "long") {
-  //     displayAddress = address;
-  //   }
-
   return (
     <>
-      <div className="flex justify-between space-x-3 px-8 my-2 mb-5">
-        <div className=" bg-red-300  w-1/6 flex-shrink-0">
+      <div className="flex justify-between space-x-3 px-1 my-2 mb-5">
+        <div className="  w-1/6 flex-shrink-0">
           {ensAvatar ? (
             // Don't want to use nextJS Image here (and adding remote patterns for the URL)
             // eslint-disable-next-line
           <img
             className="p-0.5"
             src={ensAvatar}
-            width={60}
+            width={65}
             height={50}
             alt={`${address} avatar`}
           />
           ) : (
-            <Blockies className="mx-auto" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={4} />
+            <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={4} />
           )}
         </div>
         <div className="w-4/6">
-          <div className="flex justify-between px-1 w-full">
+          <div className="flex space-x-10 px-1 w-full">
             <span className="h-8"> {address?.slice(0, 7)} </span>
-            <span className="mr-8"> Amount: {amount} ETH </span>
+            <span className=""> Amount: {amount} ETH </span>
           </div>
           <Address address={address} />
         </div>
         <div className=" ml-6 w-1/6">
           <span> {landedOn} </span>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export type TWinnerItemProps = {
+  address: string;
+  amount: number;
+};
+export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
+  const [ensAvatar, setEnsAvatar] = useState<string | null>();
+
+  const [ens, setEns] = useState<string | null>();
+  const { data: fetchedEnsAvatar } = useEnsAvatar({
+    address,
+    enabled: isAddress(address ?? ""),
+    chainId: 1,
+    cacheTime: 30_000,
+  });
+
+  const blockieSizeMap = {
+    xs: 6,
+    sm: 7,
+    base: 8,
+    lg: 9,
+    xl: 10,
+    "2xl": 12,
+    "3xl": 15,
+  };
+
+  const size = "3xl";
+
+  useEffect(() => {
+    setEns(fetchedEnsAvatar);
+  }, [fetchedEnsAvatar]);
+
+  useEffect(() => {
+    setEnsAvatar(fetchedEnsAvatar);
+  }, [fetchedEnsAvatar]);
+
+  // Skeleton UI
+  if (!address) {
+    return (
+      <div className="animate-pulse flex space-x-4">
+        <div className="rounded-md bg-slate-300 h-6 w-6"></div>
+        <div className="flex items-center space-y-6">
+          <div className="h-2 w-28 bg-slate-300 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!ethers.utils.isAddress(address)) {
+    return <span className="text-error">Wrong address</span>;
+  }
+
+  return (
+    <>
+      <div className="flex justify-between space-x-3 px-8 my-2 mb-5">
+        <div className="  w-1/6 flex-shrink-0">
+          {ensAvatar ? (
+            // Don't want to use nextJS Image here (and adding remote patterns for the URL)
+            // eslint-disable-next-line
+            <img
+              className="p-0.5"
+              src={ensAvatar}
+              width={65}
+              height={50}
+              alt={`${address} avatar`}
+            />
+          ) : (
+            <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={4} />
+          )}
+        </div>
+        <div className="w-3/6">
+          <div className="flex justify-between px-1 w-full">
+            <span className="h-8"> {address?.slice(0, 7)} </span>
+          </div>
+          <Address address={address} />
+        </div>
+        <div className=" w-1/6">
+          <span> {amount} ETH </span>
         </div>
       </div>
       <div className="divide-y divide-solid" />
