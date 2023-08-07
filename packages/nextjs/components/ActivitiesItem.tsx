@@ -60,9 +60,9 @@ const Address = ({ address }: { address: string }) => {
 };
 
 export type TActivityItemProps = {
-  address?: string;
-  amount?: number;
-  landedOn?: string;
+  address: string;
+  amount: number;
+  landedOn: string;
 };
 
 export const ActivitiesItems = ({ address, amount, landedOn }: TActivityItemProps) => {
