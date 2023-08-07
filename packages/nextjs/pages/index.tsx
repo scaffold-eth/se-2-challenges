@@ -1,35 +1,56 @@
-import { useState } from "react";
+import Image from "next/image";
 import type { NextPage } from "next";
-import { Activities } from "~~/components/Activities";
-import { Dice } from "~~/components/Dice";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { Tab } from "~~/components/Tab";
 
 const Home: NextPage = () => {
-  const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
-  const rolls = [
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "F" },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "0" },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "F" },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "F" },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "2" },
-  ];
-
-  const onRollTypeChange = (index: number) => {
-    setCurrentTabIndex(index);
-  };
-
   return (
     <>
       <MetaHeader />
-      <div className="py-20 px-40">
-        <Tab currentIndex={currentTabIndex} onTabChange={onRollTypeChange} />
-        <div className="flex flex-row">
-          <div className="w-1/2">
-            <Activities rolls={rolls} />
-          </div>
-          <div className="w-1/2">
-            <Dice />
+      <div className="flex items-center flex-col flex-grow pt-10">
+        <div className="px-5 w-[90%] md:w-[75%]">
+          <h1 className="text-center mb-6">
+            <span className="block text-2xl mb-2">SpeedRunEthereum</span>
+            <span className="block text-4xl font-bold">Challenge #3: 🎲 Dice Game</span>
+          </h1>
+          <div className="flex flex-col items-center justify-center">
+            <Image
+              src="/hero.png"
+              width="727"
+              height="231"
+              alt="challenge banner"
+              className="rounded-xl border-4 border-primary"
+            />
+            <div className="max-w-3xl">
+              <p className="text-lg mt-10">
+                🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very
+                weak form of randomness. This challenge will give you an example of a contract using block hash to
+                create random numbers. This randomness is exploitable. Other, stronger forms of randomness include
+                commit/reveal schemes, oracles, or VRF from Chainlink. the Ethereum protocol!
+              </p>
+              <p className="text-lg mt-2">👍 One day soon, randomness will be built into the Ethereum protocol!</p>
+              <p className="text-lg mt-2">
+                🧤 Every time a player rolls the dice, they are required to send .002 Eth. 40 percent of this value is
+                added to the current prize amount while the other 60 percent stays in the contract to fund future
+                prizes. Once a prize is won, the new prize amount is set to 10% of the total balance of the DiceGame
+                contract.
+              </p>
+              <p className="text-lg mt-2">
+                🧨 Your job is to attack the Dice Game contract! You will create a new contract that will predict the
+                randomness ahead of time and only roll the dice when you're guaranteed to be a winner!
+              </p>
+              <p className="text-lg mt-2">
+                💬 Meet other builders working on this challenge and get help in the{" "}
+                <a href="https://t.me/+3StA0aBSArFjNjUx" target="_blank" rel="noreferrer" className="underline">
+                  Telegram Group
+                </a>
+              </p>
+              <p className="text-center text-lg">
+                <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
+                  SpeedRunEthereum.com
+                </a>
+                !
+              </p>
+            </div>
           </div>
         </div>
       </div>
