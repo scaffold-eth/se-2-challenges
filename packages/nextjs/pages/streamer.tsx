@@ -195,7 +195,7 @@ const Streamer: NextPage = () => {
     }
   }, [userAddress]);
 
-  const provideWisdom = (client: AddressType, wisdom: string) => {
+  const provideService = (client: AddressType, wisdom: string) => {
     setWisdoms({ ...wisdoms, [client]: wisdom });
     channels[client].postMessage(wisdom);
   };
@@ -321,7 +321,7 @@ const Streamer: NextPage = () => {
                       onChange={e => {
                         e.stopPropagation();
                         const updatedWisdom = e.target.value;
-                        provideWisdom(clientAddress, updatedWisdom);
+                        provideService(clientAddress, updatedWisdom);
                       }}
                       value={wisdoms[clientAddress]}
                     />
