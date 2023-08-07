@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount } from "wagmi";
 import { Curve } from "~~/components/Curve";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Address, AddressInput, Balance, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import {
+  useAccountBalance,
+  useDeployedContractInfo,
+  useScaffoldContractRead,
+  useScaffoldContractWrite,
+} from "~~/hooks/scaffold-eth";
+
+// REGEX for number inputs (only allow numbers and a single decimal point)
+export const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
 
 const Dex: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -48,31 +56,34 @@ const Dex: NextPage = () => {
   const { writeAsync: ethToTokenWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "ethToToken",
-    value: ethToTokenAmount,
+    value: NUMBER_REGEX.test(ethToTokenAmount) ? ethToTokenAmount : undefined,
   });
 
   const { writeAsync: tokenToEthWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "tokenToEth",
-    args: [ethers.utils.parseEther(tokenToETHAmount || "0")],
+    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
+    args: [NUMBER_REGEX.test(tokenToETHAmount) ? ethers.utils.parseEther(tokenToETHAmount) : tokenToETHAmount],
   });
 
   const { writeAsync: depositWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "deposit",
-    value: depositAmount,
+    value: NUMBER_REGEX.test(depositAmount) ? depositAmount : undefined,
   });
 
   const { writeAsync: withdrawWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "withdraw",
-    args: [ethers.utils.parseEther(withdrawAmount || "0")],
+    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
+    args: [NUMBER_REGEX.test(withdrawAmount) ? ethers.utils.parseEther(withdrawAmount) : withdrawAmount],
   });
 
   const { writeAsync: approveWrite } = useScaffoldContractWrite({
     contractName: "Balloons",
     functionName: "approve",
-    args: [approveSpender, ethers.utils.parseEther(approveAmount || "0")],
+    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
+    args: [approveSpender, NUMBER_REGEX.test(approveAmount) ? ethers.utils.parseEther(approveAmount) : approveAmount],
   });
 
   const { data: balanceOfWrite } = useScaffoldContractRead({
@@ -99,9 +110,7 @@ const Dex: NextPage = () => {
     args: [connectedAccount],
   });
 
-  const { data: contractETHBalance } = useBalance({
-    address: DEXInfo?.address,
-  });
+  const { balance: contractETHBalance } = useAccountBalance(DEXInfo?.address);
 
   return (
     <>
@@ -230,7 +239,7 @@ const Dex: NextPage = () => {
                   <IntegerInput
                     value={approveAmount}
                     onChange={value => setApproveAmount(value.toString())}
-                    placeholder="uint256 Amount"
+                    placeholder="Amount"
                     hideSuffix={true}
                   />
                 </span>
@@ -261,7 +270,7 @@ const Dex: NextPage = () => {
           <Curve
             addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
             addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
-            ethReserve={parseFloat(ethers.utils.formatEther(contractETHBalance?.value || BigNumber.from("0")))}
+            ethReserve={contractETHBalance ? parseFloat("" + contractETHBalance) : 0}
             tokenReserve={parseFloat(ethers.utils.formatEther(contractBalance || BigNumber.from("0")))}
             width={500}
             height={500}

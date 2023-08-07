@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
-import { CommonInputProps, InputBase, SIGNED_NUMBER_REGEX } from "~~/components/scaffold-eth";
+import { CommonInputProps, InputBase } from "~~/components/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
 
 const MAX_DECIMALS_USD = 2;
+// REGEX for number inputs (only allow numbers and a single decimal point)
+export const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
 
 function etherValueToDisplayValue(usdMode: boolean, etherValue: string, nativeCurrencyPrice: number) {
   if (usdMode && nativeCurrencyPrice) {
@@ -47,6 +49,7 @@ export const EtherInput = ({ value, name, placeholder, onChange }: CommonInputPr
   const [transitoryDisplayValue, setTransitoryDisplayValue] = useState<string>();
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrencyPrice);
   const [usdMode, setUSDMode] = useState(false);
+  const [inputError, setInputError] = useState(false);
 
   // The displayValue is derived from the ether value that is controlled outside of the component
   // In usdMode, it is converted to its usd value, in regular mode it is unaltered
@@ -61,8 +64,10 @@ export const EtherInput = ({ value, name, placeholder, onChange }: CommonInputPr
   }, [nativeCurrencyPrice, transitoryDisplayValue, usdMode, value]);
 
   const handleChangeNumber = (newValue: string) => {
-    if (newValue && !SIGNED_NUMBER_REGEX.test(newValue)) {
-      return;
+    if (newValue && !NUMBER_REGEX.test(newValue)) {
+      setInputError(true);
+    } else {
+      setInputError(false);
     }
 
     // Following condition is a fix to prevent usdMode from experiencing different display values
@@ -94,6 +99,7 @@ export const EtherInput = ({ value, name, placeholder, onChange }: CommonInputPr
     <InputBase
       name={name}
       value={displayValue}
+      error={inputError}
       placeholder={placeholder}
       onChange={handleChangeNumber}
       prefix={<span className="pl-4 -mr-2 text-accent self-center">{usdMode ? "$" : "Ξ"}</span>}
@@ -101,7 +107,7 @@ export const EtherInput = ({ value, name, placeholder, onChange }: CommonInputPr
         <button
           className={`btn btn-primary h-[2.2rem] min-h-[2.2rem] ${nativeCurrencyPrice > 0 ? "" : "hidden"}`}
           onClick={toggleMode}
-          disabled={!usdMode && !nativeCurrencyPrice}
+          disabled={inputError || (!usdMode && !nativeCurrencyPrice)}
         >
           <ArrowsRightLeftIcon className="h-3 w-3 cursor-pointer" aria-hidden="true" />
         </button>
