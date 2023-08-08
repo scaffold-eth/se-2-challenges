@@ -27,9 +27,9 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-git clone https://github.com/scaffold-eth/se-2-challenges.git {challengeName}
-cd {challengeName}
-git checkout {challengeName}
+git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-3-dice-game
+cd challenge-3-dice-game
+git checkout challenge-3-dice-game
 yarn install
 ```
 
