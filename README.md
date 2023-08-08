@@ -62,8 +62,6 @@ Navigate to the `Debug Contracts` tab, you should see two smart contracts displa
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
-> ⭐️ Also note that there is no curve until you uncomment the specific lines of code at the end of `hardhat/deploy/00_deploy_your_contract.ts`.
-
 ![ch-4-main](https://github.com/scaffold-eth/se-2-challenges/assets/59885513/930ec64c-d185-4a33-8941-43f44a611231)
 
 > 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first!  
@@ -126,13 +124,13 @@ First, we have to call `approve()` on the Balloons contract, approving the DEX c
 ![balloons-dex-tab](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/710f5c9a-d898-4012-9014-4c46f1de015f)
 
 > 🤓 Copy and paste the DEX address to the _Address Spender_ and then set the amount to 5.  
-> You can confirm this worked using the `allowance()` function in `Debug Contracts` tab.
+> You can confirm this worked using the `allowance()` function in `Debug Contracts` tab using your local account address as the owner and the DEX contract address as the spender.
 
-Now we are ready to call `init()` on the DEX, using `Debug Contracts` tab. We will tell it to take 5000000000000000000 (5 \* 10¹⁸) of our tokens and we will also send 0.01 (0.01 \* 10¹⁸) ETH with the transaction. We have to click the \* 10¹⁸ buttons in `Debug Contracts` because contracts use wei as units.
+Now we are ready to call `init()` on the DEX, using `Debug Contracts` tab. We will tell it to take 5 of our tokens and send 0.01 ETH with the transaction. Remember in the `Debug Contracts` tab we are calling the functions directly which means we have to convert to wei, so don't forget to multiply those values by 10¹⁸!
 
 ![multiply-wei](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/531cab0b-2b37-4489-88c3-d36c0755d2d1)
 
-In `DEX` tab, to simplify user interactions, we run the conversion (_tokenAmount_ \* 10¹⁸) in the code, so they just have to input the token amount they want to swap or deposit/withdraw.
+In the `DEX` tab, to simplify user interactions, we run the conversion (_tokenAmount_ \* 10¹⁸) in the code, so they just have to input the token amount they want to swap or deposit/withdraw.
 
 You can see the DEX contract's value update and you can check the DEX token balance using the `balanceOf` function on the Balloons UI from `DEX` tab.
 
@@ -156,8 +154,8 @@ Now when we `yarn deploy --reset` then our contract should be initialized as soo
 
 ### 🥅 Goals / Checks
 
-- [ ] 🎈 Under the debug tab, does your DEX show 5 ETH and 5 Balloons of liquidity?
-- [ ] ❗ If you are planning to submit the challenge make sure to implement the `getLiquidity` getter function.
+- [ ] 🎈 In the DEX tab is your contract showing 5 ETH and 5 Balloons of liquidity?
+- [ ] ⚠ If you are planning to submit the challenge make sure to implement the `getLiquidity` getter function in `DEX.sol`
 
 ---
 
@@ -277,6 +275,12 @@ Let’s edit the `DEX.sol` smart contract and add two new functions for swapping
 
 > 💡 Each of these functions should calculate the resulting amount of output asset using our price function that looks at the ratio of the reserves vs the input asset. We can call tokenToEth and it will take our tokens and send us ETH or we can call ethToToken with some ETH in the transaction and it will send us $BAL tokens. Deploy it and try it out!
 
+### 🥅 Goals / Checks
+
+- [ ] Can you trade ETH for Balloons and get the correct amount?
+- [ ] Can you trade Balloons for ETH?
+> ⚠ When trading Balloons for ETH remember about allowances. Try using `approve()` to approve the contract address for some amount of tokens, then try the trade again!
+
 ---
 
 ## ⛳️ **Checkpoint 5: Liquidity** 🌊
@@ -353,13 +357,9 @@ Cool beans! Your front-end should be showing something like this now!
 
 Now, a user can just enter the amount of ETH or tokens they want to swap and the chart will display how the price is calculated. The user can also visualize how larger swaps result in more slippage and less output asset.
 
-### 🥅 Extra Challenge:
+### ⚔️ Side Quests  
 
-- [ ] `approve()` event emission: can you implement this into the event tabs so that it is clear when `approve()` from the `Balloons.sol` contract has been executed?
-
----
-
-> ❗ ❗ Note that the testing file is a work in progress, so `\packages\hardhat\test\Challenge4.ts` is incomplete. You can run `yarn test` if you like, but may have some failed tests, even with working code.
+- [ ] In `packages\nextjs\pages\events.tsx` implement an event and emit for the `approve()` function to make it clear when it has been executed.
 
 ---
 
@@ -395,7 +395,7 @@ yarn deploy
 
 ## Checkpoint 8: 🚢 Ship your frontend! 🚁
 
-> ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
+> ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
 
 ![chall-0-scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3b50c7a7-b9cc-4af3-ab2a-11be4f5d2235)
 
@@ -403,7 +403,7 @@ yarn deploy
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
 
 🚀 Deploy your NextJS App
 
@@ -449,3 +449,9 @@ yarn verify --network sepolia
 ## Checkpoint 10: 💪 Flex!
 
 👩‍❤️‍👨 Send some $BAL and share your public url with a friend and ask them to swap their tokens :)
+
+---
+
+> 🏃 Head to your next challenge [here](https://speedrunethereum.com).
+
+💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
