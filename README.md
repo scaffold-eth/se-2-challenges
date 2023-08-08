@@ -214,7 +214,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ## Checkpoint 5: 🚢 Ship your frontend! 🚁
 
-> ✏️ Edit your frontend config `scaffold.config.ts` in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to the network of your choice (for example `chains.sepolia`) :
+> ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to the network of your choice (for example `chains.sepolia`) :
 
 ![scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3b50c7a7-b9cc-4af3-ab2a-11be4f5d2235)
 
