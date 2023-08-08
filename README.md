@@ -118,7 +118,7 @@ yarn start
 
 ![chall-0-yarn-account](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/c34df8c9-9793-4a76-849b-170fae7fd0f0)
 
-⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
+⛽️ Use a faucet like [https://sepoliafaucet.com/](https://sepoliafaucet.com/) or [https://www.infura.io/faucet/sepolia](https://www.infura.io/faucet/sepolia) to fund your deployer address.
 
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
 
