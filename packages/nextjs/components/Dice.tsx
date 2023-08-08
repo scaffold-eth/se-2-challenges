@@ -8,7 +8,7 @@ export const Dice = ({ onRoll }: { onRoll: () => void }) => {
         <div className="flex w-full justify-center p-3">
           <span className="text-xl"> Roll a 0, 1, or 2 to win the prize! </span>
         </div>
-        <button onClick={onRoll} className={` btn btn-secondary btn-xl normal-case font-xl text-lg`}>
+        <button onClick={onRoll} className="btn btn-secondary btn-xl normal-case font-xl text-lg">
           Roll the dice
         </button>
       </div>
