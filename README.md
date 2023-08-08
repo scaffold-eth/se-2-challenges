@@ -1,14 +1,19 @@
-# 🚩 Challenge {challengeNum}: {challengeEmoji} {challengeTitle}
+# 🚩 Challenge 3: 🎲 Dice Game
 
-{challengeHeroImage}
+![readme-3](https://github.com/Ifechukwudaniel/se-2-challenges/assets/47566579/a5560446-3b22-4676-8fa8-33b544acc2f9)
 
-A {challengeDescription}.
+> 🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very weak form of randomness. This challenge will give you an example of a contract using block hash to create random numbers.  This randomness is exploitable.  Other, stronger forms of randomness include commit/reveal schemes, oracles, or VRF from Chainlink.
 
-🌟 The final deliverable is an app that {challengeDeliverable}.
-Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
+> 👍 One day soon, randomness will be built into the Ethereum protocol!
 
-💬 Meet other builders working on this challenge and get help in the {challengeTelegramLink}
+> 💬 Dice Game is a contract that allows users to roll the dice to try and win the prize.  If players roll either a 0, 1, or 2 they will win the current prize amount.  The initial prize is 10% of the contract's balance, which starts out at .05 Eth.  
+ 
+> 🧤 Every time a player rolls the dice, they are required to send .002 Eth.  40 percent of this value is added to the current prize amount while the other 60 percent stays in the contract to fund future prizes.  Once a prize is won, the new prize amount is set to 10% of the total balance of the DiceGame contract. 
+ 
+> 🧨 Your job is to attack the Dice Game contract!  You will create a new contract that will predict the randomness ahead of time and only roll the dice when you're guaranteed to be a winner!
 
+> 💬 Meet other builders working on this challenge and get help in the [Challenge 3 telegram](https://t.me/+3StA0aBSArFjNjUx)!
+ 
 ---
 
 ## Checkpoint 0: 📦 Install 📚
