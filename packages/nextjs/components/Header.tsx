@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, TvIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
@@ -41,7 +41,7 @@ export const Header = () => {
       </li>
       <li>
         <NavLink href="/streamer">
-          <BugAntIcon className="h-4 w-4" />
+          <TvIcon className="h-4 w-4" />
           Streamer
         </NavLink>
       </li>
