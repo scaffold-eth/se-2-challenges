@@ -2,7 +2,7 @@
 
 ![readme-3](https://github.com/Ifechukwudaniel/se-2-challenges/assets/47566579/a5560446-3b22-4676-8fa8-33b544acc2f9)
 
-> 🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very weak form of randomness. This challenge will give you an example of a contract using block hash to create random numbers.  This randomness is exploitable.  Other, stronger forms of randomness include commit/reveal schemes, oracles, or VRF from Chainlink.
+> 🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy-to-use, but very weak form of randomness. This challenge will give you an example of a contract using block hash to create random numbers.  This randomness is exploitable.  Other, stronger forms of randomness include commit/reveal schemes, oracles, or VRF from Chainlink.
 
 > 👍 One day soon, randomness will be built into the Ethereum protocol!
 
@@ -55,9 +55,13 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
+> You can `yarn deploy --reset` to deploy your contract until you get it right.
+
 ---
 
 _Other commonly used Checkpoints (check one Challenge and adapt the texts for your own):_
+
+## Checkpoint 2: 🎲 Dice Game
 
 ## Checkpoint {num}: 💾 Deploy it! 🛰
 
