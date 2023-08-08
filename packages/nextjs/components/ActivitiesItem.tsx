@@ -65,7 +65,7 @@ export type TActivityItemProps = {
   landedOn: string;
 };
 
-export const ActivitiesItems = ({ address, amount, landedOn }: TActivityItemProps) => {
+export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps) => {
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
 
   const { data: fetchedEnsAvatar } = useEnsAvatar({

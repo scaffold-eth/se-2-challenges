@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivitiesItems, TActivityItemProps, TWinnerItemProps, WinnerItem } from "./ActivitiesItem";
+import { ActivitiesItem, TActivityItemProps, TWinnerItemProps, WinnerItem } from "./ActivitiesItem";
 
 export type TActivitiesProps = {
   rolls: TActivityItemProps[];
@@ -37,7 +37,7 @@ export const Activities = ({ rolls, winners }: TActivitiesProps) => {
             </div>
             <div>
               {rolls.map(({ address, amount, landedOn }, i) => (
-                <ActivitiesItems key={i} address={address} amount={amount} landedOn={landedOn} />
+                <ActivitiesItem key={i} address={address} amount={amount} landedOn={landedOn} />
               ))}
             </div>
           </>
