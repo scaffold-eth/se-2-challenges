@@ -54,7 +54,7 @@ https://buidlguidl.com/
 
 DEX Telegram Channel: https://t.me/+_NeUIJ664Tc1MzIx
 
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-4-dex
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-4-dex
 
 ---
 
