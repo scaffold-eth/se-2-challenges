@@ -33,15 +33,6 @@ git checkout challenge-3-dice-game
 yarn install
 ```
 
-Then download the challenge to your computer and install dependencies by running:
-
-```sh
-git clone <challeng_repo_url> <challenge_folder_name>
-cd <challenge_folder_name>
-git checkout <challenge_repo_branch>
-yarn install
-```
-
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
 ```sh
@@ -51,14 +42,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd <challenge_folder_name>
+cd challenge-3-dice-game
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd <challenge_folder_name>
+cd challenge-3-dice-game
 yarn start
 ```
 
