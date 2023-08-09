@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @author stevepham.eth and m00npapi.eth
  * @notice Empty DEX.sol that just outlines what features could be part of the challenge (up to you!)
  * @dev We want to create an automatic market where our contract will hold reserves of both ETH and 🎈 Balloons. These reserves will provide liquidity that allows anyone to swap between the assets.
- * NOTE: functions outlined here are what work with the front end of this branch/repo. Also return variable names that may need to be specified exactly may be referenced (if you are confused, see solutions folder in this repo and/or cross reference with front-end code).
+ * NOTE: functions outlined here are what work with the front end of this challenge. Also return variable names need to be specified exactly may be referenced (It may be helpful to cross reference with front-end code function calls).
  */
 contract DEX {
     /* ========== GLOBAL VARIABLES ========== */
@@ -101,3 +101,4 @@ contract DEX {
      */
     function withdraw(uint256 amount) public returns (uint256 eth_amount, uint256 token_amount) {}
 }
+
