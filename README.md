@@ -78,7 +78,7 @@ Like the [token vendor challenge](https://speedrunethereum.com/challenge/token-v
 
 You'll have to redeploy with `yarn deploy --reset`.
 
-We'll need another active address to act as the rube in our app. To do this just open new tab in your browser.
+We'll need another active address to act as the rube in our app. To do this just open a new tab in your browser.
 
 > ⚠️ **Note**: previous challenges created new addresses by opening an incognito window or a different browser. This will **not** work for this challenge, because the off-chain application uses a very simple communication pipe that doesn't work between different browsers or private windows.)
 
@@ -105,11 +105,13 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 > 👁 Check `packages/nextjs/pages/streamer.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
 
+> Run `yarn deploy` and open a channel in the Rube's tab.  (You may need some funds from the faucet)
+
 ![channel-open](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/69a30c45-d384-476f-8b7d-67bc23d21833)
 
 ### 🥅 Goals:
 
-- [ ] Does opening a channel (from Rube's tab, you may need some funds from the faucet) cause a `Received Wisdom` box to appear?
+- [ ] Does opening a channel cause a `Received Wisdom` box to appear?
 - [ ] Do opened channels appear on the Guru's UI as well?
 - [ ] Using the _Debug Contracts_ tab, does a repeated call to `fundChannel` fail?
 
@@ -117,7 +119,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 ## Checkpoint 3: Exchange the Service
 
-Now that the channel is funded, and all participants have observed the funding via the emitted event, we can begin our off-chain exchange of service. We are now working in `packages/nextjs/pages/streamer.tsx`.
+Now that the channel is funded and all participants have observed the funding via the emitted event, we can begin our off-chain exchange of service. We are now working in `packages/nextjs/pages/streamer.tsx`.
 
 Functions of note:
 
@@ -152,7 +154,7 @@ Now that we've collected some vouchers, we'd like to redeem them on-chain and mo
 - Check that the signer has a running channel with balance greater than the voucher's `updatedBalance`
 - Calculate the payout (`balances[signer] - updatedBalance`)
 - Update the channel balance.
-- Pay the contract owner.
+- Send the payout to the Guru.
 
 💡 Reminders:
 
@@ -210,7 +212,7 @@ The `defundChannel()` function should:
 
 ### 🥅 Goals:
 
-- [ ] Launch a challenge as a channel client. The Guru's UI should show an alert via their `Cash out latest voucher` button.
+- [ ] Launch a challenge as a channel client. If wisdom has been given, the Guru's UI should show an alert via their `Cash out latest voucher` button.
 - [ ] Recover the Guru's best voucher before the channel closes.
 - [ ] Close the channel and recover rube funds.
 
