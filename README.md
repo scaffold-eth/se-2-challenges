@@ -345,6 +345,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 ### 🥅 Goals / Checks
 
 - [ ] 💧 Deposit liquidity, and then check your liquidity amount through the mapping in the debug tab. Has it changed properly? Did the right amount of assets get deposited?
+⚔️ Side Quest: Prove your knowledge by calculating the exact amount of Balloons you need to approve when depositing. Don't forget about the fee!
 - [ ] 🧐 What happens if you `deposit()` at the beginning of the deployed contract, then another user starts swapping out for most of the balloons, and then you try to withdraw your position as a liquidity provider? Answer: you should get the amount of liquidity proportional to the ratio of assets within the isolated liquidity pool. It will not be 1:1.
 
 ---
