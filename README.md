@@ -36,7 +36,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-git clone https://github.com/scaffold-eth/se-2-challenges.git {challengeName}
+git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-5-state-channels
 cd challenge-5-state-channels
 git checkout challenge-5-state-channels
 yarn install
