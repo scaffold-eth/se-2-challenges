@@ -102,7 +102,7 @@ const Streamer: NextPage = () => {
     function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
       // recreate a BigNumber object from the message. v.data.updatedBalance is
       // a string representation of the BigNumber for transit over the network
-      let updatedBalance = BigNumber.from(data.updatedBalance);
+      const updatedBalance = BigNumber.from(data.updatedBalance);
 
       /*
        *  Checkpoint 3:
@@ -113,22 +113,6 @@ const Streamer: NextPage = () => {
        *  and then use utils.verifyMessage() to confirm that voucher signer was
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
-
-      // TODO: Checkpoint 3. Remove
-      if (updatedBalance.lt(BigNumber.from(0))) {
-        updatedBalance = BigNumber.from(0);
-      }
-
-      const packed = utils.solidityPack(["uint256"], [updatedBalance]);
-      const hashed = utils.keccak256(packed);
-      const arrayified = utils.arrayify(hashed);
-
-      const senderAddress = utils.verifyMessage(arrayified, data.signature);
-
-      if (senderAddress !== clientAddress) {
-        return;
-      }
-      // TODO: end of remove block
 
       const existingVoucher = vouchers[clientAddress];
 
@@ -208,15 +192,16 @@ const Streamer: NextPage = () => {
     value: STREAM_ETH_VALUE,
   });
 
-  const { writeAsync: challengeChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "challengeChannel",
-  });
+  // Checkpoint 5
+  // const { writeAsync: challengeChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "challengeChannel",
+  // });
 
-  const { writeAsync: defundChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "defundChannel",
-  });
+  // const { writeAsync: defundChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "defundChannel",
+  // });
 
   const [recievedWisdom, setReceivedWisdom] = useState("");
 
@@ -344,13 +329,13 @@ const Streamer: NextPage = () => {
                     </div>
 
                     {/* Checkpoint 4: */}
-                    <CashOutVoucherButton
+                    {/* <CashOutVoucherButton
                       key={clientAddress}
                       clientAddress={clientAddress}
                       challenged={challenged}
                       closed={closed}
                       voucher={vouchers[clientAddress]}
-                    />
+                    /> */}
                   </div>
                 ))}
               </div>
@@ -387,8 +372,7 @@ const Streamer: NextPage = () => {
                   </div>
 
                   {/* Checkpoint 5: challenge & closure */}
-
-                  <div className="flex flex-col items-center pb-6">
+                  {/* <div className="flex flex-col items-center pb-6">
                     <button
                       disabled={challenged.includes(userAddress)}
                       className="btn btn-primary"
@@ -420,7 +404,7 @@ const Streamer: NextPage = () => {
                     >
                       Close and withdraw funds
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               ) : userAddress && closed.includes(userAddress) ? (
                 <div className="text-lg">
