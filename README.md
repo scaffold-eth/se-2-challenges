@@ -175,7 +175,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 4: 🚢 Ship it 🚁
+### Checkpoint 4: 💾 Deploy your contract! 🛰
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
@@ -195,7 +195,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 5: 🎚 Frontend 🧘‍♀️
+### Checkpoint 5: 🚢 Ship your frontend! 🚁
 
 > ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
