@@ -210,7 +210,7 @@ The `defundChannel()` function should:
 - Transfer `balances[msg.sender]` to the sender.
 - Emit a `Closed` event.
 
-> ⚠ Make sure the defundChannel definition is uncommented in `packages\nextjs\pages\streamer.tsx`
+> ⚠ Make sure the defundChannel declaration is uncommented in `packages\nextjs\pages\streamer.tsx`
 
 ### 🥅 Goals:
 
