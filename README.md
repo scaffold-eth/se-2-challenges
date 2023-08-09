@@ -68,7 +68,7 @@ yarn start
 
 ---
 
-## Checkpoint 1: Configure Deployment & Wallets
+## Checkpoint 1: 🧘‍♀️ Configure Guru & Rube 📃
 
 Like the [token vendor challenge](https://speedrunethereum.com/challenge/token-vendor), we'll be building an `Ownable` contract. The contract owner is the **Guru** (the service provider in this application), and you will use multiple browser windows or tabs to assume the roles of Guru and rube (service provider & client).
 
@@ -91,7 +91,7 @@ We'll need another active address to act as the rube in our app. To do this just
 
 ---
 
-## Checkpoint 2: Fund a Channel
+## Checkpoint 2: 💸 Fund a Channel 📺
 
 Like the [decentralized staking challenge](https://speedrunethereum.com/challenge/decentralized-staking), we'll track balances for individual channels / users in a mapping:
 
@@ -117,7 +117,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 ---
 
-## Checkpoint 3: Exchange the Service
+## Checkpoint 3: 💱 Exchange the Service 👷‍♂️
 
 Now that the channel is funded and all participants have observed the funding via the emitted event, we can begin our off-chain exchange of service. We are now working in `packages/nextjs/pages/streamer.tsx`.
 
@@ -145,7 +145,7 @@ The first two functions are complete - we will work on `processVoucher`, where t
 
 > 💬 Hint: You'll want to compare the size of your best voucher against the size of your provided wisdom. If there's too big a discrepency, cut them off!
 
-## Checkpoint 4: Recover Service Provider's Earnings
+## Checkpoint 4: 💰 Recover Service Provider's Earnings 💵
 
 Now that we've collected some vouchers, we'd like to redeem them on-chain and move funds from the `Streamer` contract's `balances` map to the Guru's own address. The `withdrawEarnings` function of `packages/hardhat/contracts/Streamer.sol` takes a Struct named voucher (balance + signature) as input, and should:
 
@@ -176,7 +176,7 @@ Now that we've collected some vouchers, we'd like to redeem them on-chain and mo
 
 - [ ] `withdrawEarnings` is a function that only the service provider would be interested in calling. Should it be marked `onlyOwner`? (the `onlyOwner` modifier makes a function accessible only to the contract owner - anyone else who tries to call it will be immediately rejected).
 
-## Checkpoint 5: Challenge & Close the Channel
+## Checkpoint 5: 💪 Challenge & Close the Channel 🔽
 
 So far so good:
 
