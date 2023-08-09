@@ -210,6 +210,8 @@ The `defundChannel()` function should:
 - Transfer `balances[msg.sender]` to the sender.
 - Emit a `Closed` event.
 
+> ⚠ Make sure the defundChannel definition is uncommented in `packages\nextjs\pages\streamer.tsx`
+
 ### 🥅 Goals:
 
 - [ ] Launch a challenge as a channel client. If wisdom has been given, the Guru's UI should show an alert via their `Cash out latest voucher` button.
