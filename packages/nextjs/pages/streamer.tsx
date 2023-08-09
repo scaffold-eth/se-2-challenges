@@ -328,13 +328,13 @@ const Streamer: NextPage = () => {
                     </div>
 
                     {/* Checkpoint 4: */}
-                    <CashOutVoucherButton
+                    {/* <CashOutVoucherButton
                       key={clientAddress}
                       clientAddress={clientAddress}
                       challenged={challenged}
                       closed={closed}
                       voucher={vouchers[clientAddress]}
-                    />
+                    /> */}
                   </div>
                 ))}
               </div>
