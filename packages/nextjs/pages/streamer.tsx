@@ -192,15 +192,16 @@ const Streamer: NextPage = () => {
     value: STREAM_ETH_VALUE,
   });
 
-  const { writeAsync: challengeChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "challengeChannel",
-  });
+  // Checkpoint 5
+  // const { writeAsync: challengeChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "challengeChannel",
+  // });
 
-  const { writeAsync: defundChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "defundChannel",
-  });
+  // const { writeAsync: defundChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "defundChannel",
+  // });
 
   const [recievedWisdom, setReceivedWisdom] = useState("");
 
@@ -371,8 +372,7 @@ const Streamer: NextPage = () => {
                   </div>
 
                   {/* Checkpoint 5: challenge & closure */}
-
-                  <div className="flex flex-col items-center pb-6">
+                  {/* <div className="flex flex-col items-center pb-6">
                     <button
                       disabled={challenged.includes(userAddress)}
                       className="btn btn-primary"
@@ -404,7 +404,7 @@ const Streamer: NextPage = () => {
                     >
                       Close and withdraw funds
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               ) : userAddress && closed.includes(userAddress) ? (
                 <div className="text-lg">
