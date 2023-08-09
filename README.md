@@ -229,7 +229,7 @@ Finally, let’s say the ratio is the same but we want to swap 100,000 tokens in
 - [ ] 🤔 Do you understand how the x\*y=k price curve actually works? Write down a clear explanation for yourself and derive the formula for price. You might have to shake off some old algebra skills!
 - [ ] 💃 You should be able to go through the price section of this tutorial with the sample numbers and generate the same outputChange variable.
 
-> 💡 _Hints:_ See this [link](https://hackernoon.com/formulas-of-uniswap-a-deep-dive), solve for the change in the Output Reserve. See the section in that link up to the uniswap v3 title.
+> 💡 _Hints:_ For more information on calculating the Output Reserve, read the Brief Revisit of Uniswap V2 in [this article](https://hackernoon.com/formulas-of-uniswap-a-deep-dive).
 
 > 💡💡 _More Hints:_ Also, don't forget to think about how to implement the trading fee. Solidity doesn't allow for decimals, so one way that contracts are written to implement percentage is using whole uints (997 and 1000) as numerator and denominator factors, respectively.
 
@@ -443,8 +443,6 @@ You can verify your smart contract on Etherscan by running (`yarn verify --netwo
 ```shell
 yarn verify --network sepolia
 ```
-
-> It is okay if it says your contract is already verified. Copy the addresses of `BAL.sol` and `DEX.sol` and search them on sepolia Etherscan to find the correct URL you need to submit this challenge.
 
 ## Checkpoint 10: 💪 Flex!
 
