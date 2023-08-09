@@ -18,6 +18,7 @@ const deployStreamer: DeployFunction = async function (hre: HardhatRuntimeEnviro
     with a random private key in the .env file (then used on hardhat.config.ts)
     You can run the `yarn account` command to check your balance in every network.
   */
+
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
@@ -31,13 +32,13 @@ const deployStreamer: DeployFunction = async function (hre: HardhatRuntimeEnviro
     autoMine: true,
   });
 
-  // Get the deployed contract
+  // // *Checkpoint 1*
+  // // Get the deployed contract
   // const streamer = await hre.ethers.getContract("Streamer", deployer);
 
-  //console.log("\n 🤹  Sending ownership to frontend address...\n");
-  //Checkpoint 2: change address to your frontend address vvvv
-  //const ownerTx = await streamer.transferOwnership("** YOUR FRONTEND ADDRESS **");
-
+  // // Transfer ownership to your front end address
+  // console.log("\n 🤹  Sending ownership to frontend address...\n");
+  // const ownerTx = await streamer.transferOwnership("** YOUR FRONTEND ADDRESS **");
   // console.log("\n       confirming...\n");
   // const ownershipResult = await ownerTx.wait();
   // if (ownershipResult) {
