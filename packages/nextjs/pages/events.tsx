@@ -155,8 +155,8 @@ const Events: NextPage = () => {
                           <td className="text-center">
                             <Address address={event.args.liquidityProvider} />
                           </td>
-                          <td>{parseFloat(utils.formatEther(event.args.tokensInput).toString()).toFixed(4)}</td>
                           <td>{parseFloat(utils.formatEther(event.args.ethInput).toString()).toFixed(4)}</td>
+                          <td>{parseFloat(utils.formatEther(event.args.tokensInput).toString()).toFixed(4)}</td>
                           <td>{parseFloat(utils.formatEther(event.args.liquidityMinted).toString()).toFixed(4)}</td>
                         </tr>
                       );
@@ -201,8 +201,8 @@ const Events: NextPage = () => {
                           <td className="text-center">
                             <Address address={event.args.liquidityRemover} />
                           </td>
-                          <td>{parseFloat(utils.formatEther(event.args.tokensOutput).toString()).toFixed(4)}</td>
                           <td>{parseFloat(utils.formatEther(event.args.ethOutput).toString()).toFixed(4)}</td>
+                          <td>{parseFloat(utils.formatEther(event.args.tokensOutput).toString()).toFixed(4)}</td>
                           <td>{parseFloat(utils.formatEther(event.args.liquidityWithdrawn).toString()).toFixed(4)}</td>
                         </tr>
                       );
