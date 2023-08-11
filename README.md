@@ -101,7 +101,7 @@ You will need to add the following image assets in `packages/nextjs/public` fold
 - **Hero image.** `hero.png`
   It's a wider version of the Thumbnail with SRE logo at the bottom right. Used as README header, and as `pages/index.tsx` hero image.
 
-### 6. Edit README adapting the [base template](#readme-base-template)
+### 6. Edit README adapting the [base template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template#readme)
 
 Adapt the base template README using the SE-1 version as a reference.
 
