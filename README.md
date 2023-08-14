@@ -279,6 +279,7 @@ Let’s edit the `DEX.sol` smart contract and add two new functions for swapping
 
 - [ ] Can you trade ETH for Balloons and get the correct amount?
 - [ ] Can you trade Balloons for ETH?
+
 > ⚠ When trading Balloons for ETH remember about allowances. Try using `approve()` to approve the contract address for some amount of tokens, then try the trade again!
 
 ---
@@ -292,9 +293,9 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 > 💬 _Hint:_
 > The `deposit()` function receives ETH and also transfers $BAL tokens from the caller to the contract at the right ratio. The contract also tracks the amount of liquidity (how many liquidity provider tokens (LPTs) minted) the depositing address owns vs the totalLiquidity.
 
-> 💡 **Remember**: Everytime you perform actions with your $BAL tokens (deposit, exchange), you will need to call `approve()` from the `Balloons.sol` contract approving the DEX to handle a specific number of your $BAL tokens. To keep things simple, you can just do that from `Debug Contracts` tab.
+> 💡 **Remember**: Every time you perform actions with your $BAL tokens (deposit, exchange), you'll need to call `approve()` from the `Balloons.sol` contract **to authorize the DEX address to handle a specific number of your $BAL tokens**. To keep things simple, you can just do that from `Debug Contracts` tab, **ensure you approve a large enough quantity of tokens to not face allowance problems**.
 
-> 💬💬 _More Hints:_ The `withdraw()` function lets a user take both ETH and $BAL tokens out at the correct ratio. The actual amount of ETH and tokens a liquidity provider withdraws could be higher than what they deposited because of the 0.3% fees collected from each trade. It also could be lower depending on the price fluctuations of $BAL to ETH and vice versa (from token swaps taking place using your AMM!). The 0.3% fee incentivizes third parties to provide liquidity, but they must be cautious of [Impermanent Loss (IL)](https://www.youtube.com/watch?v=8XJ1MSTEuU0&t=2s&ab_channel=Finematics).
+> 💬💬 _More Hints:_ The `withdraw()` function lets a user take his Liquidity Provider Tokens out, withdrawing both ETH and $BAL tokens out at the correct ratio. The actual amount of ETH and tokens a liquidity provider withdraws could be higher than what they deposited because of the 0.3% fees collected from each trade. It also could be lower depending on the price fluctuations of $BAL to ETH and vice versa (from token swaps taking place using your AMM!). The 0.3% fee incentivizes third parties to provide liquidity, but they must be cautious of [Impermanent Loss (IL)](https://www.youtube.com/watch?v=8XJ1MSTEuU0&t=2s&ab_channel=Finematics).
 
 <details markdown='1'><summary>👩🏽‍🏫 Solution Code </summary>
 
@@ -345,7 +346,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 ### 🥅 Goals / Checks
 
 - [ ] 💧 Deposit liquidity, and then check your liquidity amount through the mapping in the debug tab. Has it changed properly? Did the right amount of assets get deposited?
-⚔️ Side Quest: Prove your knowledge by calculating the exact amount of Balloons you need to approve when depositing. Don't forget about the fee!
+
 - [ ] 🧐 What happens if you `deposit()` at the beginning of the deployed contract, then another user starts swapping out for most of the balloons, and then you try to withdraw your position as a liquidity provider? Answer: you should get the amount of liquidity proportional to the ratio of assets within the isolated liquidity pool. It will not be 1:1.
 
 ---
@@ -358,7 +359,7 @@ Cool beans! Your front-end should be showing something like this now!
 
 Now, a user can just enter the amount of ETH or tokens they want to swap and the chart will display how the price is calculated. The user can also visualize how larger swaps result in more slippage and less output asset.
 
-### ⚔️ Side Quests  
+### ⚔️ Side Quests
 
 - [ ] In `packages\nextjs\pages\events.tsx` implement an event and emit for the `approve()` function to make it clear when it has been executed.
 
@@ -366,31 +367,17 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ## Checkpoint 7: 💾 Deploy your contracts! 🛰
 
-🛰 Ready to deploy to a public testnet?!?
+📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
-> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
+👩‍🚀 You will want to run `yarn account` to see if you have a **deployer address**
 
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
+🔐 If you don't have one, run `yarn generate` to create a mnemonic and save it locally for deploying.
 
-🔐 Generate a deployer address with `yarn generate`.
+⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
-![chall-0-yarn-generate](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/133f5701-e575-4cc2-904f-cdc83ae86d94)
+🚀 Run `yarn deploy` to deploy your smart contracts to a public network (selected in `hardhat.config.ts`)
 
-👛 View your deployer address using `yarn account`.
-
-![chall-0-yarn-account](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/c34df8c9-9793-4a76-849b-170fae7fd0f0)
-
-⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
-
-> ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
-
-🚀 Deploy your BAL and DEX smart contracts:
-
-```shell
-yarn deploy
-```
-
-> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
 ---
 
