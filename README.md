@@ -361,6 +361,10 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 - [ ] In `packages\nextjs\pages\events.tsx` implement an event and emit for the `approve()` function to make it clear when it has been executed.
 
+#### ⚠️ Test it!
+
+- Now is a good time to run `yarn test` to run the automated testing function. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
+  
 ---
 
 ## Checkpoint 7: 💾 Deploy your contracts! 🛰
@@ -381,31 +385,19 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ## Checkpoint 8: 🚢 Ship your frontend! 🚁
 
-> ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
+✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
-![chall-0-scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3b50c7a7-b9cc-4af3-ab2a-11be4f5d2235)
+💻 View your frontend at http://localhost:3000/stakerUI and verify you see the correct network.
 
-> You should see the correct network in the frontend (http://localhost:3000):
+📡 When you are ready to ship the frontend app...
 
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
-
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
-
-🚀 Deploy your NextJS App
-
-```shell
-yarn vercel
-```
+📦 Run `yarn vercel` to package up your frontend and deploy.
 
 > Follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
 
 > If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
-
-⚠️ Run the automated testing function to make sure your app passes
-
-```shell
-yarn test
-```
+ 
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
 
 ### Configuration of Third-Party Services for Production-Grade Apps.
 
