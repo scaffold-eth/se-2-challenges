@@ -377,7 +377,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 🚀 Run `yarn deploy` to deploy your smart contracts to a public network (selected in `hardhat.config.ts`)
 
-> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
+> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
 ---
 
