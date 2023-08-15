@@ -214,13 +214,9 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 ## Checkpoint 5: 🚢 Ship your frontend! 🚁
 
-> ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to the network of your choice (for example `chains.sepolia`) :
+✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
-![scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3b50c7a7-b9cc-4af3-ab2a-11be4f5d2235)
-
-> You should see the correct network in the frontend (http://localhost:3000):
-
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
+💻 View your frontend at http://localhost:3000/stakerUI and verify you see the correct network.
 
 📡 When you are ready to ship the frontend app...
 
@@ -229,6 +225,8 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 > Follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
 
 > If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
+
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
