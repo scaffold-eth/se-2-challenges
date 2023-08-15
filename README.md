@@ -365,29 +365,15 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ## Checkpoint 7: 💾 Deploy your contracts! 🛰
 
-🛰 Ready to deploy to a public testnet?!?
+📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
-> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
+🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
 
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
+👩‍🚀 Use `yarn account` to view your deployer account balances.
 
-🔐 Generate a deployer address with `yarn generate`.
+⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
 
-![chall-0-yarn-generate](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/133f5701-e575-4cc2-904f-cdc83ae86d94)
-
-👛 View your deployer address using `yarn account`.
-
-![chall-0-yarn-account](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/c34df8c9-9793-4a76-849b-170fae7fd0f0)
-
-⛽️ Use a faucet like [allthatnode.com/faucet/ethereum.dsrv](https://allthatnode.com/faucet/ethereum.dsrv) or [web.getlaika.app/faucets](https://web.getlaika.app/faucets) to fund your deployer address.
-
-> ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
-
-🚀 Deploy your BAL and DEX smart contracts:
-
-```shell
-yarn deploy
-```
+🚀 Run `yarn deploy` to deploy your smart contracts to a public network (selected in `hardhat.config.ts`)
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
