@@ -122,11 +122,7 @@ yarn start
 
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
 
-🚀 Deploy your NFT smart contract:
-
-```shell
-yarn deploy
-```
+🚀 Deploy your NFT smart contract with `yarn deploy`.
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
