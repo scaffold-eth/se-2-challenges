@@ -110,15 +110,19 @@ yarn start
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
-🔐 Generate a deployer address with `yarn generate`. The "yarn generate" command automates the process of creating a unique deployer address, which is needed to deploy your smart contracts onto a blockchain network. It helps you to deploy your smart contracts without worrying about your accounts' private keys.
+🔐 Generate a deployer address with `yarn generate`. This creates a unique deployer address and saves the mnemonic locally.
+
+> This local account will deploy your contracts, allowing you to avoid entering a personal private key.
 
 ![chall-0-yarn-generate](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/133f5701-e575-4cc2-904f-cdc83ae86d94)
 
-👛 View your deployer address using `yarn account`.
+👩‍🚀 Use `yarn account` to view your deployer account balances.
 
 ![chall-0-yarn-account](https://github.com/scaffold-eth/se-2-challenges/assets/2486142/c34df8c9-9793-4a76-849b-170fae7fd0f0)
 
-⛽️ Use a faucet like [https://sepoliafaucet.com/](https://sepoliafaucet.com/) or [https://www.infura.io/faucet/sepolia](https://www.infura.io/faucet/sepolia) to fund your deployer address.
+⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
+
+> Some popular faucets are [https://sepoliafaucet.com/](https://sepoliafaucet.com/) and [https://www.infura.io/faucet/sepolia](https://www.infura.io/faucet/sepolia)
 
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
 
