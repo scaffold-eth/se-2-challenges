@@ -420,11 +420,9 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ## Checkpoint 9: 📜 Contract Verification
 
-You can verify your smart contract on Etherscan by running (`yarn verify --network network_name`) :
+Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
-```shell
-yarn verify --network sepolia
-```
+👉 Search this address on Etherscan to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
 
 ## Checkpoint 10: 💪 Flex!
 
@@ -434,4 +432,4 @@ yarn verify --network sepolia
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 
-💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
+> 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
