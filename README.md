@@ -16,7 +16,7 @@
  
 ---
 
-## Checkpoint 0: 📦 Install 📚
+## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -56,6 +56,9 @@ yarn start
 📱 Open http://localhost:3000 to see the app.
 
 > You can `yarn deploy --reset` to deploy your contract until you get it right.
+> 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
+
+🔏 Now you are ready to edit your smart contract `{mainContractName.sol}` in `packages/hardhat/contracts`
 
 ---
 
@@ -65,7 +68,7 @@ _Other commonly used Checkpoints (check one Challenge and adapt the texts for yo
 
 ## Checkpoint {num}: 💾 Deploy it! 🛰
 
-## Checkpoint {num}: 🚢 Ship it! 🚁
+## Checkpoint {num}: 🚢 Ship your frontend! 🚁
 
 ## Checkpoint {num}: 📜 Contract Verification
 
