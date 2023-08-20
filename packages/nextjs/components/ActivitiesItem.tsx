@@ -109,29 +109,24 @@ export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps
 
   return (
     <>
-      <div className="flex justify-between space-x-3 px-1 my-2 mb-5">
-        <div className="  w-1/6 flex-shrink-0">
+      <div className="flex justify-between space-x-3 px-1  mb-5">
+        <div className=" w-1/6 flex-shrink-0">
           {ensAvatar ? (
             // Don't want to use nextJS Image here (and adding remote patterns for the URL)
             // eslint-disable-next-line
           <img
             className="p-0.5"
             src={ensAvatar}
-            width={65}
-            height={50}
+            width={45}
+            height={35}
             alt={`${address} avatar`}
           />
           ) : (
-            <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={4} />
+            <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={3} />
           )}
         </div>
-        <div className="w-4/6">
-          <div className="flex space-x-10 px-1 w-full">
-            <span className="h-8"> {address?.slice(0, 7)} </span>
-            <span className=""> Amount: {amount} ETH </span>
-          </div>
-          <Address address={address} />
-        </div>
+        <Address address={address} />
+        <div className="w-4/6"></div>
         <div className=" ml-6 w-1/6">
           <span> {landedOn} </span>
         </div>
@@ -193,26 +188,15 @@ export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
 
   return (
     <>
-      <div className="flex justify-between space-x-3 px-8 my-2 mb-5">
+      <div className="flex justify-between space-x-3 px-2 my-2 mb-2">
         <div className="  w-1/6 flex-shrink-0">
           {ensAvatar ? (
-            // Don't want to use nextJS Image here (and adding remote patterns for the URL)
-            // eslint-disable-next-line
-            <img
-              className="p-0.5"
-              src={ensAvatar}
-              width={65}
-              height={50}
-              alt={`${address} avatar`}
-            />
+            <img className="p-0.5" src={ensAvatar} width={45} height={35} alt={`${address} avatar`} />
           ) : (
-            <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={4} />
+            <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={3} />
           )}
         </div>
         <div className="w-3/6">
-          <div className="flex justify-between px-1 w-full">
-            <span className="h-8"> {address?.slice(0, 7)} </span>
-          </div>
           <Address address={address} />
         </div>
         <div className=" w-1/6">

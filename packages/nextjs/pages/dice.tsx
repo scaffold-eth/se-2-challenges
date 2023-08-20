@@ -4,6 +4,7 @@ import { Activities } from "~~/components/Activities";
 import { Dice } from "~~/components/Dice";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Tab } from "~~/components/Tab";
+import { Winners } from "~~/components/Winner";
 import { useAccountBalance, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const DiceGame: NextPage = () => {
@@ -38,27 +39,25 @@ const DiceGame: NextPage = () => {
       await randomDiceRoll();
     }
 
-    /// implement the dice roll ui here
+    /// implement the rigged roll  dice roll ui here
 
     if (currentTabIndex == 1) {
-    }
-
-    /// implement the dice roll ui here
-    if (currentTabIndex == 2) {
     }
   };
 
   return (
     <>
       <MetaHeader />
-      <div className="py-20 px-40">
-        <Tab currentIndex={currentTabIndex} onTabChange={onRollTypeChange} />
+      <div className="py-20 px-10">
         <div className="flex flex-row">
-          <div className="w-1/2">
-            <Activities rolls={rolls} winners={won} />
+          <div className="w-1/3">
+            <Activities rolls={rolls} />
           </div>
-          <div className="w-1/2">
+          <div className="w-1/3">
             <Dice onRoll={handleRollDice} />
+          </div>
+          <div className="w-1/3">
+            <Winners winners={won} />
           </div>
         </div>
       </div>

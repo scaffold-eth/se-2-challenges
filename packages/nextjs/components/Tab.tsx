@@ -36,9 +36,6 @@ export const Tab = ({ onTabChange, currentIndex }: { onTabChange: (index: number
           Basic Roll
         </TabButton>
         <TabButton tabIndex={1} currentIndex={currentIndex} onClick={onTabChange}>
-          Simple Roll
-        </TabButton>
-        <TabButton tabIndex={2} currentIndex={currentIndex} onClick={onTabChange}>
           Rigged Roll
         </TabButton>
       </div>

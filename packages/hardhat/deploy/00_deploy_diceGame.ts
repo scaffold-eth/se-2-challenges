@@ -3,9 +3,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat/";
 import { DiceGame } from "../typechain-types/";
 
-const deployDiceGame: DeployFunction = async function (
-  hre: HardhatRuntimeEnvironment,
-) {
+const deployDiceGame: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
@@ -21,10 +19,7 @@ const deployDiceGame: DeployFunction = async function (
   console.log("Deployed Dice Game Contract Address", diceGame.address);
 
   const balance = await ethers.provider.getBalance(diceGame.address);
-  console.log(
-    "Deployed Dice Game Contract Balance",
-    ethers.utils.formatEther(balance.toString()),
-  );
+  console.log("Deployed Dice Game Contract Balance", ethers.utils.formatEther(balance.toString()));
 };
 
 export default deployDiceGame;
