@@ -195,6 +195,8 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 > 💬 Hint: For faster loading of your _"Stake Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/stakings.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-1-decentralized-staking/packages/nextjs/pages/stakings.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241`.
 
+> To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
+
 ---
 
 ### Checkpoint 5: 🚢 Ship your frontend! 🚁
