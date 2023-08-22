@@ -50,7 +50,7 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
-> 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend (run `yarn deploy --reset` for a completely fresh deploy if you have made no contract changes).
+> 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
 
 ## ⛳️ Checkpoint 1: 🔭 The Structure 📺
 
