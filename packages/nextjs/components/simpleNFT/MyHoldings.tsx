@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "../Spinner";
 import { NFTCard } from "./NFTCard";
-import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -38,11 +37,11 @@ export const MyHoldings = () => {
       const totalBalance = parseInt(myTotalBalance.toString());
       for (let tokenIndex = 0; tokenIndex < totalBalance; tokenIndex++) {
         try {
-          const tokenId = await yourCollectibleContract.tokenOfOwnerByIndex(
+          const tokenId = await yourCollectibleContract?.read.tokenOfOwnerByIndex([
             connectedAddress,
-            BigNumber.from(tokenIndex.toString()),
-          );
-          const tokenURI = await yourCollectibleContract.tokenURI(tokenId);
+            BigInt(tokenIndex.toString()),
+          ]);
+          const tokenURI = await yourCollectibleContract?.read.tokenURI([tokenId]);
 
           const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
 
