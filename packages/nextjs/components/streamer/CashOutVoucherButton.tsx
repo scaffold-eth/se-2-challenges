@@ -26,15 +26,15 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
   });
 
   const isButtonDisabled =
-    !voucher || closed.includes(clientAddress) || (challenged.includes(clientAddress) && !timeLeft?.toNumber());
+    !voucher || closed.includes(clientAddress) || (challenged.includes(clientAddress) && !timeLeft);
 
   return (
     <div className="w-full flex flex-col items-center">
       <div className="h-8 pt-2">
         {challenged.includes(clientAddress) &&
-          (timeLeft && timeLeft.toNumber() > 0 ? (
+          (!!timeLeft ? (
             <>
-              <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
+              <span>Time left:</span> {timeLeft && humanizeDuration(Number(timeLeft) * 1000)}
             </>
           ) : (
             <>Challenged. Cash out timed out</>
