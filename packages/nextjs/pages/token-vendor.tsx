@@ -11,12 +11,12 @@ import {
   useScaffoldContractRead,
   useScaffoldContractWrite,
 } from "~~/hooks/scaffold-eth";
-import { getTokenPriceInWei, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
+import { getTokenPrice, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
 
 const TokenVendor: NextPage = () => {
   const [toAddress, setToAddress] = useState("");
   const [tokensToSend, setTokensToSend] = useState("");
-  const [tokensToBuy, setTokensToBuy] = useState<string | BigNumber>("");
+  const [tokensToBuy, setTokensToBuy] = useState<string | bigint>("");
   const [isApproved, setIsApproved] = useState(false);
   const [tokensToSell, setTokensToSell] = useState<string>("");
 
@@ -57,9 +57,7 @@ const TokenVendor: NextPage = () => {
   // const { writeAsync: buyTokens } = useScaffoldContractWrite({
   //   contractName: "Vendor",
   //   functionName: "buyTokens",
-  //   overrides: {
-  //     value: getTokenPriceInWei(tokensToBuy, tokensPerEth),
-  //   },
+  //   value: getTokenPrice(tokensToBuy, tokensPerEth),
   // });
 
   // // Approve Tokens
@@ -142,7 +140,7 @@ const TokenVendor: NextPage = () => {
         )}
 
         {/* Sell Tokens */}
-        {/* {yourTokenBalance && !yourTokenBalance?.isZero() && (
+        {/* {!!yourTokenBalance && (
           <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
             <div className="text-xl">Sell tokens</div>
             <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
