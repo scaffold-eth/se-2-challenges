@@ -1,18 +1,16 @@
-import { parseEther } from "viem";
+import { formatEther, parseEther } from "viem";
 
 export function multiplyTo1e18(tokens: string | bigint) {
-  let result = 0n;
   try {
-    result = parseEther(tokens.toString());
+    return parseEther(tokens.toString());
   } catch (err) {
     // wrong tokens value
+    return 0n;
   }
-  return result;
 }
 
-export function getTokenPriceInWei(tokens: string | bigint, tokensPerEth?: bigint) {
+export function getTokenPrice(tokens: string | bigint, tokensPerEth?: bigint) {
   const tokensMultiplied = multiplyTo1e18(tokens);
-  if (!tokensPerEth) return tokensMultiplied;
 
-  return tokensMultiplied / tokensPerEth;
+  return formatEther(tokensPerEth ? tokensMultiplied / tokensPerEth : tokensMultiplied) as `${number}`;
 }
