@@ -5,11 +5,12 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { notification } from "~~/utils/scaffold-eth";
 import { getNFTMetadataFromIPFS } from "~~/utils/simpleNFT";
 
+const DynamicReactJson = dynamic(import("react-json-view"), { ssr: false });
+
 const IpfsDownload: NextPage = () => {
   const [yourJSON, setYourJSON] = useState({});
   const [ipfsPath, setIpfsPath] = useState("");
   const [loading, setLoading] = useState(false);
-  const DynamicReactJson = dynamic(import("react-json-view"), { ssr: false });
 
   const handleIpfsDownload = async () => {
     setLoading(true);
