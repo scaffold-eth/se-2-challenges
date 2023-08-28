@@ -30,18 +30,20 @@ export const MyHoldings = () => {
 
   useEffect(() => {
     const updateMyCollectibles = async (): Promise<void> => {
-      if (myTotalBalance === undefined || yourCollectibleContract === null || connectedAddress === undefined) return;
+      if (myTotalBalance === undefined || yourCollectibleContract === undefined || connectedAddress === undefined)
+        return;
 
       setAllCollectiblesLoading(true);
       const collectibleUpdate: Collectible[] = [];
       const totalBalance = parseInt(myTotalBalance.toString());
       for (let tokenIndex = 0; tokenIndex < totalBalance; tokenIndex++) {
         try {
-          const tokenId = await yourCollectibleContract?.read.tokenOfOwnerByIndex([
+          const tokenId = await yourCollectibleContract.read.tokenOfOwnerByIndex([
             connectedAddress,
             BigInt(tokenIndex.toString()),
           ]);
-          const tokenURI = await yourCollectibleContract?.read.tokenURI([tokenId]);
+
+          const tokenURI = await yourCollectibleContract.read.tokenURI([tokenId]);
 
           const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
 
