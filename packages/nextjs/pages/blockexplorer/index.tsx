@@ -11,7 +11,6 @@ const Blockexplorer: NextPage = () => {
   const { blocks, transactionReceipts, currentPage, totalBlocks, setCurrentPage, isLoading, error } = useFetchBlocks();
 
   useEffect(() => {
-    console.log("error", error);
     if (getTargetNetwork().id === hardhat.id && error) {
       notification.error(
         <>
@@ -53,7 +52,7 @@ const Blockexplorer: NextPage = () => {
     <div className="container mx-auto my-10">
       <SearchBar />
       <TransactionsTable blocks={blocks} transactionReceipts={transactionReceipts} isLoading={isLoading} />
-      <PaginationButton currentPage={currentPage} totalItems={totalBlocks} setCurrentPage={setCurrentPage} />
+      <PaginationButton currentPage={currentPage} totalItems={Number(totalBlocks)} setCurrentPage={setCurrentPage} />
     </div>
   );
 };

@@ -1,19 +1,16 @@
-import { BigNumber } from "ethers";
-import { parseEther } from "ethers/lib/utils.js";
+import { formatEther, parseEther } from "viem";
 
-export function multiplyTo1e18(tokens: string | BigNumber) {
-  let result = BigNumber.from(0);
+export function multiplyTo1e18(tokens: string | bigint) {
   try {
-    result = BigNumber.from(parseEther(tokens.toString()));
+    return parseEther(tokens.toString());
   } catch (err) {
     // wrong tokens value
+    return 0n;
   }
-  return result;
 }
 
-export function getTokenPriceInWei(tokens: string | BigNumber, tokensPerEth?: BigNumber) {
+export function getTokenPrice(tokens: string | bigint, tokensPerEth?: bigint) {
   const tokensMultiplied = multiplyTo1e18(tokens);
-  if (!tokensPerEth) return tokensMultiplied;
 
-  return tokensMultiplied.div(tokensPerEth);
+  return formatEther(tokensPerEth ? tokensMultiplied / tokensPerEth : tokensMultiplied) as `${number}`;
 }
