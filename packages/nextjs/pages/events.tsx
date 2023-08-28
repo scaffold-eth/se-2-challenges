@@ -17,7 +17,7 @@ const Events: NextPage = () => {
   // const { data: sellTokenEvents, isLoading: isSellEventsLoading } = useScaffoldEventHistory({
   //   contractName: "Vendor",
   //   eventName: "SellTokens",
-  //   fromBlock: 0,
+  //   fromBlock: 0n,
   // });
 
   return (
