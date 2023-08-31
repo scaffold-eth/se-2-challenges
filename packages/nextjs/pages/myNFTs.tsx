@@ -1,17 +1,15 @@
-import { useState } from "react";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { MyHoldings } from "~~/components/simpleNFT";
-import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { ipfsClient } from "~~/utils/simpleNFT";
 import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
 
 const MyNFTs: NextPage = () => {
   const { address: connectedAddress, isConnected, isConnecting } = useAccount();
-  const [currentTokenMintCount, setCurrentTokenMintCount] = useState(0);
 
   const { writeAsync: mintItem } = useScaffoldContractWrite({
     contractName: "YourCollectible",
@@ -19,9 +17,19 @@ const MyNFTs: NextPage = () => {
     args: [connectedAddress, ""],
   });
 
+  const { data: tokenIdCounter } = useScaffoldContractRead({
+    contractName: "YourCollectible",
+    functionName: "tokenIdCounter",
+    watch: true,
+    cacheOnBlock: true,
+  });
+
   const handleMintItem = async () => {
     // circle back to the zero item if we've reached the end of the array
-    const currentTokenMetaData = nftsMetadata[currentTokenMintCount % nftsMetadata.length];
+    if (tokenIdCounter === undefined) return;
+
+    const tokenIdCounterNumber = parseInt(tokenIdCounter.toString());
+    const currentTokenMetaData = nftsMetadata[tokenIdCounterNumber % nftsMetadata.length];
     const notificationId = notification.loading("Uploading to IPFS");
     try {
       const uploadedItem = await ipfsClient.add(JSON.stringify(currentTokenMetaData));
@@ -33,8 +41,6 @@ const MyNFTs: NextPage = () => {
       await mintItem({
         args: [connectedAddress, uploadedItem.path],
       });
-
-      setCurrentTokenMintCount(prevCount => prevCount + 1);
     } catch (error) {
       notification.remove(notificationId);
       console.error(error);

@@ -24,7 +24,7 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
       passHref
       className={`${
         isActive ? "bg-secondary shadow-md" : ""
-      } hover:bg-secondary hover:shadow-md focus:bg-secondary py-1.5 px-2 text-sm rounded-full gap-1.5`}
+      } hover:bg-secondary hover:shadow-md focus:!bg-secondary py-1.5 px-2 text-sm rounded-full gap-1.5`}
     >
       {children}
     </Link>
@@ -84,7 +84,7 @@ export const Header = () => {
   );
 
   return (
-    <div className="sticky xl:static top-0 navbar bg-primary min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary">
+    <div className="sticky xl:static top-0 navbar bg-primary min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
       <div className="navbar-start w-auto xl:w-1/2">
         <div className="xl:hidden dropdown" ref={burgerMenuRef}>
           <label

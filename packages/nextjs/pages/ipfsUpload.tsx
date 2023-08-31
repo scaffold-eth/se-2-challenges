@@ -6,10 +6,11 @@ import { notification } from "~~/utils/scaffold-eth";
 import { ipfsClient } from "~~/utils/simpleNFT";
 import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
 
+const DynamicReactJson = dynamic(import("react-json-view"), { ssr: false });
+
 const IpfsUpload: NextPage = () => {
   const [yourJSON, setYourJSON] = useState<object>(nftsMetadata[0]);
   const [loading, setLoading] = useState(false);
-  const DynamicReactJson = dynamic(import("react-json-view"), { ssr: false });
   const [uploadedIpfsPath, setUploadedIpfsPath] = useState("");
 
   const handleIpfsUpload = async () => {

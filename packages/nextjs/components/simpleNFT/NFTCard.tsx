@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Address, AddressInput } from "../scaffold-eth";
 import { Collectible } from "./MyHoldings";
-import { BigNumber } from "ethers";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 export const NFTCard = ({ nft }: { nft: Collectible }) => {
@@ -10,7 +9,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
   const { writeAsync: transferNFT } = useScaffoldContractWrite({
     contractName: "YourCollectible",
     functionName: "transferFrom",
-    args: [nft.owner, transferToAddress, BigNumber.from(nft.id.toString())],
+    args: [nft.owner, transferToAddress, BigInt(nft.id.toString())],
   });
 
   return (
@@ -27,7 +26,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
           <p className="text-xl p-0 m-0 font-semibold">{nft.name}</p>
           <div className="flex flex-wrap space-x-2 mt-1">
             {nft.attributes?.map((attr, index) => (
-              <span key={index} className="badge py-3">
+              <span key={index} className="badge badge-primary py-3">
                 {attr.value}
               </span>
             ))}
