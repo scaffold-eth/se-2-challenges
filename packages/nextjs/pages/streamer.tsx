@@ -78,14 +78,21 @@ const Streamer: NextPage = () => {
     eventName: "Opened",
     listener: logs => {
       logs.map(log => {
-        console.log(log.args, "<<< args opened");
         const addr = log.args[0] as string;
 
-        setOpened([...opened, addr]);
+        setOpened(opened => {
+          if (!opened.includes(addr)) {
+            return [...opened, addr];
+          }
+          return opened;
+        });
 
-        if (userIsOwner) {
-          setChannels({ ...channels, [addr]: new BroadcastChannel(addr) });
-        }
+        setChannels(channels => {
+          if (userIsOwner) {
+            return { ...channels, [addr]: new BroadcastChannel(addr) };
+          }
+          return channels;
+        });
       });
     },
   });
@@ -152,7 +159,7 @@ const Streamer: NextPage = () => {
     eventName: "Challenged",
     listener: logs => {
       logs.map(log => {
-        setChallenged([...challenged, log.args[0] as string]);
+        setChallenged(challenged => [...challenged, log.args[0] as string]);
       });
     },
   });
@@ -177,7 +184,7 @@ const Streamer: NextPage = () => {
     eventName: "Closed",
     listener: logs => {
       logs.map(log => {
-        setClosed([...closed, log.args[0] as string]);
+        setClosed(closed => [...closed, log.args[0] as string]);
       });
     },
   });
