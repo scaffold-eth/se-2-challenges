@@ -54,7 +54,7 @@ export const useScaffoldContractWrite = <
     value?: UseScaffoldWriteConfig<TContractName, TFunctionName>["value"];
   } & UpdatedArgs = {}) => {
     if (!deployedContractData) {
-      notification.error("Target Contract is not deployed, did you forgot to run `yarn deploy`?");
+      notification.error("Target Contract is not deployed, did you forget to run `yarn deploy`?");
       return;
     }
     if (!chain?.id) {
