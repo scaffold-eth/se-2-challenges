@@ -62,7 +62,7 @@ export const useScaffoldContractWrite = <
       return;
     }
     if (chain?.id !== configuredNetwork.id) {
-      notification.error("You on the wrong network");
+      notification.error("You are on the wrong network");
       return;
     }
 
