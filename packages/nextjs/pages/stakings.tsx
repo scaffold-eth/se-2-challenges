@@ -9,8 +9,9 @@ const Stakings: NextPage = () => {
   const { data: stakeEvents, isLoading } = useScaffoldEventHistory({
     contractName: "Staker",
     eventName: "Stake",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
+  console.log("Stakering Events", stakeEvents);
 
   if (isLoading)
     return (
@@ -47,9 +48,9 @@ const Stakings: NextPage = () => {
                   return (
                     <tr key={index}>
                       <td>
-                        <Address address={event.args[0]} />
+                        <Address address={event.args?.staker} />
                       </td>
-                      <td>{event.args[1] && formatEther(event.args[1].toString())} ETH</td>
+                      <td>{event.args?.amount && formatEther(event.args?.amount)} ETH</td>
                     </tr>
                   );
                 })

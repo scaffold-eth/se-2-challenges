@@ -87,12 +87,12 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
         <div className="flex items-start justify-around w-full">
           <div className="flex flex-col items-center justify-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">Time Left</p>
-            <p className="m-0 p-0">{timeLeft ? `${humanizeDuration(timeLeft.toNumber() * 1000)}` : 0}</p>
+            <p className="m-0 p-0">{timeLeft ? `${humanizeDuration(parseFloat(timeLeft.toString()) * 1000)}` : 0}</p>
           </div>
           <div className="flex flex-col items-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">You Staked</p>
             <span>
-              {myStake ? formatEther(myStake.toString()) : 0} {configuredNetwork.nativeCurrency.symbol}
+              {myStake ? formatEther(myStake) : 0} {configuredNetwork.nativeCurrency.symbol}
             </span>
           </div>
         </div>
@@ -101,7 +101,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
           <div className="flex space-x-2">
             {<ETHToPrice value={stakerContractBalance != null ? stakerContractBalance.toString() : undefined} />}
             <span>/</span>
-            {<ETHToPrice value={threshold && formatEther(threshold)} />}
+            {<ETHToPrice value={threshold ? formatEther(threshold) : undefined} />}
           </div>
         </div>
         <div className="flex flex-col space-y-5">
