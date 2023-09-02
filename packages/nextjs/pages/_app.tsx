@@ -11,7 +11,7 @@ import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
-import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { wagmiClient } from "~~/services/web3/wagmiClient";
 import { appChains } from "~~/services/web3/wagmiConnectors";
 import "~~/styles/globals.css";
 
@@ -33,7 +33,7 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   }, [isDarkMode]);
 
   return (
-    <WagmiConfig config={wagmiConfig}>
+    <WagmiConfig client={wagmiClient}>
       <NextNProgress />
       <RainbowKitProvider
         chains={appChains.chains}
@@ -46,8 +46,8 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
             <Component {...pageProps} />
           </main>
           <Footer />
+          <Toaster />
         </div>
-        <Toaster />
       </RainbowKitProvider>
     </WagmiConfig>
   );

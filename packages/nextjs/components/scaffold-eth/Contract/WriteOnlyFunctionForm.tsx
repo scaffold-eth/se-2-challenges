@@ -1,52 +1,72 @@
-import { useEffect, useState } from "react";
-import { Abi, AbiFunction } from "abitype";
-import { Address, TransactionReceipt } from "viem";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { TransactionReceipt } from "@ethersproject/abstract-provider";
+import { BigNumber } from "ethers";
+import { FunctionFragment } from "ethers/lib/utils";
 import { useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
 import {
   ContractInput,
   IntegerInput,
   TxReceipt,
   getFunctionInputKey,
-  getInitialFormState,
   getParsedContractFunctionArgs,
-  getParsedError,
+  getParsedEthersError,
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
-import { getTargetNetwork, notification } from "~~/utils/scaffold-eth";
+import { getTargetNetwork, notification, parseTxnValue } from "~~/utils/scaffold-eth";
 
-type WriteOnlyFunctionFormProps = {
-  abiFunction: AbiFunction;
-  onChange: () => void;
-  contractAddress: Address;
+// TODO set sensible initial state values to avoid error on first render, also put it in utilsContract
+const getInitialFormState = (functionFragment: FunctionFragment) => {
+  const initialForm: Record<string, any> = {};
+  functionFragment.inputs.forEach((input, inputIndex) => {
+    const key = getFunctionInputKey(functionFragment, input, inputIndex);
+    initialForm[key] = "";
+  });
+  return initialForm;
 };
 
-export const WriteOnlyFunctionForm = ({ abiFunction, onChange, contractAddress }: WriteOnlyFunctionFormProps) => {
-  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
-  const [txValue, setTxValue] = useState<string | bigint>("");
+type TWriteOnlyFunctionFormProps = {
+  functionFragment: FunctionFragment;
+  contractAddress: string;
+  setRefreshDisplayVariables: Dispatch<SetStateAction<boolean>>;
+};
+
+export const WriteOnlyFunctionForm = ({
+  functionFragment,
+  contractAddress,
+  setRefreshDisplayVariables,
+}: TWriteOnlyFunctionFormProps) => {
+  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(functionFragment));
+  const [txValue, setTxValue] = useState<string | BigNumber>("");
   const { chain } = useNetwork();
   const writeTxn = useTransactor();
   const writeDisabled = !chain || chain?.id !== getTargetNetwork().id;
 
+  // We are omitting usePrepareContractWrite here to avoid unnecessary RPC calls and wrong gas estimations.
+  // See:
+  //   - https://github.com/scaffold-eth/se-2/issues/59
+  //   - https://github.com/scaffold-eth/se-2/pull/86#issuecomment-1374902738
   const {
     data: result,
     isLoading,
     writeAsync,
   } = useContractWrite({
-    chainId: getTargetNetwork().id,
     address: contractAddress,
-    functionName: abiFunction.name,
-    abi: [abiFunction] as Abi,
+    functionName: functionFragment.name,
+    abi: [functionFragment],
     args: getParsedContractFunctionArgs(form),
+    mode: "recklesslyUnprepared",
+    overrides: {
+      value: typeof txValue === "string" ? parseTxnValue(txValue) : txValue,
+    },
   });
 
   const handleWrite = async () => {
     if (writeAsync) {
       try {
-        const makeWriteWithParams = () => writeAsync({ value: BigInt(txValue) });
-        await writeTxn(makeWriteWithParams);
-        onChange();
+        await writeTxn(writeAsync());
+        setRefreshDisplayVariables(prevState => !prevState);
       } catch (e: any) {
-        const message = getParsedError(e);
+        const message = getParsedEthersError(e);
         notification.error(message);
       }
     }
@@ -61,8 +81,8 @@ export const WriteOnlyFunctionForm = ({ abiFunction, onChange, contractAddress }
   }, [txResult]);
 
   // TODO use `useMemo` to optimize also update in ReadOnlyFunctionForm
-  const inputs = abiFunction.inputs.map((input, inputIndex) => {
-    const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
+  const inputs = functionFragment.inputs.map((input, inputIndex) => {
+    const key = getFunctionInputKey(functionFragment, input, inputIndex);
     return (
       <ContractInput
         key={key}
@@ -76,14 +96,14 @@ export const WriteOnlyFunctionForm = ({ abiFunction, onChange, contractAddress }
       />
     );
   });
-  const zeroInputs = inputs.length === 0 && abiFunction.stateMutability !== "payable";
+  const zeroInputs = inputs.length === 0 && !functionFragment.payable;
 
   return (
     <div className="py-5 space-y-3 first:pt-0 last:pb-1">
       <div className={`flex gap-3 ${zeroInputs ? "flex-row justify-between items-center" : "flex-col"}`}>
-        <p className="font-medium my-0 break-words">{abiFunction.name}</p>
+        <p className="font-medium my-0 break-words">{functionFragment.name}</p>
         {inputs}
-        {abiFunction.stateMutability === "payable" ? (
+        {functionFragment.payable ? (
           <IntegerInput
             value={txValue}
             onChange={updatedTxValue => {
@@ -106,8 +126,11 @@ export const WriteOnlyFunctionForm = ({ abiFunction, onChange, contractAddress }
             }`}
             data-tip={`${writeDisabled && "Wallet not connected or in the wrong network"}`}
           >
-            <button className="btn btn-secondary btn-sm" disabled={writeDisabled || isLoading} onClick={handleWrite}>
-              {isLoading && <span className="loading loading-spinner loading-xs"></span>}
+            <button
+              className={`btn btn-secondary btn-sm ${isLoading ? "loading" : ""}`}
+              disabled={writeDisabled}
+              onClick={handleWrite}
+            >
               Send 💸
             </button>
           </div>

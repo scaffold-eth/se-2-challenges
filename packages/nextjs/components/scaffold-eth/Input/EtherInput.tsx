@@ -43,7 +43,7 @@ function displayValueToEtherValue(usdMode: boolean, displayValue: string, native
  *
  * onChange will always be called with the value in ETH
  */
-export const EtherInput = ({ value, name, placeholder, onChange, disabled }: CommonInputProps) => {
+export const EtherInput = ({ value, name, placeholder, onChange }: CommonInputProps) => {
   const [transitoryDisplayValue, setTransitoryDisplayValue] = useState<string>();
   const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrencyPrice);
   const [usdMode, setUSDMode] = useState(false);
@@ -96,7 +96,6 @@ export const EtherInput = ({ value, name, placeholder, onChange, disabled }: Com
       value={displayValue}
       placeholder={placeholder}
       onChange={handleChangeNumber}
-      disabled={disabled}
       prefix={<span className="pl-4 -mr-2 text-accent self-center">{usdMode ? "$" : "Ξ"}</span>}
       suffix={
         <button

@@ -1,50 +1,55 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { ethers } from "ethers";
 import type { NextPage } from "next";
-import { Transaction, TransactionReceipt, formatEther, formatUnits } from "viem";
-import { usePublicClient } from "wagmi";
-import { hardhat } from "wagmi/chains";
+import { localhost } from "wagmi/chains";
 import { Address } from "~~/components/scaffold-eth";
-import { decodeTransactionData, getFunctionDetails, getTargetNetwork } from "~~/utils/scaffold-eth";
+import {
+  TransactionWithFunction,
+  decodeTransactionData,
+  getFunctionDetails,
+  getTargetNetwork,
+} from "~~/utils/scaffold-eth";
+import { getLocalProvider } from "~~/utils/scaffold-eth";
+
+const provider = getLocalProvider(localhost) || new ethers.providers.JsonRpcProvider("http://localhost:8545");
 
 const TransactionPage: NextPage = () => {
-  const client = usePublicClient({ chainId: hardhat.id });
-
   const router = useRouter();
-  const { txHash } = router.query as { txHash?: `0x${string}` };
-  const [transaction, setTransaction] = useState<Transaction>();
-  const [receipt, setReceipt] = useState<TransactionReceipt>();
-  const [functionCalled, setFunctionCalled] = useState<string>();
+  const { txHash } = router.query;
+  const [transaction, setTransaction] = useState<TransactionWithFunction | null>(null);
+  const [receipt, setReceipt] = useState<ethers.providers.TransactionReceipt | null>(null);
+  const [functionCalled, setFunctionCalled] = useState<string | null>(null);
 
   const configuredNetwork = getTargetNetwork();
 
   useEffect(() => {
     if (txHash) {
       const fetchTransaction = async () => {
-        const tx = await client.getTransaction({ hash: txHash });
-        const receipt = await client.getTransactionReceipt({ hash: txHash });
+        const tx = await provider.getTransaction(txHash as string);
+        const receipt = await provider.getTransactionReceipt(txHash as string);
 
         const transactionWithDecodedData = decodeTransactionData(tx);
         setTransaction(transactionWithDecodedData);
         setReceipt(receipt);
 
-        const functionCalled = transactionWithDecodedData.input.substring(0, 10);
+        const functionCalled = transactionWithDecodedData.data.substring(0, 10);
         setFunctionCalled(functionCalled);
       };
 
       fetchTransaction();
     }
-  }, [client, txHash]);
+  }, [txHash]);
 
   return (
-    <div className="container mx-auto mt-10 mb-20 px-10 md:px-0">
+    <div className="container mx-auto mt-10 mb-20">
       <button className="btn btn-sm btn-primary" onClick={() => router.back()}>
         Back
       </button>
       {transaction ? (
         <div className="overflow-x-auto">
           <h2 className="text-3xl font-bold mb-4 text-center text-primary-content">Transaction Details</h2>{" "}
-          <table className="table rounded-lg bg-base-100 w-full shadow-lg md:table-lg table-md">
+          <table className="table w-full">
             <tbody>
               <tr>
                 <td>
@@ -56,7 +61,7 @@ const TransactionPage: NextPage = () => {
                 <td>
                   <strong>Block Number:</strong>
                 </td>
-                <td>{Number(transaction.blockNumber)}</td>
+                <td>{transaction.blockNumber}</td>
               </tr>
               <tr>
                 <td>
@@ -86,7 +91,7 @@ const TransactionPage: NextPage = () => {
                   <strong>Value:</strong>
                 </td>
                 <td>
-                  {formatEther(transaction.value)} {configuredNetwork.nativeCurrency.symbol}
+                  {ethers.utils.formatEther(transaction.value)} {configuredNetwork.nativeCurrency.symbol}
                 </td>
               </tr>
               <tr>
@@ -94,30 +99,28 @@ const TransactionPage: NextPage = () => {
                   <strong>Function called:</strong>
                 </td>
                 <td>
-                  <div className="w-full md:max-w-[600px] lg:max-w-[800px] overflow-x-auto whitespace-nowrap">
-                    {functionCalled === "0x" ? (
-                      "This transaction did not call any function."
-                    ) : (
-                      <>
-                        <span className="mr-2">{getFunctionDetails(transaction)}</span>
-                        <span className="badge badge-primary font-bold">{functionCalled}</span>
-                      </>
-                    )}
-                  </div>
+                  {functionCalled === "0x" ? (
+                    "This transaction did not call any function."
+                  ) : (
+                    <>
+                      <span className="mr-2">{getFunctionDetails(transaction)}</span>
+                      <span className="badge badge-primary font-bold">{functionCalled}</span>
+                    </>
+                  )}
                 </td>
               </tr>
               <tr>
                 <td>
                   <strong>Gas Price:</strong>
                 </td>
-                <td>{formatUnits(transaction.gasPrice || 0n, 9)} Gwei</td>
+                <td>{ethers.utils.formatUnits(transaction.gasPrice || ethers.constants.Zero, "gwei")} Gwei</td>
               </tr>
               <tr>
                 <td>
                   <strong>Data:</strong>
                 </td>
                 <td className="form-control">
-                  <textarea readOnly value={transaction.input} className="p-0 textarea-primary bg-inherit h-[150px]" />
+                  <textarea readOnly value={transaction.data} className="p-0 textarea-primary bg-inherit" />
                 </td>
               </tr>
             </tbody>

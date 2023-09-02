@@ -1,8 +1,9 @@
-import { TransactionReceipt } from "viem";
+import { TransactionReceipt } from "@ethersproject/abstract-provider";
+import { BigNumber } from "ethers";
 import { displayTxResult } from "~~/components/scaffold-eth";
 
 export const TxReceipt = (
-  txResult: string | number | bigint | Record<string, any> | TransactionReceipt | undefined,
+  txResult: string | number | BigNumber | Record<string, any> | TransactionReceipt | undefined,
 ) => {
   return (
     <div className="flex-wrap collapse collapse-arrow mb-2">

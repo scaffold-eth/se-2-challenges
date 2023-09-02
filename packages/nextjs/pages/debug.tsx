@@ -1,25 +1,13 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import type { NextPage } from "next";
-import { useLocalStorage } from "usehooks-ts";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { getContractNames } from "~~/utils/scaffold-eth/contractNames";
 
-const selectedContractStorageKey = "scaffoldEth2.selectedContract";
-const contractNames = getContractNames();
-
 const Debug: NextPage = () => {
-  const [selectedContract, setSelectedContract] = useLocalStorage<ContractName>(
-    selectedContractStorageKey,
-    contractNames[1] || contractNames[0],
-  );
-
-  useEffect(() => {
-    if (!contractNames.includes(selectedContract)) {
-      setSelectedContract(contractNames[0]);
-    }
-  }, [selectedContract, setSelectedContract]);
+  const contractNames = getContractNames();
+  const [selectedContract, setSelectedContract] = useState<ContractName>(contractNames[1] || contractNames[0]);
 
   return (
     <>

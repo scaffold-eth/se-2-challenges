@@ -9,17 +9,18 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains } from "wagmi";
 import * as chains from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 import scaffoldConfig from "~~/scaffold.config";
 import { burnerWalletConfig } from "~~/services/web3/wagmi-burner/burnerWalletConfig";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
 const configuredNetwork = getTargetNetwork();
-const { onlyLocalBurnerWallet } = scaffoldConfig;
+const burnerConfig = scaffoldConfig.burnerWallet;
 
 // We always want to have mainnet enabled (ENS resolution, ETH price, etc). But only once.
-const enabledChains = configuredNetwork.id === 1 ? [configuredNetwork] : [configuredNetwork, chains.mainnet];
+const enabledChains =
+  (configuredNetwork.id as number) === 1 ? [configuredNetwork] : [configuredNetwork, chains.mainnet];
 
 /**
  * Chains for the app
@@ -27,13 +28,19 @@ const enabledChains = configuredNetwork.id === 1 ? [configuredNetwork] : [config
 export const appChains = configureChains(
   enabledChains,
   [
-    alchemyProvider({
-      apiKey: scaffoldConfig.alchemyApiKey,
+    jsonRpcProvider({
+      rpc: chain => {
+        if (chain.rpcUrls.alchemy?.http[0]) {
+          return {
+            http: `${chain.rpcUrls.alchemy.http[0]}/${scaffoldConfig.alchemyApiKey}`,
+          };
+        }
+        return null;
+      },
     }),
     publicProvider(),
   ],
   {
-    // We might not need this checkout https://github.com/scaffold-eth/scaffold-eth-2/pull/45#discussion_r1024496359, will test and remove this before merging
     stallTimeout: 3_000,
     // Sets pollingInterval if using chain's other than local hardhat chain
     ...(configuredNetwork.id !== chains.hardhat.id
@@ -52,9 +59,6 @@ const wallets = [
   braveWallet(walletsOptions),
   coinbaseWallet({ ...walletsOptions, appName: "scaffold-eth-2" }),
   rainbowWallet(walletsOptions),
-  ...(configuredNetwork.id === chains.hardhat.id || !onlyLocalBurnerWallet
-    ? [burnerWalletConfig({ chains: [appChains.chains[0]] })]
-    : []),
 ];
 
 /**
@@ -63,6 +67,6 @@ const wallets = [
 export const wagmiConnectors = connectorsForWallets([
   {
     groupName: "Supported Wallets",
-    wallets,
+    wallets: burnerConfig.enabled ? [...wallets, burnerWalletConfig({ chains: [appChains.chains[0]] })] : wallets,
   },
 ]);

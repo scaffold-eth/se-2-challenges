@@ -1,38 +1,46 @@
 import { useState } from "react";
-import { Abi, AbiFunction } from "abitype";
-import { Address } from "viem";
+import { FunctionFragment } from "ethers/lib/utils";
 import { useContractRead } from "wagmi";
 import {
   ContractInput,
   displayTxResult,
   getFunctionInputKey,
-  getInitialFormState,
   getParsedContractFunctionArgs,
 } from "~~/components/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
+import { getTargetNetwork, notification } from "~~/utils/scaffold-eth";
 
-type TReadOnlyFunctionFormProps = {
-  contractAddress: Address;
-  abiFunction: AbiFunction;
+const getInitialFormState = (functionFragment: FunctionFragment) => {
+  const initialForm: Record<string, any> = {};
+  functionFragment.inputs.forEach((input, inputIndex) => {
+    const key = getFunctionInputKey(functionFragment, input, inputIndex);
+    initialForm[key] = "";
+  });
+  return initialForm;
 };
 
-export const ReadOnlyFunctionForm = ({ contractAddress, abiFunction }: TReadOnlyFunctionFormProps) => {
-  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
+type TReadOnlyFunctionFormProps = {
+  functionFragment: FunctionFragment;
+  contractAddress: string;
+};
+
+export const ReadOnlyFunctionForm = ({ functionFragment, contractAddress }: TReadOnlyFunctionFormProps) => {
+  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(functionFragment));
   const [result, setResult] = useState<unknown>();
 
   const { isFetching, refetch } = useContractRead({
+    chainId: getTargetNetwork().id,
     address: contractAddress,
-    functionName: abiFunction.name,
-    abi: [abiFunction] as Abi,
+    abi: [functionFragment],
+    functionName: functionFragment.name,
     args: getParsedContractFunctionArgs(form),
     enabled: false,
-    onError: (error: any) => {
+    onError: error => {
       notification.error(error.message);
     },
   });
 
-  const inputElements = abiFunction.inputs.map((input, inputIndex) => {
-    const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
+  const inputs = functionFragment.inputs.map((input, inputIndex) => {
+    const key = getFunctionInputKey(functionFragment, input, inputIndex);
     return (
       <ContractInput
         key={key}
@@ -49,26 +57,23 @@ export const ReadOnlyFunctionForm = ({ contractAddress, abiFunction }: TReadOnly
 
   return (
     <div className="flex flex-col gap-3 py-5 first:pt-0 last:pb-1">
-      <p className="font-medium my-0 break-words">{abiFunction.name}</p>
-      {inputElements}
-      <div className="flex justify-between gap-2 flex-wrap">
-        <div className="flex-grow w-4/5">
+      <p className="font-medium my-0 break-words">{functionFragment.name}</p>
+      {inputs}
+      <div className="flex justify-between gap-2">
+        <div className="flex-grow">
           {result !== null && result !== undefined && (
-            <div className="bg-secondary rounded-3xl text-sm px-4 py-1.5 break-words">
-              <p className="font-bold m-0 mb-1">Result:</p>
-              <pre className="whitespace-pre-wrap break-words">{displayTxResult(result)}</pre>
-            </div>
+            <span className="block bg-secondary rounded-3xl text-sm px-4 py-1.5">
+              <strong>Result</strong>: {displayTxResult(result)}
+            </span>
           )}
         </div>
         <button
-          className="btn btn-secondary btn-sm"
+          className={`btn btn-secondary btn-sm ${isFetching ? "loading" : ""}`}
           onClick={async () => {
             const { data } = await refetch();
             setResult(data);
           }}
-          disabled={isFetching}
         >
-          {isFetching && <span className="loading loading-spinner loading-xs"></span>}
           Read 📡
         </button>
       </div>

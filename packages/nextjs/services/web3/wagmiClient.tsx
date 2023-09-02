@@ -1,8 +1,8 @@
-import { createConfig } from "wagmi";
+import { createClient } from "wagmi";
 import { appChains, wagmiConnectors } from "~~/services/web3/wagmiConnectors";
 
-export const wagmiConfig = createConfig({
+export const wagmiClient = createClient({
   autoConnect: false,
   connectors: wagmiConnectors,
-  publicClient: appChains.publicClient,
+  provider: appChains.provider,
 });

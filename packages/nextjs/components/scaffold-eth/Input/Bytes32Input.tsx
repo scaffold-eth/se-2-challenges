@@ -1,13 +1,17 @@
 import { useCallback } from "react";
-import { hexToString, isHex, stringToHex } from "viem";
+import { ethers } from "ethers";
 import { CommonInputProps, InputBase } from "~~/components/scaffold-eth";
 
-export const Bytes32Input = ({ value, onChange, name, placeholder, disabled }: CommonInputProps) => {
+export const Bytes32Input = ({ value, onChange, name, placeholder }: CommonInputProps) => {
   const convertStringToBytes32 = useCallback(() => {
     if (!value) {
       return;
     }
-    onChange(isHex(value) ? hexToString(value, { size: 32 }) : stringToHex(value, { size: 32 }));
+    onChange(
+      ethers.utils.isHexString(value)
+        ? ethers.utils.parseBytes32String(value)
+        : ethers.utils.formatBytes32String(value),
+    );
   }, [onChange, value]);
 
   return (
@@ -16,7 +20,6 @@ export const Bytes32Input = ({ value, onChange, name, placeholder, disabled }: C
       value={value}
       placeholder={placeholder}
       onChange={onChange}
-      disabled={disabled}
       suffix={
         <div
           className="self-center cursor-pointer text-xl font-semibold px-4 text-accent"
