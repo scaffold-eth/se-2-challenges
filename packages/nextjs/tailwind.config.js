@@ -93,6 +93,9 @@ module.exports = {
       fontFamily: {
         "space-grotesk": ["Space Grotesk", "sans-serif"],
       },
+      boxShadow: {
+        center: "0 0 12px -2px rgb(0 0 0 / 0.05)",
+      },
       keyframes: {
         grow: {
           "0%": {
