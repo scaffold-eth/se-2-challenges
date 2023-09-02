@@ -1,5 +1,5 @@
+import { utils } from "ethers";
 import type { NextPage } from "next";
-import { formatEther } from "viem";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Spinner } from "~~/components/Spinner";
 import { Address } from "~~/components/scaffold-eth";
@@ -49,7 +49,7 @@ const Stakings: NextPage = () => {
                       <td>
                         <Address address={event.args[0]} />
                       </td>
-                      <td>{event.args[1] && formatEther(event.args[1].toString())} ETH</td>
+                      <td>{event.args[1] && utils.formatEther(event.args[1].toString())} ETH</td>
                     </tr>
                   );
                 })

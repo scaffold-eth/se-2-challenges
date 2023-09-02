@@ -1,7 +1,7 @@
 import { Address } from "../scaffold-eth";
 import { ETHToPrice } from "./EthToPrice";
+import { utils } from "ethers";
 import humanizeDuration from "humanize-duration";
-import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 import {
   useAccountBalance,
@@ -92,7 +92,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
           <div className="flex flex-col items-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">You Staked</p>
             <span>
-              {myStake ? formatEther(myStake.toString()) : 0} {configuredNetwork.nativeCurrency.symbol}
+              {myStake ? utils.formatEther(myStake.toString()) : 0} {configuredNetwork.nativeCurrency.symbol}
             </span>
           </div>
         </div>
@@ -101,7 +101,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
           <div className="flex space-x-2">
             {<ETHToPrice value={stakerContractBalance != null ? stakerContractBalance.toString() : undefined} />}
             <span>/</span>
-            {<ETHToPrice value={threshold && formatEther(threshold)} />}
+            {<ETHToPrice value={threshold && utils.formatEther(threshold)} />}
           </div>
         </div>
         <div className="flex flex-col space-y-5">
