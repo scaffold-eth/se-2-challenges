@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
+import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { Curve } from "~~/components/Curve";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -24,7 +24,6 @@ const Dex: NextPage = () => {
   const [approveSpender, setApproveSpender] = useState("");
   const [approveAmount, setApproveAmount] = useState("");
   const [accountBalanceOf, setAccountBalanceOf] = useState("");
-  const [totalLiquidity, setTotalLiquidity] = useState("");
 
   const { data: DEXInfo } = useDeployedContractInfo("DEX");
   const { data: BalloonsInfo } = useDeployedContractInfo("Balloons");
@@ -47,36 +46,28 @@ const Dex: NextPage = () => {
     functionName: "totalLiquidity",
   });
 
-  useEffect(() => {
-    if (DEXtotalLiquidity !== undefined) {
-      setTotalLiquidity(DEXtotalLiquidity.toString());
-    }
-  }, [DEXtotalLiquidity]);
-
   const { writeAsync: ethToTokenWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "ethToToken",
-    value: NUMBER_REGEX.test(ethToTokenAmount) ? ethToTokenAmount : undefined,
+    value: (NUMBER_REGEX.test(ethToTokenAmount) ? ethToTokenAmount : 0) as `${number}`,
   });
 
   const { writeAsync: tokenToEthWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "tokenToEth",
-    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
-    args: [NUMBER_REGEX.test(tokenToETHAmount) ? ethers.utils.parseEther(tokenToETHAmount) : tokenToETHAmount],
+    args: [NUMBER_REGEX.test(tokenToETHAmount) ? parseEther(tokenToETHAmount) : tokenToETHAmount],
   });
 
   const { writeAsync: depositWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "deposit",
-    value: NUMBER_REGEX.test(depositAmount) ? depositAmount : undefined,
+    value: (NUMBER_REGEX.test(depositAmount) ? depositAmount : 0) as `${number}`,
   });
 
   const { writeAsync: withdrawWrite } = useScaffoldContractWrite({
     contractName: "DEX",
     functionName: "withdraw",
-    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
-    args: [NUMBER_REGEX.test(withdrawAmount) ? ethers.utils.parseEther(withdrawAmount) : withdrawAmount],
+    args: [NUMBER_REGEX.test(withdrawAmount) ? parseEther(withdrawAmount) : withdrawAmount],
   });
 
   const { writeAsync: approveWrite } = useScaffoldContractWrite({
@@ -117,10 +108,10 @@ const Dex: NextPage = () => {
       <MetaHeader />
       <h1 className="text-center mb-4 mt-5">
         <span className="block text-xl text-right mr-7">
-          🎈: {parseFloat(ethers.utils.formatEther(userBalloons?.toString() || 0)).toFixed(4)}
+          🎈: {parseFloat(formatEther(userBalloons || 0n)).toFixed(4)}
         </span>
         <span className="block text-xl text-right mr-7">
-          💦💦: {parseFloat(ethers.utils.formatEther(userLiquidity?.toString() || 0)).toFixed(4)}
+          💦💦: {parseFloat(formatEther(userLiquidity || 0n)).toFixed(4)}
         </span>
         <span className="block text-2xl mb-2">SpeedRunEthereum</span>
         <span className="block text-4xl font-bold">Challenge 4: ⚖️ Build a DEX </span>
@@ -139,9 +130,7 @@ const Dex: NextPage = () => {
                 {isLoading ? (
                   <span>Loading...</span>
                 ) : (
-                  <span className="pl-8 text-xl">
-                    🎈 {parseFloat(ethers.utils.formatEther(DEXBalloonBalance?.toString() || 0)).toFixed(4)}
-                  </span>
+                  <span className="pl-8 text-xl">🎈 {parseFloat(formatEther(DEXBalloonBalance || 0n)).toFixed(4)}</span>
                 )}
               </span>
             </div>
@@ -188,11 +177,7 @@ const Dex: NextPage = () => {
             </div>
             <div className="relative flex py-5 items-center">
               <span className="flex-shrink text-gray-400 mx-auto text-xl">
-                Liquidity (
-                {totalLiquidity
-                  ? parseFloat(ethers.utils.formatEther(totalLiquidity?.toString() || 0)).toFixed(4)
-                  : "None"}
-                )
+                Liquidity ({DEXtotalLiquidity ? parseFloat(formatEther(DEXtotalLiquidity || 0n)).toFixed(4) : "None"})
               </span>
             </div>
 
@@ -258,7 +243,7 @@ const Dex: NextPage = () => {
                   <h1></h1>
                 ) : (
                   <span className="font-bold bg-primary px-3 rounded-2xl">
-                    BAL Balance: {parseFloat(ethers.utils.formatEther(balanceOfWrite?.toString() || 0)).toFixed(4)}
+                    BAL Balance: {parseFloat(formatEther(balanceOfWrite || 0n)).toFixed(4)}
                   </span>
                 )}
               </div>
@@ -271,7 +256,7 @@ const Dex: NextPage = () => {
             addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
             addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
             ethReserve={contractETHBalance ? parseFloat("" + contractETHBalance) : 0}
-            tokenReserve={parseFloat(ethers.utils.formatEther(contractBalance || BigNumber.from("0")))}
+            tokenReserve={parseFloat(formatEther(contractBalance || 0n))}
             width={500}
             height={500}
           />
