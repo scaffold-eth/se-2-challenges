@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
-import { createTestClient, encodePacked, formatEther, http, keccak256, parseEther, toBytes } from "viem";
+import { createTestClient, encodePacked, formatEther, http, keccak256, parseEther, toBytes, verifyMessage } from "viem";
 import { hardhat } from "viem/chains";
 import { Address as AddressType, useAccount, useWalletClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -111,13 +111,13 @@ const Streamer: NextPage = () => {
     /**
      * Handle incoming payments from the given client.
      */
-    function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
+    async function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
       // recreate a bigint object from the message. v.data.updatedBalance is
       // a string representation of the bigint for transit over the network
       if (!data.updatedBalance) {
         return;
       }
-      const updatedBalance = BigInt(`0x${data.updatedBalance}`);
+      let updatedBalance = BigInt(`0x${data.updatedBalance}`);
 
       /*
        *  Checkpoint 3:
@@ -128,6 +128,29 @@ const Streamer: NextPage = () => {
        *  and then use verifyMessage() to confirm that voucher signer was
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
+      // TODO: remove. Checkpoint 3 solution
+      if (updatedBalance < 0n) {
+        updatedBalance = 0n;
+      }
+
+      const packed = encodePacked(["uint256"], [updatedBalance]);
+      const hashed = keccak256(packed);
+      const arrayified = toBytes(hashed);
+
+      const verified = await verifyMessage({
+        address: clientAddress,
+        // bug in viem types, created an issue in their repo
+        // https://github.com/wagmi-dev/viem/issues/1129
+        // @ts-expect-error
+        message: { raw: arrayified },
+        signature: data.signature as `0x${string}`,
+      });
+
+      console.log(verified, "<<<< VERIFIED");
+      if (!verified) {
+        return;
+      }
+      // end of checkpoint 3
 
       const existingVoucher = vouchers[clientAddress];
 
