@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
-import { createTestClient, http, parseEther, toBytes } from "viem";
+import { createTestClient, encodePacked, formatEther, http, keccak256, parseEther, toBytes } from "viem";
 import { hardhat } from "viem/chains";
 import { Address as AddressType, useAccount, useWalletClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -126,7 +125,7 @@ const Streamer: NextPage = () => {
        *  currently, this function recieves and stores vouchers uncritically.
        *
        *  recreate the packed, hashed, and arrayified message from reimburseService (above),
-       *  and then use utils.verifyMessage() to confirm that voucher signer was
+       *  and then use verifyMessage() to confirm that voucher signer was
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
 
@@ -240,8 +239,8 @@ const Streamer: NextPage = () => {
       updatedBalance = 0n;
     }
 
-    const packed = utils.solidityPack(["uint256"], [updatedBalance]);
-    const hashed = utils.keccak256(packed);
+    const packed = encodePacked(["uint256"], [updatedBalance]);
+    const hashed = keccak256(packed);
     const arrayified = toBytes(hashed);
 
     // Why not just sign the updatedBalance string directly?
@@ -339,9 +338,7 @@ const Streamer: NextPage = () => {
                         Recieved:{" "}
                         <strong id={`claimable-${clientAddress}`}>
                           {vouchers[clientAddress]
-                            ? utils.formatEther(
-                                utils.parseEther(STREAM_ETH_VALUE).sub(vouchers[clientAddress].updatedBalance),
-                              )
+                            ? formatEther(parseEther(STREAM_ETH_VALUE) - vouchers[clientAddress].updatedBalance)
                             : 0}
                         </strong>
                         &nbsp;ETH
