@@ -87,10 +87,7 @@ const Streamer: NextPage = () => {
         });
 
         setChannels(channels => {
-          if (userIsOwner) {
-            return { ...channels, [addr]: new BroadcastChannel(addr) };
-          }
-          return channels;
+          return { ...channels, [addr]: new BroadcastChannel(addr) };
         });
       });
     },
