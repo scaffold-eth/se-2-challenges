@@ -53,6 +53,7 @@ describe(" 🕞 Statechannel Challenge: The Guru's Offering 👑", function () {
 
     const voucher = {
       updatedBalance,
+      // TODO: change when viem will implement splitSignature
       sig: ethers.utils.splitSignature(carolSig),
     };
     return voucher;

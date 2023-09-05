@@ -15,6 +15,7 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
   const { writeAsync } = useScaffoldContractWrite({
     contractName: "Streamer",
     functionName: "withdrawEarnings",
+    // TODO: change when viem will implement splitSignature
     args: [{ ...voucher, sig: voucher?.signature ? (utils.splitSignature(voucher.signature) as any) : undefined }],
   });
 

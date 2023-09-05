@@ -16,7 +16,7 @@ import {
   useScaffoldEventSubscriber,
 } from "~~/hooks/scaffold-eth";
 
-export type Voucher = { updatedBalance: bigint; signature: string };
+export type Voucher = { updatedBalance: bigint; signature: `0x${string}}` };
 
 const STREAM_ETH_VALUE = "0.5";
 const ETH_PER_CHARACTER = "0.01";
@@ -140,7 +140,7 @@ const Streamer: NextPage = () => {
         // https://github.com/wagmi-dev/viem/issues/1129
         // @ts-expect-error
         message: { raw: arrayified },
-        signature: data.signature as `0x${string}`,
+        signature: data.signature,
       });
 
       console.log(verified, "<<<< VERIFIED");
