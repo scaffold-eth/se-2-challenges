@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Amount } from "./Amount";
 import { ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import Blockies from "react-blockies";
@@ -21,12 +22,12 @@ const Address = ({ address }: { address: string }) => {
   return (
     <div className="flex">
       {getTargetNetwork().id === hardhat.id ? (
-        <span className={`ml-1.5 text-sm font-normal`}>
+        <span className={`ml-1.5 text-sm font-normal `}>
           <Link href={blockExplorerAddressLink}>{displayAddress}</Link>
         </span>
       ) : (
         <a
-          className={`ml-1.5 text-sm font-normal`}
+          className={`ml-1.5 text-sm font-normal align-middle`}
           target="_blank"
           href={blockExplorerAddressLink}
           rel="noopener noreferrer"
@@ -104,30 +105,27 @@ export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps
   }
 
   if (!ethers.utils.isAddress(address)) {
-    return <span className="text-error">Wrong address</span>;
+    return (
+      <div>
+        <span className="text-error">Wrong address</span>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="flex justify-between space-x-3 px-1  mb-5">
-        <div className=" w-1/6 flex-shrink-0">
+      <div className="flex justify-between space-x-3 px-1 mb-2 items-center">
+        <div className=" flex w-1/6 flex-shrink-0 justify-center ">
           {ensAvatar ? (
-            // Don't want to use nextJS Image here (and adding remote patterns for the URL)
-            // eslint-disable-next-line
-          <img
-            className="p-0.5"
-            src={ensAvatar}
-            width={45}
-            height={35}
-            alt={`${address} avatar`}
-          />
+            <img className="p-0.5" src={ensAvatar} width={45} height={35} alt={`${address} avatar`} />
           ) : (
             <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={3} />
           )}
         </div>
-        <Address address={address} />
-        <div className="w-4/6"></div>
-        <div className=" ml-6 w-1/6">
+        <div className="w-4/6">
+          <Address address={address} />
+        </div>
+        <div className=" w-1/6">
           <span> {landedOn} </span>
         </div>
       </div>
@@ -188,8 +186,8 @@ export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
 
   return (
     <>
-      <div className="flex justify-between space-x-3 px-2 my-2 mb-2">
-        <div className="  w-1/6 flex-shrink-0">
+      <div className="flex justify-between space-x-3 px-1  mb-2 items-center">
+        <div className=" flex w-1/6 flex-shrink-0 justify-center">
           {ensAvatar ? (
             <img className="p-0.5" src={ensAvatar} width={45} height={35} alt={`${address} avatar`} />
           ) : (
@@ -199,11 +197,10 @@ export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
         <div className="w-3/6">
           <Address address={address} />
         </div>
-        <div className=" w-1/6">
-          <span> {amount} ETH </span>
+        <div className=" w-2/6">
+          <Amount showUsdPrice={true} amount={amount} />
         </div>
       </div>
-      <div className="divide-y divide-solid" />
     </>
   );
 };
