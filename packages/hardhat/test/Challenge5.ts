@@ -113,8 +113,9 @@ describe(" 🕞 Statechannel Challenge: The Guru's Offering 👑", function () {
     });
 
     it("Should allow legitimate withdrawals", async function () {
-      const [, alice] = await ethers.getSigners();
+      const [deployer, alice] = await ethers.getSigners();
 
+      const deployerBalance = ethers.BigNumber.from(await network.provider.send("eth_getBalance", [deployer.address]));
       const updatedBalance = ethers.utils.parseEther("0.5"); // cut channel balance from 1 -> 0.5
       console.log("\t", "📩 Creating voucher...");
       const voucher = await createVoucher(updatedBalance, alice);
@@ -123,6 +124,14 @@ describe(" 🕞 Statechannel Challenge: The Guru's Offering 👑", function () {
       await expect(streamerContract.withdrawEarnings(voucher)).to.emit(streamerContract, "Withdrawn");
       console.log("\t", "💵 Expecting contract balance to equal 2.5...");
       await assertBalance("2.5"); // 3 - 0.5 = 2.5
+      const finalDeployerBalance = ethers.BigNumber.from(
+        await network.provider.send("eth_getBalance", [deployer.address]),
+      );
+      await expect(finalDeployerBalance).to.be.approximately(
+        deployerBalance.add(updatedBalance),
+        // gas for withdrawEarnings
+        ethers.utils.parseEther("0.01"),
+      );
     });
 
     it("Should refuse redundant withdrawals", async function () {
