@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { BigNumber, utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
-import { Address as AddressType, useAccount, useSigner } from "wagmi";
+import { createTestClient, encodePacked, formatEther, http, keccak256, parseEther, toBytes, verifyMessage } from "viem";
+import { hardhat } from "viem/chains";
+import { Address as AddressType, useAccount, useWalletClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Address } from "~~/components/scaffold-eth";
 import { CashOutVoucherButton } from "~~/components/streamer/CashOutVoucherButton";
@@ -14,9 +15,8 @@ import {
   useScaffoldEventHistory,
   useScaffoldEventSubscriber,
 } from "~~/hooks/scaffold-eth";
-import { getLocalProvider, getTargetNetwork } from "~~/utils/scaffold-eth";
 
-export type Voucher = { updatedBalance: BigNumber; signature: string };
+export type Voucher = { updatedBalance: bigint; signature: `0x${string}}` };
 
 const STREAM_ETH_VALUE = "0.5";
 const ETH_PER_CHARACTER = "0.01";
@@ -29,7 +29,7 @@ const ETH_PER_CHARACTER = "0.01";
 
 const Streamer: NextPage = () => {
   const { address: userAddress } = useAccount();
-  const { data: userSigner } = useSigner();
+  const { data: userSigner } = useWalletClient();
   const { data: ownerAddress } = useScaffoldContractRead({
     contractName: "Streamer",
     functionName: "owner",
@@ -55,7 +55,7 @@ const Streamer: NextPage = () => {
   const { data: openedHistoryData, isLoading: isOpenedHistoryLoading } = useScaffoldEventHistory({
     contractName: "Streamer",
     eventName: "Opened",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   useEffect(() => {
@@ -75,12 +75,21 @@ const Streamer: NextPage = () => {
   useScaffoldEventSubscriber({
     contractName: "Streamer",
     eventName: "Opened",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    listener: (addr, _) => {
-      setOpened([...opened, addr]);
-      if (userIsOwner) {
-        setChannels({ ...channels, [addr]: new BroadcastChannel(addr) });
-      }
+    listener: logs => {
+      logs.map(log => {
+        const addr = log.args[0] as string;
+
+        setOpened(opened => {
+          if (!opened.includes(addr)) {
+            return [...opened, addr];
+          }
+          return opened;
+        });
+
+        setChannels(channels => {
+          return { ...channels, [addr]: new BroadcastChannel(addr) };
+        });
+      });
     },
   });
 
@@ -99,10 +108,13 @@ const Streamer: NextPage = () => {
     /**
      * Handle incoming payments from the given client.
      */
-    function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
-      // recreate a BigNumber object from the message. v.data.updatedBalance is
-      // a string representation of the BigNumber for transit over the network
-      const updatedBalance = BigNumber.from(data.updatedBalance);
+    async function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
+      // recreate a bigint object from the message. v.data.updatedBalance is
+      // a string representation of the bigint for transit over the network
+      if (!data.updatedBalance) {
+        return;
+      }
+      const updatedBalance = BigInt(`0x${data.updatedBalance}`);
 
       /*
        *  Checkpoint 3:
@@ -110,14 +122,13 @@ const Streamer: NextPage = () => {
        *  currently, this function recieves and stores vouchers uncritically.
        *
        *  recreate the packed, hashed, and arrayified message from reimburseService (above),
-       *  and then use utils.verifyMessage() to confirm that voucher signer was
+       *  and then use verifyMessage() to confirm that voucher signer was
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
-
       const existingVoucher = vouchers[clientAddress];
 
       // update our stored voucher if this new one is more valuable
-      if (existingVoucher === undefined || updatedBalance.lt(existingVoucher.updatedBalance)) {
+      if (existingVoucher === undefined || updatedBalance < existingVoucher.updatedBalance) {
         setVouchers({ ...vouchers, [clientAddress]: { ...data, updatedBalance } });
       }
     }
@@ -128,7 +139,7 @@ const Streamer: NextPage = () => {
   const { data: challengedHistoryData, isLoading: isChallengedHistoryLoading } = useScaffoldEventHistory({
     contractName: "Streamer",
     eventName: "Challenged",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   useEffect(() => {
@@ -141,8 +152,10 @@ const Streamer: NextPage = () => {
   useScaffoldEventSubscriber({
     contractName: "Streamer",
     eventName: "Challenged",
-    listener: addr => {
-      setChallenged([...challenged, addr]);
+    listener: logs => {
+      logs.map(log => {
+        setChallenged(challenged => [...challenged, log.args[0] as string]);
+      });
     },
   });
 
@@ -151,7 +164,7 @@ const Streamer: NextPage = () => {
   const { data: closedHistoryData, isLoading: isClosedHistoryLoading } = useScaffoldEventHistory({
     contractName: "Streamer",
     eventName: "Closed",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   useEffect(() => {
@@ -164,8 +177,10 @@ const Streamer: NextPage = () => {
   useScaffoldEventSubscriber({
     contractName: "Streamer",
     eventName: "Closed",
-    listener: addr => {
-      setClosed([...closed, addr]);
+    listener: logs => {
+      logs.map(log => {
+        setClosed(closed => [...closed, log.args[0] as string]);
+      });
     },
   });
 
@@ -193,15 +208,15 @@ const Streamer: NextPage = () => {
   });
 
   // Checkpoint 5
-  // const { writeAsync: challengeChannel } = useScaffoldContractWrite({
-  //   contractName: "Streamer",
-  //   functionName: "challengeChannel",
-  // });
+  const { writeAsync: challengeChannel } = useScaffoldContractWrite({
+    contractName: "Streamer",
+    functionName: "challengeChannel",
+  });
 
-  // const { writeAsync: defundChannel } = useScaffoldContractWrite({
-  //   contractName: "Streamer",
-  //   functionName: "defundChannel",
-  // });
+  const { writeAsync: defundChannel } = useScaffoldContractWrite({
+    contractName: "Streamer",
+    functionName: "defundChannel",
+  });
 
   const [recievedWisdom, setReceivedWisdom] = useState("");
 
@@ -210,19 +225,19 @@ const Streamer: NextPage = () => {
    * to the service provider
    */
   async function reimburseService(wisdom: string) {
-    const initialBalance = utils.parseEther(STREAM_ETH_VALUE);
-    const costPerCharacter = utils.parseEther(ETH_PER_CHARACTER);
-    const duePayment = costPerCharacter.mul(BigNumber.from(wisdom.length));
+    const initialBalance = parseEther(STREAM_ETH_VALUE);
+    const costPerCharacter = parseEther(ETH_PER_CHARACTER);
+    const duePayment = costPerCharacter * BigInt(wisdom.length);
 
-    let updatedBalance = initialBalance.sub(duePayment);
+    let updatedBalance = initialBalance - duePayment;
 
-    if (updatedBalance.lt(BigNumber.from(0))) {
-      updatedBalance = BigNumber.from(0);
+    if (updatedBalance < 0n) {
+      updatedBalance = 0n;
     }
 
-    const packed = utils.solidityPack(["uint256"], [updatedBalance]);
-    const hashed = utils.keccak256(packed);
-    const arrayified = utils.arrayify(hashed);
+    const packed = encodePacked(["uint256"], [updatedBalance]);
+    const hashed = keccak256(packed);
+    const arrayified = toBytes(hashed);
 
     // Why not just sign the updatedBalance string directly?
     //
@@ -231,7 +246,7 @@ const Streamer: NextPage = () => {
     //    and on-chain (by the Streamer contract). These are distinct runtime environments, so
     //    care needs to be taken that signatures are applied to specific data encodings.
     //
-    //    the arrayify call below encodes this data in an EVM compatible way
+    //    the toBytes call below encodes this data in an EVM compatible way
     //
     //    see: https://blog.ricmoo.com/verifying-messages-in-solidity-50a94f82b2ca for some
     //         more on EVM verification of messages signed off-chain
@@ -240,9 +255,9 @@ const Streamer: NextPage = () => {
     //    the fixed-length hash can be reused for any message format.
 
     // TODO: sometimes userSigner is undefinded here, it causes a bug that last sybols doesn't count
-    const signature = await userSigner?.signMessage(arrayified);
+    const signature = await userSigner?.signMessage({ message: { raw: arrayified } });
 
-    const hexBalance = updatedBalance.toHexString();
+    const hexBalance = updatedBalance.toString(16);
 
     if (hexBalance && signature) {
       userChannel.current?.postMessage({
@@ -319,9 +334,7 @@ const Streamer: NextPage = () => {
                         Recieved:{" "}
                         <strong id={`claimable-${clientAddress}`}>
                           {vouchers[clientAddress]
-                            ? utils.formatEther(
-                                utils.parseEther(STREAM_ETH_VALUE).sub(vouchers[clientAddress].updatedBalance),
-                              )
+                            ? formatEther(parseEther(STREAM_ETH_VALUE) - vouchers[clientAddress].updatedBalance)
                             : 0}
                         </strong>
                         &nbsp;ETH
@@ -383,7 +396,13 @@ const Streamer: NextPage = () => {
                         try {
                           // ensure a 'ticking clock' for the UI without having
                           // to send new transactions & mine new blocks
-                          getLocalProvider(getTargetNetwork())?.send("evm_setIntervalMining", [5000]);
+                          createTestClient({
+                            chain: hardhat,
+                            mode: "hardhat",
+                            transport: http(),
+                          })?.setIntervalMining({
+                            interval: 5000,
+                          });
                         } catch (e) {}
                       }}
                     >
@@ -391,15 +410,15 @@ const Streamer: NextPage = () => {
                     </button>
 
                     <div className="p-2 mt-6 h-10">
-                      {challenged.includes(userAddress) && (
+                      {challenged.includes(userAddress) && !!timeLeft && (
                         <>
-                          <span>Time left:</span> {timeLeft && humanizeDuration(timeLeft.toNumber() * 1000)}
+                          <span>Time left:</span> {humanizeDuration(Number(timeLeft) * 1000)}
                         </>
                       )}
                     </div>
                     <button
                       className="btn btn-primary"
-                      disabled={!challenged.includes(userAddress) || timeLeft?.toNumber() !== 0}
+                      disabled={!challenged.includes(userAddress) || !!timeLeft}
                       onClick={() => defundChannel()}
                     >
                       Close and withdraw funds
