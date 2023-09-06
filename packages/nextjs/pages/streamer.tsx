@@ -114,7 +114,7 @@ const Streamer: NextPage = () => {
       if (!data.updatedBalance) {
         return;
       }
-      let updatedBalance = BigInt(`0x${data.updatedBalance}`);
+      const updatedBalance = BigInt(`0x${data.updatedBalance}`);
 
       /*
        *  Checkpoint 3:
@@ -125,30 +125,6 @@ const Streamer: NextPage = () => {
        *  and then use verifyMessage() to confirm that voucher signer was
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
-      // TODO: remove. Checkpoint 3 solution
-      if (updatedBalance < 0n) {
-        updatedBalance = 0n;
-      }
-
-      const packed = encodePacked(["uint256"], [updatedBalance]);
-      const hashed = keccak256(packed);
-      const arrayified = toBytes(hashed);
-
-      const verified = await verifyMessage({
-        address: clientAddress,
-        // bug in viem types, created an issue in their repo
-        // https://github.com/wagmi-dev/viem/issues/1129
-        // @ts-expect-error
-        message: { raw: arrayified },
-        signature: data.signature,
-      });
-
-      console.log(verified, "<<<< VERIFIED");
-      if (!verified) {
-        return;
-      }
-      // end of checkpoint 3
-
       const existingVoucher = vouchers[clientAddress];
 
       // update our stored voucher if this new one is more valuable
