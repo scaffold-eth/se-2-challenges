@@ -1,5 +1,5 @@
-import { utils } from "ethers";
 import type { NextPage } from "next";
+import { formatEther } from "viem";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Spinner } from "~~/components/Spinner";
 import { Address } from "~~/components/scaffold-eth";
@@ -9,7 +9,7 @@ const Stakings: NextPage = () => {
   const { data: stakeEvents, isLoading } = useScaffoldEventHistory({
     contractName: "Staker",
     eventName: "Stake",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   if (isLoading)
@@ -47,9 +47,9 @@ const Stakings: NextPage = () => {
                   return (
                     <tr key={index}>
                       <td>
-                        <Address address={event.args[0]} />
+                        <Address address={event.args?.staker} />
                       </td>
-                      <td>{event.args[1] && utils.formatEther(event.args[1].toString())} ETH</td>
+                      <td>{event.args?.amount && formatEther(event.args?.amount)} ETH</td>
                     </tr>
                   );
                 })
