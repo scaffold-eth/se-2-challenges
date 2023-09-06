@@ -228,7 +228,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 > If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocal : false` inside `burnerWallet` in your frontend config (`scaffold.config.ts` in `packages/nextjs/scaffold.config.ts`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
