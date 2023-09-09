@@ -1,49 +1,65 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
+import { Address } from "viem";
 import { Activities } from "~~/components/Activities";
+import { TActivityItemProps } from "~~/components/ActivitiesItem";
 import { Dice } from "~~/components/Dice";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Tab } from "~~/components/Tab";
 import { Winners } from "~~/components/Winner";
-import { useAccountBalance, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import {
+  useAccountBalance,
+  useScaffoldContractRead,
+  useScaffoldContractWrite,
+  useScaffoldEventHistory,
+  useScaffoldEventSubscriber,
+} from "~~/hooks/scaffold-eth";
+
+const ROLL_ETH_VALUE = "0.002";
 
 const DiceGame: NextPage = () => {
-  const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
-  const rolls = [
-    { address: "0x6918da6442B0D7D4F142EB92CD6FA5288e690668", amount: 10, landedOn: "F" },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "0" },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "F" },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10, landedOn: "F" },
-    { address: "0xCbdAa684708c13E7b85EBe3d3410DF02F8700808", amount: 10, landedOn: "2" },
-  ];
+  const [rolls, setRolls] = useState<TActivityItemProps[]>([]);
 
-  const won = [
-    { address: "0x6918da6442B0D7D4F142EB92CD6FA5288e690668", amount: 10 },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10 },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10 },
-    { address: "0xa709FF766777C40bAC916558D9262eC4868496B4", amount: 10 },
-    { address: "0xCbdAa684708c13E7b85EBe3d3410DF02F8700808", amount: 10 },
-  ];
+  const { data: rollsHistoryData, isLoading: rollsHistoryLoading } = useScaffoldEventHistory({
+    contractName: "DiceGame",
+    eventName: "Roll",
+    fromBlock: 0n,
+  });
+
+  useEffect(() => {
+    if (!rolls.length && !rollsHistoryLoading) {
+      setRolls(
+        rollsHistoryData?.map(({ args }) => ({
+          address: args.player,
+          amount: Number(args.amount),
+          landedOn: args.roll.toString(16).toUpperCase(),
+        })) || [],
+      );
+    }
+  }, [rolls, rollsHistoryData, rollsHistoryLoading]);
+
+  useScaffoldEventSubscriber({
+    contractName: "DiceGame",
+    eventName: "Roll",
+    listener: logs => {
+      logs.map(log => {
+        const { player, amount, roll } = log.args;
+
+        if (player && amount && roll) {
+          setRolls(rolls => [
+            ...rolls,
+            { address: player, amount: Number(amount), landedOn: roll.toString(16).toUpperCase() },
+          ]);
+        }
+      });
+    },
+  });
 
   const { writeAsync: randomDiceRoll } = useScaffoldContractWrite({
     contractName: "DiceGame",
     functionName: "rollTheDice",
+    value: ROLL_ETH_VALUE,
   });
-
-  const onRollTypeChange = (index: number) => {
-    setCurrentTabIndex(index);
-  };
-
-  const handleRollDice = async () => {
-    if (currentTabIndex == 0) {
-      await randomDiceRoll();
-    }
-
-    /// implement the rigged roll  dice roll ui here
-
-    if (currentTabIndex == 1) {
-    }
-  };
 
   return (
     <>
@@ -54,11 +70,20 @@ const DiceGame: NextPage = () => {
             <Activities rolls={rolls} />
           </div>
           <div className="w-1/3">
-            <Dice onRoll={handleRollDice} />
+            <Dice />
+            <button onClick={() => randomDiceRoll()} className="btn btn-secondary btn-xl normal-case font-xl text-lg">
+              Roll the dice
+            </button>
+            <div className="mt-6 flex w-full justify-center ">
+              <span className="text-xl"> This button allow a rigged roll </span>
+            </div>
+            {/* <button onClick={onRoll} className="btn btn-secondary btn-xl normal-case font-xl text-lg">
+          Rigged Roll
+        </button> */}
           </div>
-          <div className="w-1/3">
+          {/* <div className="w-1/3">
             <Winners winners={won} />
-          </div>
+          </div> */}
         </div>
       </div>
     </>

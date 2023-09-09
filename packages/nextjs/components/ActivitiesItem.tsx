@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Amount } from "./Amount";
-import { ethers } from "ethers";
-import { isAddress } from "ethers/lib/utils";
 import Blockies from "react-blockies";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Address, isAddress } from "viem";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { hardhat } from "wagmi/chains";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
@@ -61,21 +60,19 @@ const Address = ({ address }: { address: string }) => {
 };
 
 export type TActivityItemProps = {
-  address: string;
+  address: Address;
   amount: number;
   landedOn: string;
 };
 
 export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps) => {
-  const [ensAvatar, setEnsAvatar] = useState<string | null>();
-
+  const { data: fetchedEns } = useEnsName({ address, enabled: isAddress(address ?? ""), chainId: 1 });
   const { data: fetchedEnsAvatar } = useEnsAvatar({
-    address,
-    enabled: isAddress(address ?? ""),
+    name: fetchedEns,
+    enabled: Boolean(fetchedEns),
     chainId: 1,
     cacheTime: 30_000,
   });
-
   const blockieSizeMap = {
     xs: 6,
     sm: 7,
@@ -87,10 +84,6 @@ export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps
   };
 
   const size = "3xl";
-
-  useEffect(() => {
-    setEnsAvatar(fetchedEnsAvatar);
-  }, [fetchedEnsAvatar]);
 
   // Skeleton UI
   if (!address) {
@@ -104,7 +97,7 @@ export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps
     );
   }
 
-  if (!ethers.utils.isAddress(address)) {
+  if (!isAddress(address)) {
     return (
       <div>
         <span className="text-error">Wrong address</span>
@@ -116,8 +109,8 @@ export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps
     <>
       <div className="flex justify-between space-x-3 px-1 mb-2 items-center">
         <div className=" flex w-1/6 flex-shrink-0 justify-center ">
-          {ensAvatar ? (
-            <img className="p-0.5" src={ensAvatar} width={45} height={35} alt={`${address} avatar`} />
+          {fetchedEnsAvatar ? (
+            <img className="p-0.5" src={fetchedEnsAvatar} width={45} height={35} alt={`${address} avatar`} />
           ) : (
             <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={3} />
           )}
@@ -137,13 +130,15 @@ export type TWinnerItemProps = {
   address: string;
   amount: number;
 };
-export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
-  const [ensAvatar, setEnsAvatar] = useState<string | null>();
 
-  const [ens, setEns] = useState<string | null>();
+export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
+  // const [ensAvatar, setEnsAvatar] = useState<string | null>();
+
+  // const [ens, setEns] = useState<string | null>();
+  const { data: fetchedEns } = useEnsName({ address, enabled: isAddress(address ?? ""), chainId: 1 });
   const { data: fetchedEnsAvatar } = useEnsAvatar({
-    address,
-    enabled: isAddress(address ?? ""),
+    name: fetchedEns,
+    enabled: Boolean(fetchedEns),
     chainId: 1,
     cacheTime: 30_000,
   });
@@ -160,13 +155,6 @@ export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
 
   const size = "3xl";
 
-  useEffect(() => {
-    setEns(fetchedEnsAvatar);
-  }, [fetchedEnsAvatar]);
-
-  useEffect(() => {
-    setEnsAvatar(fetchedEnsAvatar);
-  }, [fetchedEnsAvatar]);
 
   // Skeleton UI
   if (!address) {
@@ -180,7 +168,7 @@ export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
     );
   }
 
-  if (!ethers.utils.isAddress(address)) {
+  if (!isAddress(address)) {
     return <span className="text-error">Wrong address</span>;
   }
 
@@ -188,8 +176,8 @@ export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
     <>
       <div className="flex justify-between space-x-3 px-1  mb-2 items-center">
         <div className=" flex w-1/6 flex-shrink-0 justify-center">
-          {ensAvatar ? (
-            <img className="p-0.5" src={ensAvatar} width={45} height={35} alt={`${address} avatar`} />
+          {fetchedEnsAvatar ? (
+            <img className="p-0.5" src={fetchedEnsAvatar} width={45} height={35} alt={`${address} avatar`} />
           ) : (
             <Blockies className="p-0.5" size={blockieSizeMap[size]} seed={address.toLowerCase()} scale={3} />
           )}
