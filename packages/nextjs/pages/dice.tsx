@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { NextPage } from "next";
-import { createTestClient, http } from "viem";
+import { createTestClient, formatEther, http } from "viem";
 import { hardhat } from "viem/chains";
 import { useBalance } from "wagmi";
 import { Amount } from "~~/components/Amount";
@@ -11,6 +11,7 @@ import { Winner, WinnerEvents } from "~~/components/WinnerEvents";
 import { Address } from "~~/components/scaffold-eth";
 import {
   useScaffoldContract,
+  useScaffoldContractRead,
   useScaffoldContractWrite,
   useScaffoldEventHistory,
   useScaffoldEventSubscriber,
@@ -27,10 +28,11 @@ const DiceGame: NextPage = () => {
   const [isRolling, setIsRolling] = useState(false);
 
   const { data: riggedRollContract } = useScaffoldContract({ contractName: "RiggedRoll" });
-  const { data: riggedRollBalance, isLoading: riggedRollBalanceLoading } = useBalance({
+  const { data: riggedRollBalance } = useBalance({
     address: riggedRollContract?.address,
     watch: true,
   });
+  const { data: prize } = useScaffoldContractRead({ contractName: "DiceGame", functionName: "prize" });
 
   const { data: rollsHistoryData, isLoading: rollsHistoryLoading } = useScaffoldEventHistory({
     contractName: "DiceGame",
@@ -149,6 +151,11 @@ const DiceGame: NextPage = () => {
               <span className="text-xl"> Roll a 0, 1, or 2 to win the prize! </span>
             </div>
 
+            <div className="flex items-center mt-1">
+              <span className="text-lg mr-2">Prize:</span>
+              <Amount amount={prize ? Number(formatEther(prize)) : 0} showUsdPrice className="text-lg" />
+            </div>
+
             <button
               onClick={() => {
                 setIsRolling(true);
@@ -167,12 +174,7 @@ const DiceGame: NextPage = () => {
               </div>
               <div className="flex mt-1 items-center">
                 <span className="text-lg mr-2">Balance:</span>
-                <Amount
-                  amount={Number(riggedRollBalance?.formatted || 0)}
-                  showUsdPrice
-                  isLoading={riggedRollBalanceLoading}
-                  className="text-lg"
-                />
+                <Amount amount={Number(riggedRollBalance?.formatted || 0)} showUsdPrice className="text-lg" />
               </div>
             </div>
             <button
