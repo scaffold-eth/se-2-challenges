@@ -4,7 +4,7 @@ import { createTestClient, http } from "viem";
 import { hardhat } from "viem/chains";
 import { useBalance, useChainId } from "wagmi";
 import { Activities } from "~~/components/Activities";
-import { TActivityItemProps } from "~~/components/ActivitiesItem";
+import { TActivityItemProps, TWinnerItemProps } from "~~/components/ActivitiesItem";
 import { Dice } from "~~/components/Dice";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Tab } from "~~/components/Tab";
@@ -24,6 +24,8 @@ const CHANGE_BLOCKS_INTERVAL_MS = 1000;
 
 const DiceGame: NextPage = () => {
   const [rolls, setRolls] = useState<TActivityItemProps[]>([]);
+  const [winners, setWinners] = useState<TWinnerItemProps[]>([]);
+
   const { data: riggedRollContract } = useScaffoldContract({ contractName: "RiggedRoll" });
   const { data: riggedRollBalance } = useBalance({ address: riggedRollContract?.address, watch: true });
 
@@ -45,18 +47,6 @@ const DiceGame: NextPage = () => {
     }
   }, [rolls, rollsHistoryData, rollsHistoryLoading]);
 
-  useEffect(() => {
-    try {
-      createTestClient({
-        chain: hardhat,
-        mode: "hardhat",
-        transport: http(),
-      })?.setIntervalMining({
-        interval: CHANGE_BLOCKS_INTERVAL_MS,
-      });
-    } catch (e) {}
-  }, []);
-
   useScaffoldEventSubscriber({
     contractName: "DiceGame",
     eventName: "Roll",
@@ -74,6 +64,37 @@ const DiceGame: NextPage = () => {
     },
   });
 
+  const { data: winnerHistoryData, isLoading: winnerHistoryLoading } = useScaffoldEventHistory({
+    contractName: "DiceGame",
+    eventName: "Winner",
+    fromBlock: 0n,
+  });
+
+  useEffect(() => {
+    if (!winners.length && !!winnerHistoryData?.length && !winnerHistoryLoading) {
+      setWinners(
+        winnerHistoryData?.map(({ args }) => ({
+          address: args.winner,
+          amount: args.amount,
+        })) || [],
+      );
+    }
+  }, [winnerHistoryData, winnerHistoryLoading, winners.length]);
+
+  useScaffoldEventSubscriber({
+    contractName: "DiceGame",
+    eventName: "Winner",
+    listener: logs => {
+      logs.map(log => {
+        const { winner, amount } = log.args;
+
+        if (winner && amount) {
+          setWinners(winners => [{ address: winner, amount }, ...winners]);
+        }
+      });
+    },
+  });
+
   const { writeAsync: randomDiceRoll } = useScaffoldContractWrite({
     contractName: "DiceGame",
     functionName: "rollTheDice",
@@ -84,6 +105,18 @@ const DiceGame: NextPage = () => {
     contractName: "RiggedRoll",
     functionName: "riggedRoll",
   });
+
+  useEffect(() => {
+    try {
+      createTestClient({
+        chain: hardhat,
+        mode: "hardhat",
+        transport: http(),
+      })?.setIntervalMining({
+        interval: CHANGE_BLOCKS_INTERVAL_MS,
+      });
+    } catch (e) {}
+  }, []);
 
   return (
     <>
@@ -109,9 +142,9 @@ const DiceGame: NextPage = () => {
               Rigged Roll
             </button>
           </div>
-          {/* <div className="w-1/3">
-            <Winners winners={won} />
-          </div> */}
+          <div className="w-1/3">
+            <Winners winners={winners} />
+          </div>
         </div>
       </div>
     </>

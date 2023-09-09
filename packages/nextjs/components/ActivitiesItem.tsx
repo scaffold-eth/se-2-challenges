@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Amount } from "./Amount";
 import Blockies from "react-blockies";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Address, isAddress } from "viem";
+import { Address, formatEther, isAddress } from "viem";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { hardhat } from "wagmi/chains";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
@@ -128,13 +128,10 @@ export const ActivitiesItem = ({ address, amount, landedOn }: TActivityItemProps
 
 export type TWinnerItemProps = {
   address: string;
-  amount: number;
+  amount: bigint;
 };
 
 export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
-  // const [ensAvatar, setEnsAvatar] = useState<string | null>();
-
-  // const [ens, setEns] = useState<string | null>();
   const { data: fetchedEns } = useEnsName({ address, enabled: isAddress(address ?? ""), chainId: 1 });
   const { data: fetchedEnsAvatar } = useEnsAvatar({
     name: fetchedEns,
@@ -186,7 +183,7 @@ export const WinnerItem = ({ address, amount }: TWinnerItemProps) => {
           <Address address={address} />
         </div>
         <div className=" w-2/6">
-          <Amount showUsdPrice={true} amount={amount} />
+          <Amount showUsdPrice={true} amount={Number(formatEther(amount))} />
         </div>
       </div>
     </>
