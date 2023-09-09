@@ -3,9 +3,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat/";
 import { DiceGame, RiggedRoll } from "../typechain-types/";
 
-const deployRiggedRoll: DeployFunction = async function (
-  hre: HardhatRuntimeEnvironment,
-) {
+const deployRiggedRoll: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
@@ -18,15 +16,14 @@ const deployRiggedRoll: DeployFunction = async function (
     autoMine: true,
   });
 
-  const riggedRoll: RiggedRoll = await ethers.getContract(
-    "RiggedRoll",
-    deployer,
-  );
+  const riggedRoll: RiggedRoll = await ethers.getContract("RiggedRoll", deployer);
 
   // Please replace the text "Your Address" with your own address.
-  // const ownershipTransaction = await riggedRoll.transferOwnership(
-  //   "Your Address",
-  // );
+  // try {
+  //   await riggedRoll.transferOwnership("Your Address");
+  // } catch (err) {
+  //   console.log(err);
+  // }
 };
 
 export default deployRiggedRoll;
