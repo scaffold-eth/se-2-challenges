@@ -16,7 +16,7 @@ export const WinnerEvents = ({ winners }: WinnerEventsProps) => {
   return (
     <div className="card bg-base-300 shadow-xl mx-10 p-1">
       <div className="flex w-auto  justify-center h-10">
-        <p className="flex justify-center text-lg font-bold">Roll Events</p>
+        <p className="flex justify-center text-lg font-bold">Winner Events</p>
       </div>
       <div className="p-2 flex flex-col mt-0">
         <div className="grid grid-cols-4 text-lg">
