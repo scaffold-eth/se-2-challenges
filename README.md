@@ -27,9 +27,9 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-5-state-channels
-cd challenge-5-state-channels
-git checkout challenge-5-state-channels
+git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-3-dice-game
+cd challenge-3-dice-game
+git checkout challenge-3-dice-game
 yarn install
 ```
 
@@ -42,14 +42,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd challenge-5-state-channels
+cd challenge-3-dice-game
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd challenge-5-state-channels
+cd challenge-3-dice-game
 yarn start
 ```
 
@@ -66,8 +66,6 @@ yarn start
 🔒 You will not be changing any code in the DiceGame.sol contract in this challenge. You will write your own contract to predict the outcome, then only roll the dice when it is favourable.
 
 💸 Grab some funds from the faucet and roll the dice a few times. Watch the balance of the DiceGame contract in the Debug tab. It increases on a failed roll and decreases by the prize amount on a successful roll.
-
-<!-- TODO ADD image -->
 
 ![image](https://user-images.githubusercontent.com/12072395/168866845-bfc07d54-4722-44a8-ae07-544e001ceeaa.png)
 
@@ -95,7 +93,6 @@ Next add a `riggedRoll()` function. This function should predict the randomness 
 #### ⚔️ Side Quest
 
 - [ ] Add a statement to require `address(this).balance >= .002 ether` in your riggedRoll function. This will help prevent calling the rollTheDice() function without enough value.
-<!-- TODO: COmment riggedRoll in -->
 - [ ] Uncomment the code in `packages/nextjs/pages/dice.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
 - [ ] Does your riggedRoll function only call rollTheDice() when it's going to be a winning roll? What happens when it does call rollTheDice()?
 

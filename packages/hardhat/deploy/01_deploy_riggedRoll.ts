@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat/";
-import { DiceGame, RiggedRoll } from "../typechain-types/";
+import { DiceGame, RiggedRoll } from "../typechain-types";
 
 const deployRiggedRoll: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
