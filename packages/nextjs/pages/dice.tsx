@@ -5,6 +5,7 @@ import { hardhat } from "viem/chains";
 import { useBalance, useChainId } from "wagmi";
 import { Activities } from "~~/components/Activities";
 import { TActivityItemProps, TWinnerItemProps } from "~~/components/ActivitiesItem";
+import { Amount } from "~~/components/Amount";
 import { Dice } from "~~/components/Dice";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Tab } from "~~/components/Tab";
@@ -27,7 +28,10 @@ const DiceGame: NextPage = () => {
   const [winners, setWinners] = useState<TWinnerItemProps[]>([]);
 
   const { data: riggedRollContract } = useScaffoldContract({ contractName: "RiggedRoll" });
-  const { data: riggedRollBalance } = useBalance({ address: riggedRollContract?.address, watch: true });
+  const { data: riggedRollBalance, isLoading: riggedRollBalanceLoading } = useBalance({
+    address: riggedRollContract?.address,
+    watch: true,
+  });
 
   const { data: rollsHistoryData, isLoading: rollsHistoryLoading } = useScaffoldEventHistory({
     contractName: "DiceGame",
@@ -133,9 +137,18 @@ const DiceGame: NextPage = () => {
             </button>
             <div className="mt-4 pt-4 flex flex-col items-center w-full justify-center border-t-4 border-primary">
               <span className="text-2xl">Rigged Roll</span>
-              <div className="flex my-2">
-                <Address address={riggedRollContract?.address} />{" "}
-                <span className="ml-4">{riggedRollBalance?.formatted}</span>
+              <div className="flex mt-2 items-center">
+                <span className="mr-2 text-lg">Address:</span>{" "}
+                <Address size="lg" address={riggedRollContract?.address} />{" "}
+              </div>
+              <div className="flex mt-1 items-center">
+                <span className="text-lg">Balance:</span>
+                <Amount
+                  amount={Number(riggedRollBalance?.formatted || 0)}
+                  showUsdPrice
+                  isLoading={riggedRollBalanceLoading}
+                  className="text-lg"
+                />
               </div>
             </div>
             <button onClick={() => riggedRoll()} className="mt-4 btn btn-secondary btn-xl normal-case font-xl text-lg">

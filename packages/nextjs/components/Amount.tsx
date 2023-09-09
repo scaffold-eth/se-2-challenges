@@ -41,11 +41,11 @@ export const Amount = ({ isLoading, showUsdPrice = false, amount = 0, className 
         {isEthBalance ? (
           <>
             <span>{amount?.toFixed(4)}</span>
-            <span className="text-xs font-bold ml-1">{configuredNetwork.nativeCurrency.symbol}</span>
+            <span className="font-bold ml-1">{configuredNetwork.nativeCurrency.symbol}</span>
           </>
         ) : (
           <>
-            <span className="text-xs font-bold mr-1">$</span>
+            <span className="font-bold mr-1">$</span>
             <span>{(amount * price).toFixed(2)}</span>
           </>
         )}
