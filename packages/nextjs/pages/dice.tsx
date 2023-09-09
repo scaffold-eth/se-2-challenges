@@ -2,19 +2,15 @@ import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { createTestClient, http } from "viem";
 import { hardhat } from "viem/chains";
-import { useBalance, useChainId } from "wagmi";
-import { Activities } from "~~/components/Activities";
-import { TActivityItemProps, TWinnerItemProps } from "~~/components/ActivitiesItem";
+import { useBalance } from "wagmi";
 import { Amount } from "~~/components/Amount";
 import { Dice } from "~~/components/Dice";
 import { MetaHeader } from "~~/components/MetaHeader";
-import { Tab } from "~~/components/Tab";
-import { Winners } from "~~/components/Winner";
+import { Roll, RollEvents } from "~~/components/RollEvents";
+import { Winner, WinnerEvents } from "~~/components/WinnerEvents";
 import { Address } from "~~/components/scaffold-eth";
 import {
-  useAccountBalance,
   useScaffoldContract,
-  useScaffoldContractRead,
   useScaffoldContractWrite,
   useScaffoldEventHistory,
   useScaffoldEventSubscriber,
@@ -24,8 +20,8 @@ const ROLL_ETH_VALUE = "0.002";
 const CHANGE_BLOCKS_INTERVAL_MS = 1000;
 
 const DiceGame: NextPage = () => {
-  const [rolls, setRolls] = useState<TActivityItemProps[]>([]);
-  const [winners, setWinners] = useState<TWinnerItemProps[]>([]);
+  const [rolls, setRolls] = useState<Roll[]>([]);
+  const [winners, setWinners] = useState<Winner[]>([]);
 
   const { data: riggedRollContract } = useScaffoldContract({ contractName: "RiggedRoll" });
   const { data: riggedRollBalance, isLoading: riggedRollBalanceLoading } = useBalance({
@@ -45,7 +41,7 @@ const DiceGame: NextPage = () => {
         rollsHistoryData?.map(({ args }) => ({
           address: args.player,
           amount: Number(args.amount),
-          landedOn: args.roll.toString(16).toUpperCase(),
+          roll: args.roll.toString(16).toUpperCase(),
         })) || [],
       );
     }
@@ -60,7 +56,7 @@ const DiceGame: NextPage = () => {
 
         if (player && amount && roll) {
           setRolls(rolls => [
-            { address: player, amount: Number(amount), landedOn: roll.toString(16).toUpperCase() },
+            { address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() },
             ...rolls,
           ]);
         }
@@ -128,7 +124,7 @@ const DiceGame: NextPage = () => {
       <div className="py-20 px-10">
         <div className="flex flex-row">
           <div className="w-1/3">
-            <Activities rolls={rolls} />
+            <RollEvents rolls={rolls} />
           </div>
           <div className="w-1/3 flex flex-col items-center">
             <Dice />
@@ -142,7 +138,7 @@ const DiceGame: NextPage = () => {
                 <Address size="lg" address={riggedRollContract?.address} />{" "}
               </div>
               <div className="flex mt-1 items-center">
-                <span className="text-lg">Balance:</span>
+                <span className="text-lg mr-2">Balance:</span>
                 <Amount
                   amount={Number(riggedRollBalance?.formatted || 0)}
                   showUsdPrice
@@ -156,7 +152,7 @@ const DiceGame: NextPage = () => {
             </button>
           </div>
           <div className="w-1/3">
-            <Winners winners={winners} />
+            <WinnerEvents winners={winners} />
           </div>
         </div>
       </div>

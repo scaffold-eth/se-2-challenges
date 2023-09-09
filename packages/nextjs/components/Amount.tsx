@@ -34,7 +34,7 @@ export const Amount = ({ isLoading, showUsdPrice = false, amount = 0, className 
 
   return (
     <button
-      className={`btn btn-sm btn-ghost flex flex-col font-normal items-center hover:bg-transparent ${className}`}
+      className={`btn btn-sm px-0 btn-ghost flex flex-col font-normal items-center hover:bg-transparent ${className}`}
       onClick={onToggleBalance}
     >
       <div className="w-full flex items-center justify-center">
