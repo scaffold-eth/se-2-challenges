@@ -25,6 +25,7 @@ const DiceGame: NextPage = () => {
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [winners, setWinners] = useState<Winner[]>([]);
 
+  const [rolled, setRolled] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
 
   const { data: riggedRollContract } = useScaffoldContract({ contractName: "RiggedRoll" });
@@ -131,9 +132,8 @@ const DiceGame: NextPage = () => {
 
   useEffect(() => {
     if (rollTheDiceError || riggedRollError) {
-      setTimeout(() => {
-        setIsRolling(false);
-      }, ROLLING_TIME_MS);
+      setIsRolling(false);
+      setRolled(false);
     }
   }, [riggedRollError, rollTheDiceError]);
 
@@ -158,6 +158,9 @@ const DiceGame: NextPage = () => {
 
             <button
               onClick={() => {
+                if (!rolled) {
+                  setRolled(true);
+                }
                 setIsRolling(true);
                 randomDiceRoll();
               }}
@@ -177,8 +180,11 @@ const DiceGame: NextPage = () => {
                 <Amount amount={Number(riggedRollBalance?.formatted || 0)} showUsdPrice className="text-lg" />
               </div>
             </div>
-            {/* <button
+            <button
               onClick={() => {
+                if (!rolled) {
+                  setRolled(true);
+                }
                 setIsRolling(true);
                 riggedRoll();
               }}
@@ -186,15 +192,18 @@ const DiceGame: NextPage = () => {
               className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
             >
               Rigged Roll!
-            </button> */}
+            </button>
 
             <div className="flex mt-8">
-              <Image
-                src={`/rolls/${isRolling ? "ROLL" : rolls[0]?.roll || "0"}.png`}
-                width={300}
-                height={300}
-                alt="roll"
-              />
+              {rolled ? (
+                isRolling ? (
+                  <video key="rolling" width={300} height={300} loop src="/rolls/Spin.webm" autoPlay />
+                ) : (
+                  <video key="rolled" width={300} height={300} src={`/rolls/${rolls[0]?.roll || "0"}.webm`} autoPlay />
+                )
+              ) : (
+                <Image src={`/rolls/images/${rolls[0]?.roll || "0"}.jpg`} width={300} height={300} alt="roll" />
+              )}
             </div>
           </div>
 
