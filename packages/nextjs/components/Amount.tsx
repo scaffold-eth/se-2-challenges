@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGlobalState } from "~~/services/store/store";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
@@ -7,15 +7,26 @@ type TAmountProps = {
   className?: string;
   isLoading?: boolean;
   showUsdPrice?: boolean;
+  disableToggle?: boolean;
 };
 
 /**
  * Display (ETH & USD) balance of an ETH address.
  */
-export const Amount = ({ isLoading, showUsdPrice = false, amount = 0, className = "" }: TAmountProps) => {
+export const Amount = ({
+  isLoading,
+  showUsdPrice = false,
+  amount = 0,
+  className = "",
+  disableToggle = false,
+}: TAmountProps) => {
   const configuredNetwork = getTargetNetwork();
   const price = useGlobalState(state => state.nativeCurrencyPrice);
   const [isEthBalance, setEthBalance] = useState<boolean>(!showUsdPrice);
+
+  useEffect(() => {
+    setEthBalance(!showUsdPrice);
+  }, [showUsdPrice]);
 
   if (isLoading) {
     return (
@@ -29,7 +40,9 @@ export const Amount = ({ isLoading, showUsdPrice = false, amount = 0, className 
   }
 
   const onToggleBalance = () => {
-    setEthBalance(!isEthBalance);
+    if (!disableToggle) {
+      setEthBalance(!isEthBalance);
+    }
   };
 
   return (
