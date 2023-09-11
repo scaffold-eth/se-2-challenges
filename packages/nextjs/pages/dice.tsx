@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { createTestClient, formatEther, http } from "viem";
 import { hardhat } from "viem/chains";
@@ -19,11 +18,13 @@ import {
 
 const ROLL_ETH_VALUE = "0.002";
 const CHANGE_BLOCKS_INTERVAL_MS = 1000;
-const ROLLING_TIME_MS = 500;
+// const ROLLING_TIME_MS = 500;
 
 const DiceGame: NextPage = () => {
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [winners, setWinners] = useState<Winner[]>([]);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const [rolled, setRolled] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
@@ -61,13 +62,13 @@ const DiceGame: NextPage = () => {
         const { player, amount, roll } = log.args;
 
         if (player && amount && roll) {
-          setTimeout(() => {
-            setIsRolling(false);
-            setRolls(rolls => [
-              { address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() },
-              ...rolls,
-            ]);
-          }, ROLLING_TIME_MS);
+          // setTimeout(() => {
+          setIsRolling(false);
+          setRolls(rolls => [
+            { address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() },
+            ...rolls,
+          ]);
+          // }, ROLLING_TIME_MS);
         }
       });
     },
@@ -98,10 +99,10 @@ const DiceGame: NextPage = () => {
         const { winner, amount } = log.args;
 
         if (winner && amount) {
-          setTimeout(() => {
-            setIsRolling(false);
-            setWinners(winners => [{ address: winner, amount }, ...winners]);
-          }, ROLLING_TIME_MS);
+          // setTimeout(() => {
+          setIsRolling(false);
+          setWinners(winners => [{ address: winner, amount }, ...winners]);
+          // }, ROLLING_TIME_MS);
         }
       });
     },
@@ -136,6 +137,13 @@ const DiceGame: NextPage = () => {
       setRolled(false);
     }
   }, [riggedRollError, rollTheDiceError]);
+
+  useEffect(() => {
+    if (videoRef.current && !isRolling) {
+      // show last frame
+      videoRef.current.currentTime = 9999;
+    }
+  }, [isRolling]);
 
   return (
     <>
@@ -202,7 +210,13 @@ const DiceGame: NextPage = () => {
                   <video key="rolled" width={300} height={300} src={`/rolls/${rolls[0]?.roll || "0"}.webm`} autoPlay />
                 )
               ) : (
-                <Image src={`/rolls/images/${rolls[0]?.roll || "0"}.jpg`} width={300} height={300} alt="roll" />
+                <video
+                  ref={videoRef}
+                  key="last"
+                  width={300}
+                  height={300}
+                  src={`/rolls/${rolls[0]?.roll || "0"}.webm`}
+                />
               )}
             </div>
           </div>
