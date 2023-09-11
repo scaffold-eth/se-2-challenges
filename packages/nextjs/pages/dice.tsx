@@ -19,6 +19,7 @@ import {
 const ROLL_ETH_VALUE = "0.002";
 const CHANGE_BLOCKS_INTERVAL_MS = 1000;
 // const ROLLING_TIME_MS = 500;
+const MAX_TABLE_ROWS = 10;
 
 const DiceGame: NextPage = () => {
   const [rolls, setRolls] = useState<Roll[]>([]);
@@ -45,11 +46,13 @@ const DiceGame: NextPage = () => {
   useEffect(() => {
     if (!rolls.length && !!rollsHistoryData?.length && !rollsHistoryLoading) {
       setRolls(
-        rollsHistoryData?.map(({ args }) => ({
-          address: args.player,
-          amount: Number(args.amount),
-          roll: args.roll.toString(16).toUpperCase(),
-        })) || [],
+        (
+          rollsHistoryData?.map(({ args }) => ({
+            address: args.player,
+            amount: Number(args.amount),
+            roll: args.roll.toString(16).toUpperCase(),
+          })) || []
+        ).slice(0, MAX_TABLE_ROWS),
       );
     }
   }, [rolls, rollsHistoryData, rollsHistoryLoading]);
@@ -64,10 +67,12 @@ const DiceGame: NextPage = () => {
         if (player && amount && roll) {
           // setTimeout(() => {
           setIsRolling(false);
-          setRolls(rolls => [
-            { address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() },
-            ...rolls,
-          ]);
+          setRolls(rolls =>
+            [{ address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() }, ...rolls].slice(
+              0,
+              MAX_TABLE_ROWS,
+            ),
+          );
           // }, ROLLING_TIME_MS);
         }
       });
@@ -83,10 +88,12 @@ const DiceGame: NextPage = () => {
   useEffect(() => {
     if (!winners.length && !!winnerHistoryData?.length && !winnerHistoryLoading) {
       setWinners(
-        winnerHistoryData?.map(({ args }) => ({
-          address: args.winner,
-          amount: args.amount,
-        })) || [],
+        (
+          winnerHistoryData?.map(({ args }) => ({
+            address: args.winner,
+            amount: args.amount,
+          })) || []
+        ).slice(0, MAX_TABLE_ROWS),
       );
     }
   }, [winnerHistoryData, winnerHistoryLoading, winners.length]);
@@ -101,7 +108,7 @@ const DiceGame: NextPage = () => {
         if (winner && amount) {
           // setTimeout(() => {
           setIsRolling(false);
-          setWinners(winners => [{ address: winner, amount }, ...winners]);
+          setWinners(winners => [{ address: winner, amount }, ...winners].slice(0, MAX_TABLE_ROWS));
           // }, ROLLING_TIME_MS);
         }
       });
