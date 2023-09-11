@@ -86,7 +86,7 @@ Next add a `riggedRoll()` function. This function should predict the randomness 
 
 > 📣 Reminder! Calling rollTheDice() will fail unless you send a message value of at least .002 Eth! [Here is one example of how to send value with a function call.](https://ethereum.stackexchange.com/questions/6665/call-contract-and-send-value-from-solidity)
 
-🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.js` file in `packages/hardhat/deploy`
+🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.ts` file in `packages/hardhat/deploy`
 
 ❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some `console.log()` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.
 
@@ -113,7 +113,7 @@ You have beaten the game, but where is your money? Since the RiggedRoll contract
 
 - [ ] Lock the withdraw function so it can only be called by the owner.
 
-> ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in `01_deploy_riggedRoll.js`. This will allow your front end address to call the withdraw function.
+> ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in `01_deploy_riggedRoll.ts`. This will allow your front end address to call the withdraw function.
 
 ## Checkpoint 4: 💾 Deploy your contracts! 🛰
 
