@@ -1,5 +1,5 @@
-import { utils } from "ethers";
 import type { NextPage } from "next";
+import { formatEther } from "viem";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Spinner } from "~~/components/Spinner";
 import { Address } from "~~/components/scaffold-eth";
@@ -9,25 +9,25 @@ const Events: NextPage = () => {
   const { data: EthToTokenEvents, isLoading: isEthToTokenEventsLoading } = useScaffoldEventHistory({
     contractName: "DEX",
     eventName: "EthToTokenSwap",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   const { data: tokenToEthEvents, isLoading: isTokenToEthEventsLoading } = useScaffoldEventHistory({
     contractName: "DEX",
     eventName: "TokenToEthSwap",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   const { data: liquidityProvidedEvents, isLoading: isLiquidityProvidedEventsLoading } = useScaffoldEventHistory({
     contractName: "DEX",
     eventName: "LiquidityProvided",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   const { data: liquidityRemovedEvents, isLoading: isLiquidityRemovedEventsLoading } = useScaffoldEventHistory({
     contractName: "DEX",
     eventName: "LiquidityRemoved",
-    fromBlock: 0,
+    fromBlock: 0n,
   });
 
   return (
@@ -66,8 +66,8 @@ const Events: NextPage = () => {
                           <td className="text-center">
                             <Address address={event.args.swapper} />
                           </td>
-                          <td>{parseFloat(utils.formatEther(event.args.ethInput).toString()).toFixed(4)}</td>
-                          <td>{parseFloat(utils.formatEther(event.args.tokenOutput).toString()).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.ethInput)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.tokenOutput)).toFixed(4)}</td>
                         </tr>
                       );
                     })
@@ -110,8 +110,8 @@ const Events: NextPage = () => {
                           <td className="text-center">
                             <Address address={event.args.swapper} />
                           </td>
-                          <td>{parseFloat(utils.formatEther(event.args.tokensInput).toString()).toFixed(4)}</td>
-                          <td>{parseFloat(utils.formatEther(event.args.ethOutput).toString()).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.tokensInput)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.ethOutput)).toFixed(4)}</td>
                         </tr>
                       );
                     })
@@ -155,9 +155,9 @@ const Events: NextPage = () => {
                           <td className="text-center">
                             <Address address={event.args.liquidityProvider} />
                           </td>
-                          <td>{parseFloat(utils.formatEther(event.args.ethInput).toString()).toFixed(4)}</td>
-                          <td>{parseFloat(utils.formatEther(event.args.tokensInput).toString()).toFixed(4)}</td>
-                          <td>{parseFloat(utils.formatEther(event.args.liquidityMinted).toString()).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.ethInput)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.tokensInput)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.liquidityMinted)).toFixed(4)}</td>
                         </tr>
                       );
                     })
@@ -201,9 +201,9 @@ const Events: NextPage = () => {
                           <td className="text-center">
                             <Address address={event.args.liquidityRemover} />
                           </td>
-                          <td>{parseFloat(utils.formatEther(event.args.ethOutput).toString()).toFixed(4)}</td>
-                          <td>{parseFloat(utils.formatEther(event.args.tokensOutput).toString()).toFixed(4)}</td>
-                          <td>{parseFloat(utils.formatEther(event.args.liquidityWithdrawn).toString()).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.ethOutput)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.tokensOutput)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args.liquidityWithdrawn)).toFixed(4)}</td>
                         </tr>
                       );
                     })
