@@ -150,9 +150,7 @@ const DiceGame: NextPage = () => {
       <MetaHeader />
       <div className="py-10 px-10">
         <div className="grid grid-cols-3">
-          <div className="mt-8">
-            <RollEvents rolls={rolls} />
-          </div>
+          <RollEvents rolls={rolls} />
 
           <div className="flex flex-col items-center">
             <div className="flex w-full justify-center">
@@ -221,9 +219,7 @@ const DiceGame: NextPage = () => {
             </div>
           </div>
 
-          <div className="mt-8">
-            <WinnerEvents winners={winners} />
-          </div>
+          <WinnerEvents winners={winners} />
         </div>
       </div>
     </>

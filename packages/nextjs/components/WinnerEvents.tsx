@@ -14,32 +14,35 @@ export type WinnerEventsProps = {
 
 export const WinnerEvents = ({ winners }: WinnerEventsProps) => {
   return (
-    <div className="card bg-base-300 shadow-xl mx-10 p-1">
-      <div className="flex w-auto  justify-center h-10">
+    <div className="mx-10">
+      <div className="flex w-auto justify-center h-10">
         <p className="flex justify-center text-lg font-bold">Winner Events</p>
       </div>
-      <div className="p-2 flex flex-col mt-0">
-        <div className="grid grid-cols-5 text-lg">
-          <div className="col-span-3">
-            <span>Address</span>
-          </div>
-          <div className="col-span-2">
-            <span>Won</span>
-          </div>
-        </div>
-        <div className="mt-2">
+
+      <table className="mt-4 p-2 bg-base-100 table table-zebra shadow-lg w-full overflow-hidden">
+        <thead className="text-accent text-lg">
+          <tr>
+            <th className="bg-primary" colSpan={3}>
+              Address
+            </th>
+            <th className="bg-primary" colSpan={2}>
+              Won
+            </th>
+          </tr>
+        </thead>
+        <tbody>
           {winners.map(({ address, amount }, i) => (
-            <div key={i} className=" grid grid-cols-5 gap-y-4 px-1 mb-2 items-center">
-              <div className="col-span-3">
+            <tr key={i}>
+              <td colSpan={3}>
                 <Address address={address} size="lg" />
-              </div>
-              <div className="col-span-2">
+              </td>
+              <td colSpan={2}>
                 <Amount showUsdPrice={true} amount={Number(formatEther(amount))} className="text-lg" />
-              </div>
-            </div>
+              </td>
+            </tr>
           ))}
-        </div>
-      </div>
+        </tbody>
+      </table>
     </div>
   );
 };
