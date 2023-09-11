@@ -26,7 +26,13 @@ export const WinnerEvents = ({ winners }: WinnerEventsProps) => {
             <th className="bg-primary" colSpan={3}>
               Address
             </th>
-            <th className="bg-primary" colSpan={2}>
+            <th
+              className="bg-primary"
+              colSpan={2}
+              onClick={() => {
+                setShowUsdPrice(!showUsdPrice);
+              }}
+            >
               Won
             </th>
           </tr>
