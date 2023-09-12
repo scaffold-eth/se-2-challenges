@@ -33,10 +33,10 @@ export const RollEvents = ({ rolls }: RollEventsProps) => {
         <tbody>
           {rolls.map(({ address, roll }, i) => (
             <tr key={i}>
-              <td colSpan={3}>
+              <td colSpan={3} className="py-3.5">
                 <Address address={address} size="lg" />
               </td>
-              <td className="col-span-1">
+              <td className="col-span-1 text-lg">
                 <span> {roll} </span>
               </td>
             </tr>
