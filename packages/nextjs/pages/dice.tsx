@@ -127,15 +127,19 @@ const DiceGame: NextPage = () => {
   });
 
   useEffect(() => {
-    try {
-      createTestClient({
-        chain: hardhat,
-        mode: "hardhat",
-        transport: http(),
-      })?.setIntervalMining({
-        interval: CHANGE_BLOCKS_INTERVAL_MS,
-      });
-    } catch (e) {}
+    const setHardhatAutomaticIntervalMinning = async () => {
+      try {
+        await createTestClient({
+          chain: hardhat,
+          mode: "hardhat",
+          transport: http(),
+        })?.setIntervalMining({
+          interval: CHANGE_BLOCKS_INTERVAL_MS,
+        });
+      } catch (e) {}
+    };
+
+    setHardhatAutomaticIntervalMinning();
   }, []);
 
   useEffect(() => {
