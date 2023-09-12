@@ -67,7 +67,7 @@ yarn start
 
 💸 Grab some funds from the faucet and roll the dice a few times. Watch the balance of the DiceGame contract in the Debug tab. It increases on a failed roll and decreases by the prize amount on a successful roll.
 
-![image](https://user-images.githubusercontent.com/12072395/168866845-bfc07d54-4722-44a8-ae07-544e001ceeaa.png)
+![Faucet](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e82e3100-20fb-4886-a6bf-4113c3729f53)
 
 #### 🥅 Goals
 
@@ -88,6 +88,8 @@ Next add a `riggedRoll()` function. This function should predict the randomness 
 
 🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.ts` file in `packages/hardhat/deploy`
 
+💸 You will need to send some funds to your RiggedRoll contract before doing your first roll, can use the Faucet button at the bottom left of the page.
+
 ❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some `console.log()` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.
 
 #### ⚔️ Side Quest
@@ -96,11 +98,15 @@ Next add a `riggedRoll()` function. This function should predict the randomness 
 - [ ] Uncomment the code in `packages/nextjs/pages/dice.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
 - [ ] Does your riggedRoll function only call rollTheDice() when it's going to be a winning roll? What happens when it does call rollTheDice()?
 
+![RiggedLosingRoll](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/b6c8d7b4-139b-4f54-a62c-a0c77b3692a3)
+
 ---
 
 ## Checkpoint 3: 💵 Where's my money?!?
 
 You have beaten the game, but where is your money? Since the RiggedRoll contract is the one calling `rollTheDice()`, that is where the prize money is being sent.
+
+![RiggedRollAddress](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e9b9d164-2fb1-416a-9c5e-198d15bca0c6)
 
 📥 Create a `withdraw(address _addr, uint256 _amount)` function to allow you to send Eth from RiggedRoll to another address.
 
@@ -112,6 +118,8 @@ You have beaten the game, but where is your money? Since the RiggedRoll contract
 #### ⚔️ Side Quest
 
 - [ ] Lock the withdraw function so it can only be called by the owner.
+
+![WithdrawOnlyOwner](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e8397b1e-a077-4009-b518-30a6d8deb6e7)
 
 > ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in `01_deploy_riggedRoll.ts`. This will allow your front end address to call the withdraw function.
 
