@@ -36,7 +36,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor
 
 🎰 Randomness is tricky on a public deterministic blockchain. In this challenge you will explore creating random numbers using block hash and how that may be exploitable. Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
 
-(Not completed). SE1 link: https://github.com/scaffold-eth/scaffold-eth-challenges/tree/challenge-3-dice-game
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-3-dice-game
 
 ---
 
@@ -55,6 +55,16 @@ https://buidlguidl.com/
 DEX Telegram Channel: https://t.me/+_NeUIJ664Tc1MzIx
 
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-4-dex
+
+---
+
+## 📺 State Channel Application Challenge
+
+🛣️ The Ethereum blockchain has great decentralization & security properties but these properties come at a price: transaction throughput is low, and transactions can be expensive. This makes many traditional web applications infeasible on a blockchain... or does it? State channels look to solve these problems by allowing participants to securely transact off-chain while keeping interaction with Ethereum Mainnet at a minimum.
+
+State Channels Telegram Channel: https://t.me/+k0eUYngV2H0zYWUx
+
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-5-state-channels
 
 ---
 
