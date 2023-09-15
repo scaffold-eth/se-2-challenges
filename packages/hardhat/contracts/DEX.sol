@@ -21,7 +21,7 @@ contract DEX {
     /**
      * @notice Emitted when ethToToken() swap transacted
      */
-    event EthToTokenSwap(address swapper, uint256 ethInput, uint256 tokenOutput);
+    event EthToTokenSwap(address swapper, uint256 tokenOutput, uint256 ethInput);
 
     /**
      * @notice Emitted when tokenToEth() swap transacted
