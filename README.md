@@ -252,7 +252,7 @@ Let’s edit the `DEX.sol` smart contract and add two new functions for swapping
         uint256 tokenOutput = price(msg.value, ethReserve, token_reserve);
 
         require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
-        emit EthToTokenSwap(msg.sender, msg.value, tokenOutput);
+        emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
         return tokenOutput;
     }
 
