@@ -156,7 +156,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-## ⚔️ Side Quests
+### ⚔️ Side Quests
 
 - [ ] Can `execute()` get called more than once, and is that okay?
 - [ ] Can you stake and withdraw freely after the `deadline`, and is that okay?
@@ -164,7 +164,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-## 🐸 It's a trap!
+### 🐸 It's a trap!
 
 - [ ] Make sure funds can't get trapped in the contract! **Try sending funds after you have executed! What happens?**
 - [ ] Try to create a [modifier](https://solidity-by-example.org/function-modifier/) called `notCompleted`. It will check that `ExampleExternalContract` is not completed yet. Use it to protect your `execute` and `withdraw` functions.
@@ -213,7 +213,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 > 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
-### Configuration of Third-Party Services for Production-Grade Apps.
+#### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.  
 This is great to complete your **SpeedRunEthereum**.
