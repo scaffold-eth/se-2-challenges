@@ -68,7 +68,7 @@ _Other commonly used Checkpoints (check one Challenge and adapt the texts for yo
 
 _Create all the required Checkpoints for the Challenge, can also add Side Quests you think may be interesting to complete. Check other Challenges for inspiration._
 
-## ⚔️ Side Quests
+### ⚔️ Side Quests
 
 _To finish your README, can add these links_
 
