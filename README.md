@@ -84,7 +84,7 @@ We'll need another active address to act as the rube in our app. To do this just
 
 ![wallets-setup](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1c0ede93-fd7d-4683-a3f0-803b52ca947c)
 
-### 🥅 Goals
+### 🥅 Goals:
 
 - [ ] Does your original frontend address recieve the `Hello Guru` UI?
 - [ ] Does your alternate addresses recieve the `Hello Rube` UI?
@@ -105,7 +105,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 > 👁 Check `packages/nextjs/pages/streamer.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
 
-> Run `yarn deploy` and open a channel in the Rube's tab.  (You may need some funds from the faucet)
+> Run `yarn deploy` and open a channel in the Rube's tab. (You may need some funds from the faucet)
 
 ![channel-open](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/69a30c45-d384-476f-8b7d-67bc23d21833)
 
