@@ -52,7 +52,7 @@ yarn start
 
 > 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
 
-## ⛳️ Checkpoint 1: 🔭 The Structure 📺
+## Checkpoint 1: 🔭 The Structure 📺
 
 Navigate to the `Debug Contracts` tab, you should see two smart contracts displayed called `DEX` and `Balloons`.
 
@@ -71,7 +71,7 @@ Navigate to the `Debug Contracts` tab, you should see two smart contracts displa
 
 ---
 
-## ⛳️ **Checkpoint 2: Reserves** ⚖️
+## Checkpoint 2: Reserves ⚖️
 
 We want to create an automatic market where our contract will hold reserves of both ETH and 🎈 Balloons. These reserves will provide liquidity that allows anyone to swap between the assets.
 
@@ -159,7 +159,7 @@ Now when we `yarn deploy --reset` then our contract should be initialized as soo
 
 ---
 
-## ⛳️ **Checkpoint 3: Price** 🤑
+## Checkpoint 3: Price 🤑
 
 This section is directly from the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) "Price" section. It outlines the general details of the DEX's pricing model.
 
@@ -235,7 +235,7 @@ Finally, let’s say the ratio is the same but we want to swap 100,000 tokens in
 
 ---
 
-## ⛳️ **Checkpoint 4: Trading** 🤝
+## Checkpoint 4: Trading 🤝
 
 Let’s edit the `DEX.sol` smart contract and add two new functions for swapping from each asset to the other, `ethToToken()` and `tokenToEth()`!
 
@@ -284,7 +284,7 @@ Let’s edit the `DEX.sol` smart contract and add two new functions for swapping
 
 ---
 
-## ⛳️ **Checkpoint 5: Liquidity** 🌊
+## Checkpoint 5: Liquidity 🌊
 
 So far, only the `init()` function controls liquidity. To make this more decentralized, it would be better if anyone could add to the liquidity pool by sending the DEX both ETH and tokens at the correct ratio.
 
@@ -351,7 +351,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 
 ---
 
-## ⛳️ **Checkpoint 6: UI** 🖼
+## Checkpoint 6: UI 🖼
 
 Cool beans! Your front-end should be showing something like this now!
 
@@ -363,7 +363,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 - [ ] In `packages\nextjs\pages\events.tsx` implement an event and emit for the `approve()` function to make it clear when it has been executed.
 
-#### ⚠️ Test it!
+### ⚠️ Test it!
 
 - Now is a good time to run `yarn test` to run the automated testing function. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
 
