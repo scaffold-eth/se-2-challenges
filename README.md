@@ -69,7 +69,7 @@ yarn start
 
 ![Faucet](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e82e3100-20fb-4886-a6bf-4113c3729f53)
 
-#### 🥅 Goals
+### 🥅 Goals
 
 - [ ] Track the solidity code to find out how the DiceGame contract is generating random numbers.
 - [ ] Is it possible to predict the random number for any given roll?
@@ -92,7 +92,7 @@ Next add a `riggedRoll()` function. This function should predict the randomness 
 
 ❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some `console.log()` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.
 
-#### ⚔️ Side Quest
+### ⚔️ Side Quest
 
 - [ ] Add a statement to require `address(this).balance >= .002 ether` in your riggedRoll function. This will help prevent calling the rollTheDice() function without enough value.
 - [ ] Uncomment the code in `packages/nextjs/pages/dice.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
@@ -110,12 +110,12 @@ You have beaten the game, but where is your money? Since the RiggedRoll contract
 
 📥 Create a `withdraw(address _addr, uint256 _amount)` function to allow you to send Eth from RiggedRoll to another address.
 
-#### 🥅 Goals
+### 🥅 Goals
 
 - [ ] Can you send value from the riggedRoll contract to your front end address?
 - [ ] Is anyone able to call the withdraw function? What would be the downside to that?
 
-#### ⚔️ Side Quest
+### ⚔️ Side Quest
 
 - [ ] Lock the withdraw function so it can only be called by the owner.
 
@@ -155,7 +155,7 @@ You have beaten the game, but where is your money? Since the RiggedRoll contract
 
 > 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
-#### Configuration of Third-Party Services for Production-Grade Apps.
+### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.  
 This is great to complete your **SpeedRunEthereum**.
