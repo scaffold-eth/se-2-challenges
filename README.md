@@ -14,7 +14,7 @@
 
 ---
 
-### Checkpoint 0: 📦 Environment 📚
+## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -59,7 +59,7 @@ yarn start
 
 ---
 
-### Checkpoint 1: 🥩 Staking 💵
+## Checkpoint 1: 🥩 Staking 💵
 
 You'll need to track individual `balances` using a mapping:
 
@@ -83,7 +83,7 @@ uint256 public constant threshold = 1 ether;
 
 > ✏ Need to troubleshoot your code? If you import `hardhat/console.sol` to your contract, you can call `console.log()` right in your Solidity code. The output will appear in your `yarn chain` terminal.
 
-#### 🥅 Goals
+### 🥅 Goals
 
 - [ ] Do you see the balance of the `Staker` contract go up when you `stake()`?
 - [ ] Is your `balance` correctly tracked?
@@ -93,9 +93,9 @@ uint256 public constant threshold = 1 ether;
 
 ---
 
-### Checkpoint 2: 🔬 State Machine / Timing ⏱
+## Checkpoint 2: 🔬 State Machine / Timing ⏱
 
-#### State Machine
+### State Machine
 
 > ⚙️ Think of your smart contract like a _state machine_. First, there is a **stake** period. Then, if you have gathered the `threshold` worth of ETH, there is a **success** state. Or, we go into a **withdraw** state to let users withdraw their funds.
 
@@ -115,7 +115,7 @@ If the `address(this).balance` of the contract is over the `threshold` by the `d
 
 If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
 
-#### Timing
+### Timing
 
 You'll have 30 seconds after deploying until the deadline is reached, you can adjust this in the contract.
 
@@ -134,7 +134,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-#### 🥅 Goals
+### 🥅 Goals
 
 - [ ] Can you see `timeLeft` counting down in the `Staker UI` tab when you trigger a transaction with the faucet button?
 - [ ] If enough ETH is staked by the deadline, does your `execute()` function correctly call `complete()` and stake the ETH?
@@ -142,7 +142,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 3: 💵 Receive Function / UX 🙎
+## Checkpoint 3: 💵 Receive Function / UX 🙎
 
 🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `stake()`. You will use what is called the `receive()` function.
 
@@ -150,7 +150,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-#### 🥅 Goals
+### 🥅 Goals
 
 - [ ] If you send ETH directly to the contract address does it update your `balance` and the `balance` of the contract?
 
@@ -169,13 +169,13 @@ Your `Staker UI` tab should be almost done and working at this point.
 - [ ] Make sure funds can't get trapped in the contract! **Try sending funds after you have executed! What happens?**
 - [ ] Try to create a [modifier](https://solidity-by-example.org/function-modifier/) called `notCompleted`. It will check that `ExampleExternalContract` is not completed yet. Use it to protect your `execute` and `withdraw` functions.
 
-#### ⚠️ Test it!
+### ⚠️ Test it!
 
 - Now is a good time to run `yarn test` to run the automated testing function. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
 
 ---
 
-### Checkpoint 4: 💾 Deploy your contract! 🛰
+## Checkpoint 4: 💾 Deploy your contract! 🛰
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
@@ -197,7 +197,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ---
 
-### Checkpoint 5: 🚢 Ship your frontend! 🚁
+## Checkpoint 5: 🚢 Ship your frontend! 🚁
 
 ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
@@ -213,7 +213,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 > 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
-#### Configuration of Third-Party Services for Production-Grade Apps.
+### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.  
 This is great to complete your **SpeedRunEthereum**.
@@ -228,7 +228,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-### Checkpoint 6: 📜 Contract Verification
+## Checkpoint 6: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
