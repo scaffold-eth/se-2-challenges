@@ -1,9 +1,5 @@
 # 🏗 Scaffold-ETH 2 Challenges
 
-> Migrating [scaffold-eth challenges](https://github.com/scaffold-eth/scaffold-eth-challenges) to Scaffold-ETH 2.
-
-⚠️ This is a work in progress. Check the [💡 Guide and Hints to create New Challenges](#-guide-and-hints-to-create-new-challenges) if you want to contribute.
-
 **Learn how to use 🏗 Scaffold-ETH 2 to create decentralized applications on Ethereum. 🚀**
 
 ---
