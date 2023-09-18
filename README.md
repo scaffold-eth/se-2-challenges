@@ -28,14 +28,6 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor
 
 ---
 
-## 🚩 Challenge 3: 🎲 Dice Game
-
-🎰 Randomness is tricky on a public deterministic blockchain. In this challenge you will explore creating random numbers using block hash and how that may be exploitable. Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
-
-https://github.com/scaffold-eth/se-2-challenges/tree/challenge-3-dice-game
-
----
-
 ## 🎉 Checkpoint: Eligible to join 🏰️ BuidlGuidl
 
 The BuidlGuidl is a curated group of Ethereum builders creating products, prototypes, and tutorials to enrich the web3 ecosystem. A place to show off your builds and meet other builders. Start crafting your Web3 portfolio by submitting your DEX, Multisig or SVG NFT build.
@@ -44,7 +36,15 @@ https://buidlguidl.com/
 
 ---
 
-## ⚖️ Build a DEX Challenge
+## 🚩 Challenge 3: 🎲 Dice Game
+
+🎰 Randomness is tricky on a public deterministic blockchain. In this challenge you will explore creating random numbers using block hash and how that may be exploitable. Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
+
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-3-dice-game
+
+---
+
+## 🚩 Challenge 4: ⚖️ Build a DEX Challenge
 
 💵 Build an exchange that swaps ETH to tokens and tokens to ETH. 💰 This is possible because the smart contract holds reserves of both assets and has a price function based on the ratio of the reserves. Liquidity providers are issued a token that represents their share of the reserves and fees...
 
@@ -54,7 +54,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-4-dex
 
 ---
 
-## 📺 State Channel Application Challenge
+## 🚩 Challenge 5: 📺 State Channel Application Challenge
 
 🛣️ The Ethereum blockchain has great decentralization & security properties but these properties come at a price: transaction throughput is low, and transactions can be expensive. This makes many traditional web applications infeasible on a blockchain... or does it? State channels look to solve these problems by allowing participants to securely transact off-chain while keeping interaction with Ethereum Mainnet at a minimum.
 
@@ -64,7 +64,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-5-state-channels
 
 ---
 
-## 💡 Guide and Hints to create New Challenges
+## 💡 Contributing: Guide and Hints to create New Challenges
 
 - We'd use the [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template) as a starting point for each challenge.
 - UI wise, we'll try to use the https://speedrunethereum.com/ design vibe.
