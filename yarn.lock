@@ -2119,7 +2119,7 @@ __metadata:
     eslint-config-prettier: ^8.5.0
     eslint-plugin-prettier: ^4.2.1
     kubo-rpc-client: ^3.0.1
-    next: ^13.1.6
+    next: 13.1.6
     nextjs-progressbar: ^0.0.16
     postcss: ^8.4.16
     prettier: ^2.8.4
@@ -10711,7 +10711,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:^13.1.6":
+"next@npm:13.1.6":
   version: 13.1.6
   resolution: "next@npm:13.1.6"
   dependencies:
