@@ -15,6 +15,7 @@ contract Vendor is Ownable {
      * Events
      */
     event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
+    event SellTokens(address seller, uint256 amountOfTokens, uint256 amountOfETH);
 
     constructor(address tokenAddress) {
         yourToken = YourToken(tokenAddress);
@@ -36,4 +37,17 @@ contract Vendor is Ownable {
     }
 
     // ToDo: create a sellTokens(uint256 _amount) function:
+    function sellTokens(uint256 _amount) public payable {
+        uint256 amountOfEth = _amount / tokensPerEth;
+        //approve amount of tokens to sell
+        yourToken.approve(address(this), _amount);
+
+        //transfer tokens from user to vendor
+        yourToken.transferFrom(msg.sender, address(this), _amount);
+
+        //transfer eth from vendor to user
+        payable(msg.sender).transfer(amountOfEth);
+
+        emit SellTokens(msg.sender, _amount, amountOfEth);
+    }
 }
