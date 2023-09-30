@@ -160,10 +160,12 @@ const DiceGame: NextPage = () => {
     <>
       <MetaHeader />
       <div className="py-10 px-10">
-        <div className="grid grid-cols-3">
-          <RollEvents rolls={rolls} />
+        <div className="grid grid-cols-3 max-md:grid-cols-1">
+          <div className="max-md:row-start-2">
+            <RollEvents rolls={rolls} />
+          </div>
 
-          <div className="flex flex-col items-center pt-4">
+          <div className="flex flex-col items-center pt-4 max-md:row-start-1">
             <div className="flex w-full justify-center">
               <span className="text-xl"> Roll a 0, 1, or 2 to win the prize! </span>
             </div>
@@ -230,7 +232,9 @@ const DiceGame: NextPage = () => {
             </div>
           </div>
 
-          <WinnerEvents winners={winners} />
+          <div className="max-md:row-start-3">
+            <WinnerEvents winners={winners} />
+          </div>
         </div>
       </div>
     </>
