@@ -401,7 +401,7 @@ const Streamer: NextPage = () => {
                             mode: "hardhat",
                             transport: http(),
                           })?.setIntervalMining({
-                            interval: 5000,
+                            interval: 5,
                           });
                         } catch (e) {}
                       }}
