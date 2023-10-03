@@ -101,10 +101,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
         </a>
       )}
       {addressCopied ? (
-        <CheckCircleIcon
-          className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer"
-          aria-hidden="true"
-        />
+        <CheckCircleIcon className="ml-1.5 text-xl font-normal h-5 w-5 cursor-pointer" aria-hidden="true" />
       ) : (
         <CopyToClipboard
           text={address}
@@ -115,10 +112,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
             }, 800);
           }}
         >
-          <DocumentDuplicateIcon
-            className="ml-1.5 text-xl font-normal text-sky-600 h-5 w-5 cursor-pointer"
-            aria-hidden="true"
-          />
+          <DocumentDuplicateIcon className="ml-1.5 text-xl font-normal h-5 w-5 cursor-pointer" aria-hidden="true" />
         </CopyToClipboard>
       )}
     </div>
