@@ -26,7 +26,6 @@ export const MyHoldings = () => {
     functionName: "balanceOf",
     args: [connectedAddress],
     watch: true,
-    cacheOnBlock: true,
   });
 
   useEffect(() => {
