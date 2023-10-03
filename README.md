@@ -310,11 +310,12 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
         // 💡 Discussion on adding 1 wei at end of calculation   ^
         // -> https://t.me/c/1655715571/106
 
+        require(token.transferFrom(msg.sender, address(this), tokenDeposit));
         uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
         liquidity[msg.sender] += liquidityMinted;
         totalLiquidity += liquidityMinted;
 
-        require(token.transferFrom(msg.sender, address(this), tokenDeposit));
+
         emit LiquidityProvided(msg.sender, tokenDeposit, msg.value, liquidityMinted);
         return tokenDeposit;
     }
