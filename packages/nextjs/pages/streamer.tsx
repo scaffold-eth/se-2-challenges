@@ -103,8 +103,6 @@ const Streamer: NextPage = () => {
    * wraps a voucher processing function for each client.
    */
   function recieveVoucher(clientAddress: string) {
-    return processVoucher;
-
     /**
      * Handle incoming payments from the given client.
      */
@@ -129,9 +127,11 @@ const Streamer: NextPage = () => {
 
       // update our stored voucher if this new one is more valuable
       if (existingVoucher === undefined || updatedBalance < existingVoucher.updatedBalance) {
-        setVouchers({ ...vouchers, [clientAddress]: { ...data, updatedBalance } });
+        setVouchers(vouchers => ({ ...vouchers, [clientAddress]: { ...data, updatedBalance } }));
       }
     }
+
+    return processVoucher;
   }
 
   const [challenged, setChallenged] = useState<AddressType[]>([]);
