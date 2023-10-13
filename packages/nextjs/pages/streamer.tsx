@@ -59,7 +59,7 @@ const Streamer: NextPage = () => {
   });
 
   useEffect(() => {
-    if (openedHistoryData?.length && !isOpenedHistoryLoading) {
+    if (openedHistoryData?.length && !isOpenedHistoryLoading && !Object.keys(channels).length) {
       const openedChannelsAddresses = openedHistoryData?.map(event => event.args[0]).reverse();
       setOpened(openedChannelsAddresses);
       if (userIsOwner) {
@@ -70,7 +70,7 @@ const Streamer: NextPage = () => {
         );
       }
     }
-  }, [openedHistoryData, isOpenedHistoryLoading, userIsOwner]);
+  }, [openedHistoryData, isOpenedHistoryLoading, userIsOwner, channels]);
 
   useScaffoldEventSubscriber({
     contractName: "Streamer",
@@ -87,6 +87,9 @@ const Streamer: NextPage = () => {
         });
 
         setChannels(channels => {
+          if (channels[addr]) {
+            return channels;
+          }
           return { ...channels, [addr]: new BroadcastChannel(addr) };
         });
       });
@@ -196,7 +199,7 @@ const Streamer: NextPage = () => {
 
   const provideService = (client: AddressType, wisdom: string) => {
     setWisdoms({ ...wisdoms, [client]: wisdom });
-    channels[client].postMessage(wisdom);
+    channels[client]?.postMessage(wisdom);
   };
 
   const [vouchers, setVouchers] = useState<{ [key: AddressType]: Voucher }>({});
