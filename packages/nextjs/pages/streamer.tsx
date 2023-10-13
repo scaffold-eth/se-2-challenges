@@ -212,15 +212,15 @@ const Streamer: NextPage = () => {
   });
 
   // Checkpoint 5
-  const { writeAsync: challengeChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "challengeChannel",
-  });
+  // const { writeAsync: challengeChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "challengeChannel",
+  // });
 
-  const { writeAsync: defundChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "defundChannel",
-  });
+  // const { writeAsync: defundChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "defundChannel",
+  // });
 
   const [recievedWisdom, setReceivedWisdom] = useState("");
 
