@@ -78,6 +78,7 @@ const Streamer: NextPage = () => {
     listener: logs => {
       logs.map(log => {
         const addr = log.args[0] as string;
+        const bc = new BroadcastChannel(addr);
 
         setOpened(opened => {
           if (!opened.includes(addr)) {
@@ -90,7 +91,7 @@ const Streamer: NextPage = () => {
           if (channels[addr]) {
             return channels;
           }
-          return { ...channels, [addr]: new BroadcastChannel(addr) };
+          return { ...channels, [addr]: bc };
         });
       });
     },
