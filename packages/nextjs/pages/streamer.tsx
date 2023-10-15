@@ -59,7 +59,7 @@ const Streamer: NextPage = () => {
   });
 
   useEffect(() => {
-    if (openedHistoryData?.length && !isOpenedHistoryLoading) {
+    if (openedHistoryData?.length && !isOpenedHistoryLoading && !Object.keys(channels).length) {
       const openedChannelsAddresses = openedHistoryData?.map(event => event.args[0]).reverse();
       setOpened(openedChannelsAddresses);
       if (userIsOwner) {
@@ -70,7 +70,7 @@ const Streamer: NextPage = () => {
         );
       }
     }
-  }, [openedHistoryData, isOpenedHistoryLoading, userIsOwner]);
+  }, [openedHistoryData, isOpenedHistoryLoading, userIsOwner, channels]);
 
   useScaffoldEventSubscriber({
     contractName: "Streamer",
@@ -78,6 +78,7 @@ const Streamer: NextPage = () => {
     listener: logs => {
       logs.map(log => {
         const addr = log.args[0] as string;
+        const bc = new BroadcastChannel(addr);
 
         setOpened(opened => {
           if (!opened.includes(addr)) {
@@ -87,7 +88,10 @@ const Streamer: NextPage = () => {
         });
 
         setChannels(channels => {
-          return { ...channels, [addr]: new BroadcastChannel(addr) };
+          if (channels[addr]) {
+            return channels;
+          }
+          return { ...channels, [addr]: bc };
         });
       });
     },
@@ -103,8 +107,6 @@ const Streamer: NextPage = () => {
    * wraps a voucher processing function for each client.
    */
   function recieveVoucher(clientAddress: string) {
-    return processVoucher;
-
     /**
      * Handle incoming payments from the given client.
      */
@@ -129,9 +131,11 @@ const Streamer: NextPage = () => {
 
       // update our stored voucher if this new one is more valuable
       if (existingVoucher === undefined || updatedBalance < existingVoucher.updatedBalance) {
-        setVouchers({ ...vouchers, [clientAddress]: { ...data, updatedBalance } });
+        setVouchers(vouchers => ({ ...vouchers, [clientAddress]: { ...data, updatedBalance } }));
       }
     }
+
+    return processVoucher;
   }
 
   const [challenged, setChallenged] = useState<AddressType[]>([]);
@@ -196,7 +200,7 @@ const Streamer: NextPage = () => {
 
   const provideService = (client: AddressType, wisdom: string) => {
     setWisdoms({ ...wisdoms, [client]: wisdom });
-    channels[client].postMessage(wisdom);
+    channels[client]?.postMessage(wisdom);
   };
 
   const [vouchers, setVouchers] = useState<{ [key: AddressType]: Voucher }>({});
@@ -208,15 +212,15 @@ const Streamer: NextPage = () => {
   });
 
   // Checkpoint 5
-  const { writeAsync: challengeChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "challengeChannel",
-  });
+  // const { writeAsync: challengeChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "challengeChannel",
+  // });
 
-  const { writeAsync: defundChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "defundChannel",
-  });
+  // const { writeAsync: defundChannel } = useScaffoldContractWrite({
+  //   contractName: "Streamer",
+  //   functionName: "defundChannel",
+  // });
 
   const [recievedWisdom, setReceivedWisdom] = useState("");
 
@@ -401,7 +405,7 @@ const Streamer: NextPage = () => {
                             mode: "hardhat",
                             transport: http(),
                           })?.setIntervalMining({
-                            interval: 5000,
+                            interval: 5,
                           });
                         } catch (e) {}
                       }}

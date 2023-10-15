@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Abi, AbiEvent, ExtractAbiEventNames } from "abitype";
 import { Hash } from "viem";
 import { usePublicClient } from "wagmi";
@@ -100,9 +100,19 @@ export const useScaffoldEventHistory = <
     receiptData,
   ]);
 
+  const historyEventsData = useMemo(() => events?.map(addIndexedArgsToEvent), [events]);
+
   return {
-    data: events,
+    data: historyEventsData,
     isLoading: isLoading,
     error: error,
   };
+};
+
+export const addIndexedArgsToEvent = (event: any) => {
+  if (event.args && !Array.isArray(event.args)) {
+    return { ...event, args: { ...event.args, ...Object.values(event.args) } };
+  }
+
+  return event;
 };
