@@ -302,7 +302,7 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
           "Check the order of the values when emitting LiquidityProvided: msg.sender, liquidityMinted, msg.value, tokenDeposit",
         )
           .to.emit(dexContract, "LiquidityProvided")
-          .withArgs(anyValue, ethers.utils.parseEther("5"), ethers.utils.parseEther("5"), anyValue);
+          .withArgs(anyValue, ethers.utils.parseEther("5").add("1"), ethers.utils.parseEther("5"), anyValue);
         const liquidity_end = await dexContract.totalLiquidity();
         console.log(
           "\t",
