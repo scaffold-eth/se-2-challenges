@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
-import { createTestClient, formatEther, http } from "viem";
-import { hardhat } from "viem/chains";
+import { formatEther } from "viem";
 import { useBalance } from "wagmi";
 import { Amount } from "~~/components/Amount";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -17,7 +16,6 @@ import {
 } from "~~/hooks/scaffold-eth";
 
 const ROLL_ETH_VALUE = "0.002";
-const CHANGE_BLOCKS_INTERVAL_SEC = 1;
 // const ROLLING_TIME_MS = 500;
 const MAX_TABLE_ROWS = 10;
 
@@ -126,22 +124,6 @@ const DiceGame: NextPage = () => {
     functionName: "riggedRoll",
     gas: 1_000_000n,
   });
-
-  useEffect(() => {
-    const setHardhatAutomaticIntervalMinning = async () => {
-      try {
-        await createTestClient({
-          chain: hardhat,
-          mode: "hardhat",
-          transport: http(),
-        })?.setIntervalMining({
-          interval: CHANGE_BLOCKS_INTERVAL_SEC,
-        });
-      } catch (e) {}
-    };
-
-    setHardhatAutomaticIntervalMinning();
-  }, []);
 
   useEffect(() => {
     if (rollTheDiceError || riggedRollError) {
