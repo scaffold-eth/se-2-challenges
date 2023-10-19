@@ -315,7 +315,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
         totalLiquidity += liquidityMinted;
 
         require(token.transferFrom(msg.sender, address(this), tokenDeposit));
-        emit LiquidityProvided(msg.sender, tokenDeposit, msg.value, liquidityMinted);
+        emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
         return tokenDeposit;
     }
 
@@ -333,7 +333,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
         (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
         require(sent, "withdraw(): revert in transferring eth to you!");
         require(token.transfer(msg.sender, tokenAmount));
-        emit LiquidityRemoved(msg.sender, tokenAmount, ethWithdrawn, amount);
+        emit LiquidityRemoved(msg.sender, amount, ethWithdrawn, tokenAmount);
         return (ethWithdrawn, tokenAmount);
     }
 
