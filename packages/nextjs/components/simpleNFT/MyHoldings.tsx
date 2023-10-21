@@ -26,7 +26,6 @@ export const MyHoldings = () => {
     functionName: "balanceOf",
     args: [connectedAddress],
     watch: true,
-    cacheOnBlock: true,
   });
 
   useEffect(() => {
@@ -62,6 +61,7 @@ export const MyHoldings = () => {
           console.log(e);
         }
       }
+      collectibleUpdate.sort((a, b) => a.id - b.id);
       setMyAllCollectibles(collectibleUpdate);
       setAllCollectiblesLoading(false);
     };

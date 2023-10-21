@@ -16,8 +16,22 @@ const deployerPrivateKey =
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 
 const config: HardhatUserConfig = {
+<<<<<<< HEAD
   solidity: "0.8.2",
   defaultNetwork: "sepolia",
+=======
+  solidity: {
+    version: "0.8.2",
+    settings: {
+      optimizer: {
+        enabled: true,
+        // https://docs.soliditylang.org/en/latest/using-the-compiler.html#optimizer-options
+        runs: 200,
+      },
+    },
+  },
+  defaultNetwork: "localhost",
+>>>>>>> 1f1cc4d023907bc333d39a113d832c2662d77694
   namedAccounts: {
     deployer: {
       // By default, it will take the first Hardhat account as the deployer
@@ -67,6 +81,14 @@ const config: HardhatUserConfig = {
     },
     polygonMumbai: {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${providerApiKey}`,
+      accounts: [deployerPrivateKey],
+    },
+    polygonZkEvm: {
+      url: `https://polygonzkevm-mainnet.g.alchemy.com/v2/${providerApiKey}`,
+      accounts: [deployerPrivateKey],
+    },
+    polygonZkEvmTestnet: {
+      url: `https://polygonzkevm-testnet.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
     zkSyncTestnet: {
