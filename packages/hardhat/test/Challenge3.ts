@@ -37,7 +37,7 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
     });
   }
 
-  async function getRoll(getRollLessThanTwo: any) {
+  async function getRoll(getRollLessThanFive: boolean) {
     let expectedRoll;
     while (true) {
       const latestBlockNumber = await provider.getBlockNumber();
@@ -52,7 +52,7 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
 
       const bigNum = BigNumber.from(hash);
       expectedRoll = bigNum.mod(16);
-      if (expectedRoll.lte(2) == getRollLessThanTwo) {
+      if (expectedRoll.lte(5) == getRollLessThanFive) {
         break;
       }
 
@@ -85,10 +85,10 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
   });
 
   describe("🔑 Rigged Rolls", function () {
-    it("Should call diceGame.rollTheDice for a roll <= 2", async () => {
-      const getRollLessThanTwo = true;
-      const expectedRoll = await getRoll(getRollLessThanTwo);
-      console.log("\t", "🎲 Expect roll to be less than or equal to 2. Dice Game Roll:", expectedRoll.toNumber());
+    it("Should call diceGame.rollTheDice for a roll <= 5", async () => {
+      const getRollLessThanFive = true;
+      const expectedRoll = await getRoll(getRollLessThanFive);
+      console.log("\t", "🎲 Expect roll to be less than or equal to 5. Dice Game Roll:", expectedRoll.toNumber());
 
       const tx = riggedRoll.riggedRoll();
 
@@ -101,10 +101,10 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
       });
     });
 
-    it("Should not call diceGame.rollTheDice for a roll > 2", async () => {
-      const getRollLessThanTwo = false;
-      const expectedRoll = await getRoll(getRollLessThanTwo);
-      console.log("\t", "🎲 Expect roll to be greater than 2. Dice Game Roll:", expectedRoll.toNumber());
+    it("Should not call diceGame.rollTheDice for a roll > 5", async () => {
+      const getRollLessThanFive = false;
+      const expectedRoll = await getRoll(getRollLessThanFive);
+      console.log("\t", "🎲 Expect roll to be greater than 5. Dice Game Roll:", expectedRoll.toNumber());
       console.log("\t", "◀  Expect riggedRoll to be reverted");
 
       await expect(riggedRoll.riggedRoll()).to.be.reverted;
