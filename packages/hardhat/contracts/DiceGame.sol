@@ -36,7 +36,7 @@ contract DiceGame {
 
     emit Roll(msg.sender, msg.value, roll);
 
-    if (roll > 2) {
+    if (roll > 5) {
       return;
     }
 

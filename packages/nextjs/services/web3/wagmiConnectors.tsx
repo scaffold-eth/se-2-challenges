@@ -41,6 +41,7 @@ export const appChains = configureChains(
           pollingInterval: scaffoldConfig.pollingInterval,
         }
       : {}),
+    retryCount: 0,
   },
 );
 
