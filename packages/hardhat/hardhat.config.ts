@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  defaultNetwork: "localhost",
+  defaultNetwork: "goerli",
   namedAccounts: {
     deployer: {
       // By default, it will take the first Hardhat account as the deployer

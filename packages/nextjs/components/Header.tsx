@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import * as chains from "wagmi/chains";
 import {
   ArrowDownTrayIcon,
   ArrowPathIcon,
@@ -13,6 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { getBlockExplorerAddressLink, getTargetNetwork } from "~~/utils/scaffold-eth";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const router = useRouter();
@@ -41,6 +43,7 @@ export const Header = () => {
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
+  const configuredNetwork = getTargetNetwork();
 
   const navLinks = (
     <>
@@ -74,12 +77,16 @@ export const Header = () => {
           Debug Contracts
         </NavLink>
       </li>
-      <li>
-        <NavLink href="/blockexplorer">
-          <MagnifyingGlassIcon className="h-4 w-4" />
-          Block Explorer
-        </NavLink>
-      </li>
+      {configuredNetwork.name != "Hardhat" && configuredNetwork.name != "Localhost" ? (
+        <></>
+      ) : (
+        <li>
+          <NavLink href="/blockexplorer">
+            <MagnifyingGlassIcon className="h-4 w-4" />
+            Block Explorer
+          </NavLink>
+        </li>
+      )}
     </>
   );
 
