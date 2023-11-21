@@ -3,6 +3,7 @@ import { CommonInputProps, InputBase, IntegerVariant, isValidInteger } from "~~/
 
 type IntegerInputProps = CommonInputProps<string | bigint> & {
   variant?: IntegerVariant;
+  hideSuffix?: boolean;
 };
 
 export const IntegerInput = ({
@@ -12,6 +13,7 @@ export const IntegerInput = ({
   placeholder,
   disabled,
   variant = IntegerVariant.UINT256,
+  hideSuffix,
 }: IntegerInputProps) => {
   const [inputError, setInputError] = useState(false);
   const multiplyBy1e18 = useCallback(() => {
@@ -41,6 +43,7 @@ export const IntegerInput = ({
       onChange={onChange}
       disabled={disabled}
       suffix={
+        !hideSuffix &&
         !inputError && (
           <div
             className="space-x-4 flex tooltip tooltip-top tooltip-secondary before:content-[attr(data-tip)] before:right-[-10px] before:left-auto before:transform-none"

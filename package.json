@@ -5,7 +5,8 @@
   "workspaces": {
     "packages": [
       "packages/hardhat",
-      "packages/nextjs"
+      "packages/nextjs",
+      "packages/backend-local"
     ]
   },
   "scripts": {
@@ -26,7 +27,8 @@
     "next:check-types": "yarn workspace @se-2/nextjs check-types",
     "postinstall": "husky install",
     "precommit": "lint-staged",
-    "vercel": "yarn workspace @se-2/nextjs vercel"
+    "vercel": "yarn workspace @se-2/nextjs vercel",
+    "backend-local": "yarn workspace backend-local dev"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
