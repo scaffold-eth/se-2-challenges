@@ -22,19 +22,19 @@ const Home: NextPage = () => {
             />
             <div className="max-w-3xl">
               <p className="text-center text-lg mt-8">
-                🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an
-                adversarial group of players can use to work together. In this challenge, you create a decentralized
+                🦸 A superpower of Ethereum is allowing the builder to create a simple set of rules that an
+                adversarial group of players can use to work together. In this challenge, I create a decentralized
                 application where users can coordinate a group funding effort. If the users cooperate, the money is
                 collected in a second smart contract. If they defect, the worst that can happen is everyone gets their
                 money back. The users only have to trust the code.
               </p>
               <p className="text-center text-lg">
                 🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and stake if the
-                conditions are met, then deploy your app to a public webserver. Submit the url on{" "}
-                <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-                  SpeedRunEthereum.com
+                conditions are met. If users collect treshhold sum in deadline (3 days afret deployment), total amount of funs will send to example EOA. 
+                DAPP works in Sepolia. {" "}
+                <a href="https://sepolia.etherscan.io/address/0xD5805FE07d2585609F39bbC08625A77E8B4774a7#code" target="_blank" rel="noreferrer" className="underline">
+                  Contract code
                 </a>{" "}
-                !
               </p>
             </div>
           </div>
