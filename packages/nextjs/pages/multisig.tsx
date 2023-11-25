@@ -1,12 +1,14 @@
 import { type FC } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { useAccount } from "wagmi";
 import { TransactionEventItem } from "~~/components/TransactionEventItem";
 import { Address, Balance } from "~~/components/scaffold-eth";
-import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Multisig: FC = () => {
-  const { address } = useAccount();
+  const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
+
+  const contractAddress = contractInfo?.address;
+
   const { data: executeTransactionEvents } = useScaffoldEventHistory({
     contractName: "MetaMultiSigWallet",
     eventName: "ExecuteTransaction",
@@ -16,9 +18,9 @@ const Multisig: FC = () => {
   console.log("executeTransactionEvents", executeTransactionEvents);
   return (
     <>
-      <Balance address={address} />
-      <QRCodeSVG value={address || ""} size={256} />
-      <Address address={address} />
+      <Balance address={contractAddress} />
+      <QRCodeSVG value={contractAddress || ""} size={256} />
+      <Address address={contractAddress} />
 
       {executeTransactionEvents?.map(txEvent => (
         <TransactionEventItem key={txEvent.args.hash} {...txEvent.args} />
