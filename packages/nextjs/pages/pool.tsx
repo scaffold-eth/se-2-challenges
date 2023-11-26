@@ -59,15 +59,17 @@ const Pool: FC = () => {
   }, 3777);
 
   return (
-    <div>
-      <h1>
-        <b style={{ padding: 16 }}>#{nonce ? String(nonce) : "Spin"}</b>
-      </h1>
-      Pool
-      <div className="flex flex-col">
-        {transactions?.map(tx => {
-          return <TransactionItem key={tx.hash} tx={tx} />;
-        })}
+    <div className="flex items-center flex-col flex-grow w-full max-w-2xl">
+      <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full">
+        <div className="text-xl font-bold">Pool</div>
+
+        <div>Nonce: #{nonce ? String(nonce) : "Loading..."}</div>
+
+        <div className="flex flex-col mt-8 gap-4">
+          {transactions?.map(tx => {
+            return <TransactionItem key={tx.hash} tx={tx} />;
+          })}
+        </div>
       </div>
     </div>
   );

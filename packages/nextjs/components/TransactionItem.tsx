@@ -68,8 +68,49 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
 
   return (
     <>
-      <div className="flex flex-col">
-        <div className="flex gap-4">
+      <input type="checkbox" id={`label-${tx.hash}`} className="modal-toggle" />
+      <div className="modal" role="dialog">
+        <div className="modal-box">
+          <div className="flex flex-col">
+            <div className="flex gap-2">
+              <div className="font-bold">Function Signature:</div>
+              {txnData.functionName || "transferFunds"}
+            </div>
+            <div className="flex flex-col gap-2 mt-6">
+              {txnData.args ? (
+                <>
+                  <h4 className="font-bold">Arguments</h4>
+                  <div className="flex gap-4">
+                    Updated signer: <Address address={String(txnData.args?.[0])} />
+                  </div>
+                  <div>Updated signatures required: {String(txnData.args?.[1])}</div>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-4">
+                    Transfer to: <Address address={tx.to} />
+                  </div>
+                  <div>Amount: {formatEther(BigInt(tx.amount))} Ξ </div>
+                </>
+              )}
+            </div>
+            <div className="mt-4">
+              <div className="font-bold">Sig hash</div>{" "}
+              <div className="flex gap-1 mt-2">
+                <BlockieAvatar size={20} address={tx.hash} /> {tx.hash.slice(0, 7)}
+              </div>
+            </div>
+            <div className="modal-action">
+              <label htmlFor={`label-${tx.hash}`} className="btn btn-sm">
+                Close!
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col pb-2 border-b border-secondary last:border-b-0">
+        <div className="flex gap-4 justify-between">
           <div className="font-bold"># {String(tx.nonce)}</div>
           <div className="flex gap-1 font-bold">
             <BlockieAvatar size={20} address={tx.hash} /> {tx.hash.slice(0, 7)}
@@ -171,33 +212,11 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
           </label>
         </div>
 
-        <div className="flex justify-between text-xs gap-4">
-          <div>Function name: {txnData.functionName}</div>
+        <div className="flex justify-between text-xs gap-4 mt-2">
+          <div>Function name: {txnData.functionName || "transferFunds"}</div>
 
           <div className="flex gap-1">
-            Addressed to: <Address address={String(txnData.args?.[0])} size="xs" />
-          </div>
-        </div>
-      </div>
-
-      <input type="checkbox" id={`label-${tx.hash}`} className="modal-toggle" />
-      <div className="modal" role="dialog">
-        <div className="modal-box">
-          <div className="flex flex-col">
-            <div>Function Signature: {txnData.functionName}</div> {/* {txnInfo.signature} */}
-            <h4 className="mt-6 font-bold">Arguments</h4>
-            <div>
-              Updated signer: <Address address={String(txnData.args?.[0] || "")} />
-            </div>
-            <div>Updated signatures required: {String(txnData.args?.[1]) || "0"}</div>
-            <div className="flex gap-1">
-              Sig hash: <BlockieAvatar size={20} address={tx.hash} /> {tx.hash.slice(0, 7)}
-            </div>
-            <div className="modal-action">
-              <label htmlFor={`label-${tx.hash}`} className="btn btn-sm">
-                Close!
-              </label>
-            </div>
+            Addressed to: <Address address={txnData.args?.[0] ? String(txnData.args?.[0]) : tx.to} size="xs" />
           </div>
         </div>
       </div>
