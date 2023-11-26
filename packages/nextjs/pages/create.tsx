@@ -5,8 +5,10 @@ import { readContract } from "@wagmi/core";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Abi, Address, parseEther } from "viem";
 import { useChainId, useWalletClient } from "wagmi";
+import * as chains from "wagmi/chains";
 import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 
 export type TransactionData = {
   chainId: number;
@@ -21,7 +23,7 @@ export type TransactionData = {
   validSignatures?: { signer: Address; signature: Address }[];
 };
 
-export const POOL_SERVER_URL = "http://localhost:49832/";
+export const POOL_SERVER_URL = scaffoldConfig.targetNetwork === chains.hardhat ? "http://localhost:49832/" : "/api/";
 
 const CreatePage: FC = () => {
   const isMounted = useIsMounted();

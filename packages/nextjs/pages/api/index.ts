@@ -3,7 +3,6 @@ import { transactions } from "~~/constants";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    console.log("POOOOST!!!!", req.body);
     const key = `${req.body.address}_${req.body.chainId}`;
 
     console.log("key:", key);
