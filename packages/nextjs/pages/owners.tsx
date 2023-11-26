@@ -48,72 +48,76 @@ const Owners: FC = () => {
   });
 
   return isMounted() ? (
-    <div>
-      <div>Signatures required: {String(signaturesRequired)}</div>
+    <div className="flex items-center flex-col flex-grow">
+      <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 max-w-lg">
+        <div className="w-72 max-w-full">Signatures required: {String(signaturesRequired)}</div>
 
-      <div className="mt-10">
-        {ownerEventsHistory?.map((event, i) => (
-          <div key={i} className="flex gap-8 justify-between">
-            <Address address={event.args.owner} />
-            <span>{event.args.added ? "Added 👍" : "Removed 👎"}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-10 flex flex-col gap-4 form-control w-full max-w-xs">
-        <label className="label">
-          <span className="label-text">Select method</span>
-        </label>
-        <select
-          className="select select-bordered select-sm w-full max-w-xs"
-          value={predefinedTxData.methodName}
-          onChange={e =>
-            setPredefinedTxData({ ...predefinedTxData, methodName: e.target.value as Method, callData: "" })
-          }
-        >
-          {OWNERS_METHODS.map(method => (
-            <option key={method} value={method}>
-              {method}
-            </option>
+        <div className="mt-6 w-full">
+          {ownerEventsHistory?.map((event, i) => (
+            <div key={i} className="flex justify-between">
+              <Address address={event.args.owner} />
+              <span>{event.args.added ? "Added 👍" : "Removed 👎"}</span>
+            </div>
           ))}
-        </select>
+        </div>
 
-        <AddressInput
-          placeholder="Signer address"
-          value={predefinedTxData.signer}
-          onChange={s => setPredefinedTxData({ ...predefinedTxData, signer: s })}
-        />
+        <div className="mt-6 flex flex-col gap-4 form-control w-full max-w-xs">
+          <div className="w-full">
+            <label className="label">
+              <span className="label-text">Select method</span>
+            </label>
+            <select
+              className="select select-bordered select-sm w-full max-w-xs bg-base-200 text-accent font-medium"
+              value={predefinedTxData.methodName}
+              onChange={e =>
+                setPredefinedTxData({ ...predefinedTxData, methodName: e.target.value as Method, callData: "" })
+              }
+            >
+              {OWNERS_METHODS.map(method => (
+                <option key={method} value={method}>
+                  {method}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <IntegerInput
-          placeholder="New № of signatures required"
-          value={predefinedTxData.newSignaturesNumber}
-          onChange={s => setPredefinedTxData({ ...predefinedTxData, newSignaturesNumber: s as string })}
-          hideSuffix
-        />
+          <AddressInput
+            placeholder="Signer address"
+            value={predefinedTxData.signer}
+            onChange={s => setPredefinedTxData({ ...predefinedTxData, signer: s })}
+          />
 
-        <button
-          className="btn btn-secondary btn-sm"
-          onClick={() => {
-            const callData = encodeFunctionData({
-              abi: contractInfo?.abi as Abi,
-              functionName: predefinedTxData.methodName,
-              args: [predefinedTxData.signer, predefinedTxData.newSignaturesNumber],
-            });
+          <IntegerInput
+            placeholder="New № of signatures required"
+            value={predefinedTxData.newSignaturesNumber}
+            onChange={s => setPredefinedTxData({ ...predefinedTxData, newSignaturesNumber: s as string })}
+            hideSuffix
+          />
 
-            setPredefinedTxData({
-              ...predefinedTxData,
-              callData,
-              amount: "0",
-              to: contractInfo?.address,
-            });
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => {
+              const callData = encodeFunctionData({
+                abi: contractInfo?.abi as Abi,
+                functionName: predefinedTxData.methodName,
+                args: [predefinedTxData.signer, predefinedTxData.newSignaturesNumber],
+              });
 
-            setTimeout(() => {
-              router.push("/create");
-            }, 777);
-          }}
-        >
-          Create Tx
-        </button>
+              setPredefinedTxData({
+                ...predefinedTxData,
+                callData,
+                amount: "0",
+                to: contractInfo?.address,
+              });
+
+              setTimeout(() => {
+                router.push("/create");
+              }, 777);
+            }}
+          >
+            Create Tx
+          </button>
+        </div>
       </div>
     </div>
   ) : null;
