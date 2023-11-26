@@ -1,6 +1,6 @@
 import { type FC, useState } from "react";
 import { useRouter } from "next/router";
-import { METHODS, Method, PredefinedTxData } from "./owners";
+import { DEFAULT_TX_DATA, METHODS, Method, PredefinedTxData } from "./owners";
 import { readContract } from "@wagmi/core";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Abi, Address, parseEther } from "viem";
@@ -44,17 +44,18 @@ const CreatePage: FC = () => {
     functionName: "nonce",
   });
 
+  const txTo = predefinedTxData.methodName === "transferFunds" ? predefinedTxData.signer : contractInfo?.address;
+
   const handleCreate = async () => {
     if (!walletClient) {
       console.log("No wallet client!");
       return;
     }
-
     const newHash = (await readContract({
       address: contractInfo?.address as Address,
       abi: contractInfo?.abi as Abi,
       functionName: "getTransactionHash",
-      args: [nonce, predefinedTxData.to, parseEther(ethValue), predefinedTxData.callData as `0x${string}`],
+      args: [nonce, txTo, predefinedTxData.amount, predefinedTxData.callData as `0x${string}`],
     })) as `0x${string}`;
 
     const signature = await walletClient.signMessage({
@@ -76,7 +77,7 @@ const CreatePage: FC = () => {
     });
 
     if (isOwner) {
-      if (!contractInfo?.address || !predefinedTxData.to || !predefinedTxData.amount || !predefinedTxData.callData) {
+      if (!contractInfo?.address || !predefinedTxData.amount || !txTo) {
         return;
       }
 
@@ -84,9 +85,9 @@ const CreatePage: FC = () => {
         chainId: chainId,
         address: contractInfo.address,
         nonce: nonce || 0n,
-        to: predefinedTxData.to,
+        to: txTo,
         amount: predefinedTxData.amount,
-        data: predefinedTxData.callData,
+        data: predefinedTxData.callData as `0x${string}`,
         hash: newHash,
         signatures: [signature],
         signers: [recover],
@@ -105,12 +106,7 @@ const CreatePage: FC = () => {
       // TODO: Set hash or error to result and show it or not?
       //   setResult(res.data.hash);
 
-      setPredefinedTxData({
-        ...predefinedTxData,
-        to: "",
-        amount: "",
-        callData: "0x",
-      });
+      setPredefinedTxData(DEFAULT_TX_DATA);
 
       setTimeout(() => {
         router.push("/pool");
@@ -141,8 +137,13 @@ const CreatePage: FC = () => {
         <select
           className="select select-bordered select-sm w-full max-w-xs"
           value={predefinedTxData.methodName}
-          onChange={e => setPredefinedTxData({ ...predefinedTxData, methodName: e.target.value as Method })}
-          disabled={predefinedTxData.methodName !== "transferFunds"}
+          onChange={e =>
+            setPredefinedTxData({
+              ...predefinedTxData,
+              methodName: e.target.value as Method,
+              callData: "" as `0x${string}`,
+            })
+          }
         >
           {METHODS.map(method => (
             <option key={method} value={method} disabled={method !== "transferFunds"}>
@@ -159,8 +160,11 @@ const CreatePage: FC = () => {
 
         {predefinedTxData.methodName === "transferFunds" && (
           <EtherInput
-            value={predefinedTxData.amount || ""}
-            onChange={val => setPredefinedTxData({ ...predefinedTxData, amount: val })}
+            value={ethValue}
+            onChange={val => {
+              setPredefinedTxData({ ...predefinedTxData, amount: String(parseEther(val)) });
+              setEthValue(val);
+            }}
           />
         )}
 

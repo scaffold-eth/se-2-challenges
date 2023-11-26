@@ -7,8 +7,13 @@ import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldEventHisto
 
 export type Method = "addSigner" | "removeSigner" | "transferFunds";
 export const METHODS: Method[] = ["addSigner", "removeSigner", "transferFunds"];
-
 export const OWNERS_METHODS = METHODS.filter(m => m !== "transferFunds");
+
+export const DEFAULT_TX_DATA = {
+  methodName: OWNERS_METHODS[0],
+  signer: "",
+  newSignaturesNumber: "",
+};
 
 export type PredefinedTxData = {
   methodName: Method;
@@ -16,7 +21,7 @@ export type PredefinedTxData = {
   newSignaturesNumber: string;
   to?: string;
   amount?: string;
-  callData?: `0x${string}`;
+  callData?: `0x${string}` | "";
 };
 
 const Owners: FC = () => {
@@ -24,11 +29,10 @@ const Owners: FC = () => {
 
   const router = useRouter();
 
-  const [predefinedTxData, setPredefinedTxData] = useLocalStorage<PredefinedTxData>("predefined-tx-data", {
-    methodName: OWNERS_METHODS[0],
-    signer: "",
-    newSignaturesNumber: "",
-  });
+  const [predefinedTxData, setPredefinedTxData] = useLocalStorage<PredefinedTxData>(
+    "predefined-tx-data",
+    DEFAULT_TX_DATA,
+  );
 
   const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
 
@@ -63,7 +67,9 @@ const Owners: FC = () => {
         <select
           className="select select-bordered select-sm w-full max-w-xs"
           value={predefinedTxData.methodName}
-          onChange={e => setPredefinedTxData({ ...predefinedTxData, methodName: e.target.value as Method })}
+          onChange={e =>
+            setPredefinedTxData({ ...predefinedTxData, methodName: e.target.value as Method, callData: "" })
+          }
         >
           {OWNERS_METHODS.map(method => (
             <option key={method} value={method}>
@@ -88,7 +94,6 @@ const Owners: FC = () => {
         <button
           className="btn btn-secondary btn-sm"
           onClick={() => {
-            // console.log("METHOD", setMethodName);
             const callData = encodeFunctionData({
               abi: contractInfo?.abi as Abi,
               functionName: predefinedTxData.methodName,

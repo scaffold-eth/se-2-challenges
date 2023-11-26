@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { Address, BlockieAvatar } from "./scaffold-eth";
 import { readContract, writeContract } from "@wagmi/core";
-import { Abi, Address as AddressType, decodeFunctionData, formatEther, parseEther } from "viem";
+import { Abi, Address as AddressType, decodeFunctionData, formatEther } from "viem";
 import { DecodeFunctionDataReturnType } from "viem/_types/utils/abi/decodeFunctionData";
 import { useAccount, useWalletClient } from "wagmi";
 import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -25,9 +25,10 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
 
   const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
 
-  const txnData = contractInfo?.abi
-    ? decodeFunctionData({ abi: contractInfo.abi as Abi, data: tx.data })
-    : ({} as DecodeFunctionDataReturnType);
+  const txnData =
+    contractInfo?.abi && tx.data
+      ? decodeFunctionData({ abi: contractInfo.abi as Abi, data: tx.data })
+      : ({} as DecodeFunctionDataReturnType);
 
   const hasSigned = tx.signers.indexOf(address as string) >= 0;
   const hasEnoughSignatures = signaturesRequired ? tx.signatures.length <= Number(signaturesRequired) : false;
@@ -76,7 +77,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
 
           <Address address={tx.to} />
 
-          <div>{formatEther(BigInt(tx.amount))} $</div>
+          <div>{formatEther(BigInt(tx.amount))} Ξ</div>
 
           {String(signaturesRequired) && (
             <span>
@@ -95,7 +96,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
                 address: contractInfo?.address as AddressType,
                 abi: contractInfo?.abi as Abi,
                 functionName: "getTransactionHash",
-                args: [nonce, tx.to, parseEther(tx.amount), tx.data],
+                args: [nonce, tx.to, tx.amount, tx.data],
               })) as `0x${string}`;
 
               const signature = await walletClient.signMessage({
@@ -119,7 +120,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
               if (isOwner) {
                 const [finalSigList, finalSigners] = await getSortedSigList([...tx.signatures, signature], newHash);
 
-                const res = await fetch(POOL_SERVER_URL, {
+                await fetch(POOL_SERVER_URL, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(
@@ -149,7 +150,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
                 address: contractInfo?.address as AddressType,
                 abi: contractInfo?.abi as Abi,
                 functionName: "getTransactionHash",
-                args: [nonce, tx.to, parseEther(tx.amount), tx.data],
+                args: [nonce, tx.to, tx.amount, tx.data],
               })) as `0x${string}`;
 
               const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
@@ -158,7 +159,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
                 address: contractInfo?.address,
                 abi: contractInfo?.abi,
                 functionName: "executeTransaction",
-                args: [tx.to, parseEther(tx.amount), tx.data, finalSigList],
+                args: [tx.to, BigInt(tx.amount), tx.data, finalSigList],
               });
             }}
           >
