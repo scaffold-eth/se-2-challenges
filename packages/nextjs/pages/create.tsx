@@ -93,7 +93,7 @@ const CreatePage: FC = () => {
         signers: [recover],
       };
 
-      const res = await fetch(POOL_SERVER_URL, {
+      await fetch(POOL_SERVER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
@@ -117,69 +117,75 @@ const CreatePage: FC = () => {
   };
 
   return isMounted() ? (
-    <div>
-      <div className="mt-10 flex flex-col gap-4 form-control w-full max-w-xs">
-        <label className="label">
-          <span className="label-text">Nonce</span>
-        </label>
-        <InputBase
-          disabled
-          value={`# ${nonce}`}
-          placeholder={"loading..."}
-          onChange={() => {
-            null;
-          }}
-        />
-
-        <label className="label">
-          <span className="label-text">Select method</span>
-        </label>
-        <select
-          className="select select-bordered select-sm w-full max-w-xs"
-          value={predefinedTxData.methodName}
-          onChange={e =>
-            setPredefinedTxData({
-              ...predefinedTxData,
-              methodName: e.target.value as Method,
-              callData: "" as `0x${string}`,
-            })
-          }
-        >
-          {METHODS.map(method => (
-            <option key={method} value={method} disabled={method !== "transferFunds"}>
-              {method}
-            </option>
-          ))}
-        </select>
-
-        <AddressInput
-          placeholder="Signer address"
-          value={predefinedTxData.signer}
-          onChange={signer => setPredefinedTxData({ ...predefinedTxData, signer: signer })}
-        />
-
-        {predefinedTxData.methodName === "transferFunds" && (
-          <EtherInput
-            value={ethValue}
-            onChange={val => {
-              setPredefinedTxData({ ...predefinedTxData, amount: String(parseEther(val)) });
-              setEthValue(val);
+    <div className="flex items-center flex-col flex-grow w-full max-w-lg">
+      <div className="flex flex-col bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl w-full p-6">
+        <div>
+          <label className="label">
+            <span className="label-text">Nonce</span>
+          </label>
+          <InputBase
+            disabled
+            value={`# ${nonce}`}
+            placeholder={"loading..."}
+            onChange={() => {
+              null;
             }}
           />
-        )}
+        </div>
 
-        <InputBase
-          value={predefinedTxData.callData || ""}
-          placeholder={"Calldata"}
-          onChange={() => {
-            null;
-          }}
-          disabled
-        />
+        <div className="flex flex-col gap-4">
+          <div className="mt-6 w-full">
+            <label className="label">
+              <span className="label-text">Select method</span>
+            </label>
+            <select
+              className="select select-bordered select-sm w-full bg-base-200 text-accent font-medium"
+              value={predefinedTxData.methodName}
+              onChange={e =>
+                setPredefinedTxData({
+                  ...predefinedTxData,
+                  methodName: e.target.value as Method,
+                  callData: "" as `0x${string}`,
+                })
+              }
+            >
+              {METHODS.map(method => (
+                <option key={method} value={method} disabled={method !== "transferFunds"}>
+                  {method}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <button className="btn btn-secondary btn-sm" disabled={!walletClient} onClick={handleCreate}>
-          Create
-        </button>
+          <AddressInput
+            placeholder="Signer address"
+            value={predefinedTxData.signer}
+            onChange={signer => setPredefinedTxData({ ...predefinedTxData, signer: signer })}
+          />
+
+          {predefinedTxData.methodName === "transferFunds" && (
+            <EtherInput
+              value={ethValue}
+              onChange={val => {
+                setPredefinedTxData({ ...predefinedTxData, amount: String(parseEther(val)) });
+                setEthValue(val);
+              }}
+            />
+          )}
+
+          <InputBase
+            value={predefinedTxData.callData || ""}
+            placeholder={"Calldata"}
+            onChange={() => {
+              null;
+            }}
+            disabled
+          />
+
+          <button className="btn btn-secondary btn-sm" disabled={!walletClient} onClick={handleCreate}>
+            Create
+          </button>
+        </div>
       </div>
     </div>
   ) : null;

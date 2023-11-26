@@ -48,9 +48,9 @@ const Owners: FC = () => {
   });
 
   return isMounted() ? (
-    <div className="flex items-center flex-col flex-grow">
-      <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 max-w-lg">
-        <div className="w-72 max-w-full">Signatures required: {String(signaturesRequired)}</div>
+    <div className="flex items-center flex-col flex-grow w-full max-w-lg">
+      <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full">
+        <div className="max-w-full">Signatures required: {String(signaturesRequired)}</div>
 
         <div className="mt-6 w-full">
           {ownerEventsHistory?.map((event, i) => (
@@ -61,13 +61,13 @@ const Owners: FC = () => {
           ))}
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 form-control w-full max-w-xs">
+        <div className="mt-6 flex flex-col gap-4 form-control w-full">
           <div className="w-full">
             <label className="label">
               <span className="label-text">Select method</span>
             </label>
             <select
-              className="select select-bordered select-sm w-full max-w-xs bg-base-200 text-accent font-medium"
+              className="select select-bordered select-sm w-full bg-base-200 text-accent font-medium"
               value={predefinedTxData.methodName}
               onChange={e =>
                 setPredefinedTxData({ ...predefinedTxData, methodName: e.target.value as Method, callData: "" })
