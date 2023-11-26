@@ -15,17 +15,21 @@ const Multisig: FC = () => {
     fromBlock: 0n,
   });
 
-  console.log("executeTransactionEvents", executeTransactionEvents);
   return (
-    <>
-      <Balance address={contractAddress} />
-      <QRCodeSVG value={contractAddress || ""} size={256} />
-      <Address address={contractAddress} />
+    <div className="flex items-center flex-col flex-grow w-full ">
+      <div className="flex flex-col gap-4 items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full max-w-lg">
+        <Balance address={contractAddress} />
+        <QRCodeSVG value={contractAddress || ""} size={256} />
+        <Address address={contractAddress} />
+      </div>
 
-      {executeTransactionEvents?.map(txEvent => (
-        <TransactionEventItem key={txEvent.args.hash} {...txEvent.args} />
-      ))}
-    </>
+      <div className="flex flex-col mt-10 items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full max-w-3xl">
+        <div className="text-xl font-bold my-2">Events:</div>
+        {executeTransactionEvents?.map(txEvent => (
+          <TransactionEventItem key={txEvent.args.hash} {...txEvent.args} />
+        ))}
+      </div>
+    </div>
   );
 };
 
