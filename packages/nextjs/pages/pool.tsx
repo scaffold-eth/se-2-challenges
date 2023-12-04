@@ -1,12 +1,11 @@
 import { type FC, useState } from "react";
 import { POOL_SERVER_URL, TransactionData } from "./create";
-import { readContract } from "@wagmi/core";
 import { useInterval } from "usehooks-ts";
-import { Abi, Address } from "viem";
 import { useChainId } from "wagmi";
 import { TransactionItem } from "~~/components/TransactionItem";
 import {
   useDeployedContractInfo,
+  useScaffoldContract,
   useScaffoldContractRead,
   useScaffoldEventHistory,
   useScaffoldEventSubscriber,
@@ -26,6 +25,10 @@ const Pool: FC = () => {
     contractName: "MetaMultiSigWallet",
     eventName: "ExecuteTransaction",
     fromBlock: 0n,
+  });
+
+  const { data: metaMultiSigWallet } = useScaffoldContract({
+    contractName: "MetaMultiSigWallet",
   });
 
   const historyHashes = eventsHistory?.map(ev => ev.log.args.hash) || [];
@@ -59,19 +62,9 @@ const Pool: FC = () => {
         const validSignatures = [];
         // eslint-disable-next-line guard-for-in, no-restricted-syntax
         for (const s in res[i].signatures) {
-          const signer = (await readContract({
-            address: contractInfo?.address as Address,
-            abi: contractInfo?.abi as Abi,
-            functionName: "recover",
-            args: [res[i].hash, res[i].signatures[s]],
-          })) as Address;
+          const signer = await metaMultiSigWallet?.read.recover([res[i].hash as `0x${string}`, res[i].signatures[s]]);
 
-          const isOwner = await readContract({
-            address: contractInfo?.address as Address,
-            abi: contractInfo?.abi as Abi,
-            functionName: "isOwner",
-            args: [signer],
-          });
+          const isOwner = await metaMultiSigWallet?.read.isOwner([signer as string]);
 
           if (signer && isOwner) {
             validSignatures.push({ signer, signature: res[i].signatures[s] });

@@ -1,13 +1,12 @@
 import { type FC, useState } from "react";
 import { useRouter } from "next/router";
 import { DEFAULT_TX_DATA, METHODS, Method, PredefinedTxData } from "./owners";
-import { readContract } from "@wagmi/core";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
-import { Abi, Address, parseEther } from "viem";
+import { Address, parseEther } from "viem";
 import { useChainId, useWalletClient } from "wagmi";
 import * as chains from "wagmi/chains";
 import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import scaffoldConfig from "~~/scaffold.config";
 
 export type TransactionData = {
@@ -48,35 +47,30 @@ const CreatePage: FC = () => {
 
   const txTo = predefinedTxData.methodName === "transferFunds" ? predefinedTxData.signer : contractInfo?.address;
 
+  const { data: metaMultiSigWallet } = useScaffoldContract({
+    contractName: "MetaMultiSigWallet",
+  });
+
   const handleCreate = async () => {
     if (!walletClient) {
       console.log("No wallet client!");
       return;
     }
-    const newHash = (await readContract({
-      address: contractInfo?.address as Address,
-      abi: contractInfo?.abi as Abi,
-      functionName: "getTransactionHash",
-      args: [nonce, txTo, predefinedTxData.amount, predefinedTxData.callData as `0x${string}`],
-    })) as `0x${string}`;
+
+    const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
+      nonce as bigint,
+      String(txTo),
+      BigInt(predefinedTxData.amount as string),
+      predefinedTxData.callData as `0x${string}`,
+    ])) as `0x${string}`;
 
     const signature = await walletClient.signMessage({
       message: { raw: newHash },
     });
 
-    const recover = (await readContract({
-      address: contractInfo?.address as Address,
-      abi: contractInfo?.abi as Abi,
-      functionName: "recover",
-      args: [newHash, signature],
-    })) as Address;
+    const recover = (await metaMultiSigWallet?.read.recover([newHash, signature])) as Address;
 
-    const isOwner = await readContract({
-      address: contractInfo?.address as Address,
-      abi: contractInfo?.abi as Abi,
-      functionName: "isOwner",
-      args: [recover],
-    });
+    const isOwner = await metaMultiSigWallet?.read.isOwner([recover]);
 
     if (isOwner) {
       if (!contractInfo?.address || !predefinedTxData.amount || !txTo) {
