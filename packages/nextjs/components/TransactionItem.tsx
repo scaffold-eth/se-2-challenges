@@ -5,6 +5,7 @@ import { DecodeFunctionDataReturnType } from "viem/_types/utils/abi/decodeFuncti
 import { useAccount, useWalletClient } from "wagmi";
 import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { POOL_SERVER_URL, TransactionData } from "~~/pages/create";
+import { notification } from "~~/utils/scaffold-eth";
 
 type TransactionItemProps = { tx: TransactionData; completed: boolean };
 
@@ -167,6 +168,8 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => 
                         (key, value) => (typeof value === "bigint" ? value.toString() : value),
                       ),
                     });
+                  } else {
+                    notification.info("Only owners can sign transactions");
                   }
                 }}
               >
