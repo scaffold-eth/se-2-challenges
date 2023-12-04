@@ -14,20 +14,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/:key", function (req, res) {
-  let key = req.params.key;
+  const key = req.params.key;
   console.log("Get /", key);
   res.status(200).send(transactions[key] || {});
 });
 
-app.post("/", function (request, response) {
-  console.log("Post /", request.body); // your JSON
-  response.send(request.body); // echo the result back
-  const key = `${request.body.address}_${request.body.chainId}`;
+app.post("/", function (req, res) {
+  console.log("Post /", req.body); // your JSON
+  res.send(req.body); // echo the result back
+  const key = `${req.body.address}_${req.body.chainId}`;
   console.log("key:", key);
   if (!transactions[key]) {
     transactions[key] = {};
   }
-  transactions[key][request.body.hash] = request.body;
+  transactions[key][req.body.hash] = req.body;
   console.log("transactions", transactions);
 });
 
