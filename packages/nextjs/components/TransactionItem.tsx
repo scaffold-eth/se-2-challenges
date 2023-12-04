@@ -7,9 +7,9 @@ import { useAccount, useWalletClient } from "wagmi";
 import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { POOL_SERVER_URL, TransactionData } from "~~/pages/create";
 
-type TransactionItemProps = { tx: TransactionData };
+type TransactionItemProps = { tx: TransactionData; completed: boolean };
 
-export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
+export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
 
@@ -126,86 +126,92 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
             </span>
           )}
 
-          <button
-            className="btn btn-xs btn-primary"
-            onClick={async () => {
-              if (!walletClient) {
-                return;
-              }
+          {completed ? (
+            <div className="font-bold">Completed</div>
+          ) : (
+            <>
+              <button
+                className="btn btn-xs btn-primary"
+                onClick={async () => {
+                  if (!walletClient) {
+                    return;
+                  }
 
-              const newHash = (await readContract({
-                address: contractInfo?.address as AddressType,
-                abi: contractInfo?.abi as Abi,
-                functionName: "getTransactionHash",
-                args: [nonce, tx.to, tx.amount, tx.data],
-              })) as `0x${string}`;
+                  const newHash = (await readContract({
+                    address: contractInfo?.address as AddressType,
+                    abi: contractInfo?.abi as Abi,
+                    functionName: "getTransactionHash",
+                    args: [nonce, tx.to, tx.amount, tx.data],
+                  })) as `0x${string}`;
 
-              const signature = await walletClient.signMessage({
-                message: { raw: newHash },
-              });
+                  const signature = await walletClient.signMessage({
+                    message: { raw: newHash },
+                  });
 
-              const signer = (await readContract({
-                address: contractInfo?.address as AddressType,
-                abi: contractInfo?.abi as Abi,
-                functionName: "recover",
-                args: [newHash, signature],
-              })) as AddressType;
+                  const signer = (await readContract({
+                    address: contractInfo?.address as AddressType,
+                    abi: contractInfo?.abi as Abi,
+                    functionName: "recover",
+                    args: [newHash, signature],
+                  })) as AddressType;
 
-              const isOwner = await readContract({
-                address: contractInfo?.address as AddressType,
-                abi: contractInfo?.abi as Abi,
-                functionName: "isOwner",
-                args: [signer],
-              });
+                  const isOwner = await readContract({
+                    address: contractInfo?.address as AddressType,
+                    abi: contractInfo?.abi as Abi,
+                    functionName: "isOwner",
+                    args: [signer],
+                  });
 
-              if (isOwner) {
-                const [finalSigList, finalSigners] = await getSortedSigList([...tx.signatures, signature], newHash);
+                  if (isOwner) {
+                    const [finalSigList, finalSigners] = await getSortedSigList([...tx.signatures, signature], newHash);
 
-                await fetch(POOL_SERVER_URL, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(
-                    {
-                      ...tx,
-                      signatures: finalSigList,
-                      signers: finalSigners,
-                    },
-                    // stringifying bigint
-                    (key, value) => (typeof value === "bigint" ? value.toString() : value),
-                  ),
-                });
-              }
-            }}
-          >
-            Sign
-          </button>
+                    await fetch(POOL_SERVER_URL, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(
+                        {
+                          ...tx,
+                          signatures: finalSigList,
+                          signers: finalSigners,
+                        },
+                        // stringifying bigint
+                        (key, value) => (typeof value === "bigint" ? value.toString() : value),
+                      ),
+                    });
+                  }
+                }}
+              >
+                Sign
+              </button>
 
-          <button
-            className={`btn btn-xs ${hasEnoughSignatures ? "btn-primary" : "btn-secondary"}`}
-            onClick={async () => {
-              if (!contractInfo) {
-                console.log("No contract info");
-                return;
-              }
-              const newHash = (await readContract({
-                address: contractInfo?.address as AddressType,
-                abi: contractInfo?.abi as Abi,
-                functionName: "getTransactionHash",
-                args: [nonce, tx.to, tx.amount, tx.data],
-              })) as `0x${string}`;
+              <button
+                className={`btn btn-xs ${hasEnoughSignatures ? "btn-primary" : "btn-secondary"}`}
+                onClick={async () => {
+                  if (!contractInfo) {
+                    console.log("No contract info");
+                    return;
+                  }
+                  const newHash = (await readContract({
+                    address: contractInfo?.address as AddressType,
+                    abi: contractInfo?.abi as Abi,
+                    functionName: "getTransactionHash",
+                    args: [nonce, tx.to, tx.amount, tx.data],
+                  })) as `0x${string}`;
 
-              const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
+                  const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
 
-              writeContract({
-                address: contractInfo?.address,
-                abi: contractInfo?.abi,
-                functionName: "executeTransaction",
-                args: [tx.to, BigInt(tx.amount), tx.data, finalSigList],
-              });
-            }}
-          >
-            Exec
-          </button>
+                  writeContract({
+                    address: contractInfo?.address,
+                    abi: contractInfo?.abi,
+                    functionName: "executeTransaction",
+                    args: [tx.to, BigInt(tx.amount), tx.data, finalSigList],
+                  });
+                }}
+              >
+                Exec
+              </button>
+            </>
+          )}
 
           <label htmlFor={`label-${tx.hash}`} className="btn btn-primary btn-xs">
             ...

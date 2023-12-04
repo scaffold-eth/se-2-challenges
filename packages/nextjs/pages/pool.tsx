@@ -5,15 +5,43 @@ import { useInterval } from "usehooks-ts";
 import { Abi, Address } from "viem";
 import { useChainId } from "wagmi";
 import { TransactionItem } from "~~/components/TransactionItem";
-import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import {
+  useDeployedContractInfo,
+  useScaffoldContractRead,
+  useScaffoldEventHistory,
+  useScaffoldEventSubscriber,
+} from "~~/hooks/scaffold-eth";
 
 const Pool: FC = () => {
   const [transactions, setTransactions] = useState<TransactionData[]>();
+  const [subscriptionEventsHashes, setSubscriptionEventsHashes] = useState<`0x${string}`[]>([]);
   const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
   const chainId = useChainId();
   const { data: nonce } = useScaffoldContractRead({
     contractName: "MetaMultiSigWallet",
     functionName: "nonce",
+  });
+
+  const { data: eventsHistory } = useScaffoldEventHistory({
+    contractName: "MetaMultiSigWallet",
+    eventName: "ExecuteTransaction",
+    fromBlock: 0n,
+  });
+
+  const historyHashes = eventsHistory?.map(ev => ev.log.args.hash) || [];
+
+  useScaffoldEventSubscriber({
+    contractName: "MetaMultiSigWallet",
+    eventName: "ExecuteTransaction",
+    listener: logs => {
+      logs.map(log => {
+        const { hash } = log.args;
+
+        if (hash) {
+          setSubscriptionEventsHashes(hashes => [...hashes, hash]);
+        }
+      });
+    },
   });
 
   useInterval(() => {
@@ -67,7 +95,15 @@ const Pool: FC = () => {
 
         <div className="flex flex-col mt-8 gap-4">
           {transactions?.map(tx => {
-            return <TransactionItem key={tx.hash} tx={tx} />;
+            return (
+              <TransactionItem
+                key={tx.hash}
+                tx={tx}
+                completed={
+                  historyHashes.includes(tx.hash) || subscriptionEventsHashes.includes(tx.hash as `0x${string}`)
+                }
+              />
+            );
           })}
         </div>
       </div>
