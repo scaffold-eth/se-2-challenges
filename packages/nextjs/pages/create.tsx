@@ -8,6 +8,7 @@ import * as chains from "wagmi/chains";
 import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import scaffoldConfig from "~~/scaffold.config";
+import { notification } from "~~/utils/scaffold-eth";
 
 export type TransactionData = {
   chainId: number;
@@ -108,7 +109,7 @@ const CreatePage: FC = () => {
         router.push("/pool");
       }, 777);
     } else {
-      console.log("ERROR, NOT OWNER.");
+      notification.info("Only owners can propose transactions");
     }
   };
 
