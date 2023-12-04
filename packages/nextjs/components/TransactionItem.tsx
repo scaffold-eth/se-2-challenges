@@ -132,6 +132,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => 
             <>
               <button
                 className="btn btn-xs btn-primary"
+                disabled={hasSigned}
                 onClick={async () => {
                   if (!walletClient) {
                     return;
