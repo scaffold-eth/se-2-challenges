@@ -87,17 +87,19 @@ const Pool: FC = () => {
         <div>Nonce: #{nonce ? String(nonce) : "Loading..."}</div>
 
         <div className="flex flex-col mt-8 gap-4">
-          {transactions?.map(tx => {
-            return (
-              <TransactionItem
-                key={tx.hash}
-                tx={tx}
-                completed={
-                  historyHashes.includes(tx.hash) || subscriptionEventsHashes.includes(tx.hash as `0x${string}`)
-                }
-              />
-            );
-          })}
+          {transactions === undefined
+            ? "Loading..."
+            : transactions.map(tx => {
+                return (
+                  <TransactionItem
+                    key={tx.hash}
+                    tx={tx}
+                    completed={
+                      historyHashes.includes(tx.hash) || subscriptionEventsHashes.includes(tx.hash as `0x${string}`)
+                    }
+                  />
+                );
+              })}
         </div>
       </div>
     </div>
