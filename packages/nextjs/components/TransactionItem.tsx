@@ -31,7 +31,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
       : ({} as DecodeFunctionDataReturnType);
 
   const hasSigned = tx.signers.indexOf(address as string) >= 0;
-  const hasEnoughSignatures = signaturesRequired ? tx.signatures.length <= Number(signaturesRequired) : false;
+  const hasEnoughSignatures = signaturesRequired ? tx.signatures.length >= Number(signaturesRequired) : false;
 
   const getSortedSigList = async (allSigs: `0x${string}`[], newHash: `0x${string}`) => {
     const sigList = [];
@@ -48,7 +48,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx }) => {
     }
 
     sigList.sort((a, b) => {
-      return BigInt(a.signer) - BigInt(b.signer) ? 1 : -1;
+      return BigInt(a.signer) > BigInt(b.signer) ? 1 : -1;
     });
 
     const finalSigList: `0x${string}`[] = [];
