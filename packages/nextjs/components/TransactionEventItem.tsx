@@ -20,7 +20,7 @@ export const TransactionEventItem: FC<TransactionEventItemProps> = ({ hash, nonc
       <div className="flex gap-1">
         To <Address address={to} />
       </div>
-      <div>{formatEther(value)} $</div>
+      <div>{formatEther(value)} Ξ</div>
       <div className="flex gap-1">
         Executed by <Address address={owner} />
       </div>
