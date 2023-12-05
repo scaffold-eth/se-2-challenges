@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { type FC, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Abi, encodeFunctionData } from "viem";
@@ -46,6 +46,12 @@ const Owners: FC = () => {
     eventName: "Owner",
     fromBlock: 0n,
   });
+
+  useEffect(() => {
+    if (predefinedTxData.methodName === "transferFunds") {
+      setPredefinedTxData(DEFAULT_TX_DATA);
+    }
+  }, [predefinedTxData.methodName, setPredefinedTxData]);
 
   return isMounted() ? (
     <div className="flex items-center flex-col flex-grow w-full max-w-lg">

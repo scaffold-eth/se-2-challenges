@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DEFAULT_TX_DATA, METHODS, Method, PredefinedTxData } from "./owners";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
@@ -34,7 +34,7 @@ const CreatePage: FC = () => {
   const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
 
   const [predefinedTxData, setPredefinedTxData] = useLocalStorage<PredefinedTxData>("predefined-tx-data", {
-    methodName: METHODS[0] as Method,
+    methodName: "transferFunds",
     signer: "",
     newSignaturesNumber: "",
     amount: "0",
@@ -111,6 +111,15 @@ const CreatePage: FC = () => {
       console.log("ERROR, NOT OWNER.");
     }
   };
+
+  useEffect(() => {
+    if (predefinedTxData && !predefinedTxData.callData && predefinedTxData.methodName !== "transferFunds") {
+      setPredefinedTxData({
+        ...predefinedTxData,
+        methodName: "transferFunds",
+      });
+    }
+  }, [predefinedTxData, setPredefinedTxData]);
 
   return isMounted() ? (
     <div className="flex items-center flex-col flex-grow w-full max-w-lg">
