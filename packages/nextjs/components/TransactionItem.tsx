@@ -5,6 +5,7 @@ import { DecodeFunctionDataReturnType } from "viem/_types/utils/abi/decodeFuncti
 import { useAccount, useWalletClient } from "wagmi";
 import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { POOL_SERVER_URL, TransactionData } from "~~/pages/create";
+import { notification } from "~~/utils/scaffold-eth";
 
 type TransactionItemProps = { tx: TransactionData; completed: boolean };
 
@@ -129,71 +130,88 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => 
             <div className="font-bold">Completed</div>
           ) : (
             <>
-              <button
-                className="btn btn-xs btn-primary"
-                onClick={async () => {
-                  if (!walletClient) {
-                    return;
-                  }
+              <div title={hasSigned ? "You have already Signed this transaction" : ""}>
+                <button
+                  className="btn btn-xs btn-primary"
+                  disabled={hasSigned}
+                  title={!hasEnoughSignatures ? "Not enough signers to Execute" : ""}
+                  onClick={async () => {
+                    if (!walletClient) {
+                      return;
+                    }
 
-                  const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
-                    nonce as bigint,
-                    tx.to,
-                    BigInt(tx.amount),
-                    tx.data,
-                  ])) as `0x${string}`;
+                    const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
+                      nonce as bigint,
+                      tx.to,
+                      BigInt(tx.amount),
+                      tx.data,
+                    ])) as `0x${string}`;
 
-                  const signature = await walletClient.signMessage({
-                    message: { raw: newHash },
-                  });
-
-                  const signer = await metaMultiSigWallet?.read.recover([newHash, signature]);
-
-                  const isOwner = await metaMultiSigWallet?.read.isOwner([signer as string]);
-
-                  if (isOwner) {
-                    const [finalSigList, finalSigners] = await getSortedSigList([...tx.signatures, signature], newHash);
-
-                    await fetch(POOL_SERVER_URL, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify(
-                        {
-                          ...tx,
-                          signatures: finalSigList,
-                          signers: finalSigners,
-                        },
-                        // stringifying bigint
-                        (key, value) => (typeof value === "bigint" ? value.toString() : value),
-                      ),
+                    const signature = await walletClient.signMessage({
+                      message: { raw: newHash },
                     });
-                  }
-                }}
-              >
-                Sign
-              </button>
 
-              <button
-                className={`btn btn-xs ${hasEnoughSignatures ? "btn-primary" : "btn-secondary"}`}
-                onClick={async () => {
-                  if (!contractInfo) {
-                    console.log("No contract info");
-                    return;
-                  }
-                  const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
-                    nonce as bigint,
-                    tx.to,
-                    BigInt(tx.amount),
-                    tx.data,
-                  ])) as `0x${string}`;
+                    const signer = await metaMultiSigWallet?.read.recover([newHash, signature]);
 
-                  const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
+                    const isOwner = await metaMultiSigWallet?.read.isOwner([signer as string]);
 
-                  await metaMultiSigWallet?.write.executeTransaction([tx.to, BigInt(tx.amount), tx.data, finalSigList]);
-                }}
-              >
-                Exec
-              </button>
+                    if (isOwner) {
+                      const [finalSigList, finalSigners] = await getSortedSigList(
+                        [...tx.signatures, signature],
+                        newHash,
+                      );
+
+                      await fetch(POOL_SERVER_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(
+                          {
+                            ...tx,
+                            signatures: finalSigList,
+                            signers: finalSigners,
+                          },
+                          // stringifying bigint
+                          (key, value) => (typeof value === "bigint" ? value.toString() : value),
+                        ),
+                      });
+                    } else {
+                      notification.info("Only owners can sign transactions");
+                    }
+                  }}
+                >
+                  Sign
+                </button>
+              </div>
+
+              <div title={!hasEnoughSignatures ? "Not enough signers to Execute" : ""}>
+                <button
+                  className="btn btn-xs btn-primary"
+                  disabled={!hasEnoughSignatures}
+                  onClick={async () => {
+                    if (!contractInfo) {
+                      console.log("No contract info");
+                      return;
+                    }
+                    const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
+                      nonce as bigint,
+                      tx.to,
+                      BigInt(tx.amount),
+                      tx.data,
+                    ])) as `0x${string}`;
+
+                    const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
+
+                    await metaMultiSigWallet?.write.executeTransaction([
+                      tx.to,
+                      BigInt(tx.amount),
+                      tx.data,
+                      finalSigList,
+                    ]);
+                  }}
+                >
+                  Exec
+                </button>
+              </div>
             </>
           )}
 
