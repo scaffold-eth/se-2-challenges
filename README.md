@@ -1,12 +1,22 @@
-# 🚩 Challenge 6: 👛 Multisig
+# 🚩 Challenge 6: 👛 Multisig Wallet
 
-{challengeHeroImage}
+![readme-6](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/577a8abd-a098-499f-9903-fb6e4c9337e9)
+
+👩‍👩‍👧‍👧 A multisig wallet it's a smart contract that acts like a wallet, allowing us to secure assets by requiring multiple accounts to "vote" on transactions. Think of it as a treasure chest that can only be opened when all key parties agree.
+
+📜 The contract keeps track of all transactions. Each transaction can be confirmed or rejected by the signers (smart contract owners). Only transactions that receive enough confirmations can be "executed" by the signers.
+
+🌟 The final deliverable is a multisig wallet where you can propose adding and removing signers, transferring funds to other accounts, and updating the required number of signers to execute a transaction. After any of the signers propose a transaction, it's up to the signers to confirm and execute it. Deploy your contracts to a testnet, then build and upload your app to a public web server.
+
+💬 Meet other builders working on this challenge and get help in the [Multisig Build Cohort telegram](https://t.me/+zKllN8OlGuxmYzFh).
 
 ## 👇🏼 Quick Break-Down 👛
 
-This is a smart contract that acts as an off-chain signature-based shared wallet amongst different signers that showcases use of meta-transaction knowledge and ECDSA `recover()`. **If you are looking for the challenge, go to the challenges repo within scaffold-eth!**
+This is a smart contract that acts as an off-chain signature-based shared wallet amongst different signers that showcases use of meta-transaction knowledge and ECDSA `recover()`.
 
 > If you are unfamiliar with these concepts, check out all the [ETH.BUILD videos](https://www.youtube.com/watch?v=CbbcISQvy1E&ab_channel=AustinGriffith) by Austin Griffith, especially the Meta Transactions one!
+
+❗ [OpenZepplin's ECDSA Library](https://docs.openzeppelin.com/contracts/2.x/api/cryptography#ECDSA) provides an easy way to verify signed messages, in this challenge we'll be using it to verify the signatures of the signers of the multisig wallet.
 
 At a high-level, the contract core functions are carried out as follows:
 
@@ -16,18 +26,13 @@ At a high-level, the contract core functions are carried out as follows:
 
 - `bytes[] memory signatures` is then passed into `executeTransaction` as well as the necessary info to use `recover()` to obtain the public address that ought to line up with one of the signers of the wallet.
   - This method, plus some conditional logic to avoid any duplicate entries from a single signer, is how votes for a specific transaction (hashed tx) are assessed.
-- If it's a success, the tx is passed to the `call(){}` function of the deployed MetaMultiSigWallet contract (this contract), thereby passing the `onlySelf` modifier for any possible calls to internal txs such as (`addSigner()`,`removeSigner()`,`transferFunds()`,`updateSignaturesRequried()`).
+- If it's a success, the tx is passed to the `call(){}` function of the deployed MetaMultiSigWallet contract (this contract), thereby passing the `onlySelf` modifier for any possible calls to internal txs such as (`addSigner()`,`removeSigner()`,`transferFunds()`,`updateSignaturesRequired()`).
 
 **Cool Stuff that is Showcased: 😎**
 
 - NOTE: Showcases how the `call(){}` function is an external call that ought to increase the nonce of an external contract, as [they increment differently](https://ethereum.stackexchange.com/questions/764/do-contracts-also-have-a-nonce) from user accounts.
 - Normal internal functions, such as changing the signers, and adding or removing signers, are treated as external function calls when `call()` is used with the respective transaction hash.
 - Showcases use of an array (see constructor) populating a mapping to store pertinent information within the deployed smart contract storage location within the EVM in a more efficient manner.
-
-🌟 The final deliverable is an app that {challengeDeliverable}.
-Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
-
-💬 Meet other builders working on this challenge and get help in the {challengeTelegramLink}
 
 ---
 
@@ -72,10 +77,10 @@ yarn start
 
 <!-- TODO: check this later -->
 
-> in a third terminal window:
+> in a fourth terminal window:
 
 ```bash
-yarn backend
+yarn backend-local
 
 ```
 
@@ -85,62 +90,71 @@ yarn backend
 
 ---
 
-\_Other commonly used Checkpoints (check one Challenge and adapt the texts for your
+## Checkpoint 1: 📝 Configure Owners 🖋
 
-> Use the faucet wallet to send your multi-sig contract some funds:
+🔏 The first step for a multisig wallet is to configure the owners, who will be able to propose, sign and execute transactions.
 
-![image](https://user-images.githubusercontent.com/31567169/118389510-53315600-b63b-11eb-9daf-f0aaa479a23e.png)
+🏗️ This is done in the constructor of the contract, where you can pass in an array of addresses that will be the signers of the wallet, and a number of signatures required to execute a transaction.
 
-> To add new owners, use the "Owners" tab:
+> 🛠️ Modify the contract constructor arguments at the deploy script `00_deploy_meta_multisig_wallet.ts` in `packages/hardhat/deploy`. In our case we will just set the first signer as the frontend account.
 
-![image](https://user-images.githubusercontent.com/31567169/118389556-896ed580-b63b-11eb-8ed6-c1e690778c8e.png)
+> 🔄 Will need to run `yarn deploy --reset` to deploy a fresh contract with your first signer configured.
 
-This will take you to a populated transaction create page:
+You can set the rest of the signers in the frontend, using the "Owners" tab:
 
-![image](https://user-images.githubusercontent.com/31567169/118389576-9986b500-b63b-11eb-8411-c227b148992a.png)
+![multisig-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1f38d41a-8f3a-4f12-a1d2-bf45db05b37c)
 
-> Create & sign the new transaction:
+In this tab you can start your transaction proposal to either add or remove Owners.
 
-![image](https://user-images.githubusercontent.com/31567169/118389603-ae634880-b63b-11eb-968f-ca78c2456ddb.png)
+> 📝 Fill the form and click on "CREATE TX".
 
-You will see the new transaction in the pool (this is all off-chain):
+![multisig-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/4b595d4f-0838-4c16-990a-6795accc2b0c)
 
-![image](https://user-images.githubusercontent.com/31567169/118389616-bd49fb00-b63b-11eb-82f7-f65ca2ee7e80.png)
+This will take you to a populated transaction "Create" page:
 
-Click on the ellipsses button [...] to read the details of the transaction
+![multisig-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/93a9bbb6-8b4f-458b-a65f-14b675586bc9)
 
-![image](https://user-images.githubusercontent.com/31567169/118389642-d6eb4280-b63b-11eb-9676-da7e7afc5614.png)
+> Create & sign the new transaction, clicking in the "CREATE" button:
 
-> Give your account some gas at the faucet and execute the transaction
+![multisig-4](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/6aeefe17-fcb1-4bdd-8350-924fe2ed68c9)
 
-The transction will appear as "executed" on the front page:
+You will see the new transaction in the pool (this is all off-chain).
 
-![image](https://user-images.githubusercontent.com/31567169/118389655-e8cce580-b63b-11eb-8428-913c6f39e48f.png)
+ℹ You won't be able to sign it because on creation it already has one signature (from the frontend account).
 
-> Create a transaction to send some funds to your frontend account:
+> Click on the ellipsses button [...] to read the details of the transaction.
 
-![image](https://user-images.githubusercontent.com/31567169/118389693-0ef28580-b63c-11eb-95d9-c5f397bf5972.png)
+![multisig-5](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3a58c920-e547-4073-9d62-41d534363a54)
 
-This time we will need a second signature:
+> ⛽️ Give your account some gas at the faucet and execute the transaction.
 
-![image](https://user-images.githubusercontent.com/31567169/118389716-3cd7ca00-b63c-11eb-959e-d46ffe31e62e.png)
+☑ Click on "EXEC" to execute it, will be marked as "Completed" on the "Pool" tab, and will appear in the "Multisig" tab with the rest of executed transactions.
 
-> Sign the transacton with enough owners:
-> ![image](https://user-images.githubusercontent.com/31567169/118389773-90e2ae80-b63c-11eb-9658-e9c411542f33.png)
+![multisig-6a](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/edf9218c-5b10-49b7-a564-e415c0d2f042)
+
+![multisig-6b](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/45f3c87a-8c9c-4fe6-9ee8-29ca03846330)
+
+## Checkpoint 2: Transfer Funds 💸
+
+> 💰 Use the faucet wallet to send your multi-sig contract some funds.
+> You can find the address in the "Multisig" and "Debug Contracts" tabs.
+
+> Create a transaction to send some funds to one of your signers, or to any other address of your choice. You can use the "Create" tab:
+
+![multisig-7](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/a6ebf68d-8fac-4272-8b52-6a48ffa366a4)
+
+🖋 This time we will need a second signature (remember we've just updated the number of signatures required to execute a transaction to 2).
+
+![multisig-8](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/2b7d8501-edfd-47d6-a6d2-937e7bb84caa)
+
+> Open other browser and access with a different owner of the multisig. Sign the transaction with enough owners:
+> ![multisig-9](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/ad667a69-499a-4ed4-8a40-52d500c94a5b)
 
 (You'll notice you don't need ⛽️gas to sign transactions.)
 
-> Execute the transction to transfer the funds:
+> Execute the transaction to transfer the funds:
 
-![image](https://user-images.githubusercontent.com/31567169/118389808-bff92000-b63c-11eb-9107-9af5b77d4e20.png)
-
-(You might need to trigger a new block by sending yourself some faucet funds or something. HartHat blocks only get mined when there is a transaction.)
-
-💼 Edit your deployment script `deploy.js` in `packages/hardhat/scripts`
-
-🔏 Edit your contracts form, `MetaMultiSigWallet.sol` in `packages/hardhat/contracts`
-
-📝 Edit your frontend in `packages/react-app/src/views`
+![multisig-10](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/2be26eda-ea09-4a0d-9f0e-d2151cfa26a4)
 
 ## ⚔️ Side Quests
 
@@ -150,51 +164,13 @@ You may not want every signer to create new transfers, only allow them to sign e
 
 #### 😎 Integrate this MultiSig wallet into other branches like nifty-ink
 
+<!-- TODO: check which build we could recommend to integrate with for this side quest, or skip it? -->
+
 Make a MultiSig wallet to store your precious doodle-NFTs!?
 
 ---
 
-## 📡 Deploy the wallet!
-
-🛰 Ready to deploy to a testnet?
-
-> Change the `defaultNetwork` in `packages/hardhat/hardhat.config.js`
-
-![image](https://user-images.githubusercontent.com/2653167/109538427-4d38c980-7a7d-11eb-878b-b59b6d316014.png)
-
-🔐 Generate a deploy account with `yarn generate`
-
-![image](https://user-images.githubusercontent.com/2653167/109537873-a2c0a680-7a7c-11eb-95de-729dbf3399a3.png)
-
-👛 View your deployer address using `yarn account` (You'll need to fund this account. Hint: use an [instant wallet](https://instantwallet.io) to fund your account via QR code)
-
-![image](https://user-images.githubusercontent.com/2653167/109537339-ff6f9180-7a7b-11eb-85b0-46cd72311d12.png)
-
-👨‍🎤 Deploy your wallet:
-
-```bash
-yarn deploy
-```
-
----
-
-> ✏️ Edit your frontend `App.jsx` in `packages/react-app/src` to change the `targetNetwork` to wherever you deployed your contract:
-
-![image](https://user-images.githubusercontent.com/2653167/109539175-3e9ee200-7a7e-11eb-8d26-3b107a276461.png)
-
-You should see the correct network in the frontend:
-
-![image](https://user-images.githubusercontent.com/2653167/109539305-655d1880-7a7e-11eb-9385-c169645dc2b5.png)
-
-> Also change the poolServerUrl constant to your deployed backend (via yarn backend)
-
-![image](https://user-images.githubusercontent.com/31567169/116589184-6f3fb280-a92d-11eb-8fff-d1e32b8359ff.png)
-
-Alternatively you can use the pool server url in the above screenshot
-
----
-
-## Checkpoint 4: 💾 Deploy your contracts! 🛰
+## Checkpoint 3: 💾 Deploy your contracts! 🛰
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
@@ -208,11 +184,19 @@ Alternatively you can use the pool server url in the above screenshot
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
-> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
+> 💬 Hint: For faster loading of your dApp tabs, consider updating the `fromBlock` passed to `useScaffoldEventHistory` (in the different components we're using it) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
+
+<!-- TODO: check this later -->
+
+> Also change the poolServerUrl constant to your deployed backend (via yarn backend)
+
+![image](https://user-images.githubusercontent.com/31567169/116589184-6f3fb280-a92d-11eb-8fff-d1e32b8359ff.png)
+
+Alternatively you can use the pool server url in the above screenshot
 
 ---
 
-## Checkpoint 5: 🚢 Ship your frontend! 🚁
+## Checkpoint 4: 🚢 Ship your frontend! 🚁
 
 ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
@@ -230,7 +214,7 @@ Alternatively you can use the pool server url in the above screenshot
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
-By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.  
+By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
 This is great to complete your **SpeedRunEthereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
@@ -243,15 +227,13 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-## Checkpoint 6: 📜 Contract Verification
+## Checkpoint 5: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
-👀 You may see an address for both YouToken and Vendor. You will want the Vendor address.
-
-👉 Search this address on Etherscan to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
-
 ---
+
+> 👩‍❤️‍👨 Share your public url with friends, add signers and send some tasty ETH to a few lucky ones 😉!!
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 
