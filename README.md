@@ -92,29 +92,29 @@ yarn backend-local
 
 ## Checkpoint 1: 📝 Configure Owners 🖋
 
-🔏 The first step for a multisig wallet is to configure the owners, who will be able to propose, sign and execute transactions.
+🔏 The first step for this multisig wallet is to configure the owners, who will be able to propose, sign and execute transactions.
 
 🏗️ This is done in the constructor of the contract, where you can pass in an array of addresses that will be the signers of the wallet, and a number of signatures required to execute a transaction.
 
-> 🛠️ Modify the contract constructor arguments at the deploy script `00_deploy_meta_multisig_wallet.ts` in `packages/hardhat/deploy`. In our case we will just set the first signer as the frontend account.
+> 🛠️ Modify the contract constructor arguments at the deploy script `00_deploy_meta_multisig_wallet.ts` in `packages/hardhat/deploy`. Just set the first signer using your frontend address.
 
-> 🔄 Will need to run `yarn deploy --reset` to deploy a fresh contract with your first signer configured.
+> 🔄 Will need to run `yarn deploy --reset` to deploy a fresh contract with the first signer configured.
 
 You can set the rest of the signers in the frontend, using the "Owners" tab:
 
 ![multisig-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/bc65bf00-93de-4f24-b42b-c78596cd54e0)
 
-In this tab you can start your transaction proposal to either add or remove Owners.
+In this tab you can start your transaction proposal to either add or remove owners.
 
-> 📝 Fill the form and click on "CREATE TX".
+> 📝 Fill the form and click on "Create Tx".
 
 ![multisig-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/a74bb0c9-62de-4a12-932a-a5498bf12ecb)
 
-This will take you to a populated transaction "Create" page:
+This will take you to a populated transaction at "Create" page:
 
 ![multisig-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/5d4adfb8-66a6-49bb-b72c-3b4062f8e804)
 
-> Create & sign the new transaction, clicking in the "CREATE" button:
+> Create & sign the new transaction, clicking in the "Create" button:
 
 ![multisig-4](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f8ef3f85-c543-468f-a008-6c4c8b9cf20a)
 
@@ -128,7 +128,7 @@ You will see the new transaction in the pool (this is all off-chain).
 
 > ⛽️ Give your account some gas at the faucet and execute the transaction.
 
-☑ Click on "EXEC" to execute it, will be marked as "Completed" on the "Pool" tab, and will appear in the "Multisig" tab with the rest of executed transactions.
+☑ Click on "Exec" to execute it, will be marked as "Completed" on the "Pool" tab, and will appear in the "Multisig" tab with the rest of executed transactions.
 
 ![multisig-6a](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/edf9218c-5b10-49b7-a564-e415c0d2f042)
 
@@ -136,10 +136,10 @@ You will see the new transaction in the pool (this is all off-chain).
 
 ## Checkpoint 2: Transfer Funds 💸
 
-> 💰 Use the faucet wallet to send your multi-sig contract some funds.
+> 💰 Use the faucet to send your multisig contract some funds.
 > You can find the address in the "Multisig" and "Debug Contracts" tabs.
 
-> Create a transaction to send some funds to one of your signers, or to any other address of your choice. You can use the "Create" tab:
+> Create a transaction in the "Create" tab to send some funds to one of your signers, or to any other address of your choice:
 
 ![multisig-7](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/8b514add-fbe5-4a45-ae68-7659c827a5bf)
 
@@ -148,9 +148,10 @@ You will see the new transaction in the pool (this is all off-chain).
 ![multisig-8](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/2b7d8501-edfd-47d6-a6d2-937e7bb84caa)
 
 > Open other browser and access with a different owner of the multisig. Sign the transaction with enough owners:
-> ![multisig-9](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/ad667a69-499a-4ed4-8a40-52d500c94a5b)
 
-(You'll notice you don't need ⛽️gas to sign transactions.)
+![multisig-9](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/ad667a69-499a-4ed4-8a40-52d500c94a5b)
+
+(You'll notice you don't need ⛽️gas to sign transactions).
 
 > Execute the transaction to transfer the funds:
 
@@ -162,11 +163,11 @@ You will see the new transaction in the pool (this is all off-chain).
 
 You may not want every signer to create new transfers, only allow them to sign existing transactions or a mega-admin role who will be able to veto any transaction.
 
-#### 😎 Integrate this MultiSig wallet into other branches like nifty-ink
+#### 😎 Integrate this MultiSig wallet into other Scaffold ETH-2 builds
 
 <!-- TODO: check which build we could recommend to integrate with for this side quest, or skip it? -->
 
-Make a MultiSig wallet to store your precious doodle-NFTs!?
+Find a Scaffold ETH-2 build that could make use of a Multisig wallet and try to integrate it.
 
 ---
 
@@ -184,7 +185,7 @@ Make a MultiSig wallet to store your precious doodle-NFTs!?
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
-> 💬 Hint: For faster loading of your dApp tabs, consider updating the `fromBlock` passed to `useScaffoldEventHistory` (in the different components we're using it) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
+> 💬 Hint: For faster loading of the Multisig tabs, consider updating the `fromBlock` passed to `useScaffoldEventHistory` (in the different components we're using it) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
 
 <!-- TODO: check this later -->
 
