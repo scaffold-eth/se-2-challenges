@@ -102,21 +102,21 @@ yarn backend-local
 
 You can set the rest of the signers in the frontend, using the "Owners" tab:
 
-![multisig-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1f38d41a-8f3a-4f12-a1d2-bf45db05b37c)
+![multisig-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/bc65bf00-93de-4f24-b42b-c78596cd54e0)
 
 In this tab you can start your transaction proposal to either add or remove Owners.
 
 > 📝 Fill the form and click on "CREATE TX".
 
-![multisig-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/4b595d4f-0838-4c16-990a-6795accc2b0c)
+![multisig-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/a74bb0c9-62de-4a12-932a-a5498bf12ecb)
 
 This will take you to a populated transaction "Create" page:
 
-![multisig-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/93a9bbb6-8b4f-458b-a65f-14b675586bc9)
+![multisig-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/5d4adfb8-66a6-49bb-b72c-3b4062f8e804)
 
 > Create & sign the new transaction, clicking in the "CREATE" button:
 
-![multisig-4](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/6aeefe17-fcb1-4bdd-8350-924fe2ed68c9)
+![multisig-4](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f8ef3f85-c543-468f-a008-6c4c8b9cf20a)
 
 You will see the new transaction in the pool (this is all off-chain).
 
@@ -124,7 +124,7 @@ You will see the new transaction in the pool (this is all off-chain).
 
 > Click on the ellipsses button [...] to read the details of the transaction.
 
-![multisig-5](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/3a58c920-e547-4073-9d62-41d534363a54)
+![multisig-5](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/25974706-a127-45f4-8a17-6f99b9e97104)
 
 > ⛽️ Give your account some gas at the faucet and execute the transaction.
 
@@ -132,7 +132,7 @@ You will see the new transaction in the pool (this is all off-chain).
 
 ![multisig-6a](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/edf9218c-5b10-49b7-a564-e415c0d2f042)
 
-![multisig-6b](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/45f3c87a-8c9c-4fe6-9ee8-29ca03846330)
+![multisig-6b](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7a7e5324-d5d1-4f10-918c-bfd7c72a52f8)
 
 ## Checkpoint 2: Transfer Funds 💸
 
@@ -141,7 +141,7 @@ You will see the new transaction in the pool (this is all off-chain).
 
 > Create a transaction to send some funds to one of your signers, or to any other address of your choice. You can use the "Create" tab:
 
-![multisig-7](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/a6ebf68d-8fac-4272-8b52-6a48ffa366a4)
+![multisig-7](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/8b514add-fbe5-4a45-ae68-7659c827a5bf)
 
 🖋 This time we will need a second signature (remember we've just updated the number of signatures required to execute a transaction to 2).
 
