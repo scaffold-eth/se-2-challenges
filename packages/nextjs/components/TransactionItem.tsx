@@ -122,7 +122,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => 
 
           {String(signaturesRequired) && (
             <span>
-              {tx.signatures.length}/{String(signaturesRequired)} {hasSigned ? "✅" : ""}
+              {tx.signatures.length}/{String(tx.requiredApprovals)} {hasSigned ? "✅" : ""}
             </span>
           )}
 

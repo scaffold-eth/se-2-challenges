@@ -21,6 +21,7 @@ export type TransactionData = {
   signatures: `0x${string}`[];
   signers: Address[];
   validSignatures?: { signer: Address; signature: Address }[];
+  requiredApprovals: bigint;
 };
 
 export const POOL_SERVER_URL = scaffoldConfig.targetNetwork === chains.hardhat ? "http://localhost:49832/" : "/api/";
@@ -44,6 +45,11 @@ const CreatePage: FC = () => {
   const { data: nonce } = useScaffoldContractRead({
     contractName: "MetaMultiSigWallet",
     functionName: "nonce",
+  });
+
+  const { data: signaturesRequired } = useScaffoldContractRead({
+    contractName: "MetaMultiSigWallet",
+    functionName: "signaturesRequired",
   });
 
   const txTo = predefinedTxData.methodName === "transferFunds" ? predefinedTxData.signer : contractInfo?.address;
@@ -88,6 +94,7 @@ const CreatePage: FC = () => {
         hash: newHash,
         signatures: [signature],
         signers: [recover],
+        requiredApprovals: signaturesRequired || 0n,
       };
 
       await fetch(POOL_SERVER_URL, {
