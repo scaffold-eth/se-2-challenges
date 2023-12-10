@@ -121,15 +121,11 @@ const CreatePage: FC = () => {
   };
 
   useEffect(() => {
-    if (
-      predefinedTxData &&
-      !predefinedTxData.callData &&
-      predefinedTxData.methodName !== "transferFunds" &&
-      predefinedTxData.amount === "0"
-    ) {
+    if (predefinedTxData && !predefinedTxData.callData && predefinedTxData.methodName !== "transferFunds") {
       setPredefinedTxData({
         ...predefinedTxData,
         methodName: "transferFunds",
+        callData: "",
       });
     }
   }, [predefinedTxData, setPredefinedTxData]);
