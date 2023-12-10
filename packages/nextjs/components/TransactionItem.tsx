@@ -128,6 +128,8 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => 
 
           {completed ? (
             <div className="font-bold">Completed</div>
+          ) : nonce !== undefined && tx.nonce < nonce ? (
+            <div className="font-bold">Outdated</div>
           ) : (
             <>
               <div title={hasSigned ? "You have already Signed this transaction" : ""}>
@@ -223,7 +225,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => 
         <div className="flex justify-between text-xs gap-4 mt-2">
           <div>Function name: {txnData.functionName || "transferFunds"}</div>
 
-          <div className="flex gap-1">
+          <div className="flex gap-1 items-center">
             Addressed to: <Address address={txnData.args?.[0] ? String(txnData.args?.[0]) : tx.to} size="xs" />
           </div>
         </div>
