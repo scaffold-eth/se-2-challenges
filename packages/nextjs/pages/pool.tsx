@@ -84,7 +84,7 @@ const Pool: FC = () => {
       <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full">
         <div className="text-xl font-bold">Pool</div>
 
-        <div>Nonce: #{nonce ? String(nonce) : "Loading..."}</div>
+        <div>Nonce: {nonce !== undefined ? `#${nonce}` : "Loading..."}</div>
 
         <div className="flex flex-col mt-8 gap-4">
           {transactions === undefined
