@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 import { POOL_SERVER_URL, TransactionData } from "./create";
 import { useInterval } from "usehooks-ts";
 import { useChainId } from "wagmi";
@@ -76,6 +76,19 @@ const Pool: FC = () => {
     getTransactions();
   }, 3777);
 
+  const allEvents = useMemo(
+    () => historyHashes.concat(subscriptionEventsHashes),
+    [historyHashes, subscriptionEventsHashes],
+  );
+
+  const lastTx = useMemo(
+    () =>
+      transactions
+        ?.filter(tx => allEvents.includes(tx.hash))
+        .sort((a, b) => (BigInt(a.nonce) < BigInt(b.nonce) ? 1 : -1))[0],
+    [allEvents, transactions],
+  );
+
   return (
     <div className="flex items-center flex-col flex-grow w-full max-w-2xl">
       <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full">
@@ -91,9 +104,8 @@ const Pool: FC = () => {
                   <TransactionItem
                     key={tx.hash}
                     tx={tx}
-                    completed={
-                      historyHashes.includes(tx.hash) || subscriptionEventsHashes.includes(tx.hash as `0x${string}`)
-                    }
+                    completed={allEvents.includes(tx.hash as `0x${string}`)}
+                    outdated={lastTx?.nonce != undefined && BigInt(tx.nonce) <= BigInt(lastTx?.nonce)}
                   />
                 );
               })}

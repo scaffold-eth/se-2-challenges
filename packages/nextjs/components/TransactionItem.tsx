@@ -7,9 +7,9 @@ import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead }
 import { POOL_SERVER_URL, TransactionData } from "~~/pages/create";
 import { notification } from "~~/utils/scaffold-eth";
 
-type TransactionItemProps = { tx: TransactionData; completed: boolean };
+type TransactionItemProps = { tx: TransactionData; completed: boolean; outdated: boolean };
 
-export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => {
+export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outdated }) => {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
 
@@ -128,7 +128,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed }) => 
 
           {completed ? (
             <div className="font-bold">Completed</div>
-          ) : nonce !== undefined && tx.nonce < nonce ? (
+          ) : outdated ? (
             <div className="font-bold">Outdated</div>
           ) : (
             <>
