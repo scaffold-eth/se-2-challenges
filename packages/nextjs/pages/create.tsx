@@ -107,9 +107,6 @@ const CreatePage: FC = () => {
         ),
       });
 
-      // TODO: Set hash or error to result and show it or not?
-      //   setResult(res.data.hash);
-
       setPredefinedTxData(DEFAULT_TX_DATA);
 
       setTimeout(() => {

@@ -56,9 +56,6 @@ const Pool: FC = () => {
       const newTransactions: TransactionData[] = [];
       // eslint-disable-next-line no-restricted-syntax, guard-for-in
       for (const i in res) {
-        const thisNonce = BigInt(res[i].nonce);
-        // TODO: figure out how to fix nonces here
-        // if (thisNonce && nonce && thisNonce > nonce) {
         const validSignatures = [];
         // eslint-disable-next-line guard-for-in, no-restricted-syntax
         for (const s in res[i].signatures) {
