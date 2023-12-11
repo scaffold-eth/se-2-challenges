@@ -10,6 +10,35 @@
 
 💬 Meet other builders working on this challenge and get help in the [Multisig Build Cohort telegram](https://t.me/+zKllN8OlGuxmYzFh).
 
+---
+
+## 📜 Quest Journal 🧭
+
+In this challenge you'll have access to a fully functional Multisig Wallet for inspiration, unlike previous challenges where certain code sections were intentionally left incomplete for completion.
+
+The objective is to allow builders to create their unique versions while referring to this existing build when encountering difficulties.
+
+### 🥅 Goals:
+
+- [ ] Can you edit and deploy the contract with a 2/3 multisig with two of your addresses and the buidlguidl multisig as the third signer? (buidlguidl.eth is like your backup recovery.)
+- [ ] Can you propose basic transactions with the frontend that sends them to the backend?
+- [ ] Can you “vote” on the transaction as other signers?
+- [ ] Can you execute the transaction and does it do the right thing?
+- [ ] Can you add and remove signers with a custom dialog (that just sends you to the create transaction dialog with the correct calldata)
+
+### ⚔️ Side Quests:
+
+- [ ] **Multisig as a service**<br>
+      Create a deploy button with a copy-paste dialog for sharing so anyone can make a multisig at your URL with your frontend.
+
+- [ ] **Create custom signer roles for your Wallet**<br>
+      You may not want every signer to create new transfers, only allow them to sign existing transactions or a mega-admin role who will be able to veto any transaction.
+
+- [ ] **Integrate this MultiSig wallet into other Scaffold ETH-2 builds**<br>
+      Find a Scaffold ETH-2 build that could make use of a Multisig wallet and try to integrate it!
+
+---
+
 ## 👇🏼 Quick Break-Down 👛
 
 This is a smart contract that acts as an off-chain signature-based shared wallet amongst different signers that showcases use of meta-transaction knowledge and ECDSA `recover()`.
@@ -156,18 +185,6 @@ You will see the new transaction in the pool (this is all off-chain).
 > Execute the transaction to transfer the funds:
 
 ![multisig-10](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/2be26eda-ea09-4a0d-9f0e-d2151cfa26a4)
-
-## ⚔️ Side Quests
-
-#### 🐟 Create custom signer roles for your Wallet
-
-You may not want every signer to create new transfers, only allow them to sign existing transactions or a mega-admin role who will be able to veto any transaction.
-
-#### 😎 Integrate this MultiSig wallet into other Scaffold ETH-2 builds
-
-<!-- TODO: check which build we could recommend to integrate with for this side quest, or skip it? -->
-
-Find a Scaffold ETH-2 build that could make use of a Multisig wallet and try to integrate it.
 
 ---
 
