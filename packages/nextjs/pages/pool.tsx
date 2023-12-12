@@ -31,7 +31,7 @@ const Pool: FC = () => {
     contractName: "MetaMultiSigWallet",
   });
 
-  const historyHashes = eventsHistory?.map(ev => ev.log.args.hash) || [];
+  const historyHashes = useMemo(() => eventsHistory?.map(ev => ev.log.args.hash) || [], [eventsHistory]);
 
   useScaffoldEventSubscriber({
     contractName: "MetaMultiSigWallet",
@@ -50,7 +50,7 @@ const Pool: FC = () => {
   useInterval(() => {
     const getTransactions = async () => {
       const res: { [key: string]: TransactionData } = await (
-        await fetch(`${POOL_SERVER_URL}${contractInfo?.address}_${chainId}`)
+        await fetch(`${POOL_SERVER_URL}?key=${contractInfo?.address}_${chainId}`)
       ).json();
 
       const newTransactions: TransactionData[] = [];
