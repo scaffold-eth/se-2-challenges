@@ -14,7 +14,7 @@
 
 ## 📜 Quest Journal 🧭
 
-In this challenge you'll have access to a fully functional Multisig Wallet for inspiration, unlike previous challenges where certain code sections were intentionally left incomplete for completion.
+In this challenge you'll have access to a fully functional Multisig Wallet for inspiration, unlike previous challenges where certain code sections were intentionally left incomplete.
 
 The objective is to allow builders to create their unique versions while referring to this existing build when encountering difficulties.
 
@@ -41,7 +41,7 @@ The objective is to allow builders to create their unique versions while referri
 
 ## 👇🏼 Quick Break-Down 👛
 
-This is a smart contract that acts as an off-chain signature-based shared wallet amongst different signers that showcases use of meta-transaction knowledge and ECDSA `recover()`.
+This is a smart contract that acts as an offchain signature-based shared wallet amongst different signers that showcases use of meta-transaction knowledge and ECDSA `recover()`.
 
 > If you are unfamiliar with these concepts, check out all the [ETH.BUILD videos](https://www.youtube.com/watch?v=CbbcISQvy1E&ab_channel=AustinGriffith) by Austin Griffith, especially the Meta Transactions one!
 
@@ -49,9 +49,9 @@ This is a smart contract that acts as an off-chain signature-based shared wallet
 
 At a high-level, the contract core functions are carried out as follows:
 
-**Off-chain: ⛓🙅🏻‍♂️** - Generation of a packed hash (bytes32) for a function call with specific parameters through a public view function . - It is signed by one of the signers associated to the multisig, and added to an array of signatures (`bytes[] memory signatures`)
+**Offchain: ⛓🙅🏻‍♂️** - Generation of a packed hash (bytes32) for a function call with specific parameters through a public view function . - It is signed by one of the signers associated to the multisig, and added to an array of signatures (`bytes[] memory signatures`)
 
-**On-Chain: ⛓🙆🏻‍♂️**
+**Onchain: ⛓🙆🏻‍♂️**
 
 - `bytes[] memory signatures` is then passed into `executeTransaction` as well as the necessary info to use `recover()` to obtain the public address that ought to line up with one of the signers of the wallet.
   - This method, plus some conditional logic to avoid any duplicate entries from a single signer, is how votes for a specific transaction (hashed tx) are assessed.
@@ -59,7 +59,7 @@ At a high-level, the contract core functions are carried out as follows:
 
 **Cool Stuff that is Showcased: 😎**
 
-- NOTE: Showcases how the `call(){}` function is an external call that ought to increase the nonce of an external contract, as [they increment differently](https://ethereum.stackexchange.com/questions/764/do-contracts-also-have-a-nonce) from user accounts.
+- Showcases how the `call(){}` function is an external call that ought to increase the nonce of an external contract, as [they increment differently](https://ethereum.stackexchange.com/questions/764/do-contracts-also-have-a-nonce) from user accounts.
 - Normal internal functions, such as changing the signers, and adding or removing signers, are treated as external function calls when `call()` is used with the respective transaction hash.
 - Showcases use of an array (see constructor) populating a mapping to store pertinent information within the deployed smart contract storage location within the EVM in a more efficient manner.
 
@@ -147,9 +147,9 @@ This will take you to a populated transaction at "Create" page:
 
 ![multisig-4](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f8ef3f85-c543-468f-a008-6c4c8b9cf20a)
 
-You will see the new transaction in the pool (this is all off-chain).
+You will see the new transaction in the pool (this is all offchain).
 
-ℹ You won't be able to sign it because on creation it already has one signature (from the frontend account).
+You won't be able to sign it because on creation it already has one signature (from the frontend account).
 
 > Click on the ellipsses button [...] to read the details of the transaction.
 
@@ -176,7 +176,7 @@ You will see the new transaction in the pool (this is all off-chain).
 
 ![multisig-8](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/2b7d8501-edfd-47d6-a6d2-937e7bb84caa)
 
-> Open other browser and access with a different owner of the multisig. Sign the transaction with enough owners:
+> Open another browser and access with a different owner of the multisig. Sign the transaction with enough owners:
 
 ![multisig-9](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/ad667a69-499a-4ed4-8a40-52d500c94a5b)
 
