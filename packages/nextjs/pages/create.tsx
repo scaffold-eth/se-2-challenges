@@ -169,7 +169,7 @@ const CreatePage: FC = () => {
           </div>
 
           <AddressInput
-            placeholder="Signer address"
+            placeholder={predefinedTxData.methodName === "transferFunds" ? "Recipient address" : "Signer address"}
             value={predefinedTxData.signer}
             onChange={signer => setPredefinedTxData({ ...predefinedTxData, signer: signer })}
           />
