@@ -104,9 +104,9 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
-<!-- TODO: check this later -->
+> In a fourth terminal window:
 
-> in a fourth terminal window:
+❗ This command is only required for local environment. When deployed to Vercel or any other web server, it will automatically use the deployed backend in `pages/api/`.
 
 ```bash
 yarn backend-local
@@ -203,14 +203,6 @@ You won't be able to sign it because on creation it already has one signature (f
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
 > 💬 Hint: For faster loading of the Multisig tabs, consider updating the `fromBlock` passed to `useScaffoldEventHistory` (in the different components we're using it) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
-
-<!-- TODO: check this later -->
-
-> Also change the poolServerUrl constant to your deployed backend (via yarn backend)
-
-![image](https://user-images.githubusercontent.com/31567169/116589184-6f3fb280-a92d-11eb-8fff-d1e32b8359ff.png)
-
-Alternatively you can use the pool server url in the above screenshot
 
 ---
 
