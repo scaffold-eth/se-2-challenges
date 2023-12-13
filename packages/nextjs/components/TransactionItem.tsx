@@ -138,46 +138,51 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
                   disabled={hasSigned}
                   title={!hasEnoughSignatures ? "Not enough signers to Execute" : ""}
                   onClick={async () => {
-                    if (!walletClient) {
-                      return;
-                    }
+                    try {
+                      if (!walletClient) {
+                        return;
+                      }
 
-                    const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
-                      nonce as bigint,
-                      tx.to,
-                      BigInt(tx.amount),
-                      tx.data,
-                    ])) as `0x${string}`;
+                      const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
+                        nonce as bigint,
+                        tx.to,
+                        BigInt(tx.amount),
+                        tx.data,
+                      ])) as `0x${string}`;
 
-                    const signature = await walletClient.signMessage({
-                      message: { raw: newHash },
-                    });
-
-                    const signer = await metaMultiSigWallet?.read.recover([newHash, signature]);
-
-                    const isOwner = await metaMultiSigWallet?.read.isOwner([signer as string]);
-
-                    if (isOwner) {
-                      const [finalSigList, finalSigners] = await getSortedSigList(
-                        [...tx.signatures, signature],
-                        newHash,
-                      );
-
-                      await fetch(POOL_SERVER_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(
-                          {
-                            ...tx,
-                            signatures: finalSigList,
-                            signers: finalSigners,
-                          },
-                          // stringifying bigint
-                          (key, value) => (typeof value === "bigint" ? value.toString() : value),
-                        ),
+                      const signature = await walletClient.signMessage({
+                        message: { raw: newHash },
                       });
-                    } else {
-                      notification.info("Only owners can sign transactions");
+
+                      const signer = await metaMultiSigWallet?.read.recover([newHash, signature]);
+
+                      const isOwner = await metaMultiSigWallet?.read.isOwner([signer as string]);
+
+                      if (isOwner) {
+                        const [finalSigList, finalSigners] = await getSortedSigList(
+                          [...tx.signatures, signature],
+                          newHash,
+                        );
+
+                        await fetch(POOL_SERVER_URL, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(
+                            {
+                              ...tx,
+                              signatures: finalSigList,
+                              signers: finalSigners,
+                            },
+                            // stringifying bigint
+                            (key, value) => (typeof value === "bigint" ? value.toString() : value),
+                          ),
+                        });
+                      } else {
+                        notification.info("Only owners can sign transactions");
+                      }
+                    } catch (e) {
+                      notification.error("Error signing transaction");
+                      console.log(e);
                     }
                   }}
                 >
@@ -190,25 +195,30 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
                   className="btn btn-xs btn-primary"
                   disabled={!hasEnoughSignatures}
                   onClick={async () => {
-                    if (!contractInfo) {
-                      console.log("No contract info");
-                      return;
+                    try {
+                      if (!contractInfo) {
+                        console.log("No contract info");
+                        return;
+                      }
+                      const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
+                        nonce as bigint,
+                        tx.to,
+                        BigInt(tx.amount),
+                        tx.data,
+                      ])) as `0x${string}`;
+
+                      const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
+
+                      await metaMultiSigWallet?.write.executeTransaction([
+                        tx.to,
+                        BigInt(tx.amount),
+                        tx.data,
+                        finalSigList,
+                      ]);
+                    } catch (e) {
+                      notification.error("Error executing transaction");
+                      console.log(e);
                     }
-                    const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
-                      nonce as bigint,
-                      tx.to,
-                      BigInt(tx.amount),
-                      tx.data,
-                    ])) as `0x${string}`;
-
-                    const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
-
-                    await metaMultiSigWallet?.write.executeTransaction([
-                      tx.to,
-                      BigInt(tx.amount),
-                      tx.data,
-                      finalSigList,
-                    ]);
                   }}
                 >
                   Exec

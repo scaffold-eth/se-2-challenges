@@ -7,8 +7,7 @@ import { useChainId, useWalletClient } from "wagmi";
 import * as chains from "wagmi/chains";
 import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
-import scaffoldConfig from "~~/scaffold.config";
-import { notification } from "~~/utils/scaffold-eth";
+import { getTargetNetwork, notification } from "~~/utils/scaffold-eth";
 
 export type TransactionData = {
   chainId: number;
@@ -24,7 +23,7 @@ export type TransactionData = {
   requiredApprovals: bigint;
 };
 
-export const POOL_SERVER_URL = scaffoldConfig.targetNetwork === chains.hardhat ? "http://localhost:49832/" : "/api/";
+export const POOL_SERVER_URL = getTargetNetwork().id === chains.hardhat.id ? "http://localhost:49832/" : "/api/";
 
 const CreatePage: FC = () => {
   const isMounted = useIsMounted();
@@ -59,61 +58,66 @@ const CreatePage: FC = () => {
   });
 
   const handleCreate = async () => {
-    if (!walletClient) {
-      console.log("No wallet client!");
-      return;
-    }
-
-    const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
-      nonce as bigint,
-      String(txTo),
-      BigInt(predefinedTxData.amount as string),
-      predefinedTxData.callData as `0x${string}`,
-    ])) as `0x${string}`;
-
-    const signature = await walletClient.signMessage({
-      message: { raw: newHash },
-    });
-
-    const recover = (await metaMultiSigWallet?.read.recover([newHash, signature])) as Address;
-
-    const isOwner = await metaMultiSigWallet?.read.isOwner([recover]);
-
-    if (isOwner) {
-      if (!contractInfo?.address || !predefinedTxData.amount || !txTo) {
+    try {
+      if (!walletClient) {
+        console.log("No wallet client!");
         return;
       }
 
-      const txData: TransactionData = {
-        chainId: chainId,
-        address: contractInfo.address,
-        nonce: nonce || 0n,
-        to: txTo,
-        amount: predefinedTxData.amount,
-        data: predefinedTxData.callData as `0x${string}`,
-        hash: newHash,
-        signatures: [signature],
-        signers: [recover],
-        requiredApprovals: signaturesRequired || 0n,
-      };
+      const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
+        nonce as bigint,
+        String(txTo),
+        BigInt(predefinedTxData.amount as string),
+        predefinedTxData.callData as `0x${string}`,
+      ])) as `0x${string}`;
 
-      await fetch(POOL_SERVER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          txData,
-          // stringifying bigint
-          (key, value) => (typeof value === "bigint" ? value.toString() : value),
-        ),
+      const signature = await walletClient.signMessage({
+        message: { raw: newHash },
       });
 
-      setPredefinedTxData(DEFAULT_TX_DATA);
+      const recover = (await metaMultiSigWallet?.read.recover([newHash, signature])) as Address;
 
-      setTimeout(() => {
-        router.push("/pool");
-      }, 777);
-    } else {
-      notification.info("Only owners can propose transactions");
+      const isOwner = await metaMultiSigWallet?.read.isOwner([recover]);
+
+      if (isOwner) {
+        if (!contractInfo?.address || !predefinedTxData.amount || !txTo) {
+          return;
+        }
+
+        const txData: TransactionData = {
+          chainId: chainId,
+          address: contractInfo.address,
+          nonce: nonce || 0n,
+          to: txTo,
+          amount: predefinedTxData.amount,
+          data: predefinedTxData.callData as `0x${string}`,
+          hash: newHash,
+          signatures: [signature],
+          signers: [recover],
+          requiredApprovals: signaturesRequired || 0n,
+        };
+
+        await fetch(POOL_SERVER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            txData,
+            // stringifying bigint
+            (key, value) => (typeof value === "bigint" ? value.toString() : value),
+          ),
+        });
+
+        setPredefinedTxData(DEFAULT_TX_DATA);
+
+        setTimeout(() => {
+          router.push("/pool");
+        }, 777);
+      } else {
+        notification.info("Only owners can propose transactions");
+      }
+    } catch (e) {
+      notification.error("Error while proposing transaction");
+      console.log(e);
     }
   };
 
