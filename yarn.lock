@@ -4424,15 +4424,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cors@npm:^2":
-  version: 2.8.16
-  resolution: "@types/cors@npm:2.8.16"
-  dependencies:
-    "@types/node": "*"
-  checksum: 0c760aa826167a42bfbccff00d67e39c9dd9852e0cd88610f6d3ea1ed17e438df0f8f1f3175c77bfbfdee4c77bf677b12f6b5bd309358c30b5d0e758624b7250
-  languageName: node
-  linkType: hard
-
 "@types/debug@npm:^4.0.0, @types/debug@npm:^4.1.7":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
@@ -4613,15 +4604,6 @@ __metadata:
   version: 17.0.45
   resolution: "@types/node@npm:17.0.45"
   checksum: aa04366b9103b7d6cfd6b2ef64182e0eaa7d4462c3f817618486ea0422984c51fc69fd0d436eae6c9e696ddfdbec9ccaa27a917f7c2e8c75c5d57827fe3d95e8
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.9.2":
-  version: 20.9.2
-  resolution: "@types/node@npm:20.9.2"
-  dependencies:
-    undici-types: ~5.26.4
-  checksum: 5bbb8fb2248fc5c5c4071d9809fb9af85997677c07124d65665202b53283a3b7bdff26fb844e9ee407e3847dfce6399c2b01e3329ea44a4b720647b1b987c678
   languageName: node
   linkType: hard
 
@@ -6554,8 +6536,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backend-local@workspace:packages/backend-local"
   dependencies:
-    "@types/cors": ^2
-    "@types/node": ^20.9.2
     cors: ^2.8.5
     express: ^4.18.2
   languageName: unknown

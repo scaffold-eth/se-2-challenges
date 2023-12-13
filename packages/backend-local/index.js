@@ -1,12 +1,12 @@
-var express = require("express");
-var fs = require("fs");
+const express = require("express");
+const fs = require("fs");
 const https = require("https");
-var cors = require("cors");
-var bodyParser = require("body-parser");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 
-var app = express();
+const app = express();
 
-let transactions = {};
+const transactions = {};
 
 app.use(cors());
 
