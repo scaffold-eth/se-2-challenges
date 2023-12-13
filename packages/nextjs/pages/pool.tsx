@@ -52,7 +52,7 @@ const Pool: FC = () => {
     const getTransactions = async () => {
       try {
         const res: { [key: string]: TransactionData } = await (
-          await fetch(`${POOL_SERVER_URL}?key=${contractInfo?.address}_${chainId}`)
+          await fetch(`${POOL_SERVER_URL}${contractInfo?.address}_${chainId}`)
         ).json();
 
         const newTransactions: TransactionData[] = [];

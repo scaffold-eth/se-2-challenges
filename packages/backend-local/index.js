@@ -11,8 +11,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", function (req, res) {
-  const { key } = req.query;
+app.get("/:key", function (req, res) {
+  const { key } = req.params;
   console.log("Get /", key);
   res.status(200).send(transactions[key] || {});
 });

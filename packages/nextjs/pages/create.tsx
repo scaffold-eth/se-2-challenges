@@ -23,7 +23,8 @@ export type TransactionData = {
   requiredApprovals: bigint;
 };
 
-export const POOL_SERVER_URL = getTargetNetwork().id === chains.hardhat.id ? "http://localhost:49832/" : "/api/";
+export const POOL_SERVER_URL =
+  getTargetNetwork().id === chains.hardhat.id ? "http://localhost:49832/" : "https://backend.multisig.holdings:49832/";
 
 const CreatePage: FC = () => {
   const isMounted = useIsMounted();
