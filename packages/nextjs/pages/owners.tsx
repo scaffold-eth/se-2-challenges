@@ -58,7 +58,7 @@ const Owners: FC = () => {
       <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full">
         <div className="max-w-full">Signatures required: {String(signaturesRequired)}</div>
 
-        <div className="mt-6 w-full">
+        <div className="mt-6 w-full space-y-3">
           {ownerEventsHistory?.map((event, i) => (
             <div key={i} className="flex justify-between">
               <Address address={event.args.owner} />
