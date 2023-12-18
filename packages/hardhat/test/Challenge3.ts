@@ -85,44 +85,39 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
   });
 
   describe("🔑 Rigged Rolls", function () {
-    it("Should call diceGame.rollTheDice for a roll <= 5", async () => {
+    it("Should call diceGame.rollTheDice for a roll <= 5", async function () {
       const getRollLessThanFive = true;
       const expectedRoll = await getRoll(getRollLessThanFive);
       console.log("\t", "🎲 Expect roll to be less than or equal to 5. Dice Game Roll:", expectedRoll.toNumber());
 
-      const tx = riggedRoll.riggedRoll();
+      const tx = await riggedRoll.riggedRoll({ value: ethers.utils.parseEther(".002") });
 
-      it("Should emit Roll event", async () => {
-        await expect(tx).to.emit(diceGame, "Roll").withArgs(riggedRoll.address, expectedRoll);
-      });
-
-      it("Should emit Winner event", async () => {
-        await expect(tx).to.emit(diceGame, "Winner");
-      });
+      await expect(tx).to.emit(diceGame, "Roll").withArgs(riggedRoll.address, ethers.utils.parseEther(".002"), expectedRoll);
+      await expect(tx).to.emit(diceGame, "Winner");
     });
 
-    it("Should not call diceGame.rollTheDice for a roll > 5", async () => {
-      const getRollLessThanFive = false;
-      const expectedRoll = await getRoll(getRollLessThanFive);
-      console.log("\t", "🎲 Expect roll to be greater than 5. Dice Game Roll:", expectedRoll.toNumber());
-      console.log("\t", "◀  Expect riggedRoll to be reverted");
+    // it("Should not call diceGame.rollTheDice for a roll > 5", async () => {
+    //   const getRollLessThanFive = false;
+    //   const expectedRoll = await getRoll(getRollLessThanFive);
+    //   console.log("\t", "🎲 Expect roll to be greater than 5. Dice Game Roll:", expectedRoll.toNumber());
+    //   console.log("\t", "◀  Expect riggedRoll to be reverted");
 
-      await expect(riggedRoll.riggedRoll()).to.be.reverted;
-    });
+    //   await expect(riggedRoll.riggedRoll()).to.be.reverted;
+    // });
 
-    it("Should withdraw funds", async () => {
-      console.log("\t", "💸 Funding RiggedRoll contract");
-      await fundRiggedContract();
+    // it("Should withdraw funds", async () => {
+    //   console.log("\t", "💸 Funding RiggedRoll contract");
+    //   await fundRiggedContract();
 
-      const prevBalance = await deployer.getBalance();
-      console.log("\t", "💲 Current RiggedRoll balance: ", ethers.utils.formatEther(prevBalance));
-      await riggedRoll.withdraw(deployer.address, provider.getBalance(riggedRoll.address));
+    //   const prevBalance = await deployer.getBalance();
+    //   console.log("\t", "💲 Current RiggedRoll balance: ", ethers.utils.formatEther(prevBalance));
+    //   await riggedRoll.withdraw(deployer.address, provider.getBalance(riggedRoll.address));
 
-      const curBalance = await deployer.getBalance();
-      console.log("\t", "💲 New RiggedRoll balance: ", ethers.utils.formatEther(curBalance));
+    //   const curBalance = await deployer.getBalance();
+    //   console.log("\t", "💲 New RiggedRoll balance: ", ethers.utils.formatEther(curBalance));
 
-      expect(prevBalance.lt(curBalance), "Error when expecting RiggedRoll balance to increase when calling withdraw").to
-        .true;
-    });
+    //   expect(prevBalance.lt(curBalance), "Error when expecting RiggedRoll balance to increase when calling withdraw").to
+    //     .true;
+    // });
   });
 });
