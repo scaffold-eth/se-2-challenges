@@ -80,10 +80,7 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
       await fundRiggedContract();
       const balance = await provider.getBalance(riggedRoll.address);
       console.log("\t", "💲 RiggedRoll balance: ", ethers.utils.formatEther(balance));
-      expect(balance).to.gte(
-        rollAmount,
-        `Error when expecting DiceGame contract to have >= ${rollAmount} eth`,
-      );
+      expect(balance).to.gte(rollAmount, `Error when expecting DiceGame contract to have >= ${rollAmount} eth`);
     });
   });
 
