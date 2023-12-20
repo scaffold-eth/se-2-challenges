@@ -14,8 +14,8 @@ type MetaHeaderProps = {
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/` : "/";
 
 export const MetaHeader = ({
-  title = "Challenge {challengeNum} | SpeedRunEthereum",
-  description = "Challenge {challengeNum} of SpeedRunEthereum. Built with 🏗 Scaffold-ETH 2",
+  title = "Challenge #6 | SpeedRunEthereum",
+  description = "Challenge #6: 👛 Multisig Wallet of SpeedRunEthereum. Built with 🏗 Scaffold-ETH 2",
   image = "thumbnail.jpg",
   twitterCard = "summary_large_image",
   children,
