@@ -3,7 +3,12 @@ import { Address, BlockieAvatar } from "./scaffold-eth";
 import { Abi, decodeFunctionData, formatEther } from "viem";
 import { DecodeFunctionDataReturnType } from "viem/_types/utils/abi/decodeFunctionData";
 import { useAccount, useWalletClient } from "wagmi";
-import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import {
+  useDeployedContractInfo,
+  useScaffoldContract,
+  useScaffoldContractRead,
+  useTransactor,
+} from "~~/hooks/scaffold-eth";
 import { POOL_SERVER_URL, TransactionData } from "~~/pages/create";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -12,6 +17,7 @@ type TransactionItemProps = { tx: TransactionData; completed: boolean; outdated:
 export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outdated }) => {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const transactor = useTransactor();
 
   const { data: signaturesRequired } = useScaffoldContractRead({
     contractName: "MetaMultiSigWallet",
@@ -196,11 +202,11 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
                   disabled={!hasEnoughSignatures}
                   onClick={async () => {
                     try {
-                      if (!contractInfo) {
+                      if (!contractInfo || !metaMultiSigWallet) {
                         console.log("No contract info");
                         return;
                       }
-                      const newHash = (await metaMultiSigWallet?.read.getTransactionHash([
+                      const newHash = (await metaMultiSigWallet.read.getTransactionHash([
                         nonce as bigint,
                         tx.to,
                         BigInt(tx.amount),
@@ -209,12 +215,9 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
 
                       const [finalSigList] = await getSortedSigList(tx.signatures, newHash);
 
-                      await metaMultiSigWallet?.write.executeTransaction([
-                        tx.to,
-                        BigInt(tx.amount),
-                        tx.data,
-                        finalSigList,
-                      ]);
+                      await transactor(() =>
+                        metaMultiSigWallet.write.executeTransaction([tx.to, BigInt(tx.amount), tx.data, finalSigList]),
+                      );
                     } catch (e) {
                       notification.error("Error executing transaction");
                       console.log(e);
