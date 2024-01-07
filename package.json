@@ -1,27 +1,14 @@
 {
   "name": "multisig-backend",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.2.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev -p 49832",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "vercel": "vercel"
+    "dev": "node index.js"
   },
   "dependencies": {
-    "@vercel/kv": "^1.0.1",
-    "next": "14.0.4",
-    "react": "^18",
-    "react-dom": "^18"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.0.4",
-    "typescript": "^5",
-    "vercel": "^33.0.1"
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "lowdb": "^7.0.1"
   }
 }
