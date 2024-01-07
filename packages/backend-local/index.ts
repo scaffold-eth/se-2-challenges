@@ -8,6 +8,7 @@ dotenv.config();
 
 type Transaction = {
   // [TransactionData type from next app]. Didn't add it since not in use
+  // and it should be updated when next type changes
   [key: string]: any;
 };
 
