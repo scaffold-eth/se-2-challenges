@@ -43,7 +43,7 @@ const server = app
   .listen(PORT, () => {
     console.log(
       "HTTP Listening on port:",
-      (server.address() as AddressInfo).port,
+      (server.address() as AddressInfo).port
     );
   })
   .on("error", (error) => {
