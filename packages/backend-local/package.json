@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec ts-node --esm ./index.ts"
+    "build": "tsc",
+    "dev": "nodemon --exec ts-node --esm ./index.ts",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

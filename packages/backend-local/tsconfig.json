@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
-    "module": "NodeNext"
+    "module": "NodeNext",
+    "outDir": "./dist"
   }
 }
