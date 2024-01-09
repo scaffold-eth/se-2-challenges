@@ -39,9 +39,13 @@ app.post("/", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 49832;
-const server = app.listen(PORT, () => {
-  console.log(
-    "HTTP Listening on port:",
-    (server.address() as AddressInfo).port
-  );
-});
+const server = app
+  .listen(PORT, () => {
+    console.log(
+      "HTTP Listening on port:",
+      (server.address() as AddressInfo).port,
+    );
+  })
+  .on("error", (error) => {
+    console.error("Error occurred starting the server: ", error);
+  });
