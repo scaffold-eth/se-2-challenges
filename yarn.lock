@@ -4585,22 +4585,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*":
-  version: 4.14.202
-  resolution: "@types/lodash@npm:4.14.202"
-  checksum: a91acf3564a568c6f199912f3eb2c76c99c5a0d7e219394294213b3f2d54f672619f0fde4da22b29dc5d4c31457cd799acc2e5cb6bd90f9af04a1578483b6ff7
-  languageName: node
-  linkType: hard
-
-"@types/lowdb@npm:^1.0.15":
-  version: 1.0.15
-  resolution: "@types/lowdb@npm:1.0.15"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 63fc277f66210a247a1255ef161635436f2d3a3e826a56de833d52d06eeeccaab372e776ff1952cdaf7244dd72270bd00e4369690542d41569a43ffcd7a478fe
-  languageName: node
-  linkType: hard
-
 "@types/lru-cache@npm:^5.1.0":
   version: 5.1.1
   resolution: "@types/lru-cache@npm:5.1.1"
@@ -6672,12 +6656,10 @@ __metadata:
     "@types/cors": ^2.8.17
     "@types/dotenv": ^8.2.0
     "@types/express": ^4.17.21
-    "@types/lowdb": ^1.0.15
     "@types/node": ^20.10.6
     cors: ^2.8.5
     dotenv: ^16.3.1
     express: ^4.18.2
-    lowdb: ^7.0.1
     nodemon: ^3.0.2
     ts-node: ^10.9.2
   languageName: unknown
@@ -12719,15 +12701,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lowdb@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "lowdb@npm:7.0.1"
-  dependencies:
-    steno: ^4.0.2
-  checksum: 124cbc41d6095ed3765fd50749815ab9d80ee9b9ace87575aaad43979c949604fd6ad055c5e33815e1f03de59940d0e37836a156166521dc16c711ea1f6e027c
-  languageName: node
-  linkType: hard
-
 "lowercase-keys@npm:^2.0.0":
   version: 2.0.0
   resolution: "lowercase-keys@npm:2.0.0"
@@ -16769,13 +16742,6 @@ __metadata:
   version: 3.5.0
   resolution: "std-env@npm:3.5.0"
   checksum: 8eba87eab2d6933e0575f13a65a359952a2e3e8c4d24eb55beac5500fe0403b3482c7b59a5de8d035ae13d390c76dd6c677772f9d2a89ea7cf39ae267b71bdd3
-  languageName: node
-  linkType: hard
-
-"steno@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "steno@npm:4.0.2"
-  checksum: 1d135aac18058e4629993d036e46b8a9af155e2a49260ece7047df8eb916f2c04f396b364db8543ad5b8c16d89c8747a6bdc43f3d85c79dc1728ffc9a2239a32
   languageName: node
   linkType: hard
 
