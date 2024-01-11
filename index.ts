@@ -3,7 +3,8 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { JSONFileSyncPreset } from "lowdb/node";
-import { AddressInfo } from "net";
+import * as fs from "fs";
+import * as https from "https";
 
 dotenv.config();
 
@@ -41,9 +42,21 @@ app.post("/", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 49832;
-const server = app.listen(PORT, () => {
-  console.log(
-    "HTTP Listening on port:",
-    (server.address() as AddressInfo).port
-  );
-});
+
+if (fs.existsSync("server.key") && fs.existsSync("server.cert")) {
+  https
+    .createServer(
+      {
+        key: fs.readFileSync("server.key"),
+        cert: fs.readFileSync("server.cert"),
+      },
+      app
+    )
+    .listen(PORT, () => {
+      console.log("HTTPS Listening on port:", PORT);
+    });
+} else {
+  app.listen(PORT, function () {
+    console.log("HTTP Listening on port:", PORT);
+  });
+}
