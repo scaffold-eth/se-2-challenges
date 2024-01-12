@@ -106,12 +106,14 @@ yarn start
 
 > In a fourth terminal window:
 
-❗ This command is only required for local environment. When deployed to Vercel or any other web server, it will automatically use the deployed backend in `pages/api/`.
+❗ This command is only required in your local environment (Hardhat chain).
 
 ```bash
 yarn backend-local
 
 ```
+
+When deployed to any other chain, it will automatically use our deployed backend ([repo](https://github.com/scaffold-eth/se-2-challenges/tree/multisig-backend)) from `https://backend.multisig.holdings:49832/`.
 
 > 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
 
