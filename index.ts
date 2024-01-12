@@ -24,6 +24,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.get("/", async (req, res) => {
+  console.log("Get /");
+  res.status(200).send("Multisig backend is live!");
+});
+
 app.get("/:key", async (req, res) => {
   const { key } = req.params;
   console.log("Get /", key);
