@@ -99,7 +99,7 @@ We want this function written in a way that when we send ETH and/or $BAL tokens 
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-1. Do we want to provide liquidity if the contract already has liquidity? How can we help/prevent this from happening?
+1. How can we check and prevent liquidity being added if the contract already has liquidity?
 2. What should the value of `totalLiquidity` be, how do we access the balance that our contract has and assign the variable a value?
 3. How would we assign our address the liquidity we just provided? How much liquidity have we provided? The `totalLiquidity`? Just half? Three quarters?
 4. Now we need to take care of the tokens `init()` is receiving. How do we transfer the tokens from the sender (us) to this contract address? How do we make sure the transaction reverts if the sender did not have as many tokens as they wanted to send?
@@ -150,9 +150,9 @@ Now we are ready to call `init()` on the DEX, using `Debug Contracts` tab. We wi
 
 In the `DEX` tab, to simplify user interactions, we run the conversion (_tokenAmount_ \* 10¹⁸) in the code, so they just have to input the token amount they want to swap or deposit/withdraw.
 
-You can see the DEX contract's value update and you can check the DEX token balance using the `balanceOf` function on the Balloons UI from `DEX` tab.
+You can see the DEX contract's value update, and you can check the DEX token balance using the `balanceOf` function on the Balloons UI from `DEX` tab.
 
-This works pretty well, but it will be a lot easier if we just call the `init()` function as we deploy the contract. In the `00_deploy_your_contract.ts` script try uncommenting the init section so our DEX will start with 5 ETH and 5 Balloons of liquidity:
+This works pretty well, but it will be a lot easier if we just call the `init()` function as we deploy the contract. In the `00_deploy_your_contract.ts` script try uncommenting the init section, so our DEX will start with 5 ETH and 5 Balloons of liquidity:
 
 ```
   // // uncomment to init DEX on deploy:
@@ -168,12 +168,12 @@ This works pretty well, but it will be a lot easier if we just call the `init()`
   // });
 ```
 
-Now when we `yarn deploy --reset` then our contract should be initialized as soon as it deploys and we should have equal reserves of ETH and tokens.
+Now, when we `yarn deploy --reset` then our contract should be initialized as soon as it deploys, and we should have equal reserves of ETH and tokens.
 
 ### 🥅 Goals / Checks
 
 - [ ] 🎈 In the DEX tab is your contract showing 5 ETH and 5 Balloons of liquidity?
-- [ ] ⚠ If you are planning to submit the challenge make sure to implement the `getLiquidity` getter function in `DEX.sol`
+- [ ] ⚠ If you are planning to submit the challenge, make sure to implement the `getLiquidity` getter function in `DEX.sol`
 
 ---
 
@@ -214,12 +214,12 @@ We should apply the fee to `xInput`, and store it in a new variable `xInputWithF
 
 <details markdown='1'><summary>🦉 Guided Explanation</summary>
 
-For the math portions of this challenge, you can black-box the math. However it's still important to understand what the math looks like, but maybe less so how it works or why it works, in other words don't get too caught up in the mathematical details! 😅 Look at articles and videos in this challenge or on your own to find out more if you're curious though! 🤓 
+For the math portions of this challenge, you can black-box the math. However, it's still important to understand what the math looks like, but maybe less so how it works or why it works, in other words don't get too caught up in the mathematical details! 😅 Look at articles and videos in this challenge or on your own to find out more if you're curious though! 🤓 
 
 1. We are multiplying `xInput` by 997 to "simulate" a multiplication by 0.997 since we can't use decimals in solidity. We'll divide by 1000 later to get the fee back to normal.
-2. Next we'll make our `numerator` by multiplying `xInputWithFee` by `yReserves`.
+2. Next, we'll make our `numerator` by multiplying `xInputWithFee` by `yReserves`.
 3. Then our `denominator` will be `xReserves` multiplied by 1000 (to account for the 997 in the numerator) plus `xInputWithFee`.
-4. Last we will return the `numerator` / `denominator` which is our `yOutput`, or the amount of swapped currency. But wait can we have decimals in Solidity? No, so the output will be rounded up or down to the nearest whole number.
+4. Last, we will return the `numerator` / `denominator` which is our `yOutput`, or the amount of swapped currency. But wait, can we have decimals in Solidity? No, so the output will be rounded up or down to the nearest whole number.
 
 <details markdown='1'><summary>👩🏽‍🏫 Solution Code</summary>
 
@@ -252,12 +252,12 @@ Let’s say we have 1 million ETH and 1 million tokens, if we put this into our 
 
 ![price-example-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e2d725cc-91f3-454d-902f-b39e4b51f5e2)
 
-If we put in 1000 ETH we will receive 996 tokens. If we’re paying a 0.3% fee it should be 997 if everything was perfect. BUT, there is a tiny bit of slippage as our contract moves away from the original ratio. Let’s dig in more to really understand what is going on here.
+If we put in 1000 ETH, we will receive 996 tokens. If we’re paying a 0.3% fee, it should be 997 if everything was perfect. BUT, there is a tiny bit of slippage as our contract moves away from the original ratio. Let’s dig in more to really understand what is going on here.
 Let’s say there is 5 million ETH and only 1 million tokens. Then, we want to put 1000 tokens in. That means we should receive about 5000 ETH:
 
 ![price-example-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/349db3d8-e39e-4c94-8026-e01da2cefb8e)
 
-Finally, let’s say the ratio is the same but we want to swap 100,000 tokens instead of just 1000. We’ll notice that the amount of slippage is much bigger. Instead of 498,000 back we will only get 453,305 because we are making such a big dent in the reserves.
+Finally, let’s say the ratio is the same, but we want to swap 100,000 tokens instead of just 1000. We’ll notice that the amount of slippage is much bigger. Instead of 498,000 back, we will only get 453,305 because we are making such a big dent in the reserves.
 
 ![price-example-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f479d7cd-0e04-4aa7-aa52-cef30d747af3)
 
@@ -279,7 +279,7 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
 1. How would we make sure the value being swapped for balloons is greater than 0? 
-2. Is `xReserves` ETH or $BAL tokens? Use a variable name that best describes which one it is. When we call this function it will already have the value we sent it in it's `liquidity`. How can we make sure we are using the balance of the contract *before* any ETH was sent to it?
+2. Is `xReserves` ETH or $BAL tokens? Use a variable name that best describes which one it is. When we call this function, it will already have the value we sent it in it's `liquidity`. How can we make sure we are using the balance of the contract *before* any ETH was sent to it?
 3. For `yReserves` we will also want to create a new more descriptive variable name. How do we find the other asset balance this address has?
 4. Now that we have all our arguments, how do we call `price()` and store the returned value in a new variable? What kind of name would best describe this variable?
 5. After getting how many tokens the sender should receive, how do we transfer those tokens to the sender?
@@ -310,12 +310,12 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 </details>
 
 
-😎 Great now onto the next! `tokenToEth()` is going to do the opposite so it should be pretty straight forward. But if you get stuck the guiding questions are always there 🦉 
+😎 Great now onto the next! `tokenToEth()` is going to do the opposite so it should be pretty straight forward. But if you get stuck, the guiding questions are always there 🦉 
 
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-1. How would we make sure the value being being swapped for ETH is greater than 0? 
+1. How would we make sure the value being swapped for ETH is greater than 0? 
 2. Is `xReserves` ETH or $BAL tokens this time? Use a variable name the describes which one it is. 
 3. For `yReserves` we will also want to create a new and more descriptive variable name. How do we find the other asset balance this address has?
 4. Now that we have all our arguments, how do we call `price()` and store the returned value in a new variable?
@@ -367,14 +367,14 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 
 > The `deposit()` function receives ETH and also transfers $BAL tokens from the caller to the contract at the right ratio. The contract also tracks the amount of liquidity (how many liquidity provider tokens (LPTs) minted) the depositing address owns vs the totalLiquidity.
 
-What does this hint mean in practice? The goal is to allow a user to `deposit()` ETH into our `totalLiquidity`, and update their `liquidity`. This is very similar to the `init()` function, except we want it to work for anyone providing liquidity. Also since there already is liquidity we want the liquidity they provide to leave the invariant `k` unchanged. 
+What does this hint mean in practice? The goal is to allow a user to `deposit()` ETH into our `totalLiquidity`, and update their `liquidity`. This is very similar to the `init()` function, except we want it to work for anyone providing liquidity. Also, since there already is liquidity we want the liquidity they provide to leave the invariant `k` unchanged. 
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-Part 1: Getting Reservese 🏦 
+Part 1: Getting Reserves 🏦 
 1. How do we ensure the sender isn't sending 0 ETH?
 2. We need to calculate the ratio of ETH and $BAL after the liquidity provider sends ETH, what variables do we need? It's similar to the previous section. What was that operation we performed on `ethReserve` in Checkpoint 4 to make sure we were getting the balance *before* the `msg.value` went through? We need to do that again for the same reason.
-3. What other asset do we need to declare a reserve for and how do we get it's balance in this contract?
+3. What other asset do we need to declare a reserve for, and how do we get its balance in this contract?
 
 - [ ] Do you have reserves of both assets?
 
@@ -388,7 +388,7 @@ Part 2: Performing Calculations 🤖
 
 Part 3: Updating, Transferring, Emitting, and Returning 🎀 
 
-7. Now that the DEX has more assests, should we update our two global variables? How do we update `liquidity`?
+7. Now that the DEX has more assets, should we update our two global variables? How do we update `liquidity`?
 8. How do we update `totalLiquidity`?
 9. The user already sent deposited their ETH, but they still have to deposit their tokens. How do we require a token transfer from them?
 10. We just completed something important, which event should we emit?
@@ -429,9 +429,9 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-Part 1: Getting Reservese 🏦 
-1. How can we verify that user is withdrawing an `amount` of `liquidity` that they actually have? 
-2. Just like the `deposit()` we need both assets. How much ETH does our DEX have? Remember this function is not payable, so we don't have to subtract anything.
+Part 1: Getting Reserves 🏦 
+1. How can we verify that a user is withdrawing an `amount` of `liquidity` that they actually have? 
+2. Just like the `deposit()` we need both assets. How much ETH does our DEX have? Remember, this function is not payable, so we don't have to subtract anything.
 3. What is the value of `tokenReserve`?
 
 Part 2: Performing Calculations 🤖 
