@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { useDarkMode } from "~~/hooks/scaffold-eth/useDarkMode";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 const allowedNetworks = getTargetNetworks();
@@ -31,6 +32,7 @@ export const AddressInfoDropdown = ({
   blockExplorerAddressLink,
 }: AddressInfoDropdownProps) => {
   const { disconnect } = useDisconnect();
+  const { isDarkMode } = useDarkMode();
 
   const [addressCopied, setAddressCopied] = useState(false);
 
@@ -47,7 +49,9 @@ export const AddressInfoDropdown = ({
       <details ref={dropdownRef} className="dropdown dropdown-end leading-3">
         <summary
           tabIndex={0}
-          className="btn btn-secondary hover:bg-secondary focus:bg-secondary btn-sm pl-0 pr-2 shadow-md dropdown-toggle gap-0 !h-auto"
+          className={`btn btn-secondary ${
+            isDarkMode ? "hover:bg-black/20" : ""
+          } focus:not:hover:bg-secondary btn-sm pl-0 pr-2 shadow-md dropdown-toggle gap-0 !h-auto`}
         >
           <BlockieAvatar address={address} size={30} ensImage={ensAvatar} />
           <span className="ml-2 mr-1">{displayName}</span>

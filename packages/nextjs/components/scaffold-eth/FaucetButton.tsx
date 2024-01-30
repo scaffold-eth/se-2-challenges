@@ -6,6 +6,7 @@ import { hardhat } from "viem/chains";
 import { useAccount, useNetwork } from "wagmi";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
 import { useAccountBalance, useTransactor } from "~~/hooks/scaffold-eth";
+import { useDarkMode } from "~~/hooks/scaffold-eth/useDarkMode";
 
 // Number of ETH faucet sends to an address
 const NUM_OF_ETH = "1";
@@ -22,6 +23,7 @@ const localWalletClient = createWalletClient({
 export const FaucetButton = () => {
   const { address } = useAccount();
   const { balance } = useAccountBalance(address);
+  const { isDarkMode } = useDarkMode();
 
   const { chain: ConnectedChain } = useNetwork();
 
@@ -60,7 +62,9 @@ export const FaucetButton = () => {
       data-tip="Grab funds from faucet"
     >
       <button
-        className="btn btn-secondary hover:bg-secondary focus:bg-secondary hover:shadow-lg btn-sm px-2 rounded-full"
+        className={`btn btn-secondary ${
+          isDarkMode ? "hover:bg-black/20" : ""
+        } focus:bg-secondary hover:shadow-lg btn-sm px-2 rounded-full`}
         onClick={sendETH}
         disabled={loading}
       >
