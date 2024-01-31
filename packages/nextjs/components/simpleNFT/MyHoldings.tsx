@@ -1,5 +1,6 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { Spinner } from "../Spinner";
 import { NFTCard } from "./NFTCard";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -73,7 +74,7 @@ export const MyHoldings = () => {
   if (allCollectiblesLoading)
     return (
       <div className="flex justify-center items-center mt-10">
-        <Spinner width="75" height="75" />
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
 
