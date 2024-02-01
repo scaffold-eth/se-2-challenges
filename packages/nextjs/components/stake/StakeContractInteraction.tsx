@@ -108,14 +108,14 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
         </div>
         <div className="flex flex-col space-y-5">
           <div className="flex space-x-7">
-            <button className="btn btn-primary" onClick={() => execute()}>
+            <button className="btn btn-primary uppercase" onClick={() => execute()}>
               Execute!
             </button>
-            <button className="btn btn-primary" onClick={() => withdrawETH()}>
+            <button className="btn btn-primary uppercase" onClick={() => withdrawETH()}>
               Withdraw
             </button>
           </div>
-          <button className="btn btn-primary" onClick={() => stakeETH()}>
+          <button className="btn btn-primary uppercase" onClick={() => stakeETH()}>
             🥩 Stake 0.5 ether!
           </button>
         </div>
