@@ -1,3 +1,5 @@
+"use client";
+
 import type { NextPage } from "next";
 import { StakeContractInteraction } from "~~/components/stake";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";

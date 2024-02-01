@@ -3,7 +3,7 @@
 import { Address } from "../scaffold-eth";
 import { ETHToPrice } from "./EthToPrice";
 import humanizeDuration from "humanize-duration";
-import { formatEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import {
   useAccountBalance,
@@ -20,7 +20,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { balance: stakerContractBalance } = useAccountBalance(StakerContract?.address);
   const { balance: exampleExternalContractBalance } = useAccountBalance(ExampleExternalContact?.address);
 
-  const { targetNetwork: configuredNetwork } = useTargetNetwork();
+  const { targetNetwork } = useTargetNetwork();
 
   // Contract Read Actions
   const { data: threshold } = useScaffoldContractRead({
@@ -49,7 +49,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { writeAsync: stakeETH } = useScaffoldContractWrite({
     contractName: "Staker",
     functionName: "stake",
-    value: "0.5",
+    value: parseEther("0.5"),
   });
   const { writeAsync: execute } = useScaffoldContractWrite({
     contractName: "Staker",
@@ -94,7 +94,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
           <div className="flex flex-col items-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">You Staked</p>
             <span>
-              {myStake ? formatEther(myStake) : 0} {configuredNetwork.nativeCurrency.symbol}
+              {myStake ? formatEther(myStake) : 0} {targetNetwork.nativeCurrency.symbol}
             </span>
           </div>
         </div>
