@@ -1,3 +1,5 @@
+"use client";
+
 import { Address } from "../scaffold-eth";
 import { ETHToPrice } from "./EthToPrice";
 import humanizeDuration from "humanize-duration";
@@ -9,7 +11,7 @@ import {
   useScaffoldContractRead,
   useScaffoldContractWrite,
 } from "~~/hooks/scaffold-eth";
-import { getTargetNetwork } from "~~/utils/scaffold-eth";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
 export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
@@ -18,7 +20,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { balance: stakerContractBalance } = useAccountBalance(StakerContract?.address);
   const { balance: exampleExternalContractBalance } = useAccountBalance(ExampleExternalContact?.address);
 
-  const configuredNetwork = getTargetNetwork();
+  const { targetNetwork: configuredNetwork } = useTargetNetwork();
 
   // Contract Read Actions
   const { data: threshold } = useScaffoldContractRead({
