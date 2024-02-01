@@ -11,13 +11,13 @@ const imageUrl = `${baseUrl}/thumbnail.jpg`;
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "SpeedRunEthereum",
+    default: "Challenge #0 | SpeedRunEthereum",
     template: "%s | SpeedRunEthereum",
   },
   description: "Built with 🏗 Scaffold-ETH 2",
   openGraph: {
     title: {
-      default: "SpeedRunEthereum",
+      default: "Challenge #0 | SpeedRunEthereum",
       template: "%s | SpeedRunEthereum",
     },
     description: "Built with 🏗 Scaffold-ETH 2",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: [imageUrl],
     title: {
-      default: "SpeedRunEthereum",
+      default: "Challenge #0 | SpeedRunEthereum",
       template: "%s | SpeedRunEthereum",
     },
     description: "Built with 🏗 Scaffold-ETH 2",
