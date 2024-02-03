@@ -578,23 +578,77 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
 Part 1: Getting Reserves 🏦 
-1. How can we verify that a user is withdrawing an `amount` of `liquidity` that they actually have? 
-2. Just like the `deposit()` we need both assets. How much ETH does our DEX have? Remember, this function is not payable, so we don't have to subtract anything.
-3. What is the value of `tokenReserve`?
+
+<details markdown='1'><summary>Question One</summary>
+
+> How can we verify that a user is withdrawing an `amount` of `liquidity` that they actually have? 
+
+</details>
+
+<details markdown='1'><summary>Question Two</summary>
+
+> Just like the `deposit()` we need both assets. How much ETH does our DEX have? Remember, this function is not payable, so we don't have to subtract anything.
+
+</details>
+
+<details markdown='1'><summary>Question Three</summary>
+
+> What is the value of `tokenReserve`?
+
+</details>
 
 Part 2: Performing Calculations 🤖 
 > We need to calculate how much of each asset our user is going withdraw, call them `ethWithdrawn` and `tokenAmount`. The equation is: amount * reserveOfDesiredUnits / totalLiquidity
-4. How do we get `ethWithdrawn`?
-5. How do we get `tokenOutput`?
+
+<details markdown='1'><summary>Question Four</summary>
+
+> How do we get `ethWithdrawn`?
+
+</details>
+
+<details markdown='1'><summary>Question Five</summary>
+
+> How do we get `tokenOutput`?
+
+</details>
 
 Part 3: Updating, Transferring, Emitting, and Returning 🎀 
 
-6. The user is withdrawing, how do we represent this decrease in this individual's `liquidity`?
-7. The DEX also lost liquidity, how should we update `totalLiquidity`?
-8. How do pay the user the value of `ethWithdrawn`?
-9. How do we give them their tokens? 
-10. We have an event to emit, which one?
-11. Last, what are we returning?
+<details markdown='1'><summary>Question Six</summary>
+
+> The user is withdrawing, how do we represent this decrease in this individual's `liquidity`?
+
+</details>
+
+<details markdown='1'><summary>Question Seven</summary>
+
+> The DEX also lost liquidity, how should we update `totalLiquidity`?
+
+</details>
+
+<details markdown='1'><summary>Question Eight</summary>
+
+> How do pay the user the value of `ethWithdrawn`?
+
+</details>
+
+<details markdown='1'><summary>Question Nine</summary>
+
+> How do we give them their tokens? 
+
+</details>
+
+<details markdown='1'><summary>Question Ten</summary>
+
+> We have an event to emit, which one?
+
+</details>
+
+<details markdown='1'><summary>Question Eleven</summary>
+
+> Last, what are we returning?
+
+</details>
 
 <details markdown='1'><summary>👩🏽‍🏫 Solution Code </summary>
 
