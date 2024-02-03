@@ -109,20 +109,28 @@ We want this function written in a way that when we send ETH and/or $BAL tokens 
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-<details markdown='1'><summary>1</summary>
+<details markdown='1'><summary>Question 1</summary>
+
 > How can we check and prevent liquidity being added if the contract already has liquidity?
+
 </details>
 
-<details markdown='1'><summary>2</summary>
+<details markdown='1'><summary>Question 2</summary>
+
 > What should the value of `totalLiquidity` be, how do we access the balance that our contract has and assign the variable a value?
+
 </details>
 
-<details markdown='1'><summary>3</summary>
+<details markdown='1'><summary>Question 3</summary>
+
 > How would we assign our address the liquidity we just provided? How much liquidity have we provided? The `totalLiquidity`? Just half? Three quarters?
+
 </details>
 
-<details markdown='1'><summary>4</summary>
+<details markdown='1'><summary>Question 4</summary>
+
 > Now we need to take care of the tokens `init()` is receiving. How do we transfer the tokens from the sender (us) to this contract address? How do we make sure the transaction reverts if the sender did not have as many tokens as they wanted to send?
+
 </details>
 
 
