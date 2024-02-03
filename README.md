@@ -246,8 +246,6 @@ We should apply the fee to `xInput`, and store it in a new variable `xInputWithF
 
 For the math portions of this challenge, you can black-box the math. However, it's still important to understand what the math looks like, but maybe less so how it works or why it works, in other words don't get too caught up in the mathematical details! 😅 Look at articles and videos in this challenge or on your own to find out more if you're curious though! 🤓 
 
-
-<details markdown='1'><summary>🦉 Guided Explanation</summary>
 1. We are multiplying `xInput` by 997 to "simulate" a multiplication by 0.997 since we can't use decimals in solidity. We'll divide by 1000 later to get the fee back to normal.
 2. Next, we'll make our `numerator` by multiplying `xInputWithFee` by `yReserves`.
 3. Then our `denominator` will be `xReserves` multiplied by 1000 (to account for the 997 in the numerator) plus `xInputWithFee`.
@@ -472,28 +470,78 @@ What does this hint mean in practice? The goal is to allow a user to `deposit()`
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
 Part 1: Getting Reserves 🏦 
-1. How do we ensure the sender isn't sending 0 ETH?
-2. We need to calculate the ratio of ETH and $BAL after the liquidity provider sends ETH, what variables do we need? It's similar to the previous section. What was that operation we performed on `ethReserve` in Checkpoint 4 to make sure we were getting the balance *before* the `msg.value` went through? We need to do that again for the same reason.
-3. What other asset do we need to declare a reserve for, and how do we get its balance in this contract?
+
+
+<details markdown='1'><summary>Question One</summary>
+
+> How do we ensure the sender isn't sending 0 ETH?
+
+</details>
+
+<details markdown='1'><summary>Question Two</summary>
+
+> We need to calculate the ratio of ETH and $BAL after the liquidity provider sends ETH, what variables do we need? It's similar to the previous section. What was that operation we performed on `ethReserve` in Checkpoint 4 to make sure we were getting the balance *before* the `msg.value` went through? We need to do that again for the same reason.
+
+</details>
+
+<details markdown='1'><summary>Question Three</summary>
+
+> What other asset do we need to declare a reserve for, and how do we get its balance in this contract?
+
+</details>
 
 - [ ] Do you have reserves of both assets?
 
 Part 2: Performing Calculations 🤖 
 > What are we calculating again? Oh yeah, for the amount of ETH the user is depositing, we want them to also deposit an equal amount of tokens. Let's make a reusable equation where we can swap out a value and get an output of the ETH and $BAL the user will be depositing, named `tokenDeposit` and `liquidityMinted`. 
-5. How do we calculate how many tokens the user needs to deposit? You multiply the value the user sends through by reserves of the units we want as an output. Then we divide by `ethReserve` and add 1 to the result.
-6. Now for `liquidityMinted` use the same equation but replace `tokenReserve` with `totalLiquidity`, so that we are multiplying in the numerator by the units we want.
+
+
+<details markdown='1'><summary>Question Four</summary>
+
+> How do we calculate how many tokens the user needs to deposit? You multiply the value the user sends through by reserves of the units we want as an output. Then we divide by `ethReserve` and add 1 to the result.
+
+</details>
+
+<details markdown='1'><summary>Question Five</summary>
+
+>Now for `liquidityMinted` use the same equation but replace `tokenReserve` with `totalLiquidity`, so that we are multiplying in the numerator by the units we want.
+
+</details>
 
 - [ ] Is `tokenDeposit` assigned the value of our equation?
 - [ ] Now is `liquidityMinted` looking similar to `tokenDeposit` but without the `+ 1` at the end?
 
 Part 3: Updating, Transferring, Emitting, and Returning 🎀 
 
-7. Now that the DEX has more assets, should we update our two global variables? How do we update `liquidity`?
-8. How do we update `totalLiquidity`?
-9. The user already sent deposited their ETH, but they still have to deposit their tokens. How do we require a token transfer from them?
-10. We just completed something important, which event should we emit?
-11. What do we return?
+<details markdown='1'><summary>Question Six</summary>
 
+> Now that the DEX has more assets, should we update our two global variables? How do we update `liquidity`?
+
+</details>
+
+<details markdown='1'><summary>Question Seven</summary>
+
+> How do we update `totalLiquidity`?
+
+</details>
+
+<details markdown='1'><summary>Question Eight</summary>
+
+> The user already sent deposited their ETH, but they still have to deposit their tokens. How do we require a token transfer from them?
+
+</details>
+
+<details markdown='1'><summary>Question Nine</summary>
+
+> We just completed something important, which event should we emit?
+
+</details>
+
+<details markdown='1'><summary>Question Ten</summary>
+
+> What do we return?
+
+</details>
 
 <details markdown='1'><summary>👩🏽‍🏫 Solution Code </summary>
 
