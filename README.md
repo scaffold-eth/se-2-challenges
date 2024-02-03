@@ -77,16 +77,17 @@ Navigate to the `Debug Contracts` tab, you should see two smart contracts displa
 
 We want to create an automatic market where our contract will hold reserves of both ETH and 🎈 Balloons. These reserves will provide liquidity that allows anyone to swap between the assets. Let's start with declaring our `totalLiquidity` and the `liquidity` of each user of our DEX!
 
-<details markdown='1'><summary>🦉 Guiding Questions</summary>
+<details markdown='1'><summary>🦉 Guiding Questions</summary>  
 
 <details markdown='1'><summary>Question One</summary>
 
-	How do we declare a variable that represents an amount of ETH? We don't have to assign it a value just yet.
+How do we declare a variable that represents an amount of ETH? We don't have to assign it a value just yet.
 
 </details>
+
 <details markdown='1'><summary>Question Two</summary>
 
-	What data structure represents the relation between keys and values (addresses to liquidity or users to ETH)??
+What data structure represents the relation between keys and values (addresses to liquidity or users to ETH)??
 
 </details>
 
