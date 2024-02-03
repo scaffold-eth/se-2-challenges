@@ -381,13 +381,47 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-1. How would we make sure the value being swapped for ETH is greater than 0? 
-2. Is `xReserves` ETH or $BAL tokens this time? Use a variable name the describes which one it is. 
-3. For `yReserves` we will also want to create a new and more descriptive variable name. How do we find the other asset balance this address has?
-4. Now that we have all our arguments, how do we call `price()` and store the returned value in a new variable?
-5. After getting how much ETH the sender should receive, how do we transfer the ETH to the sender? 
-6. Which event do we emit for this function?
-7. Lastly, what are we returning?
+<details markdown='1'><summary>Question One</summary>
+
+> How would we make sure the value being swapped for ETH is greater than 0? 
+
+</details>
+
+<details markdown='1'><summary>Question Two</summary>
+
+> Is `xReserves` ETH or $BAL tokens this time? Use a variable name the describes which one it is. 
+
+</details>
+
+<details markdown='1'><summary>Question Three</summary>
+
+> For `yReserves` we will also want to create a new and more descriptive variable name. How do we find the other asset balance this address has?
+
+</details>
+  
+<details markdown='1'><summary>Question Four</summary>
+
+> Now that we have all our arguments, how do we call `price()` and store the returned value in a new variable?
+
+</details>
+
+<details markdown='1'><summary>Question Five</summary>
+
+> After getting how much ETH the sender should receive, how do we transfer the ETH to the sender? 
+
+</details>
+
+<details markdown='1'><summary>Question Six</summary>
+
+> Which event do we emit for this function?
+
+</details>
+
+<details markdown='1'><summary>Question Seven</summary>
+
+> Lastly, what are we returning?
+
+</details>
 
 <details markdown='1'><summary>👨🏻‍🏫 Solution Code </summary>
 
