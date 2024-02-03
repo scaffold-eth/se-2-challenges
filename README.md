@@ -246,6 +246,8 @@ We should apply the fee to `xInput`, and store it in a new variable `xInputWithF
 
 For the math portions of this challenge, you can black-box the math. However, it's still important to understand what the math looks like, but maybe less so how it works or why it works, in other words don't get too caught up in the mathematical details! 😅 Look at articles and videos in this challenge or on your own to find out more if you're curious though! 🤓 
 
+
+<details markdown='1'><summary>🦉 Guided Explanation</summary>
 1. We are multiplying `xInput` by 997 to "simulate" a multiplication by 0.997 since we can't use decimals in solidity. We'll divide by 1000 later to get the fee back to normal.
 2. Next, we'll make our `numerator` by multiplying `xInputWithFee` by `yReserves`.
 3. Then our `denominator` will be `xReserves` multiplied by 1000 (to account for the 997 in the numerator) plus `xInputWithFee`.
@@ -308,13 +310,47 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-1. How would we make sure the value being swapped for balloons is greater than 0? 
-2. Is `xReserves` ETH or $BAL tokens? Use a variable name that best describes which one it is. When we call this function, it will already have the value we sent it in it's `liquidity`. How can we make sure we are using the balance of the contract *before* any ETH was sent to it?
-3. For `yReserves` we will also want to create a new more descriptive variable name. How do we find the other asset balance this address has?
-4. Now that we have all our arguments, how do we call `price()` and store the returned value in a new variable? What kind of name would best describe this variable?
-5. After getting how many tokens the sender should receive, how do we transfer those tokens to the sender?
-6. Which event should we emit for this function?
-7. Last, what do we return? 
+<details markdown='1'><summary>Question One</summary>
+
+> How would we make sure the value being swapped for balloons is greater than 0? 
+
+</details> 
+
+<details markdown='1'><summary>Question Two</summary>
+
+> Is `xReserves` ETH or $BAL tokens? Use a variable name that best describes which one it is. When we call this function, it will already have the value we sent it in it's `liquidity`. How can we make sure we are using the balance of the contract *before* any ETH was sent to it?
+
+</details>
+
+<details markdown='1'><summary>Question Three</summary>
+
+> For `yReserves` we will also want to create a new more descriptive variable name. How do we find the other asset balance this address has?
+
+</details>
+
+<details markdown='1'><summary>Question Four</summary>
+
+> Now that we have all our arguments, how do we call `price()` and store the returned value in a new variable? What kind of name would best describe this variable?
+
+</details>
+
+<details markdown='1'><summary>Question Five</summary>
+
+> After getting how many tokens the sender should receive, how do we transfer those tokens to the sender?
+
+</details>
+
+<details markdown='1'><summary>Question Six</summary>
+
+> Which event should we emit for this function?
+
+</details>
+
+<details markdown='1'><summary>Question Seven</summary>
+
+> Last, what do we return? 
+
+</details>
 
 <details markdown='1'><summary>👨🏻‍🏫 Solution Code </summary>
 
