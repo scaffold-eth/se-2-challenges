@@ -79,15 +79,14 @@ We want to create an automatic market where our contract will hold reserves of b
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-<details markdown='1'><summary>One</summary>
+<details markdown='1'><summary>Question One</summary>
 
-How do we declare a variable that represents an amount of ETH? We don't have to assign it a value just yet.
+	How do we declare a variable that represents an amount of ETH? We don't have to assign it a value just yet.
 
 </details>
+<details markdown='1'><summary>Question Two</summary>
 
-<details markdown='1'><summary>Two</summary>
-
-What data structure represents the relation between keys and values (addresses to liquidity or users to ETH)??
+	What data structure represents the relation between keys and values (addresses to liquidity or users to ETH)??
 
 </details>
 
