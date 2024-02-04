@@ -33,7 +33,7 @@ const deployYourToken: DeployFunction = async function (hre: HardhatRuntimeEnvir
   });
 
   // Get the deployed contract
-  // const yourToken = await hre.ethers.getContract("YourToken", deployer);
+  // const yourToken = await hre.ethers.getContract<Contract>("YourToken", deployer);
 };
 
 export default deployYourToken;
