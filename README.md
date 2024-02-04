@@ -86,7 +86,7 @@ We want to create an automatic market where our contract will hold reserves of b
 </details>
 <details markdown='1'><summary>Question Two</summary>
 
-> What data structure represents the relation between keys and values (addresses to liquidity or users to ETH)??
+> What data structure represents the relation between keys and values (addresses to liquidity or users to ETH)?
 
 </details>
 
@@ -685,8 +685,6 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 - [ ] 💧 Deposit liquidity, and then check your liquidity amount through the mapping in the debug tab. Has it changed properly? Did the right amount of assets get deposited?
 
 - [ ] 🧐 What happens if you `deposit()` at the beginning of the deployed contract, then another user starts swapping out for most of the balloons, and then you try to withdraw your position as a liquidity provider? Answer: you should get the amount of liquidity proportional to the ratio of assets within the isolated liquidity pool. It will not be 1:1.
-
----
 
 ---
 ## Checkpoint 6: UI 🖼
