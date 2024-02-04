@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
@@ -88,7 +90,7 @@ const TokenVendor: NextPage = () => {
           <div>
             Vendor token balance:{" "}
             <div className="inline-flex items-center justify-center">
-              {parseFloat(formatEther(vendorTokenBalance || "0")).toFixed(4)}
+              {parseFloat(formatEther(vendorTokenBalance || 0n)).toFixed(4)}
               <span className="font-bold ml-1">{yourTokenSymbol}</span>
             </div>
           </div>
@@ -108,7 +110,7 @@ const TokenVendor: NextPage = () => {
               placeholder="amount of tokens to buy"
               value={tokensToBuy.toString()}
               onChange={value => setTokensToBuy(value)}
-              hideSuffix
+              disableMultiplyBy1e18
             />
           </div>
 
@@ -148,7 +150,7 @@ const TokenVendor: NextPage = () => {
                 value={tokensToSell}
                 onChange={value => setTokensToSell(value as string)}
                 disabled={isApproved}
-                hideSuffix
+                disableMultiplyBy1e18
               />
             </div>
 

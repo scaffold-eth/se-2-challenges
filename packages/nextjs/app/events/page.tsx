@@ -37,8 +37,8 @@ const Events: NextPage = () => {
               <thead>
                 <tr>
                   <th className="bg-primary">Buyer</th>
-                  <th className="bg-primary">Amount of ETH</th>
                   <th className="bg-primary">Amount of Tokens</th>
+                  <th className="bg-primary">Amount of ETH</th>
                 </tr>
               </thead>
               <tbody>
@@ -55,8 +55,8 @@ const Events: NextPage = () => {
                         <td className="text-center">
                           <Address address={event.args.buyer} />
                         </td>
-                        <td>{formatEther(event.args.amountOfETH).toString()}</td>
                         <td>{formatEther(event.args.amountOfTokens).toString()}</td>
+                        <td>{formatEther(event.args.amountOfETH).toString()}</td>
                       </tr>
                     );
                   })
@@ -69,48 +69,48 @@ const Events: NextPage = () => {
 
       {/* SellTokens Events */}
       {/* <div className="mt-14">
-          <div className="text-center mb-4">
-            <span className="block text-2xl font-bold">Sell Token Events</span>
+        <div className="text-center mb-4">
+          <span className="block text-2xl font-bold">Sell Token Events</span>
+        </div>
+        {isSellEventsLoading ? (
+          <div className="flex justify-center items-center mt-8">
+            <span className="loading loading-spinner loading-lg"></span>
           </div>
-          {isSellEventsLoading ? (
-            <div className="flex justify-center items-center mt-8">
-              <Spinner width="65" height="65" />
-            </div>
-          ) : (
-            <div className="overflow-x-auto shadow-lg">
-              <table className="table table-zebra w-full">
-                <thead>
+        ) : (
+          <div className="overflow-x-auto shadow-lg">
+            <table className="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th className="bg-primary">Seller</th>
+                  <th className="bg-primary">Amount of Tokens</th>
+                  <th className="bg-primary">Amount of ETH</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!sellTokenEvents || sellTokenEvents.length === 0 ? (
                   <tr>
-                    <th className="bg-primary">Seller</th>
-                    <th className="bg-primary">Amount of Tokens</th>
-                    <th className="bg-primary">Amount of ETH</th>
+                    <td colSpan={3} className="text-center">
+                      No events found
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {!sellTokenEvents || sellTokenEvents.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="text-center">
-                        No events found
-                      </td>
-                    </tr>
-                  ) : (
-                    sellTokenEvents?.map((event, index) => {
-                      return (
-                        <tr key={index}>
-                          <td className="text-center">
-                            <Address address={event.args.seller} />
-                          </td>
-                          <td>{utils.formatEther(event.args.amountOfTokens).toString()}</td>
-                          <td>{utils.formatEther(event.args.amountOfETH).toString()}</td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div> */}
+                ) : (
+                  sellTokenEvents?.map((event, index) => {
+                    return (
+                      <tr key={index}>
+                        <td className="text-center">
+                          <Address address={event.args.seller} />
+                        </td>
+                        <td>{formatEther(event.args.amountOfTokens).toString()}</td>
+                        <td>{formatEther(event.args.amountOfETH).toString()}</td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div> */}
     </div>
   );
 };

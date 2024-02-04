@@ -110,10 +110,13 @@ Uncomment the `Buy Tokens` sections in `packages/nextjs/app/token-vendor/page.ts
 
 > ✏️ So instead, edit `YourToken.sol` to mint the tokens to the `msg.sender` (deployer) in the **constructor()**.
 
-> ✏️ Then, edit `deploy/01_deploy_vendor.js` to transfer 1000 tokens to `vendor.address`.
+> ✏️ Then, edit `deploy/01_deploy_vendor.js` to transfer 1000 tokens to vendor address.
 
 ```js
-await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
+await yourToken.transfer(
+  vendorDeployment.address,
+  hre.ethers.parseEther("1000")
+);
 ```
 
 > 🔎 Look in `packages/nextjs/app/token-vendor/page.tsx` for code to uncomment to display the Vendor ETH and Token balances.
