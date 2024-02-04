@@ -96,7 +96,7 @@ uint256 public constant tokensPerEth = 100;
 
 Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncomment Vendor deploy lines).
 
-Uncomment the `Buy Tokens` sections in `packages/nextjs/pages/token-vendor.tsx` to show the UI to buy tokens on the Token Vendor tab.
+Uncomment the `Buy Tokens` sections in `packages/nextjs/app/token-vendor/page.tsx` to show the UI to buy tokens on the Token Vendor tab.
 
 ### 🥅 Goals
 
@@ -116,7 +116,7 @@ Uncomment the `Buy Tokens` sections in `packages/nextjs/pages/token-vendor.tsx` 
 await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
 ```
 
-> 🔎 Look in `packages/nextjs/pages/token-vendor.tsx` for code to uncomment to display the Vendor ETH and Token balances.
+> 🔎 Look in `packages/nextjs/app/token-vendor/page.tsx` for code to uncomment to display the Vendor ETH and Token balances.
 
 > You can `yarn deploy --reset` to deploy your contract until you get it right.
 
@@ -174,7 +174,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 🔨 Use the `Debug Contracts` tab to call the approve and sellTokens() at first but then...
 
-🔍 Look in the `packages/nextjs/pages/token-vendor.tsx` for the extra approve/sell UI to uncomment!
+🔍 Look in the `packages/nextjs/app/token-vendor/page.tsx` for the extra approve/sell UI to uncomment!
 
 ![VendorBuyBack](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/99063aaa-368d-4156-997d-08dff99af11b)
 
@@ -186,7 +186,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 ### ⚔️ Side Quests
 
 - [ ] Should we disable the `owner` withdraw to keep liquidity in the `Vendor`?
-- [ ] It would be a good idea to display Sell Token Events .Create an **event** `SellTokens(address seller, uint256  amountOfTokens, uint256 amountOfETH)` and `emit` it in your `Vendor.sol` and uncomment `SellTokens Events` section in your `packages/nextjs/pages/events.tsx` to update your frontend.
+- [ ] It would be a good idea to display Sell Token Events .Create an **event** `SellTokens(address seller, uint256  amountOfTokens, uint256 amountOfETH)` and `emit` it in your `Vendor.sol` and uncomment `SellTokens Events` section in your `packages/nextjs/app/events/page.tsx` to update your frontend.
 
   ![Events](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/662c96b5-d53f-4efa-af4a-d3106bfd47f0)
 
@@ -210,7 +210,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
-> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
+> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/app/events/page.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/app/events/page.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
 
 ---
 
