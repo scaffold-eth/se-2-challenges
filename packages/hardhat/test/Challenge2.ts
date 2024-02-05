@@ -15,9 +15,8 @@ import { Contract } from "ethers";
 const { ethers } = hre;
 
 describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
-  this.timeout(125000);
-
   let yourToken: Contract;
+  let yourTokenAddress = "";
 
   let tokenContractArtifact = "";
   if (process.env.CONTRACT_ADDRESS) {
@@ -28,13 +27,15 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
 
   it("Should deploy YourToken", async function () {
     const YourToken = await ethers.getContractFactory(tokenContractArtifact);
-    yourToken = await YourToken.deploy();
+
+    yourToken = (await YourToken.deploy()) as Contract;
+    yourTokenAddress = await yourToken.getAddress();
   });
 
   describe("totalSupply()", function () {
     it("Should have a total supply of at least 1000", async function () {
       const totalSupply = await yourToken.totalSupply();
-      const totalSupplyInt = parseInt(ethers.utils.formatEther(totalSupply));
+      const totalSupplyInt = parseInt(ethers.formatEther(totalSupply));
       console.log("\t", " 🧾 Total Supply:", totalSupplyInt);
       expect(totalSupplyInt).to.greaterThan(999);
     });
@@ -48,12 +49,15 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
   }
 
   let vendor: Contract;
+  let vendorAddress = "";
   it("Should deploy Vendor", async function () {
     const Vendor = await ethers.getContractFactory(contractArtifact);
-    vendor = await Vendor.deploy(yourToken.address);
 
+    vendor = (await Vendor.deploy(yourTokenAddress)) as Contract;
+
+    vendorAddress = await vendor.getAddress();
     console.log("Transferring 1000 tokens to the vendor...");
-    await yourToken.transfer(vendor.address, ethers.utils.parseEther("1000"));
+    await yourToken.transfer(vendorAddress, ethers.parseEther("1000"));
   });
 
   describe(" 💵 buyTokens()", function () {
@@ -61,11 +65,11 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
       const [owner] = await ethers.getSigners();
       console.log("\t", " 🧑 Tester Address: ", owner.address);
 
-      const startingBalance = await yourToken.balanceOf(owner.address);
-      console.log("\t", " ⚖  Starting Token balance: ", ethers.utils.formatEther(startingBalance));
+      const startingBalance: bigint = await yourToken.balanceOf(owner.address);
+      console.log("\t", " ⚖  Starting Token balance: ", ethers.formatEther(startingBalance));
 
       console.log("\t", " 💸 Buying...");
-      const buyTokensResult = await vendor.buyTokens({ value: ethers.utils.parseEther("0.001") });
+      const buyTokensResult = await vendor.buyTokens({ value: ethers.parseEther("0.001") });
       console.log("\t", " 🏷  buyTokens Result: ", buyTokensResult.hash);
 
       console.log("\t", " ⏳ Waiting for confirmation...");
@@ -73,8 +77,8 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
       expect(txResult.status).to.equal(1);
 
       const newBalance = await yourToken.balanceOf(owner.address);
-      console.log("\t", " 🔎 New Token balance: ", ethers.utils.formatEther(newBalance));
-      expect(newBalance).to.equal(startingBalance.add(ethers.utils.parseEther("0.1")));
+      console.log("\t", " 🔎 New Token balance: ", ethers.formatEther(newBalance));
+      expect(newBalance).to.equal(startingBalance + ethers.parseEther("0.1"));
     });
   });
 
@@ -83,13 +87,13 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
       const [owner] = await ethers.getSigners();
 
       const startingETHBalance = await ethers.provider.getBalance(owner.address);
-      console.log("\t", " ⚖  Starting ETH balance: ", ethers.utils.formatEther(startingETHBalance));
+      console.log("\t", " ⚖  Starting ETH balance: ", ethers.formatEther(startingETHBalance));
 
       const startingBalance = await yourToken.balanceOf(owner.address);
-      console.log("\t", " ⚖  Starting Token balance: ", ethers.utils.formatEther(startingBalance));
+      console.log("\t", " ⚖  Starting Token balance: ", ethers.formatEther(startingBalance));
 
       console.log("\t", " 🙄 Approving...");
-      const approveTokensResult = await yourToken.approve(vendor.address, ethers.utils.parseEther("0.1"));
+      const approveTokensResult = await yourToken.approve(vendorAddress, ethers.parseEther("0.1"));
       console.log("\t", " 🏷  approveTokens Result: ", approveTokensResult.hash);
 
       console.log("\t", " ⏳ Waiting for confirmation...");
@@ -97,7 +101,7 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
       expect(atxResult.status).to.equal(1, "Error when expecting the transaction result to equal 1");
 
       console.log("\t", " 🍾 Selling...");
-      const sellTokensResult = await vendor.sellTokens(ethers.utils.parseEther("0.1"));
+      const sellTokensResult = await vendor.sellTokens(ethers.parseEther("0.1"));
       console.log("\t", " 🏷  sellTokens Result: ", sellTokensResult.hash);
 
       console.log("\t", " ⏳ Waiting for confirmation...");
@@ -105,15 +109,16 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
       expect(txResult.status).to.equal(1, "Error when expecting the transaction status to equal 1");
 
       const newBalance = await yourToken.balanceOf(owner.address);
-      console.log("\t", " 🔎 New Token balance: ", ethers.utils.formatEther(newBalance));
+      console.log("\t", " 🔎 New Token balance: ", ethers.formatEther(newBalance));
       expect(newBalance).to.equal(
-        startingBalance.sub(ethers.utils.parseEther("0.1")),
+        startingBalance - ethers.parseEther("0.1"),
         "Error when expecting the token balance to have increased by 0.1",
       );
 
       const newETHBalance = await ethers.provider.getBalance(owner.address);
-      console.log("\t", " 🔎 New ETH balance: ", ethers.utils.formatEther(newETHBalance));
-      const ethChange = newETHBalance.sub(startingETHBalance).toNumber();
+      console.log("\t", " 🔎 New ETH balance: ", ethers.formatEther(newETHBalance));
+      const ethChange = newETHBalance - startingETHBalance;
+      // check
       expect(ethChange).to.greaterThan(
         100_000_000_000_000,
         "Error when expecting the ether returned to the user by the sellTokens function to be correct",
@@ -126,25 +131,27 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
       const [owner, nonOwner] = await ethers.getSigners();
 
       console.log("\t", " 💸 Buying some tokens...");
-      const buyTokensResult = await vendor.connect(nonOwner).buyTokens({ value: ethers.utils.parseEther("0.1") });
+      const buyTokensResult = await (vendor.connect(nonOwner) as Contract).buyTokens({
+        value: ethers.parseEther("0.1"),
+      });
       console.log("\t", " 🏷  buyTokens Result: ", buyTokensResult.hash);
 
       console.log("\t", " ⏳ Waiting for confirmation...");
       const buyTxResult = await buyTokensResult.wait();
       expect(buyTxResult.status).to.equal(1, "Error when expecting the transaction result to be 1");
 
-      const vendorETHBalance = await ethers.provider.getBalance(vendor.address);
-      console.log("\t", " ⚖  Starting Vendor contract ETH balance: ", ethers.utils.formatEther(vendorETHBalance));
+      const vendorETHBalance = await ethers.provider.getBalance(vendorAddress);
+      console.log("\t", " ⚖  Starting Vendor contract ETH balance: ", ethers.formatEther(vendorETHBalance));
 
       console.log("\t", " 🍾 Withdrawing as non-owner (should fail)...");
       const startingNonOwnerETHBalance = await ethers.provider.getBalance(nonOwner.address);
-      console.log("\t", " ⚖  Starting non-owner ETH balance: ", ethers.utils.formatEther(startingNonOwnerETHBalance));
+      console.log("\t", " ⚖  Starting non-owner ETH balance: ", ethers.formatEther(startingNonOwnerETHBalance));
 
-      await expect(vendor.connect(nonOwner).withdraw()).to.be.reverted;
+      await expect((vendor.connect(nonOwner) as Contract).withdraw()).to.be.reverted;
       console.log("\t", " 🏷  withdraw reverted as non-owner");
 
       const newNonOwnerETHBalance = await ethers.provider.getBalance(nonOwner.address);
-      console.log("\t", " 🔎 New non-owner ETH balance: ", ethers.utils.formatEther(newNonOwnerETHBalance));
+      console.log("\t", " 🔎 New non-owner ETH balance: ", ethers.formatEther(newNonOwnerETHBalance));
       expect(newNonOwnerETHBalance).to.be.lte(
         startingNonOwnerETHBalance,
         "Error when expecting the new eth balance to be <= to the previous balance after calling withdraw by a non owner",
@@ -152,7 +159,7 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
 
       console.log("\t", " 🍾 Withdrawing as owner...");
       const startingOwnerETHBalance = await ethers.provider.getBalance(owner.address);
-      console.log("\t", " ⚖  Starting owner ETH balance: ", ethers.utils.formatEther(startingOwnerETHBalance));
+      console.log("\t", " ⚖  Starting owner ETH balance: ", ethers.formatEther(startingOwnerETHBalance));
       const withdrawResult = await vendor.withdraw();
       console.log("\t", " 🏷  withdraw Result: ", withdrawResult.hash);
 
@@ -161,14 +168,20 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
       expect(withdrawTxResult.status).to.equal(1, "Error when expecting the withdraw transaction to equal 1");
 
       const newOwnerETHBalance = await ethers.provider.getBalance(owner.address);
-      console.log("\t", " 🔎 New owner ETH balance: ", ethers.utils.formatEther(newOwnerETHBalance));
+      console.log("\t", " 🔎 New owner ETH balance: ", ethers.formatEther(newOwnerETHBalance));
 
       const tx = await ethers.provider.getTransaction(withdrawResult.hash);
+      if (!tx) {
+        throw new Error("Cannot resolve transaction");
+      }
       const receipt = await ethers.provider.getTransactionReceipt(withdrawResult.hash);
-      const gasCost = tx.gasPrice?.mul(receipt.gasUsed);
+      if (!receipt) {
+        throw new Error("Cannot resolve receipt");
+      }
+      const gasCost = tx.gasPrice * receipt.gasUsed;
 
       expect(newOwnerETHBalance).to.equal(
-        startingOwnerETHBalance.add(vendorETHBalance).sub(ethers.BigNumber.from(gasCost)),
+        startingOwnerETHBalance + vendorETHBalance - gasCost,
         "Error when expecting the owner's ether returned by withdraw to be sufficient",
       );
     });
