@@ -20,7 +20,7 @@
 
 Before you begin, you need to install the following tools:
 
-- [Node (v18 LTS)](https://nodejs.org/en/download/)
+- [Node (>= v18.17)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
 
@@ -189,7 +189,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 ### ⚔️ Side Quests
 
 - [ ] Should we disable the `owner` withdraw to keep liquidity in the `Vendor`?
-- [ ] It would be a good idea to display Sell Token Events .Create an **event** `SellTokens(address seller, uint256  amountOfTokens, uint256 amountOfETH)` and `emit` it in your `Vendor.sol` and uncomment `SellTokens Events` section in your `packages/nextjs/app/events/page.tsx` to update your frontend.
+- [ ] It would be a good idea to display Sell Token Events. Create an **event** `SellTokens(address seller, uint256  amountOfTokens, uint256 amountOfETH)` and `emit` it in your `Vendor.sol` and uncomment `SellTokens Events` section in your `packages/nextjs/app/events/page.tsx` to update your frontend.
 
   ![Events](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/662c96b5-d53f-4efa-af4a-d3106bfd47f0)
 
