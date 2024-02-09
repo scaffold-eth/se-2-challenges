@@ -13,15 +13,13 @@ import { ExampleExternalContract, Staker } from "../typechain-types";
 
 describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
   let exampleExternalContract: ExampleExternalContract;
-  let exampleExternalContractAddress: string;
   let stakerContract: Staker;
-  let stakerAddress: string;
 
   describe("Staker", function () {
     if (process.env.CONTRACT_ADDRESS) {
       it("Should connect to external contract", async function () {
         stakerContract = await ethers.getContractAt("Staker", process.env.CONTRACT_ADDRESS!);
-        stakerAddress = await stakerContract.getAddress();
+        const stakerAddress = await stakerContract.getAddress();
 
         console.log("     🛰 Connected to external contract", stakerAddress);
       });
@@ -32,7 +30,7 @@ describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
       });
       it("Should deploy Staker", async function () {
         const Staker = await ethers.getContractFactory("Staker");
-        exampleExternalContractAddress = await exampleExternalContract.getAddress();
+        const exampleExternalContractAddress = await exampleExternalContract.getAddress();
 
         stakerContract = await Staker.deploy(exampleExternalContractAddress);
       });
@@ -75,7 +73,7 @@ describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
           console.log("\t", " 🏷  stakeResult: ", stakeResult.hash);
 
           console.log("\t", " ⌛️ fast forward time...");
-          await network.provider.send("evm_increaseTime", [3600]);
+          await network.provider.send("evm_increaseTime", [72 * 3600]);
           await network.provider.send("evm_mine");
 
           const timeLeft2 = await stakerContract.timeLeft();
@@ -97,8 +95,10 @@ describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
 
           const ExampleExternalContract = await ethers.getContractFactory("ExampleExternalContract");
           exampleExternalContract = await ExampleExternalContract.deploy();
+          const exampleExternalContractAddress = await exampleExternalContract.getAddress();
 
           const Staker = await ethers.getContractFactory("Staker");
+
           stakerContract = await Staker.deploy(exampleExternalContractAddress);
 
           console.log("\t", " 🔨 Staking...");
@@ -112,7 +112,7 @@ describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
           expect(txResult?.status).to.equal(1);
 
           console.log("\t", " ⌛️ fast forward time...");
-          await network.provider.send("evm_increaseTime", [3600]);
+          await network.provider.send("evm_increaseTime", [72 * 3600]);
           await network.provider.send("evm_mine");
 
           console.log("\t", " 🎉 calling execute");
