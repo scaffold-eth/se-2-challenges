@@ -2,6 +2,9 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ["ipfs-utils"],
+  },
   reactStrictMode: true,
   // Ignoring typescript/eslint errors during build (deploy won't fail even if there are errors)
   typescript: {

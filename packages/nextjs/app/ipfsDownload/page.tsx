@@ -1,21 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import type { NextPage } from "next";
-import DynamicReactJson from "react-json-view";
 import { notification } from "~~/utils/scaffold-eth";
-import { getNFTMetadataFromIPFS } from "~~/utils/simpleNFT";
+import { getMetadataFromIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
+
+const LazyReactJson = lazy(() => import("react-json-view"));
 
 const IpfsDownload: NextPage = () => {
   const [yourJSON, setYourJSON] = useState({});
   const [ipfsPath, setIpfsPath] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleIpfsDownload = async () => {
     setLoading(true);
     const notificationId = notification.loading("Getting data from IPFS");
     try {
-      const metaData = await getNFTMetadataFromIPFS(ipfsPath);
+      const metaData = await getMetadataFromIPFS(ipfsPath);
       notification.remove(notificationId);
       notification.success("Downloaded from IPFS");
 
@@ -51,21 +56,24 @@ const IpfsDownload: NextPage = () => {
         >
           Download from IPFS
         </button>
-        <DynamicReactJson
-          style={{ padding: "1rem", borderRadius: "0.75rem" }}
-          src={yourJSON}
-          theme="solarized"
-          enableClipboard={false}
-          onEdit={edit => {
-            setYourJSON(edit.updated_src);
-          }}
-          onAdd={add => {
-            setYourJSON(add.updated_src);
-          }}
-          onDelete={del => {
-            setYourJSON(del.updated_src);
-          }}
-        />
+
+        {mounted && (
+          <LazyReactJson
+            style={{ padding: "1rem", borderRadius: "0.75rem" }}
+            src={yourJSON}
+            theme="solarized"
+            enableClipboard={false}
+            onEdit={edit => {
+              setYourJSON(edit.updated_src);
+            }}
+            onAdd={add => {
+              setYourJSON(add.updated_src);
+            }}
+            onDelete={del => {
+              setYourJSON(del.updated_src);
+            }}
+          />
+        )}
       </div>
     </>
   );

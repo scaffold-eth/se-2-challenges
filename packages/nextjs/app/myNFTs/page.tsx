@@ -6,7 +6,7 @@ import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { MyHoldings } from "~~/components/simpleNFT";
 import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
-import { ipfsClient } from "~~/utils/simpleNFT";
+import { addToIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
 import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
 
 const MyNFTs: NextPage = () => {
@@ -29,11 +29,11 @@ const MyNFTs: NextPage = () => {
     // circle back to the zero item if we've reached the end of the array
     if (tokenIdCounter === undefined) return;
 
-    const tokenIdCounterNumber = parseInt(tokenIdCounter.toString());
+    const tokenIdCounterNumber = Number(tokenIdCounter);
     const currentTokenMetaData = nftsMetadata[tokenIdCounterNumber % nftsMetadata.length];
     const notificationId = notification.loading("Uploading to IPFS");
     try {
-      const uploadedItem = await ipfsClient.add(JSON.stringify(currentTokenMetaData));
+      const uploadedItem = await addToIPFS(currentTokenMetaData);
 
       // First remove previous loading notification and then show success notification
       notification.remove(notificationId);

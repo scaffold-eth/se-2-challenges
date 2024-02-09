@@ -5,7 +5,8 @@ import { NFTCard } from "./NFTCard";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
-import { NFTMetaData, getNFTMetadataFromIPFS } from "~~/utils/simpleNFT";
+import { getMetadataFromIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
+import { NFTMetaData } from "~~/utils/simpleNFT/nftsMetadata";
 
 export interface Collectible extends Partial<NFTMetaData> {
   id: number;
@@ -41,14 +42,14 @@ export const MyHoldings = () => {
         try {
           const tokenId = await yourCollectibleContract.read.tokenOfOwnerByIndex([
             connectedAddress,
-            BigInt(tokenIndex.toString()),
+            BigInt(tokenIndex),
           ]);
 
           const tokenURI = await yourCollectibleContract.read.tokenURI([tokenId]);
 
           const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
 
-          const nftMetadata: NFTMetaData = await getNFTMetadataFromIPFS(ipfsHash);
+          const nftMetadata: NFTMetaData = await getMetadataFromIPFS(ipfsHash);
 
           collectibleUpdate.push({
             id: parseInt(tokenId.toString()),

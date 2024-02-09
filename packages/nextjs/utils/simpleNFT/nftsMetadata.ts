@@ -121,4 +121,6 @@ const nftsMetadata = [
   },
 ];
 
+export type NFTMetaData = (typeof nftsMetadata)[number];
+
 export default nftsMetadata;

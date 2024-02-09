@@ -20,6 +20,7 @@
     "@uniswap/v2-sdk": "^3.0.1",
     "blo": "^1.0.1",
     "daisyui": "^4.4.19",
+    "ipfs-utils": "^9.0.14",
     "kubo-rpc-client": "^3.0.1",
     "next": "^14.0.4",
     "nprogress": "^0.2.0",

@@ -2332,6 +2332,7 @@ __metadata:
     eslint-config-next: ^14.0.4
     eslint-config-prettier: ^8.5.0
     eslint-plugin-prettier: ^4.2.1
+    ipfs-utils: ^9.0.14
     kubo-rpc-client: ^3.0.1
     next: ^14.0.4
     nprogress: ^0.2.0
@@ -9874,7 +9875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ipfs-utils@npm:^9.0.13, ipfs-utils@npm:^9.0.7":
+"ipfs-utils@npm:^9.0.13, ipfs-utils@npm:^9.0.14, ipfs-utils@npm:^9.0.7":
   version: 9.0.14
   resolution: "ipfs-utils@npm:9.0.14"
   dependencies:
