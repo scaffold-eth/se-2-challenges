@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+// import { Contract } from "ethers";
 
 /**
  * Deploys a contract named "Vendor" using the deployer account and
@@ -19,25 +20,24 @@ const deployVendor: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     with a random private key in the .env file (then used on hardhat.config.ts)
     You can run the `yarn account` command to check your balance in every network.
   */
-
   // // Deploy Vendor
   // const { deployer } = await hre.getNamedAccounts();
   // const { deploy } = hre.deployments;
-  // const yourToken = await hre.ethers.getContract("YourToken", deployer);
+  // const yourToken = await hre.ethers.getContract<Contract>("YourToken", deployer);
+  // const yourTokenAddress = await yourToken.getAddress();
   // await deploy("Vendor", {
   //   from: deployer,
   //   // Contract constructor arguments
-  //   args: [yourToken.address],
+  //   args: [yourTokenAddress],
   //   log: true,
   //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
   //   // automatically mining the contract deployment transaction. There is no effect on live networks.
   //   autoMine: true,
   // });
-  // const vendor = await hre.ethers.getContract("Vendor", deployer);
-
+  // const vendor = await hre.ethers.getContract<Contract>("Vendor", deployer);
+  // const vendorAddress = await vendor.getAddress();
   // // Transfer tokens to Vendor
-  // await yourToken.transfer(vendor.address, hre.ethers.utils.parseEther("1000"));
-
+  // await yourToken.transfer(vendorAddress, hre.ethers.parseEther("1000"));
   // // Transfer contract ownership to your frontend address
   // await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 };

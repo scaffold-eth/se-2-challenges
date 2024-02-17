@@ -12,5 +12,5 @@ export function multiplyTo1e18(tokens: string | bigint) {
 export function getTokenPrice(tokens: string | bigint, tokensPerEth?: bigint) {
   const tokensMultiplied = multiplyTo1e18(tokens);
 
-  return formatEther(tokensPerEth ? tokensMultiplied / tokensPerEth : tokensMultiplied) as `${number}`;
+  return tokensPerEth ? tokensMultiplied / tokensPerEth : tokensMultiplied;
 }
