@@ -2,6 +2,9 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ["ipfs-utils"],
+  },
   reactStrictMode: true,
   // Ignoring typescript/eslint errors during build (deploy won't fail even if there are errors)
   typescript: {
@@ -12,6 +15,7 @@ const nextConfig = {
   },
   webpack: config => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
 };
