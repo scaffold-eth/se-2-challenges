@@ -8,11 +8,12 @@ const deployRiggedRoll: DeployFunction = async function (hre: HardhatRuntimeEnvi
   const { deploy } = hre.deployments;
 
   const diceGame: DiceGame = await ethers.getContract("DiceGame");
+  const diceGameAddress = await diceGame.getAddress();
 
   await deploy("RiggedRoll", {
     from: deployer,
     log: true,
-    args: [diceGame.address],
+    args: [diceGameAddress],
     autoMine: true,
   });
 

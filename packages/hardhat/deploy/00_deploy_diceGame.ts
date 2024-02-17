@@ -9,17 +9,19 @@ const deployDiceGame: DeployFunction = async function (hre: HardhatRuntimeEnviro
 
   await deploy("DiceGame", {
     from: deployer,
-    value: ethers.utils.parseEther("0.05"),
+    value: String(ethers.parseEther("0.05")),
     log: true,
   });
 
   // Simple example on how get the deployed dice game contract
   const diceGame: DiceGame = await ethers.getContract("DiceGame");
 
-  console.log("Deployed Dice Game Contract Address", diceGame.address);
+  const diceGameAddress = await diceGame.getAddress();
 
-  const balance = await ethers.provider.getBalance(diceGame.address);
-  console.log("Deployed Dice Game Contract Balance", ethers.utils.formatEther(balance.toString()));
+  console.log("Deployed Dice Game Contract Address", diceGameAddress);
+
+  const balance = await ethers.provider.getBalance(diceGameAddress);
+  console.log("Deployed Dice Game Contract Balance", ethers.formatEther(balance.toString()));
 };
 
 export default deployDiceGame;
