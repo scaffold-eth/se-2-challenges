@@ -1,6 +1,6 @@
 # 🚩 Challenge 3: 🎲 Dice Game
 
-![readme-3](https://github.com/Ifechukwudaniel/se-2-challenges/assets/47566579/a5560446-3b22-4676-8fa8-33b544acc2f9)
+![readme-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/45050937-3873-444f-831e-a7cbfd3c2897)
 
 > 🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very weak form of randomness. This challenge will give you an example of a contract using block hash to create random numbers. This randomness is exploitable. Other, stronger forms of randomness include commit/reveal schemes, oracles, or VRF from Chainlink.
 
