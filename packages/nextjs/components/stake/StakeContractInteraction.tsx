@@ -1,7 +1,9 @@
+"use client";
+
 import { Address } from "../scaffold-eth";
 import { ETHToPrice } from "./EthToPrice";
 import humanizeDuration from "humanize-duration";
-import { formatEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import {
   useAccountBalance,
@@ -9,7 +11,7 @@ import {
   useScaffoldContractRead,
   useScaffoldContractWrite,
 } from "~~/hooks/scaffold-eth";
-import { getTargetNetwork } from "~~/utils/scaffold-eth";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
 export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
@@ -18,7 +20,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { balance: stakerContractBalance } = useAccountBalance(StakerContract?.address);
   const { balance: exampleExternalContractBalance } = useAccountBalance(ExampleExternalContact?.address);
 
-  const configuredNetwork = getTargetNetwork();
+  const { targetNetwork } = useTargetNetwork();
 
   // Contract Read Actions
   const { data: threshold } = useScaffoldContractRead({
@@ -47,7 +49,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { writeAsync: stakeETH } = useScaffoldContractWrite({
     contractName: "Staker",
     functionName: "stake",
-    value: "0.5",
+    value: parseEther("0.5"),
   });
   const { writeAsync: execute } = useScaffoldContractWrite({
     contractName: "Staker",
@@ -92,7 +94,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
           <div className="flex flex-col items-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">You Staked</p>
             <span>
-              {myStake ? formatEther(myStake) : 0} {configuredNetwork.nativeCurrency.symbol}
+              {myStake ? formatEther(myStake) : 0} {targetNetwork.nativeCurrency.symbol}
             </span>
           </div>
         </div>
@@ -106,14 +108,14 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
         </div>
         <div className="flex flex-col space-y-5">
           <div className="flex space-x-7">
-            <button className="btn btn-primary" onClick={() => execute()}>
+            <button className="btn btn-primary uppercase" onClick={() => execute()}>
               Execute!
             </button>
-            <button className="btn btn-primary" onClick={() => withdrawETH()}>
+            <button className="btn btn-primary uppercase" onClick={() => withdrawETH()}>
               Withdraw
             </button>
           </div>
-          <button className="btn btn-primary" onClick={() => stakeETH()}>
+          <button className="btn btn-primary uppercase" onClick={() => stakeETH()}>
             🥩 Stake 0.5 ether!
           </button>
         </div>

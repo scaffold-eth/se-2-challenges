@@ -1,31 +1,65 @@
+"use client";
+
 import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import {
-  Bars3Icon,
-  BugAntIcon,
-  CircleStackIcon,
-  InboxStackIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import { usePathname } from "next/navigation";
+import { Bars3Icon, BugAntIcon, CircleStackIcon, InboxStackIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-  const router = useRouter();
-  const isActive = router.pathname === href;
+type HeaderMenuLink = {
+  label: string;
+  href: string;
+  icon?: React.ReactNode;
+};
+
+export const menuLinks: HeaderMenuLink[] = [
+  {
+    label: "Home",
+    href: "/",
+    icon: <BugAntIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Staker UI",
+    href: "/staker-ui",
+    icon: <CircleStackIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Stake Events",
+    href: "/stakings",
+    icon: <InboxStackIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Debug Contracts",
+    href: "/debug",
+    icon: <BugAntIcon className="h-4 w-4" />,
+  },
+];
+
+export const HeaderMenuLinks = () => {
+  const pathname = usePathname();
 
   return (
-    <Link
-      href={href}
-      passHref
-      className={`${
-        isActive ? "bg-secondary shadow-md" : ""
-      } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
-    >
-      {children}
-    </Link>
+    <>
+      {menuLinks.map(({ label, href, icon }) => {
+        const isActive = pathname === href;
+        return (
+          <li key={href}>
+            <Link
+              href={href}
+              passHref
+              className={`${
+                isActive ? "bg-secondary shadow-md" : ""
+              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+            >
+              {icon}
+              <span>{label}</span>
+            </Link>
+          </li>
+        );
+      })}
+    </>
   );
 };
 
@@ -38,38 +72,6 @@ export const Header = () => {
   useOutsideClick(
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
-  );
-
-  const navLinks = (
-    <>
-      <li>
-        <NavLink href="/">Home</NavLink>
-      </li>
-      <li>
-        <NavLink href="/stakerUI">
-          <CircleStackIcon className="h-4 w-4" />
-          Staker UI
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/stakings">
-          <InboxStackIcon className="h-4 w-4" />
-          Stake Events
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/debug">
-          <BugAntIcon className="h-4 w-4" />
-          Debug Contracts
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/blockexplorer">
-          <MagnifyingGlassIcon className="h-4 w-4" />
-          Block Explorer
-        </NavLink>
-      </li>
-    </>
   );
 
   return (
@@ -88,25 +90,27 @@ export const Header = () => {
           {isDrawerOpen && (
             <ul
               tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-primary rounded-box w-52"
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
               onClick={() => {
                 setIsDrawerOpen(false);
               }}
             >
-              {navLinks}
+              <HeaderMenuLinks />
             </ul>
           )}
         </div>
-        <Link href="/" passHref className="hidden xl:flex items-center gap-2 ml-4 mr-6 shrink-0">
+        <Link href="/" passHref className="hidden xl:flex items-center gap-1 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">SE-2 Challenges</span>
+            <span className="font-bold leading-tight">SRE Challenges</span>
             <span className="text-xs">#1: Decentralized Staking App</span>
           </div>
         </Link>
-        <ul className="hidden xl:flex xl:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
+        <ul className="hidden xl:flex xl:flex-nowrap menu menu-horizontal px-1 gap-2">
+          <HeaderMenuLinks />
+        </ul>
       </div>
       <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />
