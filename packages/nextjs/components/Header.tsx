@@ -18,7 +18,6 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
     href: "/",
-    icon: <BugAntIcon className="h-4 w-4" />,
   },
   {
     label: "Staker UI",
