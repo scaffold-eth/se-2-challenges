@@ -63,7 +63,7 @@ const DiceGame: NextPage = () => {
       logs.map(log => {
         const { player, amount, roll } = log.args;
 
-        if (player && amount && roll) {
+        if (player && amount && roll !== undefined) {
           // setTimeout(() => {
           setIsRolling(false);
           setRolls(rolls =>
