@@ -149,7 +149,7 @@ const DiceGame: NextPage = () => {
 
         <div className="flex flex-col items-center pt-4 max-lg:row-start-1">
           <div className="flex w-full justify-center">
-            <span className="text-xl"> Roll a 0, 1, or 2 to win the prize! </span>
+            <span className="text-xl"> Roll a 0, 1, 2, 3, 4 or 5 to win the prize! </span>
           </div>
 
           <div className="flex items-center mt-1">
