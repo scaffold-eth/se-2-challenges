@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useGlobalState } from "~~/services/store/store";
-import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
 type TAmountProps = {
   amount?: number;
@@ -20,7 +20,7 @@ export const Amount = ({
   className = "",
   disableToggle = false,
 }: TAmountProps) => {
-  const configuredNetwork = getTargetNetwork();
+  const { targetNetwork: configuredNetwork } = useTargetNetwork();
   const price = useGlobalState(state => state.nativeCurrencyPrice);
   const [isEthBalance, setEthBalance] = useState<boolean>(!showUsdPrice);
 

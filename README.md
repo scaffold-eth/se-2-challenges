@@ -1,6 +1,6 @@
 # 🚩 Challenge 3: 🎲 Dice Game
 
-![readme-3](https://github.com/Ifechukwudaniel/se-2-challenges/assets/47566579/a5560446-3b22-4676-8fa8-33b544acc2f9)
+![readme-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/45050937-3873-444f-831e-a7cbfd3c2897)
 
 > 🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very weak form of randomness. This challenge will give you an example of a contract using block hash to create random numbers. This randomness is exploitable. Other, stronger forms of randomness include commit/reveal schemes, oracles, or VRF from Chainlink.
 
@@ -95,7 +95,7 @@ Next add a `riggedRoll()` function. This function should predict the randomness 
 ### ⚔️ Side Quest
 
 - [ ] Add a statement to require `address(this).balance >= .002 ether` in your riggedRoll function. This will help prevent calling the rollTheDice() function without enough value.
-- [ ] Uncomment the code in `packages/nextjs/pages/dice.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
+- [ ] Uncomment the code in `packages/nextjs/dice/page.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
 - [ ] Does your riggedRoll function only call rollTheDice() when it's going to be a winning roll? What happens when it does call rollTheDice()?
 
 ![RiggedLosingRoll](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/b6c8d7b4-139b-4f54-a62c-a0c77b3692a3)

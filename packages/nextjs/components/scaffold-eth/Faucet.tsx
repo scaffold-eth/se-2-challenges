@@ -1,11 +1,13 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Address as AddressType, createWalletClient, http, parseEther } from "viem";
+import { hardhat } from "viem/chains";
 import { useNetwork } from "wagmi";
-import { hardhat } from "wagmi/chains";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
-import { Address, AddressInput, Balance, EtherInput, getParsedError } from "~~/components/scaffold-eth";
+import { Address, AddressInput, Balance, EtherInput } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 // Account index to use from generated hardhat accounts.
 const FAUCET_ACCOUNT_INDEX = 0;
@@ -82,7 +84,7 @@ export const Faucet = () => {
 
   return (
     <div>
-      <label htmlFor="faucet-modal" className="btn btn-primary btn-sm px-2 rounded-full font-normal normal-case">
+      <label htmlFor="faucet-modal" className="btn btn-primary btn-sm font-normal gap-1">
         <BanknotesIcon className="h-4 w-4" />
         <span>Faucet</span>
       </label>
@@ -110,7 +112,7 @@ export const Faucet = () => {
               <AddressInput
                 placeholder="Destination Address"
                 value={inputAddress ?? ""}
-                onChange={value => setInputAddress(value)}
+                onChange={value => setInputAddress(value as AddressType)}
               />
               <EtherInput placeholder="Amount to send" value={sendValue} onChange={value => setSendValue(value)} />
               <button className="h-10 btn btn-primary btn-sm px-2 rounded-full" onClick={sendETH} disabled={loading}>
