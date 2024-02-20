@@ -9,7 +9,7 @@ import {
   walletActions,
   webSocket,
 } from "viem";
-import { hardhat } from "viem/chains";
+import { hardhat } from "wagmi/chains";
 import { decodeTransactionData } from "~~/utils/scaffold-eth";
 
 const BLOCKS_PER_PAGE = 20;

@@ -1,77 +1,33 @@
-"use client";
-
 import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 import {
   ArrowDownTrayIcon,
   ArrowPathIcon,
   ArrowUpTrayIcon,
   Bars3Icon,
   BugAntIcon,
+  MagnifyingGlassIcon,
   PhotoIcon,
 } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
-type HeaderMenuLink = {
-  label: string;
-  href: string;
-  icon?: React.ReactNode;
-};
-
-export const menuLinks: HeaderMenuLink[] = [
-  {
-    label: "My NFTs",
-    href: "/myNFTs",
-    icon: <PhotoIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Transfers",
-    href: "/transfers",
-    icon: <ArrowPathIcon className="h-4 w-4" />,
-  },
-  {
-    label: "IPFS Upload",
-    href: "/ipfsUpload",
-    icon: <ArrowUpTrayIcon className="h-4 w-4" />,
-  },
-  {
-    label: "IPFS Download",
-    href: "/ipfsDownload",
-    icon: <ArrowDownTrayIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Debug Contracts",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
-  },
-];
-
-export const HeaderMenuLinks = () => {
-  const pathname = usePathname();
+const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
+  const router = useRouter();
+  const isActive = router.pathname === href;
 
   return (
-    <>
-      {menuLinks.map(({ label, href, icon }) => {
-        const isActive = pathname === href;
-        return (
-          <li key={href}>
-            <Link
-              href={href}
-              passHref
-              className={`${
-                isActive ? "bg-secondary shadow-md" : ""
-              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
-            >
-              {icon}
-              <span>{label}</span>
-            </Link>
-          </li>
-        );
-      })}
-    </>
+    <Link
+      href={href}
+      passHref
+      className={`${
+        isActive ? "bg-secondary shadow-md" : ""
+      } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+    >
+      {children}
+    </Link>
   );
 };
 
@@ -84,6 +40,47 @@ export const Header = () => {
   useOutsideClick(
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
+  );
+
+  const navLinks = (
+    <>
+      <li>
+        <NavLink href="/myNFTs">
+          <PhotoIcon className="h-4 w-4" />
+          My NFTs
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/transfers">
+          <ArrowPathIcon className="h-4 w-4" />
+          Transfers
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/ipfsUpload">
+          <ArrowUpTrayIcon className="h-4 w-4" />
+          IPFS Upload
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/ipfsDownload">
+          <ArrowDownTrayIcon className="h-4 w-4" />
+          IPFS Download
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/debug">
+          <BugAntIcon className="h-4 w-4" />
+          Debug Contracts
+        </NavLink>
+      </li>
+      <li>
+        <NavLink href="/blockexplorer">
+          <MagnifyingGlassIcon className="h-4 w-4" />
+          Block Explorer
+        </NavLink>
+      </li>
+    </>
   );
 
   return (
@@ -102,12 +99,12 @@ export const Header = () => {
           {isDrawerOpen && (
             <ul
               tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-primary rounded-box w-52"
               onClick={() => {
                 setIsDrawerOpen(false);
               }}
             >
-              <HeaderMenuLinks />
+              {navLinks}
             </ul>
           )}
         </div>
@@ -120,9 +117,7 @@ export const Header = () => {
             <span className="text-xs">#0: Simple NFT</span>
           </div>
         </Link>
-        <ul className="hidden xl:flex xl:flex-nowrap menu menu-horizontal px-1 gap-2">
-          <HeaderMenuLinks />
-        </ul>
+        <ul className="hidden xl:flex xl:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
       </div>
       <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />

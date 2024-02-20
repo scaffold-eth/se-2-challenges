@@ -1,7 +1,7 @@
-import * as chains from "viem/chains";
+import * as chains from "wagmi/chains";
 
 export type ScaffoldConfig = {
-  targetNetworks: readonly chains.Chain[];
+  targetNetwork: chains.Chain;
   pollingInterval: number;
   alchemyApiKey: string;
   walletConnectProjectId: string;
@@ -10,11 +10,11 @@ export type ScaffoldConfig = {
 };
 
 const scaffoldConfig = {
-  // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat],
+  // The network where your DApp lives in
+  targetNetwork: chains.hardhat,
 
   // The interval at which your front-end polls the RPC servers for new data
-  // it has no effect if you only target the local network (default is 4000)
+  // it has no effect on the local network
   pollingInterval: 30000,
 
   // This is ours Alchemy's default API key.
@@ -38,6 +38,6 @@ const scaffoldConfig = {
    * 2. If user is not connected to any wallet:  On reload, connect to burner wallet if burnerWallet.enabled is true && burnerWallet.onlyLocal is false
    */
   walletAutoConnect: true,
-} as const satisfies ScaffoldConfig;
+} satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

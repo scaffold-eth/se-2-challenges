@@ -7,11 +7,11 @@ export type TransactionWithFunction = Transaction & {
   functionArgTypes?: string[];
 };
 
-type TransactionReceipts = {
+interface TransactionReceipts {
   [key: string]: TransactionReceipt;
-};
+}
 
-export type TransactionsTableProps = {
+export interface TransactionsTableProps {
   blocks: Block[];
   transactionReceipts: TransactionReceipts;
-};
+}

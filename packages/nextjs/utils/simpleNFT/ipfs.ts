@@ -1,4 +1,7 @@
+import nftsMetadata from "./nftsMetadata";
 import { create } from "kubo-rpc-client";
+
+export type NFTMetaData = (typeof nftsMetadata)[0];
 
 const PROJECT_ID = "2GajDLTC6y04qsYsoDRq9nGmWwK";
 const PROJECT_SECRET = "48c62c6b3f82d2ecfa2cbe4c90f97037";
@@ -22,8 +25,10 @@ export async function getNFTMetadataFromIPFS(ipfsHash: string) {
     // Find the start and end index of the JSON object
     const startIndex = trimmedContent.indexOf("{");
     const endIndex = trimmedContent.lastIndexOf("}") + 1;
+
     // Extract the JSON object string
     const jsonObjectString = trimmedContent.slice(startIndex, endIndex);
+
     try {
       const jsonObject = JSON.parse(jsonObjectString);
       return jsonObject;

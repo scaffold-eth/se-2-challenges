@@ -1,5 +1,3 @@
-"use client";
-
 import { AvatarComponent } from "@rainbow-me/rainbowkit";
 import { blo } from "blo";
 

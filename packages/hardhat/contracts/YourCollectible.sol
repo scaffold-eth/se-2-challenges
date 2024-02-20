@@ -36,10 +36,9 @@ contract YourCollectible is
 	function _beforeTokenTransfer(
 		address from,
 		address to,
-		uint256 tokenId,
-		uint256 quantity
+		uint256 tokenId
 	) internal override(ERC721, ERC721Enumerable) {
-		super._beforeTokenTransfer(from, to, tokenId, quantity);
+		super._beforeTokenTransfer(from, to, tokenId);
 	}
 
 	function _burn(
@@ -56,12 +55,7 @@ contract YourCollectible is
 
 	function supportsInterface(
 		bytes4 interfaceId
-	)
-		public
-		view
-		override(ERC721, ERC721Enumerable, ERC721URIStorage)
-		returns (bool)
-	{
+	) public view override(ERC721, ERC721Enumerable) returns (bool) {
 		return super.supportsInterface(interfaceId);
 	}
 }

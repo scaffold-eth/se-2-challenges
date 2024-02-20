@@ -1,12 +1,9 @@
-"use client";
-
 import { useState } from "react";
 import { createWalletClient, http, parseEther } from "viem";
-import { hardhat } from "viem/chains";
 import { useAccount, useNetwork } from "wagmi";
+import { hardhat } from "wagmi/chains";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
 import { useAccountBalance, useTransactor } from "~~/hooks/scaffold-eth";
-import { useDarkMode } from "~~/hooks/scaffold-eth/useDarkMode";
 
 // Number of ETH faucet sends to an address
 const NUM_OF_ETH = "1";
@@ -23,7 +20,6 @@ const localWalletClient = createWalletClient({
 export const FaucetButton = () => {
   const { address } = useAccount();
   const { balance } = useAccountBalance(address);
-  const { isDarkMode } = useDarkMode();
 
   const { chain: ConnectedChain } = useNetwork();
 
@@ -56,18 +52,12 @@ export const FaucetButton = () => {
     <div
       className={
         balance
-          ? "ml-1"
-          : "ml-1 tooltip tooltip-bottom tooltip-secondary tooltip-open font-bold before:left-auto before:transform-none before:content-[attr(data-tip)] before:right-0"
+          ? ""
+          : "tooltip tooltip-bottom tooltip-secondary tooltip-open font-bold before:left-auto before:transform-none before:content-[attr(data-tip)] before:right-0"
       }
       data-tip="Grab funds from faucet"
     >
-      <button
-        className={`btn btn-secondary ${
-          isDarkMode ? "hover:bg-black/20" : ""
-        } focus:bg-secondary hover:shadow-lg btn-sm px-2 rounded-full`}
-        onClick={sendETH}
-        disabled={loading}
-      >
+      <button className="btn btn-secondary btn-sm px-2 rounded-full" onClick={sendETH} disabled={loading}>
         {!loading ? (
           <BanknotesIcon className="h-4 w-4" />
         ) : (
