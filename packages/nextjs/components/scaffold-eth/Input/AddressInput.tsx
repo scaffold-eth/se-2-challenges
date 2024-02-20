@@ -1,34 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
 import { blo } from "blo";
-import { useDebounce } from "usehooks-ts";
-import { Address, isAddress } from "viem";
+import { isAddress } from "viem";
+import { Address } from "viem";
 import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
-import { CommonInputProps, InputBase, isENS } from "~~/components/scaffold-eth";
+import { CommonInputProps, InputBase } from "~~/components/scaffold-eth";
+
+// ToDo:  move this function to an utility file
+const isENS = (address = "") => address.endsWith(".eth") || address.endsWith(".xyz");
 
 /**
  * Address input with ENS name resolution
  */
 export const AddressInput = ({ value, name, placeholder, onChange, disabled }: CommonInputProps<Address | string>) => {
-  // Debounce the input to keep clean RPC calls when resolving ENS names
-  // If the input is an address, we don't need to debounce it
-  const _debouncedValue = useDebounce(value, 500);
-  const debouncedValue = isAddress(value) ? value : _debouncedValue;
-  const isDebouncedValueLive = debouncedValue === value;
-
-  // If the user changes the input after an ENS name is already resolved, we want to remove the stale result
-  const settledValue = isDebouncedValueLive ? debouncedValue : undefined;
-
   const { data: ensAddress, isLoading: isEnsAddressLoading } = useEnsAddress({
-    name: settledValue,
-    enabled: isENS(debouncedValue),
+    name: value,
+    enabled: isENS(value),
     chainId: 1,
     cacheTime: 30_000,
   });
 
   const [enteredEnsName, setEnteredEnsName] = useState<string>();
   const { data: ensName, isLoading: isEnsNameLoading } = useEnsName({
-    address: settledValue as Address,
-    enabled: isAddress(debouncedValue),
+    address: value,
+    enabled: isAddress(value),
     chainId: 1,
     cacheTime: 30_000,
   });
@@ -45,9 +39,9 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
     if (!ensAddress) return;
 
     // ENS resolved successfully
-    setEnteredEnsName(debouncedValue);
+    setEnteredEnsName(value);
     onChange(ensAddress);
-  }, [ensAddress, onChange, debouncedValue]);
+  }, [ensAddress, onChange, value]);
 
   const handleChange = useCallback(
     (newValue: Address) => {
@@ -62,7 +56,7 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
       name={name}
       placeholder={placeholder}
       error={ensAddress === null}
-      value={value as Address}
+      value={value}
       onChange={handleChange}
       disabled={isEnsAddressLoading || isEnsNameLoading || disabled}
       prefix={

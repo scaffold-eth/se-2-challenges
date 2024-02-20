@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { Chain, Hex, HttpTransport, PrivateKeyAccount, createWalletClient, http } from "viem";
+import { Hex, HttpTransport, PrivateKeyAccount, createWalletClient, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { WalletClient, usePublicClient } from "wagmi";
+import { Chain, WalletClient, usePublicClient } from "wagmi";
 
 const burnerStorageKey = "scaffoldEth2.burnerWallet.sk";
 
 /**
- * Checks if the private key is valid
+ * Is the private key valid
+ * @internal
+ * @param pk
+ * @returns
  */
 const isValidSk = (pk: Hex | string | undefined | null): boolean => {
   return pk?.length === 64 || pk?.length === 66;
@@ -16,10 +19,13 @@ const isValidSk = (pk: Hex | string | undefined | null): boolean => {
 /**
  * If no burner is found in localstorage, we will generate a random private key
  */
-const newDefaultPrivateKey = generatePrivateKey();
+const newDefaultPriaveKey = generatePrivateKey();
 
 /**
- * Save the current burner private key to local storage
+ * Save the current burner private key from storage
+ * Can be used outside of react.  Used by the burnerConnector.
+ * @internal
+ * @returns
  */
 export const saveBurnerSK = (privateKey: Hex): void => {
   if (typeof window != "undefined" && window != null) {
@@ -28,7 +34,10 @@ export const saveBurnerSK = (privateKey: Hex): void => {
 };
 
 /**
- * Gets the current burner private key from local storage
+ * Gets the current burner private key from storage
+ * Can be used outside of react.  Used by the burnerConnector.
+ * @internal
+ * @returns
  */
 export const loadBurnerSK = (): Hex => {
   let currentSk: Hex = "0x";
@@ -39,27 +48,47 @@ export const loadBurnerSK = (): Hex => {
   if (!!currentSk && isValidSk(currentSk)) {
     return currentSk;
   } else {
-    saveBurnerSK(newDefaultPrivateKey);
-    return newDefaultPrivateKey;
+    saveBurnerSK(newDefaultPriaveKey);
+    return newDefaultPriaveKey;
   }
 };
 
-type BurnerAccount = {
+/**
+ * #### Summary
+ * Return type of useBurnerSigner:
+ *
+ * ##### ✏️ Notes
+ * - provides signer
+ * - methods of interacting with burner signer
+ * - methods to save and loadd signer from local storage
+ *
+ * @category Hooks
+ */
+export type TBurnerSigner = {
   walletClient: WalletClient | undefined;
   account: PrivateKeyAccount | undefined;
-  // creates a new burner account
+  /**
+   * create a new burner signer
+   */
   generateNewBurner: () => void;
-  // explicitly save burner to storage
+  /**
+   * explictly save burner to storage
+   */
   saveBurner: () => void;
 };
 
 /**
- * Creates a burner wallet
+ * #### Summary
+ * A hook that creates a burner signer/address and provides ways of interacting with
+ * and updating the signer
+ *
+ * @category Hooks
+ *
+ * @param localProvider localhost provider
+ * @returns IBurnerSigner
  */
-export const useBurnerWallet = (): BurnerAccount => {
-  const [burnerSk, setBurnerSk] = useLocalStorage<Hex>(burnerStorageKey, newDefaultPrivateKey, {
-    initializeWithValue: false,
-  });
+export const useBurnerWallet = (): TBurnerSigner => {
+  const [burnerSk, setBurnerSk] = useLocalStorage<Hex>(burnerStorageKey, newDefaultPriaveKey);
 
   const publicClient = usePublicClient();
   const [walletClient, setWalletClient] = useState<WalletClient<HttpTransport, Chain, PrivateKeyAccount>>();
@@ -67,10 +96,16 @@ export const useBurnerWallet = (): BurnerAccount => {
   const [account, setAccount] = useState<PrivateKeyAccount>();
   const isCreatingNewBurnerRef = useRef(false);
 
+  /**
+   * callback to save current wallet sk
+   */
   const saveBurner = useCallback(() => {
     setBurnerSk(generatedPrivateKey);
   }, [setBurnerSk, generatedPrivateKey]);
 
+  /**
+   * create a new burnerkey
+   */
   const generateNewBurner = useCallback(() => {
     if (publicClient && !isCreatingNewBurnerRef.current) {
       console.log("🔑 Create new burner wallet...");
@@ -90,7 +125,7 @@ export const useBurnerWallet = (): BurnerAccount => {
       setAccount(randomAccount);
 
       setBurnerSk(() => {
-        console.log("🔥 Saving new burner wallet");
+        console.log("🔥 ...Save new burner wallet");
         isCreatingNewBurnerRef.current = false;
         return randomPrivateKey;
       });
