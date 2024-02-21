@@ -19,17 +19,20 @@ describe("🚩 Challenge 0: 🎟 Simple NFT Example 🤓", function () {
 
   describe("YourCollectible", function () {
     const contractAddress = process.env.CONTRACT_ADDRESS;
+
+    let contractArtifact: string;
     if (contractAddress) {
-      it("Should connect to external contract", async function () {
-        myContract = await ethers.getContractAt("YourCollectible", contractAddress);
-        console.log("     🛰 Connected to external contract", myContract.address);
-      });
+      // For the autograder.
+      contractArtifact = `contracts/download-${contractAddress}.sol:YourCollectible`
     } else {
-      it("Should deploy YourCollectible", async function () {
-        const YourCollectible = await ethers.getContractFactory("YourCollectible");
-        myContract = await YourCollectible.deploy();
-      });
+      contractArtifact = "contracts/YourCollectible.sol:YourCollectible";
     }
+
+    it("Should deploy the contract", async function () {
+      const YourCollectible = await ethers.getContractFactory(contractArtifact);
+      myContract = await YourCollectible.deploy();
+      console.log("\t"," 🛰  Contract deployed on", myContract.address);
+    });
 
     describe("mintItem()", function () {
       it("Should be able to mint an NFT", async function () {
