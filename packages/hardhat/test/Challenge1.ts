@@ -26,7 +26,7 @@ describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
     });
     it("Should deploy Staker", async function () {
       const Staker = await ethers.getContractFactory(contractArtifact);
-      stakerContract = await Staker.deploy(await exampleExternalContract.getAddress());
+      stakerContract = (await Staker.deploy(await exampleExternalContract.getAddress())) as Staker;
       console.log('\t',"🛰  Staker contract deployed on", await stakerContract.getAddress())
     });
     describe("mintItem()", function () {
