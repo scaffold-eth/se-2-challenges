@@ -1,11 +1,5 @@
 //
-// this script executes when you run 'yarn test'
-//
-// you can also test remote submissions like:
-// CONTRACT_ADDRESS=0x43Ab1FCd430C1f20270C2470f857f7a006117bbb yarn test --network sepolia
-//
-// you can even run mint commands if the tests pass like:
-// yarn test && echo "PASSED" || echo "FAILED"
+// This script executes when you run 'yarn test'
 //
 
 import { ethers } from "hardhat";
@@ -19,17 +13,20 @@ describe("🚩 Challenge 0: 🎟 Simple NFT Example 🤓", function () {
 
   describe("YourCollectible", function () {
     const contractAddress = process.env.CONTRACT_ADDRESS;
+
+    let contractArtifact: string;
     if (contractAddress) {
-      it("Should connect to external contract", async function () {
-        myContract = await ethers.getContractAt("YourCollectible", contractAddress);
-        console.log("     🛰 Connected to external contract", myContract.address);
-      });
+      // For the autograder.
+      contractArtifact = `contracts/download-${contractAddress}.sol:YourCollectible`;
     } else {
-      it("Should deploy YourCollectible", async function () {
-        const YourCollectible = await ethers.getContractFactory("YourCollectible");
-        myContract = await YourCollectible.deploy();
-      });
+      contractArtifact = "contracts/YourCollectible.sol:YourCollectible";
     }
+
+    it("Should deploy the contract", async function () {
+      const YourCollectible = await ethers.getContractFactory(contractArtifact);
+      myContract = await YourCollectible.deploy();
+      console.log("\t", " 🛰  Contract deployed on", myContract.address);
+    });
 
     describe("mintItem()", function () {
       it("Should be able to mint an NFT", async function () {
