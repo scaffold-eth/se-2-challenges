@@ -17,7 +17,7 @@ describe("🚩 Challenge 0: 🎟 Simple NFT Example 🤓", function () {
     let contractArtifact: string;
     if (contractAddress) {
       // For the autograder.
-      contractArtifact = `contracts/download-${contractAddress}.sol:YourCollectible`
+      contractArtifact = `contracts/download-${contractAddress}.sol:YourCollectible`;
     } else {
       contractArtifact = "contracts/YourCollectible.sol:YourCollectible";
     }
@@ -25,7 +25,7 @@ describe("🚩 Challenge 0: 🎟 Simple NFT Example 🤓", function () {
     it("Should deploy the contract", async function () {
       const YourCollectible = await ethers.getContractFactory(contractArtifact);
       myContract = await YourCollectible.deploy();
-      console.log("\t"," 🛰  Contract deployed on", myContract.address);
+      console.log("\t", " 🛰  Contract deployed on", myContract.address);
     });
 
     describe("mintItem()", function () {
