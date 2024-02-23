@@ -15,11 +15,12 @@ import { Vendor, YourToken } from "../typechain-types";
 const { ethers } = hre;
 
 describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
+  const contractAddress = process.env.CONTRACT_ADDRESS;
   let yourToken: YourToken;
   let yourTokenAddress = "";
 
   let tokenContractArtifact = "";
-  if (process.env.CONTRACT_ADDRESS) {
+  if (contractAddress) {
     tokenContractArtifact = `contracts/YourTokenAutograder.sol:YourToken`;
   } else {
     tokenContractArtifact = "contracts/YourToken.sol:YourToken";
@@ -43,7 +44,7 @@ describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
 
   let contractArtifact = "";
   if (process.env.CONTRACT_ADDRESS) {
-    contractArtifact = `contracts/${process.env.CONTRACT_ADDRESS}.sol:Vendor`;
+    contractArtifact = `contracts/download-${process.env.CONTRACT_ADDRESS}.sol:Vendor`;
   } else {
     contractArtifact = "contracts/Vendor.sol:Vendor";
   }
