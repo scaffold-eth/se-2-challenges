@@ -1,11 +1,5 @@
 //
-// this script executes when you run 'yarn test'
-//
-// you can also test remote submissions like:
-// CONTRACT_ADDRESS=0x43Ab1FCd430C1f20270C2470f857f7a006117bbb yarn test --network rinkeby
-//
-// you can even run mint commands if the tests pass like:
-// yarn test && echo "PASSED" || echo "FAILED"
+// This script executes when you run 'yarn test'
 //
 import { ethers, network } from "hardhat";
 import { expect } from "chai";
@@ -16,26 +10,25 @@ describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
   let stakerContract: Staker;
 
   describe("Staker", function () {
-    if (process.env.CONTRACT_ADDRESS) {
-      it("Should connect to external contract", async function () {
-        stakerContract = await ethers.getContractAt("Staker", process.env.CONTRACT_ADDRESS!);
-        const stakerAddress = await stakerContract.getAddress();
+    const contractAddress = process.env.CONTRACT_ADDRESS;
 
-        console.log("     🛰 Connected to external contract", stakerAddress);
-      });
+    let contractArtifact: string;
+    if (contractAddress) {
+      // For the autograder.
+      contractArtifact = `contracts/download-${contractAddress}.sol:Staker`;
     } else {
-      it("Should deploy ExampleExternalContract", async function () {
-        const ExampleExternalContract = await ethers.getContractFactory("ExampleExternalContract");
-        exampleExternalContract = await ExampleExternalContract.deploy();
-      });
-      it("Should deploy Staker", async function () {
-        const Staker = await ethers.getContractFactory("Staker");
-        const exampleExternalContractAddress = await exampleExternalContract.getAddress();
-
-        stakerContract = await Staker.deploy(exampleExternalContractAddress);
-      });
+      contractArtifact = "contracts/Staker.sol:Staker";
     }
 
+    it("Should deploy ExampleExternalContract", async function () {
+      const ExampleExternalContract = await ethers.getContractFactory("ExampleExternalContract");
+      exampleExternalContract = await ExampleExternalContract.deploy();
+    });
+    it("Should deploy Staker", async function () {
+      const Staker = await ethers.getContractFactory(contractArtifact);
+      stakerContract = await Staker.deploy(await exampleExternalContract.getAddress());
+      console.log('\t',"🛰  Staker contract deployed on", await stakerContract.getAddress())
+    });
     describe("mintItem()", function () {
       it("Balance should go up when you stake()", async function () {
         const [owner] = await ethers.getSigners();
