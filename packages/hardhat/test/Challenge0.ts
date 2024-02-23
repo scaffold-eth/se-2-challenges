@@ -15,7 +15,7 @@ describe("🚩 Challenge 0: 🎟 Simple NFT Example 🤓", function () {
     let contractArtifact: string;
     if (contractAddress) {
       // For the autograder.
-      contractArtifact = `contracts/download-${contractAddress}.sol:YourCollectible`
+      contractArtifact = `contracts/download-${contractAddress}.sol:YourCollectible`;
     } else {
       contractArtifact = "contracts/YourCollectible.sol:YourCollectible";
     }
