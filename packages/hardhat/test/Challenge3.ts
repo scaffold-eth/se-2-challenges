@@ -20,9 +20,10 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
     const DiceGame = await ethers.getContractFactory("DiceGame");
     diceGame = await DiceGame.deploy();
 
+    const contractAddress = process.env.CONTRACT_ADDRESS;
     let contractArtifact;
     if (process.env.CONTRACT_ADDRESS) {
-      contractArtifact = `contracts/${process.env.CONTRACT_ADDRESS}.sol:RiggedRoll`;
+      contractArtifact = `contracts/download-${contractAddress}.sol:RiggedRoll`;
     } else {
       contractArtifact = "contracts/RiggedRoll.sol:RiggedRoll";
     }
