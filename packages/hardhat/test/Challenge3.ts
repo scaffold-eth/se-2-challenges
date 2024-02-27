@@ -22,7 +22,7 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
 
     const contractAddress = process.env.CONTRACT_ADDRESS;
     let contractArtifact;
-    if (process.env.CONTRACT_ADDRESS) {
+    if (contractAddress) {
       contractArtifact = `contracts/download-${contractAddress}.sol:RiggedRoll`;
     } else {
       contractArtifact = "contracts/RiggedRoll.sol:RiggedRoll";
