@@ -1,12 +1,3 @@
-//
-// this script executes when you run 'yarn test'
-//
-// you can also test remote submissions like:
-// CONTRACT_ADDRESS=0x43Ab1FCd430C1f20270C2470f857f7a006117bbb yarn test --network rinkeby
-//
-// you can even run mint commands if the tests pass like:
-// yarn test && echo "PASSED" || echo "FAILED"
-//
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { Contract } from "ethers";
