@@ -1,13 +1,3 @@
-//
-// this script executes when you run 'yarn test'
-//
-// you can also test remote submissions like:
-// CONTRACT_ADDRESS=0x43Ab1FCd430C1f20270C2470f857f7a006117bbb yarn test --network rinkeby
-//
-// you can even run commands if the tests pass like:
-// yarn test && echo "PASSED" || echo "FAILED"
-//
-
 import hre from "hardhat";
 
 import { expect, assert } from "chai";
@@ -60,9 +50,10 @@ describe(" 🕞 Statechannel Challenge: The Guru's Offering 👑", function () {
   }
 
   describe("Streamer.sol", function () {
-    let contractArtifact = "";
-    if (process.env.CONTRACT_ADDRESS) {
-      contractArtifact = `contracts/${process.env.CONTRACT_ADDRESS}.sol:Streamer`;
+    const contractAddress = process.env.CONTRACT_ADDRESS;
+    let contractArtifact: string;
+    if (contractAddress) {
+      contractArtifact = `contracts/download-${contractAddress}.sol:Streamer`;
     } else {
       contractArtifact = "contracts/Streamer.sol:Streamer";
     }
