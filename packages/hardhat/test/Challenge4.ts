@@ -23,11 +23,12 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
   let user2: SignerWithAddress;
   let user3: SignerWithAddress;
 
+  const contractAddress = process.env.CONTRACT_ADDRESS;
   let contractArtifact: string;
-  if (process.env.CONTRACT_ADDRESS) {
-    contractArtifact = `contracts/${process.env.CONTRACT_ADDRESS}.sol:DEX`;
+  if (contractAddress) {
+    contractArtifact = `contracts/download-${contractAddress}.sol:RiggedRoll`;
   } else {
-    contractArtifact = "contracts/DEX.sol:DEX";
+    contractArtifact = "contracts/RiggedRoll.sol:RiggedRoll";
   }
 
   function getEventValue(txReceipt: TransactionReceipt, eventNumber: number) {
