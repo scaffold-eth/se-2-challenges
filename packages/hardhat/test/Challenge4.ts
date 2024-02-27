@@ -1,12 +1,3 @@
-//
-// this script executes when you run 'yarn test'
-//
-// you can also test remote submissions like:
-// CONTRACT_ADDRESS=0x43Ab1FCd430C1f20270C2470f857f7a006117bbb yarn test --network rinkeby
-//
-// you can even run mint commands if the tests pass like:
-// yarn test && echo "PASSED" || echo "FAILED"
-//
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { Contract } from "ethers";
@@ -23,9 +14,10 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
   let user2: SignerWithAddress;
   let user3: SignerWithAddress;
 
+  const contractAddress = process.env.CONTRACT_ADDRESS;
   let contractArtifact: string;
-  if (process.env.CONTRACT_ADDRESS) {
-    contractArtifact = `contracts/${process.env.CONTRACT_ADDRESS}.sol:DEX`;
+  if (contractAddress) {
+    contractArtifact = `contracts/download-${contractAddress}.sol:DEX`;
   } else {
     contractArtifact = "contracts/DEX.sol:DEX";
   }
