@@ -4,7 +4,7 @@ pragma solidity 0.8.4; //Do not change the solidity version as it negativly impa
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./YourToken.sol";
 
-contract Vendor is Ownable {
+contract Vendor {
   // event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
 
   YourToken public yourToken;
