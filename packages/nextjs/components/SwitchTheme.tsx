@@ -11,7 +11,6 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
   const isDarkMode = resolvedTheme === "dark";
 
   const handleToggle = () => {
-    console.log(isDarkMode, "<< isDarkMode");
     if (isDarkMode) {
       setTheme("light");
       return;
