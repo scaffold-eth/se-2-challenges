@@ -153,7 +153,7 @@ We want this function written in a way that when we send ETH and/or $BAL tokens 
 
 Calling `init()` will load our contract up with both ETH and 🎈 Balloons.
 
-We can see that the DEX starts empty. We want to be able to call `init()` to start it off with liquidity, but we don’t have any funds or tokens yet. Add some ETH to your local account using the faucet and then find the `00_deploy_your_contract.ts` file. Find and uncomment the lines below and add your front-end address (your burner wallet address)?
+We can see that the DEX starts empty. We want to be able to call `init()` to start it off with liquidity, but we don’t have any funds or tokens yet. Add some ETH to your local account using the faucet and then find the `00_deploy_your_contract.ts` file. Find and uncomment the lines below and add your front-end address (your burner wallet address).
 
 ```
   // // paste in your front-end address here to get 10 balloons on deploy:
@@ -174,7 +174,7 @@ First, we have to call `approve()` on the Balloons contract, approving the DEX c
 > 🤓 Copy and paste the DEX address to the _Address Spender_ and then set the amount to 5.  
 > You can confirm this worked using the `allowance()` function in `Debug Contracts` tab using your local account address as the owner and the DEX contract address as the spender.
 
-Now we are ready to call `init()` on the DEX, using `Debug Contracts` tab. We will tell it to take 5 of our tokens and send 0.01 ETH with the transaction. Remember in the `Debug Contracts` tab we are calling the functions directly which means we have to convert to wei, so don't forget to multiply those values by 10¹⁸!
+Now we are ready to call `init()` on the DEX, using the `Debug Contracts` tab. We will tell it to take 5 of our tokens and send 0.01 ETH with the transaction. Remember in the `Debug Contracts` tab we are calling the functions directly which means we have to convert to wei, so don't forget to multiply those values by 10¹⁸!
 
 ![multiply-wei](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/531cab0b-2b37-4489-88c3-d36c0755d2d1)
 
@@ -465,7 +465,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 
 > The `deposit()` function receives ETH and also transfers $BAL tokens from the caller to the contract at the right ratio. The contract also tracks the amount of liquidity (how many liquidity provider tokens (LPTs) minted) the depositing address owns vs the totalLiquidity.
 
-What does this hint mean in practice? The goal is to allow a user to `deposit()` ETH into our `totalLiquidity`, and update their `liquidity`. This is very similar to the `init()` function, except we want it to work for anyone providing liquidity. Also, since there already is liquidity we want the liquidity they provide to leave the invariant `k` unchanged. 
+What does this hint mean in practice? The goal is to allow a user to `deposit()` ETH into our `totalLiquidity`, and update their `liquidity`. This is very similar to the `init()` function, except we want it to work for anyone providing liquidity. Also, since there already is liquidity we want the liquidity they provide to leave the ratio of the two assets unchanged. 
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
@@ -493,7 +493,7 @@ Part 1: Getting Reserves 🏦
 - [ ] Do you have reserves of both assets?
 
 Part 2: Performing Calculations 🤖 
-> What are we calculating again? Oh yeah, for the amount of ETH the user is depositing, we want them to also deposit an equal amount of tokens. Let's make a reusable equation where we can swap out a value and get an output of the ETH and $BAL the user will be depositing, named `tokenDeposit` and `liquidityMinted`. 
+> What are we calculating again? Oh yeah, for the amount of ETH the user is depositing, we want them to also deposit a proportional amount of tokens. Let's make a reusable equation where we can swap out a value and get an output of the ETH and $BAL the user will be depositing, named `tokenDeposit` and `liquidityMinted`. 
 
 
 <details markdown='1'><summary>Question Four</summary>
@@ -527,7 +527,7 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 <details markdown='1'><summary>Question Eight</summary>
 
-> The user already sent deposited their ETH, but they still have to deposit their tokens. How do we require a token transfer from them?
+> The user already deposited their ETH, but they still have to deposit their tokens. How do we require a token transfer from them?
 
 </details>
 
@@ -587,7 +587,7 @@ Part 1: Getting Reserves 🏦
 
 <details markdown='1'><summary>Question Two</summary>
 
-> Just like the `deposit()` we need both assets. How much ETH does our DEX have? Remember, this function is not payable, so we don't have to subtract anything.
+> Just like the `deposit()` function we need both assets. How much ETH does our DEX have? Remember, this function is not payable, so we don't have to subtract anything.
 
 </details>
 
@@ -598,7 +598,7 @@ Part 1: Getting Reserves 🏦
 </details>
 
 Part 2: Performing Calculations 🤖 
-> We need to calculate how much of each asset our user is going withdraw, call them `ethWithdrawn` and `tokenAmount`. The equation is: amount * reserveOfDesiredUnits / totalLiquidity
+> We need to calculate how much of each asset our user is going withdraw, call them `ethWithdrawn` and `tokenAmount`. The equation is: `amount *` reserveOfDesiredUnits `/ totalLiquidity`
 
 <details markdown='1'><summary>Question Four</summary>
 
@@ -668,7 +668,7 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
         (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
         require(sent, "withdraw(): revert in transferring eth to you!");
         require(token.transfer(msg.sender, tokenAmount));
-        emit LiquidityRemoved(msg.sender, amount, ethWithdrawn, tokenAmount);
+        emit LiquidityRemoved(msg.sender, amount, tokenAmount, ethWithdrawn);
         return (ethWithdrawn, tokenAmount);
     }
 
