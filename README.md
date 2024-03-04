@@ -80,7 +80,7 @@ You'll have to redeploy with `yarn deploy --reset`.
 
 We'll need another active address to act as the rube in our app. To do this just open a new tab in your browser.
 
-> ⚠️ **Note**: previous challenges created new addresses by opening an incognito window or a different browser. This will **not** work for this challenge, because the off-chain application uses a very simple communication pipe that doesn't work between different browsers or private windows.)
+> ⚠️ **Note**: previous challenges created new addresses by opening an incognito window or a different browser. This will **not** work for this challenge, because the off-chain application uses a very simple communication pipe that doesn't work between different browsers or private windows.
 
 ![wallets-setup](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1c0ede93-fd7d-4683-a3f0-803b52ca947c)
 
@@ -103,7 +103,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `fundChannel()` function
 
-> 👁 Check `packages/nextjs/pages/streamer.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
+> 👁 Check `packages/nextjs/app/streamer/page.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
 
 > Run `yarn deploy` and open a channel in the Rube's tab. (You may need some funds from the faucet)
 
@@ -119,7 +119,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 ## Checkpoint 3: 💱 Exchange the Service 👷‍♂️
 
-Now that the channel is funded and all participants have observed the funding via the emitted event, we can begin our off-chain exchange of service. We are now working in `packages/nextjs/pages/streamer.tsx`.
+Now that the channel is funded and all participants have observed the funding via the emitted event, we can begin our off-chain exchange of service. We are now working in `packages/nextjs/app/streamer/page.tsx`.
 
 Functions of note:
 
@@ -129,7 +129,7 @@ Functions of note:
 
 The first two functions are complete - we will work on `processVoucher`, where the service provider examines returned payments, confirms their authenticity, and stores them.
 
-> 📝 Edit `packages/nextjs/pages/streamer.tsx` to complete the `processVoucher()` function and secure this off-chain exchange. You'll need to recreate the encoded message that the client has signed, and then verify that the received signature was in fact produced by the client on that same data.
+> 📝 Edit `packages/nextjs/app/streamer/page.tsx` to complete the `processVoucher()` function and secure this off-chain exchange. You'll need to recreate the encoded message that the client has signed, and then verify that the received signature was in fact produced by the client on that same data.
 
 ### 🥅 Goals:
 
@@ -150,7 +150,7 @@ The first two functions are complete - we will work on `processVoucher`, where t
 Now that we've collected some vouchers, we'd like to redeem them on-chain and move funds from the `Streamer` contract's `balances` map to the Guru's own address. The `withdrawEarnings` function of `packages/hardhat/contracts/Streamer.sol` takes a Struct named voucher (balance + signature) as input, and should:
 
 - Recover the signer using `ecrecover(bytes32, uint8, bytes32, bytes32)` on the `prefixedHashed` message and supplied signature.
-  - _Hint_: `ecrecover` takes the signature in its decomposed form with `v,`,`r`, and`s` values. The string signature produced in `packages/nextjs/pages/streamer.tsx` is just a concatenation of these values, which we split using `ethers.utils.splitSignature` to create the on-chain friendly signature. Read about the [ecrecover function here](https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html)
+  - _Hint_: `ecrecover` takes the signature in its decomposed form with `v,`,`r`, and`s` values. The string signature produced in `packages/nextjs/app/streamer/page.tsx` is just a concatenation of these values, which we split using `ethers.utils.splitSignature` to create the on-chain friendly signature. Read about the [ecrecover function here](https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html)
 - Check that the signer has a running channel with balance greater than the voucher's `updatedBalance`
 - Calculate the payout (`balances[signer] - updatedBalance`)
 - Update the channel balance.
@@ -163,7 +163,7 @@ Now that we've collected some vouchers, we'd like to redeem them on-chain and mo
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `withdrawEarnings()` function as described.
 
-> 📝 Edit `packages/nextjs/pages/streamer.tsx` to enable the UI button for withdrawals.
+> 📝 Edit `packages/nextjs/app/streamer/page.tsx` to enable the UI button for withdrawals.
 
 ### 🥅 Goals:
 
@@ -190,7 +190,7 @@ A payment channel is a cryptoeconomic protocol - care needs to be taken so that 
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to create a public `challengeChannel()` function.
 
-> 📝 Edit `packages/nextjs/pages/streamer.tsx` to enable the challenge and closure buttons for service clients(rubes).
+> 📝 Edit `packages/nextjs/app/streamer/page.tsx` to enable the challenge and closure buttons for service clients(rubes).
 
 The `challengeChannel()` function should:
 
@@ -210,7 +210,7 @@ The `defundChannel()` function should:
 - Transfer `balances[msg.sender]` to the sender.
 - Emit a `Closed` event.
 
-> ⚠ Make sure the defundChannel declaration is uncommented in `packages\nextjs\pages\streamer.tsx`
+> ⚠ Make sure the defundChannel declaration is uncommented in `packages\nextjs\app\streamer\page.tsx`
 
 ### 🥅 Goals:
 

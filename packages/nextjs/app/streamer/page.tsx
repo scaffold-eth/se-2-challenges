@@ -152,7 +152,8 @@ const Streamer: NextPage = () => {
       const challengedChannelsAddresses = challengedHistoryData?.map(event => event.args[0]);
       setChallenged(challengedChannelsAddresses);
     }
-  }, [challengedHistoryData, isChallengedHistoryLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [challengedHistoryData?.length, isChallengedHistoryLoading]);
 
   useScaffoldEventSubscriber({
     contractName: "Streamer",
