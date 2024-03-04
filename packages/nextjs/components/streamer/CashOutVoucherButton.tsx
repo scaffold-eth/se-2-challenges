@@ -1,8 +1,8 @@
 import { utils } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { Address } from "wagmi";
+import { Voucher } from "~~/app/streamer/page";
 import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { Voucher } from "~~/pages/streamer";
 
 type CashOutVoucherButtonProps = {
   clientAddress: Address;
