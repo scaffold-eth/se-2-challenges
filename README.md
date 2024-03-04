@@ -135,7 +135,7 @@ await yourToken.transfer(
 
 `contract Vendor is Ownable {`
 
-⚠️ You will also need to uncomment the Ownable.sol contract!
+⚠️ You will also need to uncomment the import of Ownable.sol contract!
 
 In `deploy/01_deploy_vendor.js` you will need to call `transferOwnership()` on the `Vendor` to make _your frontend address_ the `owner`:
 
