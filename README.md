@@ -360,7 +360,7 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
         require(msg.value > 0, "cannot swap 0 ETH");
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 token_reserve = token.balanceOf(address(this));
-        uint256 tokenOutput = price(msg.value, ethReserve, token_reserve);
+        tokenOutput = price(msg.value, ethReserve, token_reserve);
 
         require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
         emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
@@ -430,7 +430,7 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
     function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
         require(tokenInput > 0, "cannot swap 0 tokens");
         uint256 token_reserve = token.balanceOf(address(this));
-        uint256 ethOutput = price(tokenInput, token_reserve, address(this).balance);
+        ethOutput = price(tokenInput, token_reserve, address(this).balance);
         require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
         (bool sent, ) = msg.sender.call{ value: ethOutput }("");
         require(sent, "tokenToEth: revert in transferring eth to you!");
