@@ -211,6 +211,10 @@ yarn verify --network sepolia
 
 ---
 
+> 🤖 If you have Chat GPT Plus account, you can try out [GPT Challenge 0 assistant](https://chat.openai.com/g/g-gk1PO5LNr-sre-challenge-0-assistant-alpha-version) and get answers for your questions about this Challenge.
+>
+> ⭐ Please share your feedback with us in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx) if you have a chance to try the GPT assistant!
+
 > 🏃 Head to your next challenge [here](https://github.com/scaffold-eth/se-2-challenges).
 
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
