@@ -104,35 +104,34 @@ mapping (address => uint256) public liquidity;
 </details>
 
 These variables track the total liquidity, but also the liquidity of each address.
-Now, let's create an `init()` function in `DEX.sol`. 
-We want this function written in a way that when we send ETH and/or $BAL tokens through our front end or deployer script, the function will get those values from the contract and assign them onto the global variables we just defined. 
+Now, let's create an `init()` function in `DEX.sol`.
+We want this function written in a way that when we send ETH and/or $BAL tokens through our front end or deployer script, the function will get those values from the contract and assign them onto the global variables we just defined.
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-<details markdown='1'><summary>Question 1</summary>
+<details markdown='1'><summary>Question One</summary>
 
 > How can we check and prevent liquidity being added if the contract already has liquidity?
 
 </details>
 
-<details markdown='1'><summary>Question 2</summary>
+<details markdown='1'><summary>Question Two</summary>
 
 > What should the value of `totalLiquidity` be, how do we access the balance that our contract has and assign the variable a value?
 
 </details>
 
-<details markdown='1'><summary>Question 3</summary>
+<details markdown='1'><summary>Question Three</summary>
 
 > How would we assign our address the liquidity we just provided? How much liquidity have we provided? The `totalLiquidity`? Just half? Three quarters?
 
 </details>
 
-<details markdown='1'><summary>Question 4</summary>
+<details markdown='1'><summary>Question Four</summary>
 
 > Now we need to take care of the tokens `init()` is receiving. How do we transfer the tokens from the sender (us) to this contract address? How do we make sure the transaction reverts if the sender did not have as many tokens as they wanted to send?
 
 </details>
-
 
 <details markdown='1'><summary> 👨🏻‍🏫 Solution Code</summary>
 
@@ -149,7 +148,6 @@ We want this function written in a way that when we send ETH and/or $BAL tokens 
 </details>
 
 </details>
-
 
 Calling `init()` will load our contract up with both ETH and 🎈 Balloons.
 
@@ -226,7 +224,6 @@ The `k` is called an invariant because it doesn’t change during trades. (The `
 
 > 💡 We are just swapping one asset for another, the “price” is basically how much of the resulting output asset you will get if you put in a certain amount of the input asset.
 
-
 🤔 OH! A market based on a curve like this will always have liquidity, but as the ratio becomes more and more unbalanced, you will get less and less of the less-liquid asset from the same trade amount. Again, if the smart contract has too much ETH and not enough $BAL tokens, the price to swap $BAL tokens to ETH should be more desirable.
 
 When we call `init()` we passed in ETH and $BAL tokens at a ratio of 1:1. As the reserves of one asset changes, the other asset must also change inversely in order to maintain the constant product formula (invariant `k`).
@@ -244,7 +241,7 @@ We should apply the fee to `xInput`, and store it in a new variable `xInputWithF
 
 <details markdown='1'><summary>🦉 Guided Explanation</summary>
 
-For the math portions of this challenge, you can black-box the math. However, it's still important to understand what the math looks like, but maybe less so how it works or why it works, in other words don't get too caught up in the mathematical details! 😅 Look at articles and videos in this challenge or on your own to find out more if you're curious though! 🤓 
+For the math portions of this challenge, you can black-box the math. However, it's still important to understand what the math looks like, but maybe less so how it works or why it works, in other words don't get too caught up in the mathematical details! 😅 Look at articles and videos in this challenge or on your own to find out more if you're curious though! 🤓
 
 1. We are multiplying `xInput` by 997 to "simulate" a multiplication by 0.997 since we can't use decimals in solidity. We'll divide by 1000 later to get the fee back to normal.
 2. Next, we'll make our `numerator` by multiplying `xInputWithFee` by `yReserves`.
@@ -298,11 +295,11 @@ Finally, let’s say the ratio is the same, but we want to swap 100,000 tokens i
 - [ ] 🤔 Do you understand how the x\*y=k price curve actually works? Write down a clear explanation for yourself and derive the formula for price. You might have to shake off some old algebra skills!
 - [ ] 💃 You should be able to go through the price section of this tutorial with the sample numbers and generate the same outputChange variable.
 
-
 ---
+
 ## Checkpoint 4: Trading 🤝
 
-Let’s edit the `DEX.sol` smart contract and add two new functions for swapping from each asset to the other, `ethToToken()` and `tokenToEth()`. 
+Let’s edit the `DEX.sol` smart contract and add two new functions for swapping from each asset to the other, `ethToToken()` and `tokenToEth()`.
 
 The basic overview for `ethToToken()` is we're going to define our variables to pass into `price()` so we can calculate what the user's `tokenOutput` is.
 
@@ -310,13 +307,13 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 
 <details markdown='1'><summary>Question One</summary>
 
-> How would we make sure the value being swapped for balloons is greater than 0? 
+> How would we make sure the value being swapped for balloons is greater than 0?
 
-</details> 
+</details>
 
 <details markdown='1'><summary>Question Two</summary>
 
-> Is `xReserves` ETH or $BAL tokens? Use a variable name that best describes which one it is. When we call this function, it will already have the value we sent it in it's `liquidity`. How can we make sure we are using the balance of the contract *before* any ETH was sent to it?
+> Is `xReserves` ETH or $BAL tokens? Use a variable name that best describes which one it is. When we call this function, it will already have the value we sent it in it's `liquidity`. How can we make sure we are using the balance of the contract _before_ any ETH was sent to it?
 
 </details>
 
@@ -346,7 +343,7 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 
 <details markdown='1'><summary>Question Seven</summary>
 
-> Last, what do we return? 
+> Last, what do we return?
 
 </details>
 
@@ -366,28 +363,26 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
         emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
         return tokenOutput;
     }
-    
+
 ```
 
 </details>
 
 </details>
 
-
-😎 Great now onto the next! `tokenToEth()` is going to do the opposite so it should be pretty straight forward. But if you get stuck, the guiding questions are always there 🦉 
-
+😎 Great now onto the next! `tokenToEth()` is going to do the opposite so it should be pretty straight forward. But if you get stuck, the guiding questions are always there 🦉
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
 <details markdown='1'><summary>Question One</summary>
 
-> How would we make sure the value being swapped for ETH is greater than 0? 
+> How would we make sure the value being swapped for ETH is greater than 0?
 
 </details>
 
 <details markdown='1'><summary>Question Two</summary>
 
-> Is `xReserves` ETH or $BAL tokens this time? Use a variable name the describes which one it is. 
+> Is `xReserves` ETH or $BAL tokens this time? Use a variable name the describes which one it is.
 
 </details>
 
@@ -405,7 +400,7 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 
 <details markdown='1'><summary>Question Five</summary>
 
-> After getting how much ETH the sender should receive, how do we transfer the ETH to the sender? 
+> After getting how much ETH the sender should receive, how do we transfer the ETH to the sender?
 
 </details>
 
@@ -443,7 +438,6 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
 
 </details>
 
-
 > 💡 Each of these functions should calculate the resulting amount of output asset using our price function that looks at the ratio of the reserves vs the input asset. We can call tokenToEth and it will take our tokens and send us ETH or we can call ethToToken with some ETH in the transaction and it will send us $BAL tokens. Deploy it and try it out!
 
 ### 🥅 Goals / Checks
@@ -469,8 +463,7 @@ What does this hint mean in practice? The goal is to allow a user to `deposit()`
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-Part 1: Getting Reserves 🏦 
-
+Part 1: Getting Reserves 🏦
 
 <details markdown='1'><summary>Question One</summary>
 
@@ -480,7 +473,7 @@ Part 1: Getting Reserves 🏦
 
 <details markdown='1'><summary>Question Two</summary>
 
-> We need to calculate the ratio of ETH and $BAL after the liquidity provider sends ETH, what variables do we need? It's similar to the previous section. What was that operation we performed on `ethReserve` in Checkpoint 4 to make sure we were getting the balance *before* the `msg.value` went through? We need to do that again for the same reason.
+> We need to calculate the ratio of ETH and $BAL after the liquidity provider sends ETH, what variables do we need? It's similar to the previous section. What was that operation we performed on `ethReserve` in Checkpoint 4 to make sure we were getting the balance _before_ the `msg.value` went through? We need to do that again for the same reason.
 
 </details>
 
@@ -495,7 +488,6 @@ Part 1: Getting Reserves 🏦
 Part 2: Performing Calculations 🤖 
 > What are we calculating again? Oh yeah, for the amount of ETH the user is depositing, we want them to also deposit a proportional amount of tokens. Let's make a reusable equation where we can swap out a value and get an output of the ETH and $BAL the user will be depositing, named `tokenDeposit` and `liquidityMinted`. 
 
-
 <details markdown='1'><summary>Question Four</summary>
 
 > How do we calculate how many tokens the user needs to deposit? You multiply the value the user sends through by reserves of the units we want as an output. Then we divide by `ethReserve` and add 1 to the result.
@@ -504,14 +496,14 @@ Part 2: Performing Calculations 🤖
 
 <details markdown='1'><summary>Question Five</summary>
 
->Now for `liquidityMinted` use the same equation but replace `tokenReserve` with `totalLiquidity`, so that we are multiplying in the numerator by the units we want.
+> Now for `liquidityMinted` use the same equation but replace `tokenReserve` with `totalLiquidity`, so that we are multiplying in the numerator by the units we want.
 
 </details>
 
 - [ ] Is `tokenDeposit` assigned the value of our equation?
 - [ ] Now is `liquidityMinted` looking similar to `tokenDeposit` but without the `+ 1` at the end?
 
-Part 3: Updating, Transferring, Emitting, and Returning 🎀 
+Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 <details markdown='1'><summary>Question Six</summary>
 
@@ -577,11 +569,11 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
-Part 1: Getting Reserves 🏦 
+Part 1: Getting Reserves 🏦
 
 <details markdown='1'><summary>Question One</summary>
 
-> How can we verify that a user is withdrawing an `amount` of `liquidity` that they actually have? 
+> How can we verify that a user is withdrawing an `amount` of `liquidity` that they actually have?
 
 </details>
 
@@ -612,7 +604,7 @@ Part 2: Performing Calculations 🤖
 
 </details>
 
-Part 3: Updating, Transferring, Emitting, and Returning 🎀 
+Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 <details markdown='1'><summary>Question Six</summary>
 
@@ -634,7 +626,7 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 <details markdown='1'><summary>Question Nine</summary>
 
-> How do we give them their tokens? 
+> How do we give them their tokens?
 
 </details>
 
@@ -687,6 +679,7 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 - [ ] 🧐 What happens if you `deposit()` at the beginning of the deployed contract, then another user starts swapping out for most of the balloons, and then you try to withdraw your position as a liquidity provider? Answer: you should get the amount of liquidity proportional to the ratio of assets within the isolated liquidity pool. It will not be 1:1.
 
 ---
+
 ## Checkpoint 6: UI 🖼
 
 Cool beans! Your front-end should be showing something like this now!
@@ -697,7 +690,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ### ⚔️ Side Quests
 
-- [ ] In `packages\nextjs\pages\events.tsx` implement an event and emit for the `approve()` function to make it clear when it has been executed.
+- [ ] In `packages\nextjs\app\events\page.tsx` implement an event and emit for the `approve()` function to make it clear when it has been executed.
 
 ### ⚠️ Test it!
 
@@ -719,7 +712,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
-> 💬💬 More Hints: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/pages/events.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/packages/nextjs/pages/events.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
+> 💬💬 More Hints: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/app/events/page.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/packages/nextjs/app/events/page.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
 
 ---
 
