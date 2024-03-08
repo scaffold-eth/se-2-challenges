@@ -1,7 +1,3 @@
-//
-// this script executes when you run 'yarn test'
-//
-
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { ContractTransactionReceipt } from "ethers";
@@ -18,9 +14,10 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
   let user2: HardhatEthersSigner;
   let user3: HardhatEthersSigner;
 
+  const contractAddress = process.env.CONTRACT_ADDRESS;
   let contractArtifact: string;
-  if (process.env.CONTRACT_ADDRESS) {
-    contractArtifact = `contracts/${process.env.CONTRACT_ADDRESS}.sol:DEX`;
+  if (contractAddress) {
+    contractArtifact = `contracts/download-${contractAddress}.sol:DEX`;
   } else {
     contractArtifact = "contracts/DEX.sol:DEX";
   }
