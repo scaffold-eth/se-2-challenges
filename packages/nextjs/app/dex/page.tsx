@@ -14,7 +14,7 @@ import {
 } from "~~/hooks/scaffold-eth";
 
 // REGEX for number inputs (only allow numbers and a single decimal point)
-export const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
+const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
 
 const Dex: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
