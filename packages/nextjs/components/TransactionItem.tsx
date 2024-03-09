@@ -3,13 +3,14 @@ import { Address, BlockieAvatar } from "./scaffold-eth";
 import { Abi, decodeFunctionData, formatEther } from "viem";
 import { DecodeFunctionDataReturnType } from "viem/_types/utils/abi/decodeFunctionData";
 import { useAccount, useWalletClient } from "wagmi";
+import { TransactionData, getPoolServerUrl } from "~~/app/create/page";
 import {
   useDeployedContractInfo,
   useScaffoldContract,
   useScaffoldContractRead,
   useTransactor,
 } from "~~/hooks/scaffold-eth";
-import { POOL_SERVER_URL, TransactionData } from "~~/pages/create";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { notification } from "~~/utils/scaffold-eth";
 
 type TransactionItemProps = { tx: TransactionData; completed: boolean; outdated: boolean };
@@ -18,6 +19,8 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const transactor = useTransactor();
+  const { targetNetwork } = useTargetNetwork();
+  const poolServerUrl = getPoolServerUrl(targetNetwork.id);
 
   const { data: signaturesRequired } = useScaffoldContractRead({
     contractName: "MetaMultiSigWallet",
@@ -170,7 +173,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
                           newHash,
                         );
 
-                        await fetch(POOL_SERVER_URL, {
+                        await fetch(poolServerUrl, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify(
