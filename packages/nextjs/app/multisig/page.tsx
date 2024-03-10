@@ -1,3 +1,5 @@
+"use client";
+
 import { type FC } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { TransactionEventItem } from "~~/components/TransactionEventItem";

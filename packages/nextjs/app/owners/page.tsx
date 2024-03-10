@@ -1,5 +1,7 @@
+"use client";
+
 import { type FC, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Abi, encodeFunctionData } from "viem";
 import { Address, AddressInput, IntegerInput } from "~~/components/scaffold-eth";

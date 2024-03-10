@@ -1,5 +1,7 @@
+"use client";
+
 import { type FC, useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { DEFAULT_TX_DATA, METHODS, Method, PredefinedTxData } from "../owners/page";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Address, parseEther } from "viem";

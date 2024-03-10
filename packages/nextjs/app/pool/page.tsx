@@ -1,3 +1,5 @@
+"use client";
+
 import { type FC, useMemo, useState } from "react";
 import { TransactionData, getPoolServerUrl } from "../create/page";
 import { useInterval } from "usehooks-ts";
