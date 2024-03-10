@@ -18,7 +18,7 @@ const Multisig: FC = () => {
   });
 
   return (
-    <div className="flex items-center flex-col flex-grow w-full ">
+    <div className="flex items-center flex-col flex-grow w-full my-20 gap-8">
       <div className="flex flex-col gap-4 items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full max-w-lg">
         <Balance address={contractAddress} />
         <QRCodeSVG value={contractAddress || ""} size={256} />

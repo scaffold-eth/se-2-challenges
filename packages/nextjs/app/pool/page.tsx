@@ -104,25 +104,27 @@ const Pool: FC = () => {
   );
 
   return (
-    <div className="flex items-center flex-col flex-grow w-full max-w-2xl">
-      <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full">
-        <div className="text-xl font-bold">Pool</div>
+    <div className="flex flex-col flex-1 items-center my-20 gap-8">
+      <div className="flex items-center flex-col flex-grow w-full max-w-2xl">
+        <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full">
+          <div className="text-xl font-bold">Pool</div>
 
-        <div>Nonce: {nonce !== undefined ? `#${nonce}` : "Loading..."}</div>
+          <div>Nonce: {nonce !== undefined ? `#${nonce}` : "Loading..."}</div>
 
-        <div className="flex flex-col mt-8 gap-4">
-          {transactions === undefined
-            ? "Loading..."
-            : transactions.map(tx => {
-                return (
-                  <TransactionItem
-                    key={tx.hash}
-                    tx={tx}
-                    completed={allEvents.includes(tx.hash as `0x${string}`)}
-                    outdated={lastTx?.nonce != undefined && BigInt(tx.nonce) <= BigInt(lastTx?.nonce)}
-                  />
-                );
-              })}
+          <div className="flex flex-col mt-8 gap-4">
+            {transactions === undefined
+              ? "Loading..."
+              : transactions.map(tx => {
+                  return (
+                    <TransactionItem
+                      key={tx.hash}
+                      tx={tx}
+                      completed={allEvents.includes(tx.hash as `0x${string}`)}
+                      outdated={lastTx?.nonce != undefined && BigInt(tx.nonce) <= BigInt(lastTx?.nonce)}
+                    />
+                  );
+                })}
+          </div>
         </div>
       </div>
     </div>
