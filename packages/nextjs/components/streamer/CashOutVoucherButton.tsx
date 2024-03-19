@@ -1,8 +1,8 @@
-import { utils } from "ethers";
+import { Signature } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { Address } from "wagmi";
+import { Voucher } from "~~/app/streamer/page";
 import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { Voucher } from "~~/pages/streamer";
 
 type CashOutVoucherButtonProps = {
   clientAddress: Address;
@@ -16,7 +16,7 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
     contractName: "Streamer",
     functionName: "withdrawEarnings",
     // TODO: change when viem will implement splitSignature
-    args: [{ ...voucher, sig: voucher?.signature ? (utils.splitSignature(voucher.signature) as any) : undefined }],
+    args: [{ ...voucher, sig: voucher?.signature ? (Signature.from(voucher.signature) as any) : undefined }],
   });
 
   const { data: timeLeft } = useScaffoldContractRead({
