@@ -63,7 +63,7 @@ yarn start
 
 🔍 Inspect the code in the `DiceGame.sol` contract in `packages/hardhat/contracts`
 
-🔒 You will not be changing any code in the DiceGame.sol contract in this challenge. You will write your own contract to predict the outcome, then only roll the dice when it is favourable.
+🔒 You will not be changing any code in the `DiceGame.sol` contract in this challenge. You will write your own contract to predict the outcome, then only roll the dice when it is favourable.
 
 💸 Grab some funds from the faucet and roll the dice a few times. Watch the balance of the DiceGame contract in the Debug tab. It increases on a failed roll and decreases by the prize amount on a successful roll.
 
@@ -78,25 +78,25 @@ yarn start
 
 ## Checkpoint 2: 🔑 Rigged Contract
 
-Start by creating a `receive()` function in the `RiggedRoll.sol` contract to allow it to receive Eth. This will allow us to fund the RiggedRoll contract from the faucet which is required for our contract to call the rollTheDice() function.
+Start by creating a `receive()` function in the `RiggedRoll.sol` contract to allow it to receive Eth. This will allow us to fund the RiggedRoll contract from the faucet which is required for our contract to call the `rollTheDice()` function.
 
 Next add a `riggedRoll()` function. This function should predict the randomness of a roll, and if the outcome will be a winner, call `rollTheDice()` on the DiceGame contract.
 
 🃏 Predict the outcome by generating your random numbers in the exact same way as the DiceGame contract.
 
-> 📣 Reminder! Calling rollTheDice() will fail unless you send a message value of at least .002 Eth! [Here is one example of how to send value with a function call.](https://ethereum.stackexchange.com/questions/6665/call-contract-and-send-value-from-solidity)
+> 📣 Reminder! Calling `rollTheDice()` will fail unless you send a message value of at least .002 Eth! [Here is one example of how to send value with a function call.](https://ethereum.stackexchange.com/questions/6665/call-contract-and-send-value-from-solidity)
 
 🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.ts` file in `packages/hardhat/deploy`
 
-💸 You will need to send some funds to your RiggedRoll contract before doing your first roll, can use the Faucet button at the bottom left of the page.
+💸 You will need to send some funds to your RiggedRoll contract before doing your first roll, you can use the Faucet button at the bottom left of the page.
 
 ❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some `console.log()` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.
 
 ### ⚔️ Side Quest
 
-- [ ] Add a statement to require `address(this).balance >= .002 ether` in your riggedRoll function. This will help prevent calling the rollTheDice() function without enough value.
-- [ ] Uncomment the code in `packages/nextjs/dice/page.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
-- [ ] Does your riggedRoll function only call rollTheDice() when it's going to be a winning roll? What happens when it does call rollTheDice()?
+- [ ] Add a statement to require `address(this).balance >= .002 ether` in your riggedRoll function. This will help prevent calling the `rollTheDice()` function without enough value.
+- [ ] Uncomment the code in `packages/nextjs/app/dice/page.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
+- [ ] Does your riggedRoll function only call `rollTheDice()` when it's going to be a winning roll? What happens when it does call `rollTheDice()`?
 
 ![RiggedLosingRoll](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/b6c8d7b4-139b-4f54-a62c-a0c77b3692a3)
 
@@ -112,7 +112,7 @@ You have beaten the game, but where is your money? Since the RiggedRoll contract
 
 ### 🥅 Goals
 
-- [ ] Can you send value from the riggedRoll contract to your front end address?
+- [ ] Can you send value from the RiggedRoll contract to your front end address?
 - [ ] Is anyone able to call the withdraw function? What would be the downside to that?
 
 ### ⚔️ Side Quest
