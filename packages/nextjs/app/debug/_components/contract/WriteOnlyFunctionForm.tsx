@@ -16,7 +16,6 @@ import {
 import { IntegerInput } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;
@@ -58,8 +57,7 @@ export const WriteOnlyFunctionForm = ({
         await writeTxn(makeWriteWithParams);
         onChange();
       } catch (e: any) {
-        const message = getParsedError(e);
-        notification.error(message);
+        console.error("⚡️ ~ file: WriteOnlyFunctionForm.tsx:handleWrite ~ error", e);
       }
     }
   };
@@ -100,14 +98,20 @@ export const WriteOnlyFunctionForm = ({
         </p>
         {inputs}
         {abiFunction.stateMutability === "payable" ? (
-          <IntegerInput
-            value={txValue}
-            onChange={updatedTxValue => {
-              setDisplayedTxResult(undefined);
-              setTxValue(updatedTxValue);
-            }}
-            placeholder="value (wei)"
-          />
+          <div className="flex flex-col gap-1.5 w-full">
+            <div className="flex items-center ml-2">
+              <span className="text-xs font-medium mr-2 leading-none">payable value</span>
+              <span className="block text-xs font-extralight leading-none">wei</span>
+            </div>
+            <IntegerInput
+              value={txValue}
+              onChange={updatedTxValue => {
+                setDisplayedTxResult(undefined);
+                setTxValue(updatedTxValue);
+              }}
+              placeholder="value (wei)"
+            />
+          </div>
         ) : null}
         <div className="flex justify-between gap-2">
           {!zeroInputs && (
