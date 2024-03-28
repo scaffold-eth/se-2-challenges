@@ -58,24 +58,20 @@ const config: HardhatUserConfig = {
       url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
-    goerli: {
-      url: `https://eth-goerli.alchemyapi.io/v2/${providerApiKey}`,
-      accounts: [deployerPrivateKey],
-    },
     arbitrum: {
       url: `https://arb-mainnet.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
-    arbitrumGoerli: {
-      url: `https://arb-goerli.g.alchemy.com/v2/${providerApiKey}`,
+    arbitrumSepolia: {
+      url: `https://arb-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
     optimism: {
       url: `https://opt-mainnet.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
-    optimismGoerli: {
-      url: `https://opt-goerli.g.alchemy.com/v2/${providerApiKey}`,
+    optimismSepolia: {
+      url: `https://opt-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
     polygon: {
@@ -104,10 +100,6 @@ const config: HardhatUserConfig = {
     },
     base: {
       url: "https://mainnet.base.org",
-      accounts: [deployerPrivateKey],
-    },
-    baseGoerli: {
-      url: "https://goerli.base.org",
       accounts: [deployerPrivateKey],
     },
     baseSepolia: {
