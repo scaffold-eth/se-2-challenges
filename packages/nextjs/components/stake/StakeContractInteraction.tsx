@@ -109,14 +109,14 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
         </div>
         <div className="flex flex-col space-y-5">
           <div className="flex space-x-7">
-            <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(execute)}>
+            <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(execute, "execute")}>
               Execute!
             </button>
-            <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(withdrawETH)}>
+            <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(withdrawETH, "withdrawETH")}>
               Withdraw
             </button>
           </div>
-          <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(stakeETH)}>
+          <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(stakeETH, "stakeETH")}>
             🥩 Stake 0.5 ether!
           </button>
         </div>
