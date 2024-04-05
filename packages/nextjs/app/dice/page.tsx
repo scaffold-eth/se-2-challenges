@@ -15,6 +15,7 @@ import {
   useScaffoldEventHistory,
   useScaffoldEventSubscriber,
 } from "~~/hooks/scaffold-eth";
+import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 const ROLL_ETH_VALUE = "0.002";
 // const ROLLING_TIME_MS = 500;
@@ -163,7 +164,7 @@ const DiceGame: NextPage = () => {
                 setRolled(true);
               }
               setIsRolling(true);
-              randomDiceRoll();
+              wrapInTryCatch(randomDiceRoll);
             }}
             disabled={isRolling}
             className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
@@ -186,7 +187,7 @@ const DiceGame: NextPage = () => {
                   setRolled(true);
                 }
                 setIsRolling(true);
-                riggedRoll();
+                wrapInTryCatch(riggedRoll);
               }}
               disabled={isRolling}
               className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
