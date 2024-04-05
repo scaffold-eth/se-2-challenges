@@ -137,7 +137,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
             className="btn btn-primary uppercase"
             onClick={async () => {
               try {
-                stakeETH();
+                await stakeETH();
               } catch (error) {
                 console.error("Error calling stake function", error);
               }
