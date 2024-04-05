@@ -49,7 +49,10 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
           />
         </div>
         <div className="card-actions justify-end">
-          <button className="btn btn-secondary btn-md px-8 tracking-wide" onClick={wrapInTryCatch(transferNFT)}>
+          <button
+            className="btn btn-secondary btn-md px-8 tracking-wide"
+            onClick={wrapInTryCatch(transferNFT, "transferNFT")}
+          >
             Send
           </button>
         </div>
