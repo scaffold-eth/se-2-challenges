@@ -108,14 +108,41 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
         </div>
         <div className="flex flex-col space-y-5">
           <div className="flex space-x-7">
-            <button className="btn btn-primary uppercase" onClick={() => execute()}>
+            <button
+              className="btn btn-primary uppercase"
+              onClick={async () => {
+                try {
+                  await execute();
+                } catch (error) {
+                  console.error("Error calling execute function", error);
+                }
+              }}
+            >
               Execute!
             </button>
-            <button className="btn btn-primary uppercase" onClick={() => withdrawETH()}>
+            <button
+              className="btn btn-primary uppercase"
+              onClick={async () => {
+                try {
+                  await withdrawETH();
+                } catch (error) {
+                  console.error("Error calling withdraw function", error);
+                }
+              }}
+            >
               Withdraw
             </button>
           </div>
-          <button className="btn btn-primary uppercase" onClick={() => stakeETH()}>
+          <button
+            className="btn btn-primary uppercase"
+            onClick={async () => {
+              try {
+                stakeETH();
+              } catch (error) {
+                console.error("Error calling stake function", error);
+              }
+            }}
+          >
             🥩 Stake 0.5 ether!
           </button>
         </div>
