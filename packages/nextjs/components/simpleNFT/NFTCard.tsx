@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Address, AddressInput } from "../scaffold-eth";
 import { Collectible } from "./MyHoldings";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 export const NFTCard = ({ nft }: { nft: Collectible }) => {
   const [transferToAddress, setTransferToAddress] = useState("");
@@ -48,7 +49,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
           />
         </div>
         <div className="card-actions justify-end">
-          <button className="btn btn-secondary btn-md px-8 tracking-wide" onClick={() => transferNFT()}>
+          <button className="btn btn-secondary btn-md px-8 tracking-wide" onClick={wrapInTryCatch(transferNFT)}>
             Send
           </button>
         </div>
