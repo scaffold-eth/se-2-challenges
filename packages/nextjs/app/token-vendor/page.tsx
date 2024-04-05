@@ -115,7 +115,7 @@ const TokenVendor: NextPage = () => {
             />
           </div>
 
-          <button className="btn btn-secondary mt-2" onClick={wrapInTryCatch(buyTokens)}>
+          <button className="btn btn-secondary mt-2" onClick={wrapInTryCatch(buyTokens, "buyTokens")}>
             Buy Tokens
           </button>
         </div> */}
@@ -133,7 +133,7 @@ const TokenVendor: NextPage = () => {
               />
             </div>
 
-            <button className="btn btn-secondary" onClick={wrapInTryCatch(transferTokens)}>
+            <button className="btn btn-secondary" onClick={wrapInTryCatch(transferTokens, "transferTokens")}>
               Send Tokens
             </button>
           </div>
@@ -161,7 +161,7 @@ const TokenVendor: NextPage = () => {
                 onClick={wrapInTryCatch(async () => {
                   await approveTokens();
                   setIsApproved(true);
-                })}
+                }, "approveTokens")}
               >
                 Approve Tokens
               </button>
@@ -171,7 +171,7 @@ const TokenVendor: NextPage = () => {
                 onClick={wrapInTryCatch(async () => {
                   await sellTokens();
                   setIsApproved(false);
-                })}
+                }, "sellTokens")}
               >
                 Sell Tokens
               </button>
