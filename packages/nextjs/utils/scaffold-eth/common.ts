@@ -2,10 +2,10 @@
 // https://wagmi.sh/react/faq#bigint-serialization
 export const replacer = (_key: string, value: unknown) => (typeof value === "bigint" ? value.toString() : value);
 
-export const wrapInTryCatch = (fn: () => Promise<any>) => async () => {
+export const wrapInTryCatch = (fn: () => Promise<any>, errorMessageFnDescription: string) => async () => {
   try {
     await fn();
   } catch (error) {
-    console.error(`Error calling ${fn.name} function`, error);
+    console.error(`Error calling ${errorMessageFnDescription} function`, error);
   }
 };
