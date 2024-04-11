@@ -159,12 +159,13 @@ const DiceGame: NextPage = () => {
           </div>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               if (!rolled) {
                 setRolled(true);
               }
               setIsRolling(true);
-              wrapInTryCatch(randomDiceRoll);
+              const wrappedRandomDiceRoll = wrapInTryCatch(randomDiceRoll, "randomDiceRoll");
+              await wrappedRandomDiceRoll();
             }}
             disabled={isRolling}
             className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
@@ -182,17 +183,18 @@ const DiceGame: NextPage = () => {
             </div>
           </div>
           {/* <button
-              onClick={() => {
-                if (!rolled) {
-                  setRolled(true);
-                }
-                setIsRolling(true);
-                wrapInTryCatch(riggedRoll);
-              }}
-              disabled={isRolling}
-              className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
-            >
-              Rigged Roll!
+              onClick={async () => {
+              if (!rolled) {
+                setRolled(true);
+              }
+              setIsRolling(true);
+              const wrappedRiggedRoll = wrapInTryCatch(riggedRoll, "riggedRoll");
+              await wrappedRiggedRoll();
+            }}
+            disabled={isRolling}
+            className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
+          >
+            Rigged Roll!
             </button> */}
 
           <div className="flex mt-8">
