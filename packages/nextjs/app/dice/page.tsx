@@ -18,7 +18,6 @@ import {
 import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 const ROLL_ETH_VALUE = "0.002";
-// const ROLLING_TIME_MS = 500;
 const MAX_TABLE_ROWS = 10;
 
 const DiceGame: NextPage = () => {
@@ -65,7 +64,6 @@ const DiceGame: NextPage = () => {
         const { player, amount, roll } = log.args;
 
         if (player && amount && roll !== undefined) {
-          // setTimeout(() => {
           setIsRolling(false);
           setRolls(rolls =>
             [{ address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() }, ...rolls].slice(
@@ -73,7 +71,6 @@ const DiceGame: NextPage = () => {
               MAX_TABLE_ROWS,
             ),
           );
-          // }, ROLLING_TIME_MS);
         }
       });
     },
@@ -106,10 +103,8 @@ const DiceGame: NextPage = () => {
         const { winner, amount } = log.args;
 
         if (winner && amount) {
-          // setTimeout(() => {
           setIsRolling(false);
           setWinners(winners => [{ address: winner, amount }, ...winners].slice(0, MAX_TABLE_ROWS));
-          // }, ROLLING_TIME_MS);
         }
       });
     },
