@@ -152,7 +152,7 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(ethToTokenWrite)}
+                  onClick={wrapInTryCatch(ethToTokenWrite, "ethToTokenWrite")}
                 >
                   Send
                 </button>
@@ -172,7 +172,7 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(tokenToEthWrite)}
+                  onClick={wrapInTryCatch(tokenToEthWrite, "tokenToEthWrite")}
                 >
                   Send
                 </button>
@@ -188,7 +188,7 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(depositWrite)}
+                  onClick={wrapInTryCatch(depositWrite, "depositWrite")}
                 >
                   Send
                 </button>
@@ -200,7 +200,7 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(withdrawWrite)}
+                  onClick={wrapInTryCatch(withdrawWrite, "withdrawWrite")}
                 >
                   Send
                 </button>
@@ -236,7 +236,7 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-auto"
-                  onClick={wrapInTryCatch(approveWrite)}
+                  onClick={wrapInTryCatch(approveWrite, "approveWrite")}
                 >
                   Send
                 </button>
