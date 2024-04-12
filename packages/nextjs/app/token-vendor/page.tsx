@@ -11,6 +11,7 @@ import {
   useScaffoldContractRead,
   useScaffoldContractWrite,
 } from "~~/hooks/scaffold-eth";
+import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 import { getTokenPrice, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
 
 const TokenVendor: NextPage = () => {
@@ -114,7 +115,7 @@ const TokenVendor: NextPage = () => {
             />
           </div>
 
-          <button className="btn btn-secondary mt-2" onClick={() => buyTokens()}>
+          <button className="btn btn-secondary mt-2" onClick={wrapInTryCatch(buyTokens, "buyTokens")}>
             Buy Tokens
           </button>
         </div> */}
@@ -132,7 +133,7 @@ const TokenVendor: NextPage = () => {
               />
             </div>
 
-            <button className="btn btn-secondary" onClick={() => transferTokens()}>
+            <button className="btn btn-secondary" onClick={wrapInTryCatch(transferTokens, "transferTokens")}>
               Send Tokens
             </button>
           </div>
@@ -157,20 +158,20 @@ const TokenVendor: NextPage = () => {
             <div className="flex gap-4">
               <button
                 className={`btn ${isApproved ? "btn-disabled" : "btn-secondary"}`}
-                onClick={async () => {
+                onClick={wrapInTryCatch(async () => {
                   await approveTokens();
                   setIsApproved(true);
-                }}
+                }, "approveTokens")}
               >
                 Approve Tokens
               </button>
 
               <button
                 className={`btn ${isApproved ? "btn-secondary" : "btn-disabled"}`}
-                onClick={async () => {
+                onClick={wrapInTryCatch(async () => {
                   await sellTokens();
                   setIsApproved(false);
-                }}
+                }, "sellTokens")}
               >
                 Sell Tokens
               </button>
