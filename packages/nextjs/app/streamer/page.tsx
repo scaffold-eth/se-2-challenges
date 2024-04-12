@@ -16,6 +16,7 @@ import {
   useScaffoldEventHistory,
   useScaffoldEventSubscriber,
 } from "~~/hooks/scaffold-eth";
+import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 export type Voucher = { updatedBalance: bigint; signature: `0x${string}}` };
 
@@ -394,10 +395,11 @@ const Streamer: NextPage = () => {
                     <button
                       disabled={challenged.includes(userAddress)}
                       className="btn btn-primary"
-                      onClick={() => {
+                      onClick={async () => {
                         // disable the production of further voucher signatures
                         setAutoPay(false);
-                        challengeChannel();
+                        const wrappedChallengeChannel = wrapInTryCatch(challengeChannel, "challengeChannel");
+                        wrappedChallengeChannel();
                         try {
                           // ensure a 'ticking clock' for the UI without having
                           // to send new transactions & mine new blocks
@@ -424,11 +426,11 @@ const Streamer: NextPage = () => {
                     <button
                       className="btn btn-primary"
                       disabled={!challenged.includes(userAddress) || !!timeLeft}
-                      onClick={() => defundChannel()}
+                      onClick={wrapInTryCatch(defundChannel, "defundChannel")}
                     >
                       Close and withdraw funds
                     </button>
-                  </div> */}
+                    </div> */}
                 </div>
               ) : userAddress && closed.includes(userAddress) ? (
                 <div className="text-lg">
@@ -439,7 +441,7 @@ const Streamer: NextPage = () => {
                 </div>
               ) : (
                 <div className="p-2">
-                  <button className="btn btn-primary" onClick={() => fundChannel()}>
+                  <button className="btn btn-primary" onClick={wrapInTryCatch(fundChannel, "fundChannel")}>
                     Open a 0.5 ETH channel for advice from the Guru
                   </button>
                 </div>
