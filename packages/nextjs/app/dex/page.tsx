@@ -12,6 +12,7 @@ import {
   useScaffoldContractRead,
   useScaffoldContractWrite,
 } from "~~/hooks/scaffold-eth";
+import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 // REGEX for number inputs (only allow numbers and a single decimal point)
 const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
@@ -151,7 +152,7 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={() => ethToTokenWrite()}
+                  onClick={wrapInTryCatch(ethToTokenWrite, "ethToTokenWrite")}
                 >
                   Send
                 </button>
@@ -171,7 +172,7 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={() => tokenToEthWrite()}
+                  onClick={wrapInTryCatch(tokenToEthWrite, "tokenToEthWrite")}
                 >
                   Send
                 </button>
@@ -185,7 +186,10 @@ const Dex: NextPage = () => {
                 <span className="w-1/2">
                   Deposit <EtherInput value={depositAmount} onChange={value => setDepositAmount(value)} />
                 </span>
-                <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5" onClick={() => depositWrite()}>
+                <button
+                  className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
+                  onClick={wrapInTryCatch(depositWrite, "depositWrite")}
+                >
                   Send
                 </button>
               </div>
@@ -194,7 +198,10 @@ const Dex: NextPage = () => {
                 <span className="w-1/2">
                   Withdraw <EtherInput value={withdrawAmount} onChange={value => setWithdrawAmount(value)} />
                 </span>
-                <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5" onClick={() => withdrawWrite()}>
+                <button
+                  className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
+                  onClick={wrapInTryCatch(withdrawWrite, "withdrawWrite")}
+                >
                   Send
                 </button>
               </div>
@@ -227,7 +234,10 @@ const Dex: NextPage = () => {
                     disableMultiplyBy1e18
                   />
                 </span>
-                <button className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-auto" onClick={() => approveWrite()}>
+                <button
+                  className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-auto"
+                  onClick={wrapInTryCatch(approveWrite, "approveWrite")}
+                >
                   Send
                 </button>
                 <span className="w-1/2">

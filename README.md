@@ -459,7 +459,7 @@ Let’s create two new functions that let us deposit and withdraw liquidity. How
 
 > The `deposit()` function receives ETH and also transfers $BAL tokens from the caller to the contract at the right ratio. The contract also tracks the amount of liquidity (how many liquidity provider tokens (LPTs) minted) the depositing address owns vs the totalLiquidity.
 
-What does this hint mean in practice? The goal is to allow a user to `deposit()` ETH into our `totalLiquidity`, and update their `liquidity`. This is very similar to the `init()` function, except we want it to work for anyone providing liquidity. Also, since there already is liquidity we want the liquidity they provide to leave the ratio of the two assets unchanged. 
+What does this hint mean in practice? The goal is to allow a user to `deposit()` ETH into our `totalLiquidity`, and update their `liquidity`. This is very similar to the `init()` function, except we want it to work for anyone providing liquidity. Also, since there already is liquidity we want the liquidity they provide to leave the ratio of the two assets unchanged.
 
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
@@ -485,8 +485,9 @@ Part 1: Getting Reserves 🏦
 
 - [ ] Do you have reserves of both assets?
 
-Part 2: Performing Calculations 🤖 
-> What are we calculating again? Oh yeah, for the amount of ETH the user is depositing, we want them to also deposit a proportional amount of tokens. Let's make a reusable equation where we can swap out a value and get an output of the ETH and $BAL the user will be depositing, named `tokenDeposit` and `liquidityMinted`. 
+Part 2: Performing Calculations 🤖
+
+> What are we calculating again? Oh yeah, for the amount of ETH the user is depositing, we want them to also deposit a proportional amount of tokens. Let's make a reusable equation where we can swap out a value and get an output of the ETH and $BAL the user will be depositing, named `tokenDeposit` and `liquidityMinted`.
 
 <details markdown='1'><summary>Question Four</summary>
 
@@ -589,7 +590,8 @@ Part 1: Getting Reserves 🏦
 
 </details>
 
-Part 2: Performing Calculations 🤖 
+Part 2: Performing Calculations 🤖
+
 > We need to calculate how much of each asset our user is going withdraw, call them `ethWithdrawn` and `tokenAmount`. The equation is: `amount *` reserveOfDesiredUnits `/ totalLiquidity`
 
 <details markdown='1'><summary>Question Four</summary>
