@@ -15,9 +15,9 @@ import {
   useScaffoldEventHistory,
   useScaffoldEventSubscriber,
 } from "~~/hooks/scaffold-eth";
+import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 const ROLL_ETH_VALUE = "0.002";
-// const ROLLING_TIME_MS = 500;
 const MAX_TABLE_ROWS = 10;
 
 const DiceGame: NextPage = () => {
@@ -47,9 +47,9 @@ const DiceGame: NextPage = () => {
       setRolls(
         (
           rollsHistoryData?.map(({ args }) => ({
-            address: args.player,
+            address: args.player as string,
             amount: Number(args.amount),
-            roll: args.roll.toString(16).toUpperCase(),
+            roll: (args.roll as bigint).toString(16).toUpperCase(),
           })) || []
         ).slice(0, MAX_TABLE_ROWS),
       );
@@ -64,7 +64,6 @@ const DiceGame: NextPage = () => {
         const { player, amount, roll } = log.args;
 
         if (player && amount && roll !== undefined) {
-          // setTimeout(() => {
           setIsRolling(false);
           setRolls(rolls =>
             [{ address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() }, ...rolls].slice(
@@ -72,7 +71,6 @@ const DiceGame: NextPage = () => {
               MAX_TABLE_ROWS,
             ),
           );
-          // }, ROLLING_TIME_MS);
         }
       });
     },
@@ -89,8 +87,8 @@ const DiceGame: NextPage = () => {
       setWinners(
         (
           winnerHistoryData?.map(({ args }) => ({
-            address: args.winner,
-            amount: args.amount,
+            address: args.winner as string,
+            amount: args.amount as bigint,
           })) || []
         ).slice(0, MAX_TABLE_ROWS),
       );
@@ -105,10 +103,8 @@ const DiceGame: NextPage = () => {
         const { winner, amount } = log.args;
 
         if (winner && amount) {
-          // setTimeout(() => {
           setIsRolling(false);
           setWinners(winners => [{ address: winner, amount }, ...winners].slice(0, MAX_TABLE_ROWS));
-          // }, ROLLING_TIME_MS);
         }
       });
     },
@@ -158,12 +154,13 @@ const DiceGame: NextPage = () => {
           </div>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               if (!rolled) {
                 setRolled(true);
               }
               setIsRolling(true);
-              randomDiceRoll();
+              const wrappedRandomDiceRoll = wrapInTryCatch(randomDiceRoll, "randomDiceRoll");
+              await wrappedRandomDiceRoll();
             }}
             disabled={isRolling}
             className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
@@ -181,17 +178,18 @@ const DiceGame: NextPage = () => {
             </div>
           </div>
           {/* <button
-              onClick={() => {
-                if (!rolled) {
-                  setRolled(true);
-                }
-                setIsRolling(true);
-                riggedRoll();
-              }}
-              disabled={isRolling}
-              className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
-            >
-              Rigged Roll!
+              onClick={async () => {
+              if (!rolled) {
+                setRolled(true);
+              }
+              setIsRolling(true);
+              const wrappedRiggedRoll = wrapInTryCatch(riggedRoll, "riggedRoll");
+              await wrappedRiggedRoll();
+            }}
+            disabled={isRolling}
+            className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
+          >
+            Rigged Roll!
             </button> */}
 
           <div className="flex mt-8">
