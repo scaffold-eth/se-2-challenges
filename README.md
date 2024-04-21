@@ -86,8 +86,8 @@ We'll need another active address to act as the rube in our app. To do this just
 
 ### 🥅 Goals:
 
-- [ ] Does your original frontend address recieve the `Hello Guru` UI?
-- [ ] Does your alternate addresses recieve the `Hello Rube` UI?
+- [ ] Does your original frontend address receive the `Hello Guru` UI?
+- [ ] Does your alternate addresses receive the `Hello Rube` UI?
 
 ---
 
@@ -124,8 +124,8 @@ Now that the channel is funded and all participants have observed the funding vi
 Functions of note:
 
 - `provideService`: The Guru sends wisdom over the wire to the client.
-- `reimburseService`: The rube creates a voucher for the recieved service, signs it, and returns it.
-- `processVoucher`: The service provider recieves and stores vouchers.
+- `reimburseService`: The rube creates a voucher for the received service, signs it, and returns it.
+- `processVoucher`: The service provider receives and stores vouchers.
 
 The first two functions are complete - we will work on `processVoucher`, where the service provider examines returned payments, confirms their authenticity, and stores them.
 
