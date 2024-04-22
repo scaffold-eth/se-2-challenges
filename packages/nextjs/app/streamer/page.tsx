@@ -101,14 +101,14 @@ const Streamer: NextPage = () => {
 
   if (userIsOwner) {
     Object.keys(channels)?.forEach(clientAddress => {
-      channels[clientAddress].onmessage = recieveVoucher(clientAddress);
+      channels[clientAddress].onmessage = receiveVoucher(clientAddress);
     });
   }
 
   /**
    * wraps a voucher processing function for each client.
    */
-  function recieveVoucher(clientAddress: string) {
+  function receiveVoucher(clientAddress: string) {
     /**
      * Handle incoming payments from the given client.
      */
@@ -123,7 +123,7 @@ const Streamer: NextPage = () => {
       /*
        *  Checkpoint 3:
        *
-       *  currently, this function recieves and stores vouchers uncritically.
+       *  currently, this function receives and stores vouchers uncritically.
        *
        *  recreate the packed, hashed, and arrayified message from reimburseService (above),
        *  and then use verifyMessage() to confirm that voucher signer was
@@ -225,10 +225,10 @@ const Streamer: NextPage = () => {
   //   functionName: "defundChannel",
   // });
 
-  const [recievedWisdom, setReceivedWisdom] = useState("");
+  const [receivedWisdom, setReceivedWisdom] = useState("");
 
   /**
-   * reimburseService prepares, signs, and delivers a voucher that pays for the recieved wisdom
+   * reimburseService prepares, signs, and delivers a voucher that pays for the received wisdom
    * to the service provider
    */
   async function reimburseService(wisdom: string) {
@@ -285,7 +285,7 @@ const Streamer: NextPage = () => {
      */
     userChannel.current.onmessage = e => {
       if (typeof e.data != "string") {
-        console.warn(`recieved unexpected channel data: ${JSON.stringify(e.data)}`);
+        console.warn(`received unexpected channel data: ${JSON.stringify(e.data)}`);
         return;
       }
 
@@ -337,7 +337,7 @@ const Streamer: NextPage = () => {
                         Served: <strong>{wisdoms[clientAddress]?.length || 0}</strong>&nbsp;chars
                       </div>
                       <div>
-                        Recieved:{" "}
+                        Received:{" "}
                         <strong id={`claimable-${clientAddress}`}>
                           {vouchers[clientAddress]
                             ? formatEther(parseEther(STREAM_ETH_VALUE) - vouchers[clientAddress].updatedBalance)
@@ -378,7 +378,7 @@ const Streamer: NextPage = () => {
                         setAutoPay(updatedAutoPay);
 
                         if (updatedAutoPay) {
-                          reimburseService(recievedWisdom);
+                          reimburseService(receivedWisdom);
                         }
                       }}
                     />
@@ -387,7 +387,7 @@ const Streamer: NextPage = () => {
 
                   <div className="text-center w-full mt-4">
                     <p className="text-xl font-semibold">Received Wisdom</p>
-                    <p className="mb-3 text-lg min-h-[1.75rem] border-2 border-primary rounded">{recievedWisdom}</p>
+                    <p className="mb-3 text-lg min-h-[1.75rem] border-2 border-primary rounded">{receivedWisdom}</p>
                   </div>
 
                   {/* Checkpoint 5: challenge & closure */}
