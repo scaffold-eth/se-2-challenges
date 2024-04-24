@@ -1,17 +1,12 @@
 import { useState } from "react";
 import { Address, AddressInput } from "../scaffold-eth";
 import { Collectible } from "./MyHoldings";
-import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 export const NFTCard = ({ nft }: { nft: Collectible }) => {
   const [transferToAddress, setTransferToAddress] = useState("");
 
-  const { writeAsync: transferNFT } = useScaffoldContractWrite({
-    contractName: "YourCollectible",
-    functionName: "transferFrom",
-    args: [nft.owner, transferToAddress, BigInt(nft.id.toString())],
-  });
+  const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
 
   return (
     <div className="card card-compact bg-base-100 shadow-lg sm:min-w-[300px] shadow-secondary">
@@ -51,7 +46,16 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
         <div className="card-actions justify-end">
           <button
             className="btn btn-secondary btn-md px-8 tracking-wide"
-            onClick={wrapInTryCatch(transferNFT, "transferNFT")}
+            onClick={() => {
+              try {
+                writeContractAsync({
+                  functionName: "transferFrom",
+                  args: [nft.owner, transferToAddress, BigInt(nft.id.toString())],
+                });
+              } catch (err) {
+                console.error("Error calling transferFrom function");
+              }
+            }}
           >
             Send
           </button>

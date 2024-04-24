@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { NFTCard } from "./NFTCard";
 import { useAccount } from "wagmi";
-import { useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { getMetadataFromIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
 import { NFTMetaData } from "~~/utils/simpleNFT/nftsMetadata";
@@ -23,7 +23,7 @@ export const MyHoldings = () => {
     contractName: "YourCollectible",
   });
 
-  const { data: myTotalBalance } = useScaffoldContractRead({
+  const { data: myTotalBalance } = useScaffoldReadContract({
     contractName: "YourCollectible",
     functionName: "balanceOf",
     args: [connectedAddress],
