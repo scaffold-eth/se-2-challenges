@@ -1,7 +1,11 @@
 import { Chain, Wallet } from "@rainbow-me/rainbowkit";
 import { hardhat } from "viem/chains";
 import scaffoldConfig from "~~/scaffold.config";
-import { BurnerConnector, burnerWalletId, burnerWalletName } from "~~/services/web3/wagmi-burner/BurnerConnector";
+import {
+  burnerWalletId,
+  burnerWalletName,
+  createBurnerConnector,
+} from "~~/services/web3/wagmi-burner/createBurnerConnector";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 const { onlyLocalBurnerWallet } = scaffoldConfig;
@@ -16,7 +20,7 @@ const burnerWalletIconBase64 =
 /**
  * Wagmi config for burner wallet
  */
-export const burnerWalletConfig = ({ chains }: BurnerWalletOptions): Wallet => ({
+export const burnerWalletConfig = (): Wallet => ({
   id: burnerWalletId,
   name: burnerWalletName,
   iconUrl: burnerWalletIconBase64,
@@ -28,11 +32,5 @@ export const burnerWalletConfig = ({ chains }: BurnerWalletOptions): Wallet => (
 
     return false;
   },
-  createConnector: () => {
-    const connector = new BurnerConnector({ chains, options: { defaultChainId: targetNetworks[0].id } });
-
-    return {
-      connector,
-    };
-  },
+  createConnector: createBurnerConnector,
 });
