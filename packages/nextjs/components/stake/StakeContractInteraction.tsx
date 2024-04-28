@@ -1,65 +1,60 @@
 "use client";
 
+import { useEffect } from "react";
 import { Address } from "../scaffold-eth";
 import { ETHToPrice } from "./EthToPrice";
+import { useQueryClient } from "@tanstack/react-query";
 import humanizeDuration from "humanize-duration";
 import { formatEther, parseEther } from "viem";
-import { useAccount } from "wagmi";
-import {
-  useAccountBalance,
-  useDeployedContractInfo,
-  useScaffoldContractRead,
-  useScaffoldContractWrite,
-} from "~~/hooks/scaffold-eth";
+import { useAccount, useBalance, useBlockNumber } from "wagmi";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
   const { data: StakerContract } = useDeployedContractInfo("Staker");
   const { data: ExampleExternalContact } = useDeployedContractInfo("ExampleExternalContract");
-  const { balance: stakerContractBalance } = useAccountBalance(StakerContract?.address);
-  const { balance: exampleExternalContractBalance } = useAccountBalance(ExampleExternalContact?.address);
+  const { data: stakerContractBalance, queryKey: stakerBalanceQueryKey } = useBalance({
+    address: StakerContract?.address,
+  });
+  const { data: exampleExternalContractBalance, queryKey: externaContractBalanceQueryKey } = useBalance({
+    address: ExampleExternalContact?.address,
+  });
 
   const { targetNetwork } = useTargetNetwork();
 
+  const queryClient = useQueryClient();
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: stakerBalanceQueryKey });
+    queryClient.invalidateQueries({ queryKey: externaContractBalanceQueryKey });
+  }, [blockNumber, stakerBalanceQueryKey, externaContractBalanceQueryKey, queryClient]);
+
   // Contract Read Actions
-  const { data: threshold } = useScaffoldContractRead({
+  const { data: threshold } = useScaffoldReadContract({
     contractName: "Staker",
     functionName: "threshold",
     watch: true,
   });
-  const { data: timeLeft } = useScaffoldContractRead({
+  const { data: timeLeft } = useScaffoldReadContract({
     contractName: "Staker",
     functionName: "timeLeft",
     watch: true,
   });
-  const { data: myStake } = useScaffoldContractRead({
+  const { data: myStake } = useScaffoldReadContract({
     contractName: "Staker",
     functionName: "balances",
     args: [connectedAddress],
     watch: true,
   });
-  const { data: isStakingCompleted } = useScaffoldContractRead({
+  const { data: isStakingCompleted } = useScaffoldReadContract({
     contractName: "ExampleExternalContract",
     functionName: "completed",
     watch: true,
   });
 
-  // Contract Write Actions
-  const { writeAsync: stakeETH } = useScaffoldContractWrite({
-    contractName: "Staker",
-    functionName: "stake",
-    value: parseEther("0.5"),
-  });
-  const { writeAsync: execute } = useScaffoldContractWrite({
-    contractName: "Staker",
-    functionName: "execute",
-  });
-  const { writeAsync: withdrawETH } = useScaffoldContractWrite({
-    contractName: "Staker",
-    functionName: "withdraw",
-  });
+  const { writeContractAsync } = useScaffoldWriteContract("Staker");
 
   return (
     <div className="flex items-center flex-col flex-grow w-full px-4 gap-12">
@@ -71,7 +66,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
           </p>
           <div className="flex items-center">
             <ETHToPrice
-              value={exampleExternalContractBalance != null ? exampleExternalContractBalance.toString() : undefined}
+              value={exampleExternalContractBalance ? formatEther(exampleExternalContractBalance.value) : undefined}
               className="text-[1rem]"
             />
             <p className="block m-0 text-lg -ml-1">staked !!</p>
@@ -102,21 +97,48 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
         <div className="flex flex-col items-center shrink-0 w-full">
           <p className="block text-xl mt-0 mb-1 font-semibold">Total Staked</p>
           <div className="flex space-x-2">
-            {<ETHToPrice value={stakerContractBalance != null ? stakerContractBalance.toString() : undefined} />}
+            {<ETHToPrice value={stakerContractBalance ? formatEther(stakerContractBalance.value) : undefined} />}
             <span>/</span>
             {<ETHToPrice value={threshold ? formatEther(threshold) : undefined} />}
           </div>
         </div>
         <div className="flex flex-col space-y-5">
           <div className="flex space-x-7">
-            <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(execute, "execute")}>
+            <button
+              className="btn btn-primary uppercase"
+              onClick={async () => {
+                try {
+                  await writeContractAsync({ functionName: "execute" });
+                } catch (err) {
+                  console.error("Error calling execute function");
+                }
+              }}
+            >
               Execute!
             </button>
-            <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(withdrawETH, "withdrawETH")}>
+            <button
+              className="btn btn-primary uppercase"
+              onClick={async () => {
+                try {
+                  await writeContractAsync({ functionName: "withdraw" });
+                } catch (err) {
+                  console.error("Error calling withdraw function");
+                }
+              }}
+            >
               Withdraw
             </button>
           </div>
-          <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(stakeETH, "stakeETH")}>
+          <button
+            className="btn btn-primary uppercase"
+            onClick={async () => {
+              try {
+                await writeContractAsync({ functionName: "stake", value: parseEther("0.5") });
+              } catch (err) {
+                console.error("Error calling stake function");
+              }
+            }}
+          >
             🥩 Stake 0.5 ether!
           </button>
         </div>
