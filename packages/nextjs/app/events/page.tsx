@@ -100,8 +100,8 @@ const Events: NextPage = () => {
                         <td className="text-center">
                           <Address address={event.args.seller} />
                         </td>
-                        <td>{formatEther(event.args.amountOfTokens).toString()}</td>
-                        <td>{formatEther(event.args.amountOfETH).toString()}</td>
+                        <td>{formatEther(event.args?.amountOfTokens || 0n)}</td>
+                        <td>{formatEther(event.args?.amountOfETH || 0n)}</td>
                       </tr>
                     );
                   })
