@@ -24,7 +24,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { targetNetwork } = useTargetNetwork();
 
   const queryClient = useQueryClient();
-  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: targetNetwork.id });
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: stakerBalanceQueryKey });
