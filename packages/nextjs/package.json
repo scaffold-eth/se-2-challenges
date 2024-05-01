@@ -19,6 +19,7 @@
     "@uniswap/sdk-core": "^4.0.1",
     "@uniswap/v2-sdk": "^3.0.1",
     "blo": "^1.0.1",
+    "burner-connector": "^0.0.3",
     "daisyui": "4.5.0",
     "ipfs-utils": "^9.0.14",
     "kubo-rpc-client": "^3.0.1",
