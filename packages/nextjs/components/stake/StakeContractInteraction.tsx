@@ -1,35 +1,26 @@
 "use client";
 
-import { useEffect } from "react";
 import { Address } from "../scaffold-eth";
 import { ETHToPrice } from "./EthToPrice";
-import { useQueryClient } from "@tanstack/react-query";
 import humanizeDuration from "humanize-duration";
 import { formatEther, parseEther } from "viem";
-import { useAccount, useBalance, useBlockNumber } from "wagmi";
+import { useAccount } from "wagmi";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
 export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
   const { data: StakerContract } = useDeployedContractInfo("Staker");
   const { data: ExampleExternalContact } = useDeployedContractInfo("ExampleExternalContract");
-  const { data: stakerContractBalance, queryKey: stakerBalanceQueryKey } = useBalance({
+  const { data: stakerContractBalance } = useWatchBalance({
     address: StakerContract?.address,
   });
-  const { data: exampleExternalContractBalance, queryKey: externaContractBalanceQueryKey } = useBalance({
+  const { data: exampleExternalContractBalance } = useWatchBalance({
     address: ExampleExternalContact?.address,
   });
 
   const { targetNetwork } = useTargetNetwork();
-
-  const queryClient = useQueryClient();
-  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: targetNetwork.id });
-
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: stakerBalanceQueryKey });
-    queryClient.invalidateQueries({ queryKey: externaContractBalanceQueryKey });
-  }, [blockNumber, stakerBalanceQueryKey, externaContractBalanceQueryKey, queryClient]);
 
   // Contract Read Actions
   const { data: threshold } = useScaffoldReadContract({
