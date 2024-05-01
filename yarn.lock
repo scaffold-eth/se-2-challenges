@@ -2579,7 +2579,7 @@ __metadata:
     use-debounce: ^8.0.4
     usehooks-ts: ^2.13.0
     vercel: ^32.4.1
-    viem: ^2.8.16
+    viem: 2.8.16
     wagmi: ^2.5.12
     zustand: ^4.1.2
   languageName: unknown
@@ -16385,27 +16385,6 @@ __metadata:
     typescript:
       optional: true
   checksum: c351fdea2d53d2d781ac73c964348b3b9fc5dd46f9eb53903e867705fc9e30a893cb9f2c8d7a00acdcdeca27d14eeebf976eed9f948c28c47018dc9211369117
-  languageName: node
-  linkType: hard
-
-"viem@npm:^2.8.16":
-  version: 2.9.25
-  resolution: "viem@npm:2.9.25"
-  dependencies:
-    "@adraffy/ens-normalize": 1.10.0
-    "@noble/curves": 1.2.0
-    "@noble/hashes": 1.3.2
-    "@scure/bip32": 1.3.2
-    "@scure/bip39": 1.2.1
-    abitype: 1.0.0
-    isows: 1.0.3
-    ws: 8.13.0
-  peerDependencies:
-    typescript: ">=5.0.4"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: f9dbcc00a63b223a5ae213da5fd16ae8549d851f069065ace7072fb0c264d295a56fde547ec6c154c71d36011944c5fa600315131ea2c0fc34a94283ae4f40b3
   languageName: node
   linkType: hard
 
