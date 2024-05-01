@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
-import { useAccount, useBalance, useBlockNumber } from "wagmi";
+import { useAccount } from "wagmi";
 import { AddressInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 import { getTokenPrice, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
 
 const TokenVendor: NextPage = () => {
@@ -39,14 +38,7 @@ const TokenVendor: NextPage = () => {
   //   args: [vendorContractData?.address],
   // });
 
-  // const { targetNetwork } = useTargetNetwork();
-  // const queryClient = useQueryClient();
-  // const { data: blockNumber } = useBlockNumber({ watch: true, chainId: targetNetwork.id });
-  // const { data: vendorEthBalance, queryKey } = useBalance({ address: vendorContractData?.address });
-  // useEffect(() => {
-  //   queryClient.invalidateQueries({ queryKey });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [blockNumber]);
+  // const { data: vendorEthBalance } = useWatchBalance({ address: vendorContractData?.address });
 
   // const { data: tokensPerEth } = useScaffoldReadContract({
   //   contractName: "Vendor",
