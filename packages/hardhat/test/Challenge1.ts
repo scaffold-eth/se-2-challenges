@@ -5,7 +5,7 @@ import { ethers, network } from "hardhat";
 import { expect } from "chai";
 import { ExampleExternalContract, Staker } from "../typechain-types";
 
-describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
+describe("🚩 Challenge 1: 🔏 Decentralized Staking App", function () {
   let exampleExternalContract: ExampleExternalContract;
   let stakerContract: Staker;
 
@@ -27,7 +27,7 @@ describe("🚩 Challenge 1: 🥩 Decentralized Staking App", function () {
     it("Should deploy Staker", async function () {
       const Staker = await ethers.getContractFactory(contractArtifact);
       stakerContract = (await Staker.deploy(await exampleExternalContract.getAddress())) as Staker;
-      console.log('\t',"🛰  Staker contract deployed on", await stakerContract.getAddress())
+      console.log("\t", "🛰  Staker contract deployed on", await stakerContract.getAddress());
     });
     describe("mintItem()", function () {
       it("Balance should go up when you stake()", async function () {

@@ -117,7 +117,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
             </button>
           </div>
           <button className="btn btn-primary uppercase" onClick={wrapInTryCatch(stakeETH, "stakeETH")}>
-            🥩 Stake 0.5 ether!
+            🔏 Stake 0.5 ether!
           </button>
         </div>
       </div>
