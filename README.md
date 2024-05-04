@@ -57,7 +57,9 @@ yarn start
 
 🔏 Now you are ready to edit your smart contract `Staker.sol` in `packages/hardhat/contracts`
 
-⚗️ You will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with [🏗️ Scaffold-ETH-2](https://scaffoldeth.io) and [📑 Solidity By Example](https://solidity-by-example.org/).
+---
+
+⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
 
 ---
 
