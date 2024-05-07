@@ -1,35 +1,35 @@
 import { FC, useEffect, useRef } from "react";
 
+const drawArrow = (ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number) => {
+  const [dx, dy] = [x1 - x2, y1 - y2];
+  const norm = Math.sqrt(dx * dx + dy * dy);
+  const [udx, udy] = [dx / norm, dy / norm];
+  const size = norm / 7;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 + udx * size - udy * size, y2 + udx * size + udy * size);
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 + udx * size + udy * size, y2 - udx * size + udy * size);
+  ctx.stroke();
+};
+
 export interface ICurveProps {
   ethReserve: number;
   tokenReserve: number;
   addingEth: number;
   addingToken: number;
   width: number;
-  height: number
+  height: number;
 }
 
-export const Curve: FC<ICurveProps> = (props) => {
-  let ref = useRef<HTMLCanvasElement>(null);;
-
-  const drawArrow = (ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number) => {
-    let [dx, dy] = [x1 - x2, y1 - y2];
-    let norm = Math.sqrt(dx * dx + dy * dy);
-    let [udx, udy] = [dx / norm, dy / norm];
-    const size = norm / 7;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-    ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 + udx * size - udy * size, y2 + udx * size + udy * size);
-    ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 + udx * size + udy * size, y2 - udx * size + udy * size);
-    ctx.stroke();
-  };
+export const Curve: FC<ICurveProps> = (props: ICurveProps) => {
+  const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    let canvas = ref.current;
+    const canvas = ref.current;
     if (!canvas) {
       return;
     }
@@ -84,9 +84,9 @@ export const Curve: FC<ICurveProps> = (props) => {
       ctx.lineWidth = 2;
       ctx.beginPath();
       let first = true;
-      for (var x = minX; x <= maxX; x += maxX / width) {
+      for (let x = minX; x <= maxX; x += maxX / width) {
         /////
-        var y = k / x;
+        const y = k / x;
         /////
         if (first) {
           ctx.moveTo(plotX(x), plotY(y));
@@ -100,7 +100,7 @@ export const Curve: FC<ICurveProps> = (props) => {
       ctx.lineWidth = 1;
 
       if (props.addingEth) {
-        let newEthReserve = props.ethReserve + parseFloat(props.addingEth.toString());
+        const newEthReserve = props.ethReserve + parseFloat(props.addingEth.toString());
 
         ctx.fillStyle = "#bbbbbb";
         ctx.beginPath();
@@ -126,7 +126,7 @@ export const Curve: FC<ICurveProps> = (props) => {
         ctx.strokeStyle = "#990000";
         drawArrow(ctx, plotX(newEthReserve), plotY(props.tokenReserve), plotX(newEthReserve), plotY(k / newEthReserve));
 
-        let amountGained = Math.round((10000 * (props.addingEth * props.tokenReserve)) / newEthReserve) / 10000;
+        const amountGained = Math.round((10000 * (props.addingEth * props.tokenReserve)) / newEthReserve) / 10000;
         ctx.fillStyle = "#000000";
         ctx.fillText(
           "" + amountGained + " 🎈 output (-0.3% fee)",
@@ -134,7 +134,7 @@ export const Curve: FC<ICurveProps> = (props) => {
           plotY(k / newEthReserve),
         );
       } else if (props.addingToken) {
-        let newTokenReserve = props.tokenReserve + parseFloat(props.addingToken.toString());
+        const newTokenReserve = props.tokenReserve + parseFloat(props.addingToken.toString());
 
         ctx.fillStyle = "#bbbbbb";
         ctx.beginPath();
@@ -167,7 +167,7 @@ export const Curve: FC<ICurveProps> = (props) => {
           plotY(newTokenReserve),
         );
 
-        let amountGained = Math.round((10000 * (props.addingToken * props.ethReserve)) / newTokenReserve) / 10000;
+        const amountGained = Math.round((10000 * (props.addingToken * props.ethReserve)) / newTokenReserve) / 10000;
         //console.log("amountGained",amountGained)
         ctx.fillStyle = "#000000";
         ctx.fillText(
@@ -195,4 +195,4 @@ export const Curve: FC<ICurveProps> = (props) => {
       </div>
     </div>
   );
-}
+};
