@@ -1,8 +1,8 @@
 import { Signature } from "ethers";
 import humanizeDuration from "humanize-duration";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import { Voucher } from "~~/app/streamer/page";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type CashOutVoucherButtonProps = {
   clientAddress: Address;
@@ -12,14 +12,9 @@ type CashOutVoucherButtonProps = {
 };
 
 export const CashOutVoucherButton = ({ clientAddress, challenged, closed, voucher }: CashOutVoucherButtonProps) => {
-  const { writeAsync } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "withdrawEarnings",
-    // TODO: change when viem will implement splitSignature
-    args: [{ ...voucher, sig: voucher?.signature ? (Signature.from(voucher.signature) as any) : undefined }],
-  });
+  const { writeContractAsync } = useScaffoldWriteContract("Streamer");
 
-  const { data: timeLeft } = useScaffoldContractRead({
+  const { data: timeLeft } = useScaffoldReadContract({
     contractName: "Streamer",
     functionName: "timeLeft",
     args: [clientAddress],
@@ -46,8 +41,16 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
           isButtonDisabled ? " btn-disabled" : ""
         }`}
         disabled={isButtonDisabled}
-        onClick={() => {
-          writeAsync();
+        onClick={async () => {
+          try {
+            await writeContractAsync({
+              functionName: "withdrawEarnings",
+              // TODO: change when viem will implement splitSignature
+              args: [{ ...voucher, sig: voucher?.signature ? (Signature.from(voucher.signature) as any) : undefined }],
+            });
+          } catch (err) {
+            console.error("Error calling withdrawEarnings function");
+          }
         }}
       >
         Cash out latest voucher

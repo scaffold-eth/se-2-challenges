@@ -3,20 +3,29 @@
 import { useEffect, useRef, useState } from "react";
 import humanizeDuration from "humanize-duration";
 import { NextPage } from "next";
-import { createTestClient, encodePacked, formatEther, http, keccak256, parseEther, toBytes, verifyMessage } from "viem";
+import {
+  Address as AddressType,
+  createTestClient,
+  encodePacked,
+  formatEther,
+  http,
+  keccak256,
+  parseEther,
+  toBytes,
+  verifyMessage,
+} from "viem";
 import { hardhat } from "viem/chains";
-import { Address as AddressType, useAccount, useWalletClient } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { CashOutVoucherButton } from "~~/components/streamer/CashOutVoucherButton";
 import {
-  useAccountBalance,
   useDeployedContractInfo,
-  useScaffoldContractRead,
-  useScaffoldContractWrite,
   useScaffoldEventHistory,
-  useScaffoldEventSubscriber,
+  useScaffoldReadContract,
+  useScaffoldWatchContractEvent,
+  useScaffoldWriteContract,
+  useWatchBalance,
 } from "~~/hooks/scaffold-eth";
-import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
 
 export type Voucher = { updatedBalance: bigint; signature: `0x${string}}` };
 
@@ -31,16 +40,16 @@ const ETH_PER_CHARACTER = "0.01";
 
 const Streamer: NextPage = () => {
   const { address: userAddress } = useAccount();
-  const { data: userSigner } = useWalletClient();
-  const { data: ownerAddress } = useScaffoldContractRead({
+
+  const { data: ownerAddress } = useScaffoldReadContract({
     contractName: "Streamer",
     functionName: "owner",
   });
-
+  const { signMessageAsync } = useSignMessage();
   const { data: deployedContractData } = useDeployedContractInfo("Streamer");
-  const { balance } = useAccountBalance(deployedContractData?.address);
+  const { data: balance } = useWatchBalance({ address: deployedContractData?.address });
 
-  const { data: timeLeft } = useScaffoldContractRead({
+  const { data: timeLeft } = useScaffoldReadContract({
     contractName: "Streamer",
     functionName: "timeLeft",
     args: [userAddress],
@@ -74,10 +83,10 @@ const Streamer: NextPage = () => {
     }
   }, [openedHistoryData, isOpenedHistoryLoading, userIsOwner, channels]);
 
-  useScaffoldEventSubscriber({
+  useScaffoldWatchContractEvent({
     contractName: "Streamer",
     eventName: "Opened",
-    listener: logs => {
+    onLogs: logs => {
       logs.map(log => {
         const addr = log.args[0] as string;
         const bc = new BroadcastChannel(addr);
@@ -156,10 +165,10 @@ const Streamer: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [challengedHistoryData?.length, isChallengedHistoryLoading]);
 
-  useScaffoldEventSubscriber({
+  useScaffoldWatchContractEvent({
     contractName: "Streamer",
     eventName: "Challenged",
-    listener: logs => {
+    onLogs: logs => {
       logs.map(log => {
         setChallenged(challenged => [...challenged, log.args[0] as string]);
       });
@@ -181,10 +190,10 @@ const Streamer: NextPage = () => {
     }
   }, [closedHistoryData, isClosedHistoryLoading]);
 
-  useScaffoldEventSubscriber({
+  useScaffoldWatchContractEvent({
     contractName: "Streamer",
     eventName: "Closed",
-    listener: logs => {
+    onLogs: logs => {
       logs.map(log => {
         setClosed(closed => [...closed, log.args[0] as string]);
       });
@@ -208,22 +217,7 @@ const Streamer: NextPage = () => {
 
   const [vouchers, setVouchers] = useState<{ [key: AddressType]: Voucher }>({});
 
-  const { writeAsync: fundChannel } = useScaffoldContractWrite({
-    contractName: "Streamer",
-    functionName: "fundChannel",
-    value: parseEther(STREAM_ETH_VALUE),
-  });
-
-  // Checkpoint 5
-  // const { writeAsync: challengeChannel } = useScaffoldContractWrite({
-  //   contractName: "Streamer",
-  //   functionName: "challengeChannel",
-  // });
-
-  // const { writeAsync: defundChannel } = useScaffoldContractWrite({
-  //   contractName: "Streamer",
-  //   functionName: "defundChannel",
-  // });
+  const { writeContractAsync: writeStreamerContractAsync } = useScaffoldWriteContract("Streamer");
 
   const [receivedWisdom, setReceivedWisdom] = useState("");
 
@@ -261,8 +255,12 @@ const Streamer: NextPage = () => {
     //    rather than to arbitrary messages themselves. This way the encoding strategy for
     //    the fixed-length hash can be reused for any message format.
 
-    // TODO: sometimes userSigner is undefinded here, it causes a bug that last sybols doesn't count
-    const signature = await userSigner?.signMessage({ message: { raw: arrayified } });
+    let signature;
+    try {
+      signature = await signMessageAsync({ message: { raw: arrayified } });
+    } catch (err) {
+      console.error("signMessageAsync error", err);
+    }
 
     const hexBalance = updatedBalance.toString(16);
 
@@ -274,7 +272,7 @@ const Streamer: NextPage = () => {
     }
   }
 
-  if (userChannel.current) {
+  if (userChannel.current && !userIsOwner) {
     /**
      * Handle incoming service data from the service provider.
      *
@@ -310,7 +308,9 @@ const Streamer: NextPage = () => {
               <p className="block text-xl mt-0 mb-1 font-semibold">
                 You have {writableChannels.length} channel{writableChannels.length == 1 ? "" : "s"} open
               </p>
-              <p className="mt-0 text-lg text-center font-semibold">Total ETH locked: {balance?.toFixed(4) || 0} ETH</p>
+              <p className="mt-0 text-lg text-center font-semibold">
+                Total ETH locked: {Number(formatEther(balance?.value || 0n)).toFixed(4)} ETH
+              </p>
 
               <div className="mt-4 text-lg">
                 Channels with <button className="btn btn-sm btn-error">RED</button> withdrawal buttons are under
@@ -398,8 +398,13 @@ const Streamer: NextPage = () => {
                       onClick={async () => {
                         // disable the production of further voucher signatures
                         setAutoPay(false);
-                        const wrappedChallengeChannel = wrapInTryCatch(challengeChannel, "challengeChannel");
-                        wrappedChallengeChannel();
+
+                        try {
+                          await writeStreamerContractAsync({ functionName: "challengeChannel" });
+                        } catch (err) {
+                          console.error("Error calling challengeChannel function");
+                        }
+
                         try {
                           // ensure a 'ticking clock' for the UI without having
                           // to send new transactions & mine new blocks
@@ -426,11 +431,17 @@ const Streamer: NextPage = () => {
                     <button
                       className="btn btn-primary"
                       disabled={!challenged.includes(userAddress) || !!timeLeft}
-                      onClick={wrapInTryCatch(defundChannel, "defundChannel")}
+                      onClick={async () => {
+                        try {
+                          await writeStreamerContractAsync({ functionName: "defundChannel" });
+                        } catch (err) {
+                          console.error("Error calling defundChannel function");
+                        }
+                      }}
                     >
                       Close and withdraw funds
                     </button>
-                    </div> */}
+                  </div> */}
                 </div>
               ) : userAddress && closed.includes(userAddress) ? (
                 <div className="text-lg">
@@ -441,7 +452,19 @@ const Streamer: NextPage = () => {
                 </div>
               ) : (
                 <div className="p-2">
-                  <button className="btn btn-primary" onClick={wrapInTryCatch(fundChannel, "fundChannel")}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={async () => {
+                      try {
+                        await writeStreamerContractAsync({
+                          functionName: "fundChannel",
+                          value: parseEther(STREAM_ETH_VALUE),
+                        });
+                      } catch (err) {
+                        console.error("Error calling fundChannel function");
+                      }
+                    }}
+                  >
                     Open a 0.5 ETH channel for advice from the Guru
                   </button>
                 </div>
