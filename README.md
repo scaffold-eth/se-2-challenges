@@ -28,14 +28,6 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor
 
 ---
 
-## 🎉 Checkpoint: Eligible to join 🏰️ BuidlGuidl
-
-The BuidlGuidl is a curated group of Ethereum builders creating products, prototypes, and tutorials to enrich the web3 ecosystem. A place to show off your builds and meet other builders. Start crafting your Web3 portfolio by submitting your DEX, Multisig or SVG NFT build.
-
-https://buidlguidl.com/
-
----
-
 ## 🚩 Challenge 3: 🎲 Dice Game
 
 🎰 Randomness is tricky on a public deterministic blockchain. In this challenge you will explore creating random numbers using block hash and how that may be exploitable. Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
@@ -51,6 +43,14 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-3-dice-game
 DEX Telegram Channel: https://t.me/+_NeUIJ664Tc1MzIx
 
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-4-dex
+
+---
+
+## 🎉 Checkpoint: Eligible to join 🏰️ BuidlGuidl
+
+The BuidlGuidl is a curated group of Ethereum builders creating products, prototypes, and tutorials to enrich the web3 ecosystem. A place to show off your builds and meet other builders. Start crafting your Web3 portfolio by submitting your DEX, Multisig or SVG NFT build.
+
+https://buidlguidl.com/
 
 ---
 
