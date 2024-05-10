@@ -53,7 +53,7 @@ cd challenge-0-simple-nft
 yarn start
 ```
 
-📱 Open http://localhost:3000 to see the app.
+📱 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ---
 
