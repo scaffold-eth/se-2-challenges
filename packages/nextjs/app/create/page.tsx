@@ -8,7 +8,7 @@ import { Address, parseEther } from "viem";
 import { useChainId, useWalletClient } from "wagmi";
 import * as chains from "wagmi/chains";
 import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useScaffoldContract, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -19,7 +19,7 @@ export type TransactionData = {
   to: string;
   amount: string;
   data: `0x${string}`;
-  hash: string;
+  hash: `0x${string}`;
   signatures: `0x${string}`[];
   signers: Address[];
   validSignatures?: { signer: Address; signature: Address }[];
@@ -48,12 +48,12 @@ const CreatePage: FC = () => {
     amount: "0",
   });
 
-  const { data: nonce } = useScaffoldContractRead({
+  const { data: nonce } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
     functionName: "nonce",
   });
 
-  const { data: signaturesRequired } = useScaffoldContractRead({
+  const { data: signaturesRequired } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
     functionName: "signaturesRequired",
   });

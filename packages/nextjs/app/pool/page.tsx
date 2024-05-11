@@ -8,9 +8,9 @@ import { TransactionItem } from "~~/components/TransactionItem";
 import {
   useDeployedContractInfo,
   useScaffoldContract,
-  useScaffoldContractRead,
   useScaffoldEventHistory,
-  useScaffoldEventSubscriber,
+  useScaffoldReadContract,
+  useScaffoldWatchContractEvent,
 } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { notification } from "~~/utils/scaffold-eth";
@@ -22,7 +22,7 @@ const Pool: FC = () => {
   const poolServerUrl = getPoolServerUrl(targetNetwork.id);
   const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
   const chainId = useChainId();
-  const { data: nonce } = useScaffoldContractRead({
+  const { data: nonce } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
     functionName: "nonce",
   });
@@ -39,10 +39,10 @@ const Pool: FC = () => {
 
   const historyHashes = useMemo(() => eventsHistory?.map(ev => ev.log.args.hash) || [], [eventsHistory]);
 
-  useScaffoldEventSubscriber({
+  useScaffoldWatchContractEvent({
     contractName: "MetaMultiSigWallet",
     eventName: "ExecuteTransaction",
-    listener: logs => {
+    onLogs: logs => {
       logs.map(log => {
         const { hash } = log.args;
 

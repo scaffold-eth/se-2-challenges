@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Abi, encodeFunctionData } from "viem";
 import { Address, AddressInput, IntegerInput } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export type Method = "addSigner" | "removeSigner" | "transferFunds";
 export const METHODS: Method[] = ["addSigner", "removeSigner", "transferFunds"];
@@ -38,7 +38,7 @@ const Owners: FC = () => {
 
   const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
 
-  const { data: signaturesRequired } = useScaffoldContractRead({
+  const { data: signaturesRequired } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
     functionName: "signaturesRequired",
   });

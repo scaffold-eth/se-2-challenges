@@ -3,7 +3,7 @@ import { Address, BlockieAvatar } from "./scaffold-eth";
 import { Address as AddressType, formatEther } from "viem";
 
 type TransactionEventItemProps = {
-  hash: string;
+  hash: `0x${string}`;
   nonce: bigint;
   owner: AddressType;
   to: AddressType;
