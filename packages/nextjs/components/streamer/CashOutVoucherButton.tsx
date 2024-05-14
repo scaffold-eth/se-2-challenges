@@ -1,7 +1,7 @@
+import { Voucher } from "./Guru";
 import { Signature } from "ethers";
 import humanizeDuration from "humanize-duration";
 import { Address } from "viem";
-import { Voucher } from "~~/app/streamer/page";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type CashOutVoucherButtonProps = {
