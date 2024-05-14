@@ -148,8 +148,8 @@ const CreatePage: FC = () => {
             </label>
             <InputBase
               disabled
-              value={`# ${nonce}`}
-              placeholder={"loading..."}
+              value={nonce !== undefined ? `# ${nonce}` : "Loading..."}
+              placeholder={"Loading..."}
               onChange={() => {
                 null;
               }}
