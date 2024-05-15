@@ -103,7 +103,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `fundChannel()` function
 
-> 👁 Check `packages/nextjs/app/streamer/page.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
+> 👁 Check `packages/nextjs/components/streamer/Rube.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
 
 > Run `yarn deploy` and open a channel in the Rube's tab. (You may need some funds from the faucet)
 
@@ -119,17 +119,17 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 ## Checkpoint 3: 💱 Exchange the Service 👷‍♂️
 
-Now that the channel is funded and all participants have observed the funding via the emitted event, we can begin our off-chain exchange of service. We are now working in `packages/nextjs/app/streamer/page.tsx`.
+Now that the channel is funded and all participants have observed the funding via the emitted event, we can begin our off-chain exchange of service. We are now working in `packages/nextjs/app/streamer/page.tsx` and its components.
 
 Functions of note:
 
-- `provideService`: The Guru sends wisdom over the wire to the client.
-- `reimburseService`: The rube creates a voucher for the received service, signs it, and returns it.
-- `processVoucher`: The service provider receives and stores vouchers.
+- `provideService` in `packages/nextjs/components/streamer/Guru.tsx`: The Guru sends wisdom over the wire to the client.
+- `reimburseService` in `packages/nextjs/components/streamer/Rube.tsx`: The rube creates a voucher for the received service, signs it, and returns it.
+- `processVoucher` in `packages/nextjs/components/streamer/Guru.tsx`: The service provider receives and stores vouchers.
 
 The first two functions are complete - we will work on `processVoucher`, where the service provider examines returned payments, confirms their authenticity, and stores them.
 
-> 📝 Edit `packages/nextjs/app/streamer/page.tsx` to complete the `processVoucher()` function and secure this off-chain exchange. You'll need to recreate the encoded message that the client has signed, and then verify that the received signature was in fact produced by the client on that same data.
+> 📝 Edit `packages/nextjs/components/streamer/Guru.tsx` to complete the `processVoucher()` function and secure this off-chain exchange. You'll need to recreate the encoded message that the client has signed, and then verify that the received signature was in fact produced by the client on that same data.
 
 ### 🥅 Goals:
 
@@ -150,7 +150,7 @@ The first two functions are complete - we will work on `processVoucher`, where t
 Now that we've collected some vouchers, we'd like to redeem them on-chain and move funds from the `Streamer` contract's `balances` map to the Guru's own address. The `withdrawEarnings` function of `packages/hardhat/contracts/Streamer.sol` takes a Struct named voucher (balance + signature) as input, and should:
 
 - Recover the signer using `ecrecover(bytes32, uint8, bytes32, bytes32)` on the `prefixedHashed` message and supplied signature.
-  - _Hint_: `ecrecover` takes the signature in its decomposed form with `v,`,`r`, and`s` values. The string signature produced in `packages/nextjs/app/streamer/page.tsx` is just a concatenation of these values, which we split using `ethers.Signature.from` to create the on-chain friendly signature. Read about the [ecrecover function here](https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html)
+  - _Hint_: `ecrecover` takes the signature in its decomposed form with `v,`,`r`, and`s` values. The string signature produced in `packages/nextjs/components/streamer/Rube.tsx` is just a concatenation of these values, which we split using `ethers.Signature.from` in `packages/nextjs/components/streamer/CashOutVoucherButton.tsx` to create the on-chain friendly signature. Read about the [ecrecover function here](https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html)
 - Check that the signer has a running channel with balance greater than the voucher's `updatedBalance`
 - Calculate the payout (`balances[signer] - updatedBalance`)
 - Update the channel balance.
@@ -163,7 +163,7 @@ Now that we've collected some vouchers, we'd like to redeem them on-chain and mo
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `withdrawEarnings()` function as described.
 
-> 📝 Edit `packages/nextjs/app/streamer/page.tsx` to enable the UI button for withdrawals.
+> 📝 Edit `packages/nextjs/components/streamer/Guru.tsx` to enable the UI button for withdrawals.
 
 ### 🥅 Goals:
 
@@ -190,7 +190,7 @@ A payment channel is a cryptoeconomic protocol - care needs to be taken so that 
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to create a public `challengeChannel()` function.
 
-> 📝 Edit `packages/nextjs/app/streamer/page.tsx` to enable the challenge and closure buttons for service clients(rubes).
+> 📝 Edit `packages/nextjs/components/streamer/Rube.tsx` to enable the challenge and closure buttons for service clients(rubes).
 
 The `challengeChannel()` function should:
 
@@ -209,8 +209,6 @@ The `defundChannel()` function should:
 - Check that `msg.sender` has a channel that can be closed, by ensuring a non-zero `canCloseAt[msg.sender]` is before the current timestamp.
 - Transfer `balances[msg.sender]` to the sender.
 - Emit a `Closed` event.
-
-> ⚠ Make sure the defundChannel declaration is uncommented in `packages\nextjs\app\streamer\page.tsx`
 
 ### 🥅 Goals:
 
