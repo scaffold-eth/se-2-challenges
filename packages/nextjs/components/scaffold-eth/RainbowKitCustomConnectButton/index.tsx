@@ -7,7 +7,7 @@ import { AddressQRCodeModal } from "./AddressQRCodeModal";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Address } from "viem";
-import { useAutoConnect, useNetworkColor } from "~~/hooks/scaffold-eth";
+import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
@@ -15,7 +15,6 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
  * Custom Wagmi Connect Button (watch balance + custom design)
  */
 export const RainbowKitCustomConnectButton = () => {
-  useAutoConnect();
   const networkColor = useNetworkColor();
   const { targetNetwork } = useTargetNetwork();
 
@@ -32,7 +31,11 @@ export const RainbowKitCustomConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <button className="btn btn-secondary btn-sm" onClick={openConnectModal} type="button">
+                  <button
+                    className="btn btn-secondary dark:hover:bg-black/20 btn-sm"
+                    onClick={openConnectModal}
+                    type="button"
+                  >
                     Connect Wallet
                   </button>
                 );

@@ -29,6 +29,7 @@
     "next:format": "yarn workspace @se-2/nextjs format",
     "next:check-types": "yarn workspace @se-2/nextjs check-types",
     "next:build": "yarn workspace @se-2/nextjs build",
+    "next:serve": "yarn workspace @se-2/nextjs serve",
     "postinstall": "husky install",
     "precommit": "lint-staged",
     "vercel": "yarn workspace @se-2/nextjs vercel",
@@ -38,5 +39,8 @@
   "devDependencies": {
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3"
+  },
+  "engines": {
+    "node": ">=18.17.0"
   }
 }

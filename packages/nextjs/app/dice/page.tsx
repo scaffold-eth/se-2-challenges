@@ -3,19 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { formatEther, parseEther } from "viem";
-import { useBalance } from "wagmi";
 import { Amount } from "~~/components/Amount";
 import { Roll, RollEvents } from "~~/components/RollEvents";
 import { Winner, WinnerEvents } from "~~/components/WinnerEvents";
 import { Address } from "~~/components/scaffold-eth";
 import {
   useScaffoldContract,
-  useScaffoldContractRead,
-  useScaffoldContractWrite,
   useScaffoldEventHistory,
-  useScaffoldEventSubscriber,
+  useScaffoldReadContract,
+  useScaffoldWriteContract,
 } from "~~/hooks/scaffold-eth";
-import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
+import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
 const ROLL_ETH_VALUE = "0.002";
 const MAX_TABLE_ROWS = 10;
@@ -30,20 +28,26 @@ const DiceGame: NextPage = () => {
   const [isRolling, setIsRolling] = useState(false);
 
   const { data: riggedRollContract } = useScaffoldContract({ contractName: "RiggedRoll" });
-  const { data: riggedRollBalance } = useBalance({
+  const { data: riggedRollBalance } = useWatchBalance({
     address: riggedRollContract?.address,
-    watch: true,
   });
-  const { data: prize } = useScaffoldContractRead({ contractName: "DiceGame", functionName: "prize" });
+  const { data: prize } = useScaffoldReadContract({ contractName: "DiceGame", functionName: "prize" });
 
   const { data: rollsHistoryData, isLoading: rollsHistoryLoading } = useScaffoldEventHistory({
     contractName: "DiceGame",
     eventName: "Roll",
     fromBlock: 0n,
+    watch: true,
   });
 
   useEffect(() => {
-    if (!rolls.length && !!rollsHistoryData?.length && !rollsHistoryLoading) {
+    if (
+      !rollsHistoryLoading &&
+      Boolean(rollsHistoryData?.length) &&
+      (rollsHistoryData?.length as number) > rolls.length
+    ) {
+      setIsRolling(false);
+
       setRolls(
         (
           rollsHistoryData?.map(({ args }) => ({
@@ -56,34 +60,21 @@ const DiceGame: NextPage = () => {
     }
   }, [rolls, rollsHistoryData, rollsHistoryLoading]);
 
-  useScaffoldEventSubscriber({
-    contractName: "DiceGame",
-    eventName: "Roll",
-    listener: logs => {
-      logs.map(log => {
-        const { player, amount, roll } = log.args;
-
-        if (player && amount && roll !== undefined) {
-          setIsRolling(false);
-          setRolls(rolls =>
-            [{ address: player, amount: Number(amount), roll: roll.toString(16).toUpperCase() }, ...rolls].slice(
-              0,
-              MAX_TABLE_ROWS,
-            ),
-          );
-        }
-      });
-    },
-  });
-
   const { data: winnerHistoryData, isLoading: winnerHistoryLoading } = useScaffoldEventHistory({
     contractName: "DiceGame",
     eventName: "Winner",
     fromBlock: 0n,
+    watch: true,
   });
 
   useEffect(() => {
-    if (!winners.length && !!winnerHistoryData?.length && !winnerHistoryLoading) {
+    if (
+      !winnerHistoryLoading &&
+      Boolean(winnerHistoryData?.length) &&
+      (winnerHistoryData?.length as number) > winners.length
+    ) {
+      setIsRolling(false);
+
       setWinners(
         (
           winnerHistoryData?.map(({ args }) => ({
@@ -95,32 +86,9 @@ const DiceGame: NextPage = () => {
     }
   }, [winnerHistoryData, winnerHistoryLoading, winners.length]);
 
-  useScaffoldEventSubscriber({
-    contractName: "DiceGame",
-    eventName: "Winner",
-    listener: logs => {
-      logs.map(log => {
-        const { winner, amount } = log.args;
+  const { writeContractAsync: writeDiceGameAsync, isError: rollTheDiceError } = useScaffoldWriteContract("DiceGame");
 
-        if (winner && amount) {
-          setIsRolling(false);
-          setWinners(winners => [{ address: winner, amount }, ...winners].slice(0, MAX_TABLE_ROWS));
-        }
-      });
-    },
-  });
-
-  const { writeAsync: randomDiceRoll, isError: rollTheDiceError } = useScaffoldContractWrite({
-    contractName: "DiceGame",
-    functionName: "rollTheDice",
-    value: parseEther(ROLL_ETH_VALUE),
-  });
-
-  const { writeAsync: riggedRoll, isError: riggedRollError } = useScaffoldContractWrite({
-    contractName: "RiggedRoll",
-    functionName: "riggedRoll",
-    gas: 1_000_000n,
-  });
+  const { writeContractAsync: writeRiggedRollAsync, isError: riggedRollError } = useScaffoldWriteContract("RiggedRoll");
 
   useEffect(() => {
     if (rollTheDiceError || riggedRollError) {
@@ -159,8 +127,11 @@ const DiceGame: NextPage = () => {
                 setRolled(true);
               }
               setIsRolling(true);
-              const wrappedRandomDiceRoll = wrapInTryCatch(randomDiceRoll, "randomDiceRoll");
-              await wrappedRandomDiceRoll();
+              try {
+                await writeDiceGameAsync({ functionName: "rollTheDice", value: parseEther(ROLL_ETH_VALUE) });
+              } catch (err) {
+                console.error("Error calling rollTheDice function", err);
+              }
             }}
             disabled={isRolling}
             className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
@@ -178,19 +149,22 @@ const DiceGame: NextPage = () => {
             </div>
           </div>
           {/* <button
-              onClick={async () => {
+            onClick={async () => {
               if (!rolled) {
                 setRolled(true);
               }
               setIsRolling(true);
-              const wrappedRiggedRoll = wrapInTryCatch(riggedRoll, "riggedRoll");
-              await wrappedRiggedRoll();
+              try {
+                await writeRiggedRollAsync({ functionName: "riggedRoll" });
+              } catch (err) {
+                console.error("Error calling riggedRoll function", err);
+              }
             }}
             disabled={isRolling}
             className="mt-2 btn btn-secondary btn-xl normal-case font-xl text-lg"
           >
             Rigged Roll!
-            </button> */}
+          </button> */}
 
           <div className="flex mt-8">
             {rolled ? (
