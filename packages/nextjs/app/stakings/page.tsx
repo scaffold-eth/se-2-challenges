@@ -47,7 +47,7 @@ const Stakings: NextPage = () => {
                     <td>
                       <Address address={event.args?.[0]} />
                     </td>
-                    <td>{event.args?.[1] && formatEther(event.args?.[1])} ETH</td>
+                    <td>{formatEther(event.args?.[1] || 0n)} ETH</td>
                   </tr>
                 );
               })
