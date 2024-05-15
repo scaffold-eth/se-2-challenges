@@ -5,13 +5,8 @@ import type { NextPage } from "next";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 import { AddressInput, IntegerInput } from "~~/components/scaffold-eth";
-import {
-  useAccountBalance,
-  useDeployedContractInfo,
-  useScaffoldContractRead,
-  useScaffoldContractWrite,
-} from "~~/hooks/scaffold-eth";
-import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 import { getTokenPrice, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
 
 const TokenVendor: NextPage = () => {
@@ -22,57 +17,32 @@ const TokenVendor: NextPage = () => {
   const [tokensToSell, setTokensToSell] = useState<string>("");
 
   const { address } = useAccount();
-  const { data: yourTokenSymbol } = useScaffoldContractRead({
+  const { data: yourTokenSymbol } = useScaffoldReadContract({
     contractName: "YourToken",
     functionName: "symbol",
   });
 
-  const { data: yourTokenBalance } = useScaffoldContractRead({
+  const { data: yourTokenBalance } = useScaffoldReadContract({
     contractName: "YourToken",
     functionName: "balanceOf",
     args: [address],
   });
 
-  const { writeAsync: transferTokens } = useScaffoldContractWrite({
-    contractName: "YourToken",
-    functionName: "transfer",
-    args: [toAddress, multiplyTo1e18(tokensToSend)],
-  });
+  const { data: vendorContractData } = useDeployedContractInfo("Vendor");
+  const { writeContractAsync: writeVendorAsync } = useScaffoldWriteContract("Vendor");
+  const { writeContractAsync: writeYourTokenAsync } = useScaffoldWriteContract("YourToken");
 
-  // // Vendor Balances
-  // const { data: vendorContractData } = useDeployedContractInfo("Vendor");
-  // const { data: vendorTokenBalance } = useScaffoldContractRead({
+  // const { data: vendorTokenBalance } = useScaffoldReadContract({
   //   contractName: "YourToken",
   //   functionName: "balanceOf",
   //   args: [vendorContractData?.address],
   // });
-  // const { balance: vendorEthBalance } = useAccountBalance(vendorContractData?.address);
 
-  // // tokenPerEth
-  // const { data: tokensPerEth } = useScaffoldContractRead({
+  // const { data: vendorEthBalance } = useWatchBalance({ address: vendorContractData?.address });
+
+  // const { data: tokensPerEth } = useScaffoldReadContract({
   //   contractName: "Vendor",
   //   functionName: "tokensPerEth",
-  // });
-
-  // // Buy Tokens
-  // const { writeAsync: buyTokens } = useScaffoldContractWrite({
-  //   contractName: "Vendor",
-  //   functionName: "buyTokens",
-  //   value: getTokenPrice(tokensToBuy, tokensPerEth),
-  // });
-
-  // // Approve Tokens
-  // const { writeAsync: approveTokens } = useScaffoldContractWrite({
-  //   contractName: "YourToken",
-  //   functionName: "approve",
-  //   args: [vendorContractData?.address, multiplyTo1e18(tokensToSell)],
-  // });
-
-  // // Sell Tokens
-  // const { writeAsync: sellTokens } = useScaffoldContractWrite({
-  //   contractName: "Vendor",
-  //   functionName: "sellTokens",
-  //   args: [multiplyTo1e18(tokensToSell)],
   // });
 
   return (
@@ -91,12 +61,12 @@ const TokenVendor: NextPage = () => {
           <div>
             Vendor token balance:{" "}
             <div className="inline-flex items-center justify-center">
-              {parseFloat(formatEther(vendorTokenBalance || 0n)).toFixed(4)}
+              {Number(formatEther(vendorTokenBalance || 0n)).toFixed(4)}
               <span className="font-bold ml-1">{yourTokenSymbol}</span>
             </div>
           </div>
           <div>
-            Vendor eth balance: {vendorEthBalance?.toFixed(4)}
+            Vendor eth balance: {Number(formatEther(vendorEthBalance?.value || 0n)).toFixed(4)}
             <span className="font-bold ml-1">ETH</span>
           </div> */}
         </div>
@@ -115,7 +85,16 @@ const TokenVendor: NextPage = () => {
             />
           </div>
 
-          <button className="btn btn-secondary mt-2" onClick={wrapInTryCatch(buyTokens, "buyTokens")}>
+          <button
+            className="btn btn-secondary mt-2"
+            onClick={async () => {
+              try {
+                await writeVendorAsync({ functionName: "buyTokens", value: getTokenPrice(tokensToBuy, tokensPerEth) });
+              } catch (err) {
+                console.error("Error calling buyTokens function");
+              }
+            }}
+          >
             Buy Tokens
           </button>
         </div> */}
@@ -133,7 +112,19 @@ const TokenVendor: NextPage = () => {
               />
             </div>
 
-            <button className="btn btn-secondary" onClick={wrapInTryCatch(transferTokens, "transferTokens")}>
+            <button
+              className="btn btn-secondary"
+              onClick={async () => {
+                try {
+                  await writeYourTokenAsync({
+                    functionName: "transfer",
+                    args: [toAddress, multiplyTo1e18(tokensToSend)],
+                  });
+                } catch (err) {
+                  console.error("Error calling transfer function");
+                }
+              }}
+            >
               Send Tokens
             </button>
           </div>
@@ -158,20 +149,31 @@ const TokenVendor: NextPage = () => {
             <div className="flex gap-4">
               <button
                 className={`btn ${isApproved ? "btn-disabled" : "btn-secondary"}`}
-                onClick={wrapInTryCatch(async () => {
-                  await approveTokens();
-                  setIsApproved(true);
-                }, "approveTokens")}
+                onClick={async () => {
+                  try {
+                    await writeYourTokenAsync({
+                      functionName: "approve",
+                      args: [vendorContractData?.address, multiplyTo1e18(tokensToSell)],
+                    });
+                    setIsApproved(true);
+                  } catch (err) {
+                    console.error("Error calling approve function");
+                  }
+                }}
               >
                 Approve Tokens
               </button>
 
               <button
                 className={`btn ${isApproved ? "btn-secondary" : "btn-disabled"}`}
-                onClick={wrapInTryCatch(async () => {
-                  await sellTokens();
-                  setIsApproved(false);
-                }, "sellTokens")}
+                onClick={async () => {
+                  try {
+                    await writeVendorAsync({ functionName: "sellTokens", args: [multiplyTo1e18(tokensToSell)] });
+                    setIsApproved(false);
+                  } catch (err) {
+                    console.error("Error calling sellTokens function");
+                  }
+                }}
               >
                 Sell Tokens
               </button>
