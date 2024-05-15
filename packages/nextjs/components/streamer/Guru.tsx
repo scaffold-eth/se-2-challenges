@@ -1,7 +1,7 @@
 import { type FC, useEffect, useState } from "react";
 import { Address } from "../scaffold-eth";
 import { CashOutVoucherButton } from "./CashOutVoucherButton";
-import { Address as AddressType, formatEther, parseEther, verifyMessage } from "viem";
+import { Address as AddressType, encodePacked, formatEther, keccak256, parseEther, toBytes, verifyMessage } from "viem";
 import { useDeployedContractInfo, useWatchBalance } from "~~/hooks/scaffold-eth";
 
 export const STREAM_ETH_VALUE = "0.5";
