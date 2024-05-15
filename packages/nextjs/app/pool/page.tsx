@@ -8,21 +8,20 @@ import { TransactionItem } from "~~/components/TransactionItem";
 import {
   useDeployedContractInfo,
   useScaffoldContract,
-  useScaffoldContractRead,
   useScaffoldEventHistory,
-  useScaffoldEventSubscriber,
+  useScaffoldReadContract,
 } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { notification } from "~~/utils/scaffold-eth";
 
 const Pool: FC = () => {
   const [transactions, setTransactions] = useState<TransactionData[]>();
-  const [subscriptionEventsHashes, setSubscriptionEventsHashes] = useState<`0x${string}`[]>([]);
+  // const [subscriptionEventsHashes, setSubscriptionEventsHashes] = useState<`0x${string}`[]>([]);
   const { targetNetwork } = useTargetNetwork();
   const poolServerUrl = getPoolServerUrl(targetNetwork.id);
   const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
   const chainId = useChainId();
-  const { data: nonce } = useScaffoldContractRead({
+  const { data: nonce } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
     functionName: "nonce",
   });
@@ -31,6 +30,7 @@ const Pool: FC = () => {
     contractName: "MetaMultiSigWallet",
     eventName: "ExecuteTransaction",
     fromBlock: 0n,
+    watch: true,
   });
 
   const { data: metaMultiSigWallet } = useScaffoldContract({
@@ -38,20 +38,6 @@ const Pool: FC = () => {
   });
 
   const historyHashes = useMemo(() => eventsHistory?.map(ev => ev.log.args.hash) || [], [eventsHistory]);
-
-  useScaffoldEventSubscriber({
-    contractName: "MetaMultiSigWallet",
-    eventName: "ExecuteTransaction",
-    listener: logs => {
-      logs.map(log => {
-        const { hash } = log.args;
-
-        if (hash) {
-          setSubscriptionEventsHashes(hashes => [...hashes, hash as `0x${string}`]);
-        }
-      });
-    },
-  });
 
   useInterval(() => {
     const getTransactions = async () => {
@@ -90,17 +76,12 @@ const Pool: FC = () => {
     getTransactions();
   }, 3777);
 
-  const allEvents = useMemo(
-    () => historyHashes.concat(subscriptionEventsHashes),
-    [historyHashes, subscriptionEventsHashes],
-  );
-
   const lastTx = useMemo(
     () =>
       transactions
-        ?.filter(tx => allEvents.includes(tx.hash))
+        ?.filter(tx => historyHashes.includes(tx.hash))
         .sort((a, b) => (BigInt(a.nonce) < BigInt(b.nonce) ? 1 : -1))[0],
-    [allEvents, transactions],
+    [historyHashes, transactions],
   );
 
   return (
@@ -119,7 +100,7 @@ const Pool: FC = () => {
                     <TransactionItem
                       key={tx.hash}
                       tx={tx}
-                      completed={allEvents.includes(tx.hash as `0x${string}`)}
+                      completed={historyHashes.includes(tx.hash as `0x${string}`)}
                       outdated={lastTx?.nonce != undefined && BigInt(tx.nonce) <= BigInt(lastTx?.nonce)}
                     />
                   );

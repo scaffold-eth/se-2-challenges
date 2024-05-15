@@ -7,7 +7,7 @@ import { TransactionData, getPoolServerUrl } from "~~/app/create/page";
 import {
   useDeployedContractInfo,
   useScaffoldContract,
-  useScaffoldContractRead,
+  useScaffoldReadContract,
   useTransactor,
 } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
@@ -22,12 +22,12 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
   const { targetNetwork } = useTargetNetwork();
   const poolServerUrl = getPoolServerUrl(targetNetwork.id);
 
-  const { data: signaturesRequired } = useScaffoldContractRead({
+  const { data: signaturesRequired } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
     functionName: "signaturesRequired",
   });
 
-  const { data: nonce } = useScaffoldContractRead({
+  const { data: nonce } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
     functionName: "nonce",
   });

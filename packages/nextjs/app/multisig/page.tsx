@@ -28,7 +28,7 @@ const Multisig: FC = () => {
       <div className="flex flex-col mt-10 items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full max-w-3xl">
         <div className="text-xl font-bold my-2">Events:</div>
         {executeTransactionEvents?.map(txEvent => (
-          <TransactionEventItem key={txEvent.args.hash} {...txEvent.args} />
+          <TransactionEventItem key={txEvent.args.hash} {...(txEvent.args as Required<(typeof txEvent)["args"]>)} />
         ))}
       </div>
     </div>
