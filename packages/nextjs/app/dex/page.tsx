@@ -6,13 +6,8 @@ import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { Curve } from "~~/components/Curve";
 import { Address, AddressInput, Balance, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
-import {
-  useAccountBalance,
-  useDeployedContractInfo,
-  useScaffoldContractRead,
-  useScaffoldContractWrite,
-} from "~~/hooks/scaffold-eth";
-import { wrapInTryCatch } from "~~/utils/scaffold-eth/common";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
 // REGEX for number inputs (only allow numbers and a single decimal point)
 const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
@@ -31,7 +26,7 @@ const Dex: NextPage = () => {
   const { data: BalloonsInfo } = useDeployedContractInfo("Balloons");
   const { address: connectedAccount } = useAccount();
 
-  const { data: DEXBalloonBalance } = useScaffoldContractRead({
+  const { data: DEXBalloonBalance } = useScaffoldReadContract({
     contractName: "Balloons",
     functionName: "balanceOf",
     args: [DEXInfo?.address?.toString()],
@@ -43,69 +38,40 @@ const Dex: NextPage = () => {
     }
   }, [DEXBalloonBalance]);
 
-  const { data: DEXtotalLiquidity } = useScaffoldContractRead({
+  const { data: DEXtotalLiquidity } = useScaffoldReadContract({
     contractName: "DEX",
     functionName: "totalLiquidity",
   });
 
-  const { writeAsync: ethToTokenWrite } = useScaffoldContractWrite({
-    contractName: "DEX",
-    functionName: "ethToToken",
-    value: NUMBER_REGEX.test(ethToTokenAmount) ? parseEther(ethToTokenAmount) : 0n,
-  });
+  const { writeContractAsync: writeDexContractAsync } = useScaffoldWriteContract("DEX");
 
-  const { writeAsync: tokenToEthWrite } = useScaffoldContractWrite({
-    contractName: "DEX",
-    functionName: "tokenToEth",
-    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
-    args: [NUMBER_REGEX.test(tokenToETHAmount) ? parseEther(tokenToETHAmount) : tokenToETHAmount],
-  });
+  const { writeContractAsync: writeBalloonsContractAsync } = useScaffoldWriteContract("Balloons");
 
-  const { writeAsync: depositWrite } = useScaffoldContractWrite({
-    contractName: "DEX",
-    functionName: "deposit",
-    value: NUMBER_REGEX.test(depositAmount) ? parseEther(depositAmount) : 0n,
-  });
-
-  const { writeAsync: withdrawWrite } = useScaffoldContractWrite({
-    contractName: "DEX",
-    functionName: "withdraw",
-    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
-    args: [NUMBER_REGEX.test(withdrawAmount) ? parseEther(withdrawAmount) : withdrawAmount],
-  });
-
-  const { writeAsync: approveWrite } = useScaffoldContractWrite({
-    contractName: "Balloons",
-    functionName: "approve",
-    // @ts-expect-error - Show error on frontend while sending, if user types invalid number
-    args: [approveSpender, NUMBER_REGEX.test(approveAmount) ? parseEther(approveAmount) : approveAmount],
-  });
-
-  const { data: balanceOfWrite } = useScaffoldContractRead({
+  const { data: balanceOfWrite } = useScaffoldReadContract({
     contractName: "Balloons",
     functionName: "balanceOf",
     args: [accountBalanceOf],
   });
 
-  const { data: contractBalance } = useScaffoldContractRead({
+  const { data: contractBalance } = useScaffoldReadContract({
     contractName: "Balloons",
     functionName: "balanceOf",
     args: [DEXInfo?.address],
   });
 
-  const { data: userBalloons } = useScaffoldContractRead({
+  const { data: userBalloons } = useScaffoldReadContract({
     contractName: "Balloons",
     functionName: "balanceOf",
     args: [connectedAccount],
   });
 
-  const { data: userLiquidity } = useScaffoldContractRead({
+  const { data: userLiquidity } = useScaffoldReadContract({
     contractName: "DEX",
     functionName: "getLiquidity",
     args: [connectedAccount],
   });
 
-  const { balance: contractETHBalance } = useAccountBalance(DEXInfo?.address);
+  const { data: contractETHBalance } = useWatchBalance({ address: DEXInfo?.address });
 
   return (
     <>
@@ -152,7 +118,16 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(ethToTokenWrite, "ethToTokenWrite")}
+                  onClick={async () => {
+                    try {
+                      await writeDexContractAsync({
+                        functionName: "ethToToken",
+                        value: NUMBER_REGEX.test(ethToTokenAmount) ? parseEther(ethToTokenAmount) : 0n,
+                      });
+                    } catch (err) {
+                      console.error("Error calling ethToToken function");
+                    }
+                  }}
                 >
                   Send
                 </button>
@@ -172,7 +147,17 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(tokenToEthWrite, "tokenToEthWrite")}
+                  onClick={async () => {
+                    try {
+                      await writeDexContractAsync({
+                        functionName: "tokenToEth",
+                        // @ts-expect-error - Show error on frontend while sending, if user types invalid number
+                        args: [NUMBER_REGEX.test(tokenToETHAmount) ? parseEther(tokenToETHAmount) : tokenToETHAmount],
+                      });
+                    } catch (err) {
+                      console.error("Error calling tokenToEth function");
+                    }
+                  }}
                 >
                   Send
                 </button>
@@ -188,7 +173,16 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(depositWrite, "depositWrite")}
+                  onClick={async () => {
+                    try {
+                      await writeDexContractAsync({
+                        functionName: "deposit",
+                        value: NUMBER_REGEX.test(depositAmount) ? parseEther(depositAmount) : 0n,
+                      });
+                    } catch (err) {
+                      console.error("Error calling deposit function");
+                    }
+                  }}
                 >
                   Send
                 </button>
@@ -200,7 +194,17 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
-                  onClick={wrapInTryCatch(withdrawWrite, "withdrawWrite")}
+                  onClick={async () => {
+                    try {
+                      await writeDexContractAsync({
+                        functionName: "withdraw",
+                        // @ts-expect-error - Show error on frontend while sending, if user types invalid number
+                        args: [NUMBER_REGEX.test(withdrawAmount) ? parseEther(withdrawAmount) : withdrawAmount],
+                      });
+                    } catch (err) {
+                      console.error("Error calling withdraw function");
+                    }
+                  }}
                 >
                   Send
                 </button>
@@ -236,7 +240,20 @@ const Dex: NextPage = () => {
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-auto"
-                  onClick={wrapInTryCatch(approveWrite, "approveWrite")}
+                  onClick={async () => {
+                    try {
+                      await writeBalloonsContractAsync({
+                        functionName: "approve",
+                        args: [
+                          approveSpender,
+                          // @ts-expect-error - Show error on frontend while sending, if user types invalid number
+                          NUMBER_REGEX.test(approveAmount) ? parseEther(approveAmount) : approveAmount,
+                        ],
+                      });
+                    } catch (err) {
+                      console.error("Error calling approve function");
+                    }
+                  }}
                 >
                   Send
                 </button>
@@ -264,7 +281,7 @@ const Dex: NextPage = () => {
           <Curve
             addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
             addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
-            ethReserve={contractETHBalance ? parseFloat("" + contractETHBalance) : 0}
+            ethReserve={parseFloat(formatEther(contractETHBalance?.value || 0n))}
             tokenReserve={parseFloat(formatEther(contractBalance || 0n))}
             width={500}
             height={500}
