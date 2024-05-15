@@ -130,7 +130,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
               }
             }}
           >
-            🥩 Stake 0.5 ether!
+            🔏 Stake 0.5 ether!
           </button>
         </div>
       </div>
