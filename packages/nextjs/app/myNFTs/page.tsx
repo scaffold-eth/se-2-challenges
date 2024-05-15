@@ -4,7 +4,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { MyHoldings } from "~~/components/simpleNFT";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { addToIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
 import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
@@ -12,17 +12,12 @@ import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
 const MyNFTs: NextPage = () => {
   const { address: connectedAddress, isConnected, isConnecting } = useAccount();
 
-  const { writeAsync: mintItem } = useScaffoldContractWrite({
-    contractName: "YourCollectible",
-    functionName: "mintItem",
-    args: [connectedAddress, ""],
-  });
+  const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
 
-  const { data: tokenIdCounter } = useScaffoldContractRead({
+  const { data: tokenIdCounter } = useScaffoldReadContract({
     contractName: "YourCollectible",
     functionName: "tokenIdCounter",
     watch: true,
-    cacheOnBlock: true,
   });
 
   const handleMintItem = async () => {
@@ -39,7 +34,8 @@ const MyNFTs: NextPage = () => {
       notification.remove(notificationId);
       notification.success("Metadata uploaded to IPFS");
 
-      await mintItem({
+      await writeContractAsync({
+        functionName: "mintItem",
         args: [connectedAddress, uploadedItem.path],
       });
     } catch (error) {
