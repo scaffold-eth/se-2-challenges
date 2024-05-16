@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Curve } from "./_components";
 import type { NextPage } from "next";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { Curve } from "~~/components/Curve";
 import { Address, AddressInput, Balance, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
