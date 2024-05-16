@@ -1,6 +1,6 @@
 "use client";
 
-import { MyHoldings } from "./_components/MyHoldings";
+import { MyHoldings } from "./_components";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
