@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Guru, Rube } from "./_components";
 import { NextPage } from "next";
 import { Address as AddressType } from "viem";
 import { useAccount } from "wagmi";
-import { Guru } from "~~/components/streamer/Guru";
-import { Rube } from "~~/components/streamer/Rube";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 /**
