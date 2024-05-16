@@ -1,6 +1,6 @@
 import { type FC } from "react";
-import { Address, BlockieAvatar } from "./scaffold-eth";
 import { Address as AddressType, formatEther } from "viem";
+import { Address, BlockieAvatar } from "~~/components/scaffold-eth";
 
 type TransactionEventItemProps = {
   hash: `0x${string}`;

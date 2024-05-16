@@ -1,8 +1,8 @@
 "use client";
 
 import { type FC } from "react";
+import { TransactionEventItem } from "./_components";
 import { QRCodeSVG } from "qrcode.react";
-import { TransactionEventItem } from "~~/components/TransactionEventItem";
 import { Address, Balance } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 

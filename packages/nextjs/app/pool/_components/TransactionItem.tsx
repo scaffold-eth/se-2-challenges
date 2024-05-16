@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { Address, BlockieAvatar } from "./scaffold-eth";
+import { Address, BlockieAvatar } from "../../../components/scaffold-eth";
 import { Abi, decodeFunctionData, formatEther } from "viem";
 import { DecodeFunctionDataReturnType } from "viem/_types/utils/abi/decodeFunctionData";
 import { useAccount, useWalletClient } from "wagmi";

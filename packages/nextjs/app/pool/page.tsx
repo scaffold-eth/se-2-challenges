@@ -2,9 +2,9 @@
 
 import { type FC, useMemo, useState } from "react";
 import { TransactionData, getPoolServerUrl } from "../create/page";
+import { TransactionItem } from "./_components";
 import { useInterval } from "usehooks-ts";
 import { useChainId } from "wagmi";
-import { TransactionItem } from "~~/components/TransactionItem";
 import {
   useDeployedContractInfo,
   useScaffoldContract,
