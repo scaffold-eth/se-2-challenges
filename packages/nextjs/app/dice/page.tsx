@@ -3,9 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { formatEther, parseEther } from "viem";
-import { Amount } from "~~/components/Amount";
-import { Roll, RollEvents } from "~~/components/RollEvents";
-import { Winner, WinnerEvents } from "~~/components/WinnerEvents";
+import { Amount, Roll, RollEvents, Winner, WinnerEvents } from "~~/app/dice/_components";
 import { Address } from "~~/components/scaffold-eth";
 import {
   useScaffoldContract,

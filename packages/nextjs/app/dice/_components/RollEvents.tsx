@@ -1,6 +1,6 @@
 import React from "react";
-import { Address } from "./scaffold-eth";
 import { Address as AddressType } from "viem";
+import { Address } from "~~/components/scaffold-eth";
 
 export type Roll = {
   address: AddressType;
