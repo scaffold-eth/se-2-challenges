@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Address, AddressInput } from "../scaffold-eth";
 import { Collectible } from "./MyHoldings";
+import { Address, AddressInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 export const NFTCard = ({ nft }: { nft: Collectible }) => {
