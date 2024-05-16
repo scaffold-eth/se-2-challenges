@@ -1,10 +1,10 @@
 "use client";
 
-import { Address } from "../scaffold-eth";
 import { ETHToPrice } from "./EthToPrice";
 import humanizeDuration from "humanize-duration";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
+import { Address } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
