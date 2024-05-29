@@ -6,6 +6,8 @@
 
 🌟 The final deliverable is an app that lets users purchase and transfer NFTs. Deploy your contracts to a testnet, then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
+🤖 If you have any question during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions.
+
 💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
 ## Checkpoint 0: 📦 Environment 📚
@@ -211,8 +213,6 @@ yarn verify --network sepolia
 
 ---
 
-> 🤖 If you have Chat GPT Plus account, you can try out [GPT Challenge 0 assistant](https://chat.openai.com/g/g-gk1PO5LNr-sre-challenge-0-assistant-alpha-version) and get answers for your questions about this Challenge.
->
 > ⭐ Please share your feedback with us in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx) if you have a chance to try the GPT assistant!
 
 > 🏃 Head to your next challenge [here](https://github.com/scaffold-eth/se-2-challenges).
