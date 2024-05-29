@@ -9,7 +9,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
   const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
 
   return (
-    <div className="card card-compact bg-base-100 shadow-lg sm:min-w-[300px] shadow-secondary">
+    <div className="card card-compact bg-base-100 shadow-lg w-[300px] shadow-secondary">
       <figure className="relative">
         {/* eslint-disable-next-line  */}
         <img src={nft.image} alt="NFT Image" className="h-60 min-w-full" />
