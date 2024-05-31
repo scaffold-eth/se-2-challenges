@@ -103,7 +103,7 @@ Rubes seeking wisdom will use a **payable** `fundChannel()` function, which will
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `fundChannel()` function
 
-> 👁 Check `packages/nextjs/components/streamer/Rube.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
+> 👁 Check `packages/nextjs/app/streamer/_components/Rube.tsx` to see the frontend calling this function. (ctrl-f fundChannel)
 
 > Run `yarn deploy` and open a channel in the Rube's tab. (You may need some funds from the faucet)
 
@@ -123,13 +123,13 @@ Now that the channel is funded and all participants have observed the funding vi
 
 Functions of note:
 
-- `provideService` in `packages/nextjs/components/streamer/Guru.tsx`: The Guru sends wisdom over the wire to the client.
-- `reimburseService` in `packages/nextjs/components/streamer/Rube.tsx`: The rube creates a voucher for the received service, signs it, and returns it.
-- `processVoucher` in `packages/nextjs/components/streamer/Guru.tsx`: The service provider receives and stores vouchers.
+- `provideService` in `packages/nextjs/app/streamer/_components/Guru.tsx`: The Guru sends wisdom over the wire to the client.
+- `reimburseService` in `packages/nextjs/app/streamer/_components/Rube.tsx`: The rube creates a voucher for the received service, signs it, and returns it.
+- `processVoucher` in `packages/nextjs/app/streamer/_components/Guru.tsx`: The service provider receives and stores vouchers.
 
 The first two functions are complete - we will work on `processVoucher`, where the service provider examines returned payments, confirms their authenticity, and stores them.
 
-> 📝 Edit `packages/nextjs/components/streamer/Guru.tsx` to complete the `processVoucher()` function and secure this off-chain exchange. You'll need to recreate the encoded message that the client has signed, and then verify that the received signature was in fact produced by the client on that same data.
+> 📝 Edit `packages/nextjs/app/streamer/_components/Guru.tsx` to complete the `processVoucher()` function and secure this off-chain exchange. You'll need to recreate the encoded message that the client has signed, and then verify that the received signature was in fact produced by the client on that same data.
 
 ### 🥅 Goals:
 
@@ -163,7 +163,7 @@ Now that we've collected some vouchers, we'd like to redeem them on-chain and mo
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to complete the `withdrawEarnings()` function as described.
 
-> 📝 Edit `packages/nextjs/components/streamer/Guru.tsx` to enable the UI button for withdrawals.
+> 📝 Edit `packages/nextjs/app/streamer/_components/Guru.tsx` to enable the UI button for withdrawals.
 
 ### 🥅 Goals:
 
