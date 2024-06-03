@@ -10,6 +10,8 @@
 
 💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
+🤖 If you have any question during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions. Please reach us in Telegram if something feels wrong!
+
 ## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
@@ -212,8 +214,6 @@ yarn verify --network sepolia
 (It can take a while before they show up, but here is an example:) https://testnets.opensea.io/assets/sepolia/0x17ed03686653917efa2194a5252c5f0a4f3dc49c/2
 
 ---
-
-> ⭐ Please share your feedback with us in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx) if you have a chance to try the GPT assistant!
 
 > 🏃 Head to your next challenge [here](https://github.com/scaffold-eth/se-2-challenges).
 
