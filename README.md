@@ -16,6 +16,8 @@
 
 💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
+🤖 If you have any question during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions. Please reach us in Telegram if something feels wrong!
+
 ## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
