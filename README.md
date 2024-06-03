@@ -150,7 +150,7 @@ The first two functions are complete - we will work on `processVoucher`, where t
 Now that we've collected some vouchers, we'd like to redeem them on-chain and move funds from the `Streamer` contract's `balances` map to the Guru's own address. The `withdrawEarnings` function of `packages/hardhat/contracts/Streamer.sol` takes a Struct named voucher (balance + signature) as input, and should:
 
 - Recover the signer using `ecrecover(bytes32, uint8, bytes32, bytes32)` on the `prefixedHashed` message and supplied signature.
-  - _Hint_: `ecrecover` takes the signature in its decomposed form with `v,`,`r`, and`s` values. The string signature produced in `packages/nextjs/components/streamer/Rube.tsx` is just a concatenation of these values, which we split using `ethers.Signature.from` in `packages/nextjs/components/streamer/CashOutVoucherButton.tsx` to create the on-chain friendly signature. Read about the [ecrecover function here](https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html)
+  - _Hint_: `ecrecover` takes the signature in its decomposed form with `v,`,`r`, and`s` values. The string signature produced in `packages/nextjs/app/streamer/_components/Rube.tsx` is just a concatenation of these values, which we split using `ethers.Signature.from` in `packages/nextjs/app/streamer/_components/CashOutVoucherButton.tsx` to create the on-chain friendly signature. Read about the [ecrecover function here](https://docs.soliditylang.org/en/v0.8.17/units-and-global-variables.html)
 - Check that the signer has a running channel with balance greater than the voucher's `updatedBalance`
 - Calculate the payout (`balances[signer] - updatedBalance`)
 - Update the channel balance.
@@ -190,7 +190,7 @@ A payment channel is a cryptoeconomic protocol - care needs to be taken so that 
 
 > 📝 Edit `packages/hardhat/contracts/Streamer.sol` to create a public `challengeChannel()` function.
 
-> 📝 Edit `packages/nextjs/components/streamer/Rube.tsx` to enable the challenge and closure buttons for service clients(rubes).
+> 📝 Edit `packages/nextjs/app/streamer/_components/Rube.tsx` to enable the challenge and closure buttons for service clients(rubes).
 
 The `challengeChannel()` function should:
 
