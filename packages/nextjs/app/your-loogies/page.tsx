@@ -7,7 +7,7 @@ import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
-const Home: NextPage = () => {
+const YourLoogies: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const [yourLoogies, setYourLoogies] = useState<any[]>();
   const [loadingLoogies, setLoadingLoogies] = useState(true);
@@ -21,7 +21,6 @@ const Home: NextPage = () => {
     contractName: "YourCollectible",
     functionName: "totalSupply",
   });
-  console.log(totalSupply, "🟣 totalSupply");
 
   const { data: balance } = useScaffoldReadContract({
     contractName: "YourCollectible",
@@ -63,7 +62,7 @@ const Home: NextPage = () => {
     };
     updateAllLoogies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balance, connectedAddress]);
+  }, [balance, connectedAddress, Boolean(contract)]);
 
   return (
     <>
@@ -72,7 +71,7 @@ const Home: NextPage = () => {
           <h1 className="text-center">
             <span className="block text-4xl font-bold">Your Loogies</span>
           </h1>
-          <div className="flex flex-col justify-center items-center space-x-2">
+          <div className="flex flex-col justify-center items-center mt-4 space-x-2">
             <button
               onClick={async () => {
                 try {
@@ -89,11 +88,16 @@ const Home: NextPage = () => {
             >
               Mint Now for {price ? (+formatEther(price)).toFixed(6) : "-"} ETH
             </button>
-            <p>{totalSupply ? (3728n - totalSupply).toString() : "-"} Loogies left</p>
+            <p>{Number(3728n - (totalSupply || 0n))} Loogies left</p>
           </div>
+        </div>
+
+        <div className="flex-grow bg-base-300 w-full mt-8 px-8 py-12">
           <div className="flex justify-center items-center space-x-2">
-            {loadingLoogies || !yourLoogies ? (
+            {loadingLoogies ? (
               <p className="my-2 font-medium">Loading...</p>
+            ) : !yourLoogies?.length ? (
+              <p className="my-2 font-medium">No loogies minted</p>
             ) : (
               <div>
                 <div className="grid grid-cols-3 gap-4">
@@ -119,4 +123,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default YourLoogies;

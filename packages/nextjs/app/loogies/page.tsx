@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
-const Home: NextPage = () => {
+const Loogies: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const [allLoogies, setAllLoogies] = useState<any[]>();
   const [page, setPage] = useState(1n);
@@ -59,7 +59,8 @@ const Home: NextPage = () => {
       setLoadingLoogies(false);
     };
     updateAllLoogies();
-  }, [totalSupply, page, perPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalSupply, page, perPage, Boolean(contract)]);
 
   return (
     <>
@@ -67,7 +68,7 @@ const Home: NextPage = () => {
         <div className="px-5">
           <h1 className="text-center">
             <span className="block text-4xl font-bold">OptimisticLoogies</span>
-            <span className="block text-2xl mb-2">Loogies with a smile :)</span>
+            <span className="block text-2xl mt-4 mb-2">Loogies with a smile :)</span>
           </h1>
           <div className="text-center">
             <p>Only 3728 Optimistic Loogies available on a price curve increasing 0.2% with each new mint.</p>
@@ -78,7 +79,7 @@ const Home: NextPage = () => {
               </a>
             </p>
           </div>
-          <div className="flex flex-col justify-center items-center space-x-2">
+          <div className="flex flex-col justify-center items-center mt-6 space-x-2">
             <button
               onClick={async () => {
                 try {
@@ -95,14 +96,16 @@ const Home: NextPage = () => {
             >
               Mint Now for {price ? (+formatEther(price)).toFixed(6) : "-"} ETH
             </button>
-            <p>{totalSupply ? (3728n - totalSupply).toString() : "-"} Loogies left</p>
+            <p>{Number(3728n - (totalSupply || 0n))} Loogies left</p>
           </div>
         </div>
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
+        <div className="flex-grow bg-base-300 w-full mt-8 px-8 py-12">
           <div className="flex justify-center items-center space-x-2">
-            {loadingLoogies || !allLoogies ? (
+            {loadingLoogies ? (
               <p className="my-2 font-medium">Loading...</p>
+            ) : !allLoogies?.length ? (
+              <p className="my-2 font-medium">No loogies minted</p>
             ) : (
               <div>
                 <div className="grid grid-cols-3 gap-4">
@@ -144,4 +147,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Loogies;
