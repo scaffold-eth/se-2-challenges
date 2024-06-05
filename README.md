@@ -1,13 +1,18 @@
-# 🚩 Challenge {challengeNum}: {challengeEmoji} {challengeTitle}
+# 🚩 Challenge 7: 🎁 SVG NFT
 
-{challengeHeroImage}
+![readme-7](https://github.com/scaffold-eth/se-2-challenges/assets/25638585/94178d41-f7ce-4d0f-af9a-488a224d301f)
 
-A {challengeDescription}.
+> 🎨 Creating on-chain SVG NFTs is an exciting way to leverage the power of smart contracts for generating unique digital art. This challenge will have you build a contract that generates dynamic SVG images directly on the blockchain. Users will be able to mint their own unique NFTs with customizable SVG graphics and metadata.
 
-🌟 The final deliverable is an app that {challengeDeliverable}.
-Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
+> 🔗 Your contract will handle the creation and storage of the SVG code, ensuring each minted NFT is unique and stored entirely on-chain. This approach keeps the artwork decentralized and immutable.
 
-💬 Meet other builders working on this challenge and get help in the {challengeTelegramLink}
+> 💎 The objective is to develop an app that allows users to mint their own dynamic SVG NFTs. Customize your SVG generation logic and make the minting process interactive and engaging.
+
+> 🚀 Once your project is live, share the minting URL so others can see and mint their unique SVG NFTs!
+
+> 🌟 Use Loogies NFT as an example to guide your project. This will provide a solid foundation and inspiration for creating your own dynamic SVG NFTs.
+
+💬 Meet other builders working on this challenge and get help in the [🎁 SVG NFT 🎫 Building Cohort](https://t.me/+mUeITJ5u7Ig0ZWJh)!
 
 ---
 
@@ -22,9 +27,9 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-git clone https://github.com/scaffold-eth/se-2-challenges.git {challengeName}
-cd {challengeName}
-git checkout {challengeName}
+git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-7-svg-nft
+cd challenge-7-svg-nft
+git checkout challenge-7-svg-nft
 yarn install
 ```
 
@@ -37,14 +42,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd <challenge_folder_name>
+cd challenge-7-svg-nft
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd <challenge_folder_name>
+cd challenge-7-svg-nft
 yarn start
 ```
 
@@ -52,25 +57,76 @@ yarn start
 
 > 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
 
-🔏 Now you are ready to edit your smart contract `{mainContractName.sol}` in `packages/hardhat/contracts`
+🔏 Now you are ready to edit your smart contracts `YourCollectible.sol` in `packages/hardhat/contracts`
 
 ---
 
-_Other commonly used Checkpoints (check one Challenge and adapt the texts for your own):_
+## Checkpoint 1: 🏗️ Buidl! 🌟
 
-## Checkpoint {num}: 💾 Deploy your contract! 🛰
+This challenge is brimming with creative freedom, giving you the opportunity to explore various approaches! 🌟 To help guide your efforts, consider the following goals. Additionally, the current branch includes an example of SVG NFTs, the "Loogies." Feel free to use it as inspiration or start your project entirely from scratch! 🚀
 
-## Checkpoint {num}: 🚢 Ship your frontend! 🚁
+### 🥅 Goals
 
-## Checkpoint {num}: 📜 Contract Verification
+- [ ] Design and implement SVG generation logic within the contract
+- [ ] Add metadata generation functionality to the smart contract
+- [ ] Make sure metadata is stored and retrievable on-chain
+- [ ] Ensure each minted NFT is unique and customizable
+- [ ] Create UI for minting and interaction with your smart contracts
+
+## Checkpoint 2: 💾 Deploy your contracts! 🛰
+
+📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
+
+🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
+
+👩‍🚀 Use `yarn account` to view your deployer account balances.
+
+⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
+
+🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
+
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
 ---
 
-_Create all the required Checkpoints for the Challenge, can also add Side Quests you think may be interesting to complete. Check other Challenges for inspiration._
+## Checkpoint 3: 🚢 Ship your frontend! 🚁
 
-### ⚔️ Side Quests
+✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
-_To finish your README, can add these links_
+💻 View your frontend at http://localhost:3000 and verify you see the correct network.
+
+📡 When you are ready to ship the frontend app...
+
+📦 Run `yarn vercel` to package up your frontend and deploy.
+
+> Follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
+
+> If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
+
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+
+#### Configuration of Third-Party Services for Production-Grade Apps.
+
+By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.  
+This is great to complete your **SpeedRunEthereum**.
+
+For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
+
+- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+
+- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+> 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
+
+---
+
+## Checkpoint 4: 📜 Contract Verification
+
+Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
+
+👉 Search this address on Etherscan to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
+
+---
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 
