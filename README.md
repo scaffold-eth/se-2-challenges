@@ -63,7 +63,7 @@ yarn start
 
 ## Checkpoint 1: 🏗️ Buidl! 🌟
 
-This challenge is brimming with creative freedom, giving you the opportunity to explore various approaches! 🌟 To help guide your efforts, consider the following goals. Additionally, the current branch includes an example of SVG NFTs, the "Loogies." Feel free to use it as inspiration or start your project entirely from scratch! 🚀
+This challenge is brimming with creative freedom, giving you the opportunity to explore various approaches! 🌟 To help guide your efforts, consider the following goals. Additionally, the current branch includes an example of SVG NFTs, the Loogies. Feel free to use it as inspiration or start your project entirely from scratch! 🚀
 
 ### 🥅 Goals
 

@@ -19,25 +19,21 @@ const Home: NextPage = () => {
             className="rounded-xl border-4 border-primary"
           />
           <div className="max-w-3xl text-center text-lg">
-            <p className="text-center text-lg mt-8">
-              🏆 Assuming you have made it this far you should be comfortable with the basics of 🏗 Scaffold-Eth 2
+            <p className="mt-8">
+              🎨 Creating on-chain SVG NFTs is an exciting way to leverage the power of smart contracts for generating
+              unique digital art. This challenge will have you build a contract that generates dynamic SVG images
+              directly on the blockchain. Users will be able to mint their own unique NFTs with customizable SVG
+              graphics and metadata.
             </p>
-            <p>⚗️ This challenge is _very_ open-ended!</p>
             <p>
-              🛠 Take{" "}
-              <Link href={"/loogies"} className="underline">
-                Loogies NFT
+              🌟 Use{" "}
+              <Link href="/loogies" className="underline">
+                Loogies
               </Link>{" "}
-              as an example and make your own SVG NFT. Post the minting URL in the chat!
+              as an example to guide your project. This will provide a solid foundation and inspiration for creating
+              your own dynamic SVG NFTs.
             </p>
-            <p className="text-center text-lg font-bold">
-              💸 MAIN GOAL: Build an SVG NFT on mainnet and let us ape in.
-            </p>
-            <p>
-              💵 A side goal here is to make something cool enough that people might pay a little ETH for your hardwork
-              on the Solidity!
-            </p>
-            <p>
+            <p className="mt-8">
               💬 Meet other builders working on this challenge and get help in the{" "}
               <a href="https://t.me/+mUeITJ5u7Ig0ZWJh" target="_blank" rel="noreferrer" className="underline">
                 🎁 SVG NFT 🎫 Building Cohort
