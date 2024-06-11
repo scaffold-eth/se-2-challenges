@@ -30,6 +30,12 @@ This challenge is brimming with creative freedom, giving you the opportunity to 
 - [ ] Ensure each minted NFT is unique and customizable
 - [ ] Create UI for minting and interaction with your smart contracts
 
+### ⚔️ Side Quests:
+
+- [ ] Leave the minting funds in the contract, so the minter does not pay extra gas to send the funds to the recipient address. Create a `Withdraw()` function to allow the owner to withdraw the funds.
+- [ ] Explore other pricing models for minting NFTs, such as dutch auctions (with or without settlement)
+- [ ] Set different phases for minting, such as a discount for early adopters (allowlisted). Manage the allowlist and the functions to switch between phases.
+
 ---
 
 ## Checkpoint 0: 📦 Environment 📚
