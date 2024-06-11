@@ -16,6 +16,22 @@
 
 ---
 
+## 📜 Quest Journal 🧭
+
+This challenge is brimming with creative freedom, giving you the opportunity to explore various approaches!
+
+🌟 To help guide your efforts, consider the following goals. Additionally, the current branch includes an example of SVG NFTs, the Loogies. Feel free to use it as inspiration or start your project entirely from scratch! 🚀
+
+### 🥅 Goals:
+
+- [ ] Design and implement SVG generation logic within the contract
+- [ ] Add metadata generation functionality to the smart contract
+- [ ] Make sure metadata is stored and retrievable on-chain
+- [ ] Ensure each minted NFT is unique and customizable
+- [ ] Create UI for minting and interaction with your smart contracts
+
+---
+
 ## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
@@ -61,19 +77,7 @@ yarn start
 
 ---
 
-## Checkpoint 1: 🏗️ Buidl! 🌟
-
-This challenge is brimming with creative freedom, giving you the opportunity to explore various approaches! 🌟 To help guide your efforts, consider the following goals. Additionally, the current branch includes an example of SVG NFTs, the Loogies. Feel free to use it as inspiration or start your project entirely from scratch! 🚀
-
-### 🥅 Goals
-
-- [ ] Design and implement SVG generation logic within the contract
-- [ ] Add metadata generation functionality to the smart contract
-- [ ] Make sure metadata is stored and retrievable on-chain
-- [ ] Ensure each minted NFT is unique and customizable
-- [ ] Create UI for minting and interaction with your smart contracts
-
-## Checkpoint 2: 💾 Deploy your contracts! 🛰
+## Checkpoint 1: 💾 Deploy your contracts! 🛰
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
@@ -89,7 +93,7 @@ This challenge is brimming with creative freedom, giving you the opportunity to 
 
 ---
 
-## Checkpoint 3: 🚢 Ship your frontend! 🚁
+## Checkpoint 2: 🚢 Ship your frontend! 🚁
 
 ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` or any other public network.
 
@@ -120,7 +124,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-## Checkpoint 4: 📜 Contract Verification
+## Checkpoint 3: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
