@@ -9,7 +9,7 @@ const baseUrl = process.env.VERCEL_URL
   : `http://localhost:${process.env.PORT || 3000}`;
 const imageUrl = `${baseUrl}/thumbnail.jpg`;
 
-const title = "SpeedRunEthereum";
+const title = "Challenge #7 | SpeedRunEthereum";
 const titleTemplate = "%s | SpeedRunEthereum";
 const description = "Built with 🏗 Scaffold-ETH 2";
 
