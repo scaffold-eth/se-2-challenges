@@ -77,7 +77,7 @@ const Loogies: NextPage = () => {
             <p>Only 3728 Optimistic Loogies available on a price curve increasing 0.2% with each new mint.</p>
             <p>
               Double the supply of the{" "}
-              <a href="https://loogies.io/" target="_blank">
+              <a className="underline" href="https://loogies.io/" target="_blank">
                 Original Ethereum Mainnet Loogies
               </a>
             </p>
