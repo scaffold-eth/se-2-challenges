@@ -95,7 +95,7 @@ const YourLoogies: NextPage = () => {
           </div>
         </div>
 
-        <div className="flex-grow bg-base-300 w-full mt-8 px-8 py-12">
+        <div className="flex-grow bg-base-300 w-full mt-4 p-8">
           <div className="flex justify-center items-center space-x-2">
             {loadingLoogies ? (
               <p className="my-2 font-medium">Loading...</p>
@@ -103,12 +103,12 @@ const YourLoogies: NextPage = () => {
               <p className="my-2 font-medium">No loogies minted</p>
             ) : (
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 my-8 px-8 justify-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-center">
                   {yourLoogies.map(loogie => {
                     return (
                       <div
                         key={loogie.id}
-                        className="flex flex-col bg-base-100 px-5 py-10 text-center items-center max-w-xs rounded-3xl"
+                        className="flex flex-col bg-base-100 p-5 text-center items-center max-w-xs rounded-3xl"
                       >
                         <h2 className="text-xl font-bold">{loogie.name}</h2>
                         <Image src={loogie.image} alt={loogie.name} width="300" height="300" />
