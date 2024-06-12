@@ -33,7 +33,7 @@ This challenge is brimming with creative freedom, giving you the opportunity to 
 ### ⚔️ Side Quests:
 
 - [ ] Leave the minting funds in the contract, so the minter does not pay extra gas to send the funds to the recipient address. Create a `Withdraw()` function to allow the owner to withdraw the funds.
-- [ ] Explore other pricing models for minting NFTs, such as dutch auctions (with or without settlement)
+- [ ] Explore other [pricing models for minting NFTs](https://docs.artblocks.io/creator-docs/minter-suite/minting-philosophy/), such as dutch auctions (with or without settlement)
 - [ ] Set different phases for minting, such as a discount for early adopters (allowlisted). Manage the allowlist and the functions to switch between phases.
 
 ---
