@@ -134,9 +134,9 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
-👉 Search this address on Etherscan to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
-
 ---
+
+> 👩‍❤️‍👨 Share your public url with friends, showcase your art on-chain, and enjoy the minting experience together🎉!!
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 
