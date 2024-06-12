@@ -68,7 +68,7 @@ const YourLoogies: NextPage = () => {
     <>
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="relative w-48 h-48 -m-12">
-          <Image alt="Loogie" className="cursor-pointer" fill src="/my-loogie.svg" />
+          <Image alt="Loogie" className="cursor-pointer" fill src="/your-loogie.svg" />
         </div>
         <div className="px-5">
           <h1 className="text-center">
