@@ -2,17 +2,17 @@
 
 ![readme-7](https://github.com/scaffold-eth/se-2-challenges/assets/25638585/94178d41-f7ce-4d0f-af9a-488a224d301f)
 
-> 🎨 Creating on-chain SVG NFTs is an exciting way to leverage the power of smart contracts for generating unique digital art. This challenge will have you build a contract that generates dynamic SVG images directly on the blockchain. Users will be able to mint their own unique NFTs with customizable SVG graphics and metadata.
+🎨 Creating on-chain SVG NFTs is an exciting way to leverage the power of smart contracts for generating unique digital art. This challenge will have you build a contract that generates dynamic SVG images directly on the blockchain. Users will be able to mint their own unique NFTs with customizable SVG graphics and metadata.
 
-> 🔗 Your contract will handle the creation and storage of the SVG code, ensuring each minted NFT is unique and stored entirely on-chain. This approach keeps the artwork decentralized and immutable.
+🔗 Your contract will handle the creation and storage of the SVG code, ensuring each minted NFT is unique and stored entirely on-chain. This approach keeps the artwork decentralized and immutable.
 
-> 💎 The objective is to develop an app that allows users to mint their own dynamic SVG NFTs. Customize your SVG generation logic and make the minting process interactive and engaging.
+💎 The objective is to develop an app that allows users to mint their own dynamic SVG NFTs. Customize your SVG generation logic and make the minting process interactive and engaging.
 
-> 🚀 Once your project is live, share the minting URL so others can see and mint their unique SVG NFTs!
+🚀 Once your project is live, share the minting URL so others can see and mint their unique SVG NFTs!
 
-> 🌟 Use Loogies NFT as an example to guide your project. This will provide a solid foundation and inspiration for creating your own dynamic SVG NFTs.
+🌟 Use Loogies NFT as an example to guide your project. This will provide a solid foundation and inspiration for creating your own dynamic SVG NFTs.
 
-💬 Meet other builders working on this challenge and get help in the [🎁 SVG NFT 🎫 Building Cohort](https://t.me/+mUeITJ5u7Ig0ZWJh)!
+> 💬 Meet other builders working on this challenge and get help in the [🎁 SVG NFT 🎫 Building Cohort](https://t.me/+mUeITJ5u7Ig0ZWJh)!
 
 ---
 
