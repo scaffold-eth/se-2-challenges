@@ -32,18 +32,18 @@ const TokenVendor: NextPage = () => {
   const { writeContractAsync: writeVendorAsync } = useScaffoldWriteContract("Vendor");
   const { writeContractAsync: writeYourTokenAsync } = useScaffoldWriteContract("YourToken");
 
-  // const { data: vendorTokenBalance } = useScaffoldReadContract({
-  //   contractName: "YourToken",
-  //   functionName: "balanceOf",
-  //   args: [vendorContractData?.address],
-  // });
+  const { data: vendorTokenBalance } = useScaffoldReadContract({
+    contractName: "YourToken",
+    functionName: "balanceOf",
+    args: [vendorContractData?.address],
+  });
 
-  // const { data: vendorEthBalance } = useWatchBalance({ address: vendorContractData?.address });
+  const { data: vendorEthBalance } = useWatchBalance({ address: vendorContractData?.address });
 
-  // const { data: tokensPerEth } = useScaffoldReadContract({
-  //   contractName: "Vendor",
-  //   functionName: "tokensPerEth",
-  // });
+  const { data: tokensPerEth } = useScaffoldReadContract({
+    contractName: "Vendor",
+    functionName: "tokensPerEth",
+  });
 
   return (
     <>
@@ -57,7 +57,7 @@ const TokenVendor: NextPage = () => {
             </div>
           </div>
           {/* Vendor Balances */}
-          {/* <hr className="w-full border-secondary my-3" />
+          <hr className="w-full border-secondary my-3" />
           <div>
             Vendor token balance:{" "}
             <div className="inline-flex items-center justify-center">
@@ -68,11 +68,11 @@ const TokenVendor: NextPage = () => {
           <div>
             Vendor eth balance: {Number(formatEther(vendorEthBalance?.value || 0n)).toFixed(4)}
             <span className="font-bold ml-1">ETH</span>
-          </div> */}
+          </div>
         </div>
 
         {/* Buy Tokens */}
-        {/* <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
+        <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
           <div className="text-xl">Buy tokens</div>
           <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
 
@@ -97,7 +97,7 @@ const TokenVendor: NextPage = () => {
           >
             Buy Tokens
           </button>
-        </div> */}
+        </div>
 
         {!!yourTokenBalance && (
           <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
@@ -131,7 +131,7 @@ const TokenVendor: NextPage = () => {
         )}
 
         {/* Sell Tokens */}
-        {/* {!!yourTokenBalance && (
+        {!!yourTokenBalance && (
           <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
             <div className="text-xl">Sell tokens</div>
             <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
@@ -179,7 +179,7 @@ const TokenVendor: NextPage = () => {
               </button>
             </div>
           </div>
-        )} */}
+        )}
       </div>
     </>
   );
