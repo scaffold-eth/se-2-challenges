@@ -36,10 +36,20 @@
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
+    "@types/keccak": "^3",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3"
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "bufferutil": "^4.0.8",
+    "classic-level": "^1.4.1",
+    "esbuild": "^0.23.0",
+    "keccak": "^3.0.4",
+    "protobufjs": "^7.3.2",
+    "secp256k1": "^5.0.0",
+    "utf-8-validate": "^6.0.4"
   }
 }
