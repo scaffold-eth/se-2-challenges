@@ -62,7 +62,7 @@ export const Rube: FC<RubeProps> = ({ challenged, closed, writable }) => {
     //    and on-chain (by the Streamer contract). These are distinct runtime environments, so
     //    care needs to be taken that signatures are applied to specific data encodings.
     //
-    //    the toBytes call below encodes this data in an EVM compatible way
+    //    the toBytes call above encodes this data in an EVM compatible way
     //
     //    see: https://blog.ricmoo.com/verifying-messages-in-solidity-50a94f82b2ca for some
     //         more on EVM verification of messages signed off-chain
