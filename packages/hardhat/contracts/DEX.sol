@@ -58,8 +58,8 @@ contract DEX {
 
 	/* ========== CONSTRUCTOR ========== */
 
-	constructor(address token_addr) {
-		token = IERC20(token_addr); //specifies the token address that will hook into the interface and be used through the variable 'token'
+	constructor(address tokenAddr) {
+		token = IERC20(tokenAddr); //specifies the token address that will hook into the interface and be used through the variable 'token'
 	}
 
 	/* ========== MUTATIVE FUNCTIONS ========== */
@@ -116,5 +116,5 @@ contract DEX {
 	 */
 	function withdraw(
 		uint256 amount
-	) public returns (uint256 eth_amount, uint256 token_amount) {}
+	) public returns (uint256 ethAmount, uint256 tokenAmount) {}
 }
