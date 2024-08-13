@@ -76,7 +76,7 @@ const DiceGame: NextPage = () => {
       setWinners(
         (
           winnerHistoryData?.map(({ args }) => ({
-            address: args.winner as string,
+            address: args.winner!,
             amount: args.amount as bigint,
           })) || []
         ).slice(0, MAX_TABLE_ROWS),
