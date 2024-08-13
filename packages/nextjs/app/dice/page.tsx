@@ -49,7 +49,7 @@ const DiceGame: NextPage = () => {
       setRolls(
         (
           rollsHistoryData?.map(({ args }) => ({
-            address: args.player as string,
+            address: args.player!,
             amount: Number(args.amount),
             roll: (args.roll as bigint).toString(16).toUpperCase(),
           })) || []
