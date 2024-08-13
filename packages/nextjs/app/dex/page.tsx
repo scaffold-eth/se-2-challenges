@@ -50,7 +50,7 @@ const Dex: NextPage = () => {
   const { data: balanceOfWrite } = useScaffoldReadContract({
     contractName: "Balloons",
     functionName: "balanceOf",
-    args: [accountBalanceOf],
+    args: [accountBalanceOf as `0x${string}`],
   });
 
   const { data: contractBalance } = useScaffoldReadContract({
@@ -245,7 +245,7 @@ const Dex: NextPage = () => {
                       await writeBalloonsContractAsync({
                         functionName: "approve",
                         args: [
-                          approveSpender,
+                          approveSpender as `0x${string}`,
                           // @ts-expect-error - Show error on frontend while sending, if user types invalid number
                           NUMBER_REGEX.test(approveAmount) ? parseEther(approveAmount) : approveAmount,
                         ],
