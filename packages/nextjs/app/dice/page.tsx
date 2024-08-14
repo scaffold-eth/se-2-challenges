@@ -49,7 +49,7 @@ const DiceGame: NextPage = () => {
       setRolls(
         (
           rollsHistoryData?.map(({ args }) => ({
-            address: args.player!,
+            address: args.player,
             amount: Number(args.amount),
             roll: (args.roll as bigint).toString(16).toUpperCase(),
           })) || []
@@ -76,7 +76,7 @@ const DiceGame: NextPage = () => {
       setWinners(
         (
           winnerHistoryData?.map(({ args }) => ({
-            address: args.winner!,
+            address: args.winner,
             amount: args.amount as bigint,
           })) || []
         ).slice(0, MAX_TABLE_ROWS),
