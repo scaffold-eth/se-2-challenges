@@ -42,7 +42,7 @@ export const Guru: FC<GuruProps> = ({ challenged, closed, opened, writable }) =>
     }
   }, [channels, opened]);
 
-  (Object.keys(channels) as `0x${string}`[])?.forEach(clientAddress => {
+  (Object.keys(channels) as AddressType[])?.forEach(clientAddress => {
     channels[clientAddress].onmessage = receiveVoucher(clientAddress);
   });
 
@@ -54,7 +54,7 @@ export const Guru: FC<GuruProps> = ({ challenged, closed, opened, writable }) =>
   /**
    * wraps a voucher processing function for each client.
    */
-  function receiveVoucher(clientAddress: `0x${string}`) {
+  function receiveVoucher(clientAddress: AddressType) {
     /**
      * Handle incoming payments from the given client.
      */
