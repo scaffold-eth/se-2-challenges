@@ -5,6 +5,7 @@ import { Address } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useWatchBalance } from "~~/hooks/scaffold-eth";
 
 export const STREAM_ETH_VALUE = "0.5";
+export const ETH_PER_CHARACTER = "0.01";
 
 export type Voucher = { updatedBalance: bigint; signature: `0x${string}}` };
 
