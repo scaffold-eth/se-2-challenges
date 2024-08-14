@@ -1,12 +1,10 @@
 import { type FC, useEffect, useRef, useState } from "react";
-import { STREAM_ETH_VALUE } from "./Guru";
+import { ETH_PER_CHARACTER, STREAM_ETH_VALUE } from "./Guru";
 import humanizeDuration from "humanize-duration";
 import { Address as AddressType, createTestClient, encodePacked, http, keccak256, parseEther, toBytes } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount, useSignMessage } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-
-const ETH_PER_CHARACTER = "0.01";
 
 type RubeProps = {
   challenged: Array<AddressType>;
