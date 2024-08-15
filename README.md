@@ -94,7 +94,7 @@ uint256 public constant tokensPerEth = 100;
 
 > 📟 Emit **event** `BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens)` when tokens are purchased.
 
-Edit `packages/hardhat/deploy/01_deploy_vendor.js` to deploy the `Vendor` (uncomment Vendor deploy lines).
+Edit `packages/hardhat/deploy/01_deploy_vendor.ts` to deploy the `Vendor` (uncomment Vendor deploy lines).
 
 Uncomment the `Buy Tokens` sections in `packages/nextjs/app/token-vendor/page.tsx` to show the UI to buy tokens on the Token Vendor tab.
 
@@ -110,7 +110,7 @@ Uncomment the `Buy Tokens` sections in `packages/nextjs/app/token-vendor/page.ts
 
 > ✏️ So instead, edit `YourToken.sol` to mint the tokens to the `msg.sender` (deployer) in the **constructor()**.
 
-> ✏️ Then, edit `deploy/01_deploy_vendor.js` to transfer 1000 tokens to vendor address.
+> ✏️ Then, edit `deploy/01_deploy_vendor.ts` to transfer 1000 tokens to vendor address.
 
 ```js
 await yourToken.transfer(
@@ -137,7 +137,7 @@ await yourToken.transfer(
 
 ⚠️ You will also need to uncomment the import of Ownable.sol contract!
 
-In `deploy/01_deploy_vendor.js` you will need to call `transferOwnership()` on the `Vendor` to make _your frontend address_ the `owner`:
+In `deploy/01_deploy_vendor.ts` you will need to call `transferOwnership()` on the `Vendor` to make _your frontend address_ the `owner`:
 
 ```js
 await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
