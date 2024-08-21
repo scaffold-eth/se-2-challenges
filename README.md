@@ -113,10 +113,7 @@ Uncomment the `Buy Tokens` sections in `packages/nextjs/app/token-vendor/page.ts
 > ✏️ Then, edit `deploy/01_deploy_vendor.js` to transfer 1000 tokens to vendor address.
 
 ```js
-await yourToken.transfer(
-  vendorDeployment.address,
-  hre.ethers.parseEther("1000")
-);
+await yourToken.transfer(vendorAddress, hre.ethers.parseEther("1000"));
 ```
 
 > 🔎 Look in `packages/nextjs/app/token-vendor/page.tsx` for code to uncomment to display the Vendor ETH and Token balances.
