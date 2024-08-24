@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
-import { formatEther, parseEther } from "viem";
+import { Address as AddressType, formatEther, parseEther } from "viem";
 import { Amount, Roll, RollEvents, Winner, WinnerEvents } from "~~/app/dice/_components";
 import { Address } from "~~/components/scaffold-eth";
 import {
@@ -49,7 +49,7 @@ const DiceGame: NextPage = () => {
       setRolls(
         (
           rollsHistoryData?.map(({ args }) => ({
-            address: args.player as string,
+            address: args.player as AddressType,
             amount: Number(args.amount),
             roll: (args.roll as bigint).toString(16).toUpperCase(),
           })) || []
@@ -76,7 +76,7 @@ const DiceGame: NextPage = () => {
       setWinners(
         (
           winnerHistoryData?.map(({ args }) => ({
-            address: args.winner as string,
+            address: args.winner as AddressType,
             amount: args.amount as bigint,
           })) || []
         ).slice(0, MAX_TABLE_ROWS),

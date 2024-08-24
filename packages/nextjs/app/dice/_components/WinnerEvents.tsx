@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Amount } from "./Amount";
-import { formatEther } from "viem";
+import { Address as AddressType, formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 
 export type Winner = {
-  address: string;
+  address: AddressType;
   amount: bigint;
 };
 
