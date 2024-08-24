@@ -1,12 +1,10 @@
 import { type FC, useEffect, useRef, useState } from "react";
-import { STREAM_ETH_VALUE } from "./Guru";
+import { ETH_PER_CHARACTER, STREAM_ETH_VALUE } from "./Guru";
 import humanizeDuration from "humanize-duration";
 import { Address as AddressType, createTestClient, encodePacked, http, keccak256, parseEther, toBytes } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount, useSignMessage } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-
-const ETH_PER_CHARACTER = "0.01";
 
 type RubeProps = {
   challenged: Array<AddressType>;
@@ -62,7 +60,7 @@ export const Rube: FC<RubeProps> = ({ challenged, closed, writable }) => {
     //    and on-chain (by the Streamer contract). These are distinct runtime environments, so
     //    care needs to be taken that signatures are applied to specific data encodings.
     //
-    //    the toBytes call below encodes this data in an EVM compatible way
+    //    the toBytes call above encodes this data in an EVM compatible way
     //
     //    see: https://blog.ricmoo.com/verifying-messages-in-solidity-50a94f82b2ca for some
     //         more on EVM verification of messages signed off-chain
