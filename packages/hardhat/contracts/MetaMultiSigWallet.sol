@@ -125,14 +125,15 @@ contract MetaMultiSigWallet {
 
     function _streamWithdraw(address payable to, uint256 amount, string memory reason) private {
         uint256 totalAmountCanWithdraw = streamBalance(to);
-        require(totalAmountCanWithdraw >= amount,"withdraw: not enough");
+        require(totalAmountCanWithdraw >= amount, "withdraw: not enough");
         streams[to].last = streams[to].last + ((block.timestamp - streams[to].last) * amount / totalAmountCanWithdraw);
-        emit Withdraw( to, amount, reason );
-        to.transfer(amount);
+        emit Withdraw(to, amount, reason);
+        (bool success,) = to.call{value: amount}("");
+        require(success, "withdraw: failed to send"); 
     }
 
     function streamBalance(address to) public view returns (uint256){
-      return (streams[to].amount * (block.timestamp-streams[to].last)) / streams[to].frequency;
+      return (streams[to].amount * (block.timestamp - streams[to].last)) / streams[to].frequency;
     }
 
     function openStream(address to, uint256 amount, uint256 frequency) public onlySelf {
@@ -153,6 +154,4 @@ contract MetaMultiSigWallet {
         delete streams[to];
         emit CloseStream(to);
     }
-
-
 }
