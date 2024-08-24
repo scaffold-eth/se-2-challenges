@@ -155,10 +155,7 @@ We can see that the DEX starts empty. We want to be able to call `init()` to sta
 
 ```
   // // paste in your front-end address here to get 10 balloons on deploy:
-  // await balloons.transfer(
-  //   "YOUR_FRONTEND_ADDRESS",
-  //   "" + 10 * 10 ** 18
-  // );
+  // await balloons.transfer("YOUR_FRONTEND_ADDRESS", "" + 10 * 10 ** 18);
 ```
 
 > Run `yarn deploy`.
@@ -184,14 +181,14 @@ This works pretty well, but it will be a lot easier if we just call the `init()`
 
 ```
   // // uncomment to init DEX on deploy:
-  // console.log(
-  //   "Approving DEX (" + dex.address + ") to take Balloons from main account..."
-  // );
+
+  // const dexAddress = await dex.getAddress();
+  // console.log("Approving DEX (" + dexAddress + ") to take Balloons from main account...");
   // // If you are going to the testnet make sure your deployer account has enough ETH
-  // await balloons.approve(dex.address, ethers.utils.parseEther("100"));
+  // await balloons.approve(dexAddress, hre.ethers.parseEther("100"));
   // console.log("INIT exchange...");
-  // await dex.init(ethers.utils.parseEther("5"), {
-  //   value: ethers.utils.parseEther("5"),
+  // await dex.init(hre.ethers.parseEther("5"), {
+  //   value: hre.ethers.parseEther("5"),
   //   gasLimit: 200000,
   // });
 ```
@@ -356,8 +353,8 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
     function ethToToken() public payable returns (uint256 tokenOutput) {
         require(msg.value > 0, "cannot swap 0 ETH");
         uint256 ethReserve = address(this).balance - msg.value;
-        uint256 token_reserve = token.balanceOf(address(this));
-        tokenOutput = price(msg.value, ethReserve, token_reserve);
+        uint256 tokenReserve = token.balanceOf(address(this));
+        tokenOutput = price(msg.value, ethReserve, tokenReserve);
 
         require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
         emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
@@ -424,8 +421,8 @@ The basic overview for `ethToToken()` is we're going to define our variables to 
      */
     function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
         require(tokenInput > 0, "cannot swap 0 tokens");
-        uint256 token_reserve = token.balanceOf(address(this));
-        ethOutput = price(tokenInput, token_reserve, address(this).balance);
+        uint256 tokenReserve = token.balanceOf(address(this));
+        ethOutput = price(tokenInput, tokenReserve, address(this).balance);
         require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
         (bool sent, ) = msg.sender.call{ value: ethOutput }("");
         require(sent, "tokenToEth: revert in transferring eth to you!");
@@ -648,7 +645,7 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 ```
 
-    function withdraw(uint256 amount) public returns (uint256 eth_amount, uint256 token_amount) {
+    function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tokenAmount) {
         require(liquidity[msg.sender] >= amount, "withdraw: sender does not have enough liquidity to withdraw.");
         uint256 ethReserve = address(this).balance;
         uint256 tokenReserve = token.balanceOf(address(this));
