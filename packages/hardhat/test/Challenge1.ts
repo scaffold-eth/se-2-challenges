@@ -29,7 +29,7 @@ describe("🚩 Challenge 1: 🔏 Decentralized Staking App", function () {
       stakerContract = (await Staker.deploy(await exampleExternalContract.getAddress())) as Staker;
       console.log("\t", "🛰  Staker contract deployed on", await stakerContract.getAddress());
     });
-    describe("mintItem()", function () {
+    describe("stake()", function () {
       it("Balance should go up when you stake()", async function () {
         const [owner] = await ethers.getSigners();
 
