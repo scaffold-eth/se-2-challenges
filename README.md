@@ -136,6 +136,8 @@ yarn start
 
 > If you're using OP Sepolia, you can get testnet ETH from the [Superchain Faucet](https://console.optimism.io/faucet) or [Alchemy Faucet](https://www.alchemy.com/faucets/optimism-sepolia).
 
+> 🌉 If you need to bridge funds from Sepolia to OP Sepolia, you can use the [Superchain Bridges](https://app.optimism.io/bridge/deposit). This allows you to transfer ETH and other supported tokens between the two networks.
+
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
