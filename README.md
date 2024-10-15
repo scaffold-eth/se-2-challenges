@@ -2,7 +2,7 @@
 
 ![readme-0](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/375b7797-6839-43cd-abe5-fca94d88e300)
 
-📚 This tutorial is meant for developers that already understand the [ 🖍️ basics ](https://www.youtube.com/watch?v=MlJPjJQZtC8). 
+📚 This tutorial is meant for developers that already understand the [ 🖍️ basics ](https://www.youtube.com/watch?v=MlJPjJQZtC8).
 
 🧑‍🏫 If you would like a more gentle introduction for developers, watch our 15 video [🎥 Web2 to Web3](https://www.youtube.com/playlist?list=PLJz1HruEnenAf80uOfDwBPqaliJkjKg69) series.
 
@@ -116,7 +116,7 @@ yarn start
 
 🛰 Ready to deploy to a public testnet?!?
 
-> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
+> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia` (or `optimismSepolia` if you prefer OP Sepolia for lower gas costs).
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
@@ -132,19 +132,21 @@ yarn start
 
 ⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
 
-> Some popular Sepolia faucets are the [Alchemy Faucet](https://sepoliafaucet.com/), [Infura Faucet](https://www.infura.io/faucet/sepolia), and [Google Cloud Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia).
+> Some popular Sepolia faucets are the [Alchemy Faucet](https://www.alchemy.com/faucets/ethereum-sepolia), [Infura Faucet](https://www.infura.io/faucet/sepolia), and [Google Cloud Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia).
+
+> If you're using OP Sepolia, you can get testnet ETH from the [Superchain Faucet](https://console.optimism.io/faucet) or [Alchemy Faucet](https://www.alchemy.com/faucets/optimism-sepolia).
 
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
-> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
 
 ---
 
 ## Checkpoint 4: 🚢 Ship your frontend! 🚁
 
-> ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` :
+> ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia):
 
 ![chall-0-scaffold-config](https://github.com/scaffold-eth/se-2-challenges/assets/12072395/ff03bda0-66c6-4907-a9ad-bc8587da8036)
 
@@ -191,13 +193,15 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ## Checkpoint 5: 📜 Contract Verification
 
-You can verify your smart contract on Etherscan by running (`yarn verify --network network_name`) :
+You can verify your smart contract on Etherscan by running:
 
 ```shell
 yarn verify --network sepolia
+# Or for OP Sepolia:
+# yarn verify --network optimismSepolia
 ```
 
-> It is okay if it says your contract is already verified. Copy the address of YourCollectable.sol and search it on sepolia Etherscan to find the correct URL you need to submit this challenge.
+> It is okay if it says your contract is already verified. Copy the address of YourCollectable.sol and search it on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [OP Sepolia Etherscan](https://sepolia-optimism.etherscan.io/)) to find the correct URL you need to submit this challenge.
 
 ## Checkpoint 6: 💪 Flex!
 
