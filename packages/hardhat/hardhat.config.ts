@@ -76,6 +76,12 @@ const config: HardhatUserConfig = {
     optimismSepolia: {
       url: `https://sepolia.optimism.io`,
       accounts: [deployerPrivateKey],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api-sepolia-optimistic.etherscan.io",
+          apiKey: process.env.ETHERSCAN_OPTIMISTIC_API_KEY,
+        },
+      },
     },
     polygon: {
       url: `https://polygon-rpc.com`,
