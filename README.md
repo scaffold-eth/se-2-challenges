@@ -203,7 +203,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ## Checkpoint 5: 🚢 Ship your frontend! 🚁
 
-> ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia):
+✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia):
 
 💻 View your frontend at http://localhost:3000/staker-ui and verify you see the correct network.
 
