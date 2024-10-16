@@ -64,12 +64,6 @@ const config: HardhatUserConfig = {
     arbitrumSepolia: {
       url: `https://sepolia-rollup.arbitrum.io/rpc`,
       accounts: [deployerPrivateKey],
-      verify: {
-        etherscan: {
-          apiUrl: "https://api-sepolia.arbiscan.io",
-          apiKey: process.env.ARBISCAN_API_KEY,
-        },
-      },
     },
     optimism: {
       url: `https://mainnet.optimism.io`,
@@ -89,15 +83,9 @@ const config: HardhatUserConfig = {
       url: `https://polygon-rpc.com`,
       accounts: [deployerPrivateKey],
     },
-    polygonAmoy: {
-      url: "https://rpc-amoy.polygon.technology",
+    polygonMumbai: {
+      url: `https://rpc.ankr.com/polygon_mumbai`,
       accounts: [deployerPrivateKey],
-      verify: {
-        etherscan: {
-          apiUrl: "https://api-amoy.polygonscan.com",
-          apiKey: process.env.POLYGONSCAN_API_KEY,
-        },
-      },
     },
     polygonZkEvm: {
       url: `https://zkevm-rpc.com`,
@@ -122,12 +110,6 @@ const config: HardhatUserConfig = {
     baseSepolia: {
       url: "https://sepolia.base.org",
       accounts: [deployerPrivateKey],
-      verify: {
-        etherscan: {
-          apiUrl: "https://api-sepolia.basescan.org",
-          apiKey: process.env.BASESCAN_API_KEY,
-        },
-      },
     },
     scrollSepolia: {
       url: "https://sepolia-rpc.scroll.io",
