@@ -225,6 +225,8 @@ yarn verify --network sepolia
 
 (It can take a while before they show up, but here is an example:) https://testnets.opensea.io/assets/sepolia/0x17ed03686653917efa2194a5252c5f0a4f3dc49c/2
 
+> ⚠️ Note: OpenSea might not work for Optimism Sepolia. In that case, you can view your NFTs on Optimism Sepolia Blockscout. Replace `YOUR_ADDRESS` with your actual address. https://optimism-sepolia.blockscout.com/address/YOUR_ADDRESS?tab=tokens_nfts
+
 ---
 
 > 🏃 Head to your next challenge [here](https://github.com/scaffold-eth/se-2-challenges).
