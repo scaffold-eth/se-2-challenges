@@ -166,7 +166,7 @@ First, we have to call `approve()` on the Balloons contract, approving the DEX c
 
 ![balloons-dex-tab](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/710f5c9a-d898-4012-9014-4c46f1de015f)
 
-> 🤓 Copy and paste the DEX address to the _Address Spender_ and then set the amount to 5.  
+> 🤓 Copy and paste the DEX address to the _Address Spender_ and then set the amount to 5.
 > You can confirm this worked using the `allowance()` function in `Debug Contracts` tab using your local account address as the owner and the DEX contract address as the spender.
 
 Now we are ready to call `init()` on the DEX, using the `Debug Contracts` tab. We will tell it to take 5 of our tokens and send 0.01 ETH with the transaction. Remember in the `Debug Contracts` tab we are calling the functions directly which means we have to convert to wei, so don't forget to multiply those values by 10¹⁸!
@@ -750,7 +750,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
-👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia.optimistic.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
+👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
 
 ## Checkpoint 10: 💪 Flex!
 
