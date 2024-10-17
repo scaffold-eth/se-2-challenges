@@ -203,7 +203,7 @@ yarn verify --network sepolia
 # yarn verify --network optimismSepolia
 ```
 
-> It is okay if it says your contract is already verified. Copy the address of YourCollectable.sol and search it on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [OP Sepolia Etherscan](https://sepolia-optimism.etherscan.io/)) to find the correct URL you need to submit this challenge.
+> It is okay if it says your contract is already verified. Copy the address of YourCollectible contract and search it on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [OP Sepolia Etherscan](https://sepolia-optimism.etherscan.io/)) to find the correct URL you need to submit this challenge.
 
 ## Checkpoint 6: 💪 Flex!
 
