@@ -1,9 +1,49 @@
 const nftsMetadata = [
   {
-    description: "It's actually a bison?",
-    external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-    image: "https://austingriffith.com/images/paintings/buffalo.jpg",
-    name: "Buffalo",
+    description: "El FOMO",
+    external_url: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/", // <-- this can link to a page for the specific file too
+    image: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/Dise%C3%B1o%20Loter%C3%ADa%20-%20v3_1.%20FOMITO_BLKA.png",
+    name: "Fomito",
+    attributes: [
+      {
+        trait_type: "BackgroundColor",
+        value: "blue",
+      },
+      {
+        trait_type: "Eyes",
+        value: "FOMO",
+      },
+      {
+        trait_type: "Stamina",
+        value: 1,
+      },
+    ],
+  },
+  {
+    description: "EL BASADO",
+    external_url: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/", // <-- this can link to a page for the specific file too
+    image: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/Dise%C3%B1o%20Loter%C3%ADa%20-%20v3_5.%20BASADO_BLKA.png",
+    name: "EL BASADO",
+    attributes: [
+      {
+        trait_type: "BackgroundColor",
+        value: "blue",
+      },
+      {
+        trait_type: "Eyes",
+        value: "BASE",
+      },
+      {
+        trait_type: "Stamina",
+        value: 5,
+      },
+    ],
+  },
+  {
+    description: "EL ARCO",
+    external_url: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/", // <-- this can link to a page for the specific file too
+    image: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/Dise%C3%B1o%20Loter%C3%ADa%20-%20v3_20.%20ARCO_BLKA.png",
+    name: "Farecaster",
     attributes: [
       {
         trait_type: "BackgroundColor",
@@ -11,19 +51,39 @@ const nftsMetadata = [
       },
       {
         trait_type: "Eyes",
-        value: "googly",
+        value: "BASE",
       },
       {
         trait_type: "Stamina",
-        value: 42,
+        value: 20,
       },
     ],
   },
   {
-    description: "What is it so worried about?",
-    external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-    image: "https://austingriffith.com/images/paintings/zebra.jpg",
-    name: "Zebra",
+    description: "EL DEV",
+    external_url: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/", // <-- this can link to a page for the specific file too
+    image: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/Dise%C3%B1o%20Loter%C3%ADa%20-%20v3_11.%20DEV_BLKA.png",
+    name: "DEV",
+    attributes: [
+      {
+        trait_type: "BackgroundColor",
+        value: "purple",
+      },
+      {
+        trait_type: "Eyes",
+        value: "WEB3",
+      },
+      {
+        trait_type: "Stamina",
+        value: 11,
+      },
+    ],
+  },
+  {
+    description: "Coinbase.",
+    external_url: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/", // <-- this can link to a page for the specific file too
+    image: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/Dise%C3%B1o%20Loter%C3%ADa%20-%20v3_17.%20EXCHANGE_BLKA.png",
+    name: "LA EXCHANGE",
     attributes: [
       {
         trait_type: "BackgroundColor",
@@ -31,78 +91,18 @@ const nftsMetadata = [
       },
       {
         trait_type: "Eyes",
-        value: "googly",
+        value: "BASE",
       },
       {
         trait_type: "Stamina",
-        value: 38,
+        value: 17,
       },
     ],
   },
   {
-    description: "What a horn!",
-    external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-    image: "https://austingriffith.com/images/paintings/rhino.jpg",
-    name: "Rhino",
-    attributes: [
-      {
-        trait_type: "BackgroundColor",
-        value: "pink",
-      },
-      {
-        trait_type: "Eyes",
-        value: "googly",
-      },
-      {
-        trait_type: "Stamina",
-        value: 22,
-      },
-    ],
-  },
-  {
-    description: "Is that an underbyte?",
-    external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-    image: "https://austingriffith.com/images/paintings/fish.jpg",
-    name: "Fish",
-    attributes: [
-      {
-        trait_type: "BackgroundColor",
-        value: "blue",
-      },
-      {
-        trait_type: "Eyes",
-        value: "googly",
-      },
-      {
-        trait_type: "Stamina",
-        value: 15,
-      },
-    ],
-  },
-  {
-    description: "So delicate.",
-    external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-    image: "https://austingriffith.com/images/paintings/flamingo.jpg",
-    name: "Flamingo",
-    attributes: [
-      {
-        trait_type: "BackgroundColor",
-        value: "black",
-      },
-      {
-        trait_type: "Eyes",
-        value: "googly",
-      },
-      {
-        trait_type: "Stamina",
-        value: 6,
-      },
-    ],
-  },
-  {
-    description: "Raaaar!",
-    external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-    image: "https://austingriffith.com/images/paintings/godzilla.jpg",
+    description: "EL ESTAFADOR",
+    external_url: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/", // <-- this can link to a page for the specific file too
+    image: "https://ivory-past-penguin-650.mypinata.cloud/ipfs/QmZHFRCekacxKsRXheh7W9YJUcJzkpH61PUjnGFjBjxpeH/Dise%C3%B1o%20Loter%C3%ADa%20-%20v3_6.%20SHILLARDO_BLKA.png",
     name: "Godzilla",
     attributes: [
       {
@@ -111,11 +111,11 @@ const nftsMetadata = [
       },
       {
         trait_type: "Eyes",
-        value: "googly",
+        value: "SCAM",
       },
       {
         trait_type: "Stamina",
-        value: 99,
+        value: 6,
       },
     ],
   },
