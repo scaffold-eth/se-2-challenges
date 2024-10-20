@@ -22,7 +22,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.17",
+        version: "0.8.20",
         settings: {
           optimizer: {
             enabled: true,
@@ -33,7 +33,7 @@ const config: HardhatUserConfig = {
       },
     ],
   },
-  defaultNetwork: "baseSepolia",
+  defaultNetwork: "core",
   namedAccounts: {
     deployer: {
       // By default, it will take the first Hardhat account as the deployer
@@ -93,8 +93,8 @@ const config: HardhatUserConfig = {
       url: "https://rpc.gnosischain.com",
       accounts: [deployerPrivateKey],
     },
-    chiado: {
-      url: "https://rpc.chiadochain.net",
+    core: {
+      url: "https://rpc.ankr.com/core",
       accounts: [deployerPrivateKey],
     },
     base: {

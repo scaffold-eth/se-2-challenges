@@ -9,7 +9,7 @@ const Transfers: NextPage = () => {
     contractName: "YourCollectible",
     eventName: "Transfer",
     // Specify the starting block number from which to read events, this is a bigint.
-    fromBlock: 	    16601094n,
+    fromBlock: 	    24246459n,
   });
 
   if (isLoading)
