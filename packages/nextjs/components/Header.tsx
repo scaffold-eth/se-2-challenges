@@ -25,28 +25,7 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "My NFTs",
     href: "/myNFTs",
-    icon: <PhotoIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Transfers",
-    href: "/transfers",
-    icon: <ArrowPathIcon className="h-4 w-4" />,
-  },
-  {
-    label: "IPFS Upload",
-    href: "/ipfsUpload",
-    icon: <ArrowUpTrayIcon className="h-4 w-4" />,
-  },
-  {
-    label: "IPFS Download",
-    href: "/ipfsDownload",
-    icon: <ArrowDownTrayIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Debug Contracts",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
-  },
+  }
 ];
 
 export const HeaderMenuLinks = () => {
@@ -113,7 +92,7 @@ export const Header = () => {
         </div>
         <Link href="/" passHref className="hidden xl:flex items-center gap-1 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
+            <Image alt="SE2 logo" className="cursor-pointer" fill src="/basado.svg" />
           </div>
           <div className="flex flex-col">
             <span className="font-bold leading-tight">La Blocka</span>
