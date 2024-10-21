@@ -9,8 +9,8 @@ const baseUrl = process.env.VERCEL_URL
   : `http://localhost:${process.env.PORT || 3000}`;
 const imageUrl = `${baseUrl}/thumbnail.jpg`;
 
-const title = "Challenge #0 | SpeedRunEthereum";
-const titleTemplate = "%s | SpeedRunEthereum";
+const title = "Bingo-Nboarding";
+const titleTemplate = "Bingo-Nboarding";
 const description = "Built with 🏗 Scaffold-ETH 2";
 
 export const metadata: Metadata = {
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     description,
   },
   icons: {
-    icon: [{ url: "/favicon.png", sizes: "32x32", type: "image/png" }],
+    icon: [{ url: "/basado.svg", sizes: "32x32", type: "image/svg" }],
   },
 };
 
