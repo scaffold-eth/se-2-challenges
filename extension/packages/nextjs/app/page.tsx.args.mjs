@@ -26,6 +26,5 @@ export const description = `
     </div>
   </div>
 `;
-
 // CHALLENGE-TODO: Update the externalExtensionName to reflect your challenge
 export const externalExtensionName = "SpeedRunEthereum CHALLENGE TITLE";
