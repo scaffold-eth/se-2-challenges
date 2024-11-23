@@ -191,6 +191,8 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 > 📝 If you plan on submitting this challenge, be sure to set your `deadline` to at least `block.timestamp + 72 hours`
 
+> Note: If your balance is 0, even when you have Sepolia ETH in it, configure the Alchemy RPC URL by adding your own custom URL (e.g., using ALCHEMY_API_KEY) to the .env file. Ensure the .env includes the required keys: DEPLOYER_PRIVATE_KEY=, ALCHEMY_API_KEY=, and ETHERSCAN_OPTIMISTIC_API_KEY=. This configuration is crucial for accurate balance readings.
+
 🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
