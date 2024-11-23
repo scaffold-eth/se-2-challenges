@@ -208,6 +208,8 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
 
+> Note: If your balance is 0, even when you have Sepolia ETH in it, configure the Alchemy RPC URL by adding your own custom URL (e.g., using ALCHEMY_API_KEY) to the .env file. Ensure the .env includes the required keys: DEPLOYER_PRIVATE_KEY=, ALCHEMY_API_KEY=, and ETHERSCAN_OPTIMISTIC_API_KEY=. This configuration is crucial for accurate balance readings.
+
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
 
 > 💬 Hint: For faster loading of your _"Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/app/events/page.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/app/events/page.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
