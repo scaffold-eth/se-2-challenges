@@ -138,6 +138,8 @@ yarn start
 
 > 🌉 If you need to bridge funds from Sepolia to OP Sepolia, you can use the [Superchain Bridges](https://app.optimism.io/bridge/deposit). This allows you to transfer ETH and other supported tokens between the two networks.
 
+> Note: If your balance is 0, even when you have Sepolia ETH in it, configure the Alchemy RPC URL by adding your own custom URL (e.g., using ALCHEMY_API_KEY) to the .env file. Ensure the .env includes the required keys: DEPLOYER_PRIVATE_KEY=, ALCHEMY_API_KEY=, and ETHERSCAN_OPTIMISTIC_API_KEY=. This configuration is crucial for accurate balance readings.
+
 > ⚔️ Side Quest: Keep a 🧑‍🎤 [punkwallet.io](https://punkwallet.io) on your phone's home screen and keep it loaded with testnet eth. 🧙‍♂️ You'll look like a wizard when you can fund your deployer address from your phone in seconds.
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
