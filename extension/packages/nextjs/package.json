@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "ipfs-utils": "^9.0.14",
+    "kubo-rpc-client": "^3.0.1",
+    "react-json-view": "^1.21.3"
+  }
+}
