@@ -34,7 +34,7 @@
     "use-debounce": "^8.0.4",
     "usehooks-ts": "^2.13.0",
     "viem": "2.8.16",
-    "wagmi": "^2.5.12",
+    "wagmi": "2.5.12",
     "zustand": "^4.4.2"
   },
   "devDependencies": {
