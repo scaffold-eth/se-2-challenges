@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "humanize-duration": "^3.28.0"
+  }
+}
