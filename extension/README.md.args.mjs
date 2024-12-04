@@ -27,14 +27,12 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 \`\`\`sh
-cd challenge-1-decentralized-staking
 yarn deploy
 \`\`\`
 
 > in a third terminal window, start your 📱 frontend:
 
 \`\`\`sh
-cd challenge-1-decentralized-staking
 yarn start
 \`\`\`
 
