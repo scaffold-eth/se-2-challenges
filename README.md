@@ -25,10 +25,8 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-git clone https://github.com/scaffold-eth/se-2-challenges.git challenge-1-decentralized-staking
+npx create-eth@latest -e sre-challenge-1 challenge-1-decentralized-staking
 cd challenge-1-decentralized-staking
-git checkout challenge-1-decentralized-staking
-yarn install
 ```
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
