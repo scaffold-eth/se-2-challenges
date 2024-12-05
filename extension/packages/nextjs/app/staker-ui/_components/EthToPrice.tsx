@@ -13,7 +13,7 @@ type TBalanceProps = {
 export const ETHToPrice = ({ value, className = "" }: TBalanceProps) => {
   const [isEthBalance, setIsEthBalance] = useState(true);
   const { targetNetwork } = useTargetNetwork();
-  const price = useGlobalState(state => state.nativeCurrencyPrice);
+  const price = useGlobalState(state => state.nativeCurrency.price);
 
   const onToggleBalance = useCallback(() => {
     if (price > 0) {
