@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract RiggedRoll is Ownable {
     DiceGame public diceGame;
 
-    constructor(address payable diceGameAddress) Ownable(diceGameAddress) {
+    constructor(address payable diceGameAddress) Ownable(msg.sender) {
         diceGame = DiceGame(diceGameAddress);
     }
 
