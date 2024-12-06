@@ -21,7 +21,7 @@ export const Amount = ({
   disableToggle = false,
 }: TAmountProps) => {
   const { targetNetwork: configuredNetwork } = useTargetNetwork();
-  const price = useGlobalState(state => state.nativeCurrencyPrice);
+  const price = useGlobalState(state => state.nativeCurrency.price);
   const [isEthBalance, setEthBalance] = useState<boolean>(!showUsdPrice);
 
   useEffect(() => {
