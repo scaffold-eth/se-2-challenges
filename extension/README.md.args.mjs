@@ -24,19 +24,19 @@ export const extraContents = `# 🚩 Challenge 3: 🎲 Dice Game
 
 \`\`\`sh
 yarn chain
-    \`\`\`
+\`\`\`
 
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 \`\`\`sh
 yarn deploy
-    \`\`\`
+\`\`\`
 
 > in a third terminal window, start your 📱 frontend:
 
 \`\`\`sh
 yarn start
-    \`\`\`
+\`\`\`
 
 📱 Open http://localhost:3000 to see the app.
 
