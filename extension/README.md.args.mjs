@@ -37,7 +37,7 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
-> 👩‍💻 Rerun \`yarn deploy\` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run \`yarn deploy--reset\` for a completely fresh deploy.
+> 👩‍💻 Rerun \`yarn deploy\` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run \`yarn deploy --reset\` for a completely fresh deploy.
 
 ---
 
@@ -182,7 +182,7 @@ This works pretty well, but it will be a lot easier if we just call the \`init()
   // });
   \`\`\`
 
-Now, when we \`yarn deploy--reset\` then our contract should be initialized as soon as it deploys, and we should have equal reserves of ETH and tokens.
+Now, when we \`yarn deploy --reset\` then our contract should be initialized as soon as it deploys, and we should have equal reserves of ETH and tokens.
 
 ### 🥅 Goals / Checks
 
@@ -698,7 +698,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 🚀 Run \`yarn deploy\` to deploy your smart contracts to a public network (selected in \`hardhat.config.ts\`)
 
-> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy--network sepolia\` or \`yarn deploy--network optimismSepolia\`.
+> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.
 
 > 💬💬 More Hints: For faster loading of your _"Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages / nextjs / app / events / page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/packages/nextjs/app/events/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the \`Contract Creation\` transaction line.
 
