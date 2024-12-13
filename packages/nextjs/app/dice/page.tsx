@@ -47,13 +47,11 @@ const DiceGame: NextPage = () => {
       setIsRolling(false);
 
       setRolls(
-        (
-          rollsHistoryData?.map(({ args }) => ({
-            address: args.player as AddressType,
-            amount: Number(args.amount),
-            roll: (args.roll as bigint).toString(16).toUpperCase(),
-          })) || []
-        ).slice(0, MAX_TABLE_ROWS),
+        rollsHistoryData?.map(({ args }) => ({
+          address: args.player as AddressType,
+          amount: Number(args.amount),
+          roll: (args.roll as bigint).toString(16).toUpperCase(),
+        })) || [],
       );
     }
   }, [rolls, rollsHistoryData, rollsHistoryLoading]);
@@ -74,12 +72,10 @@ const DiceGame: NextPage = () => {
       setIsRolling(false);
 
       setWinners(
-        (
-          winnerHistoryData?.map(({ args }) => ({
-            address: args.winner as AddressType,
-            amount: args.amount as bigint,
-          })) || []
-        ).slice(0, MAX_TABLE_ROWS),
+        winnerHistoryData?.map(({ args }) => ({
+          address: args.winner as AddressType,
+          amount: args.amount as bigint,
+        })) || [],
       );
     }
   }, [winnerHistoryData, winnerHistoryLoading, winners.length]);
@@ -106,7 +102,7 @@ const DiceGame: NextPage = () => {
     <div className="py-10 px-10">
       <div className="grid grid-cols-3 max-lg:grid-cols-1">
         <div className="max-lg:row-start-2">
-          <RollEvents rolls={rolls} />
+          <RollEvents rolls={rolls.slice(0, MAX_TABLE_ROWS)} />
         </div>
 
         <div className="flex flex-col items-center pt-4 max-lg:row-start-1">
@@ -178,7 +174,7 @@ const DiceGame: NextPage = () => {
         </div>
 
         <div className="max-lg:row-start-3">
-          <WinnerEvents winners={winners} />
+          <WinnerEvents winners={winners.slice(0, MAX_TABLE_ROWS)} />
         </div>
       </div>
     </div>
