@@ -70,12 +70,7 @@ At a high-level, the contract core functions are carried out as follows:
 
 ## Checkpoint 0: 📦 Environment 📚
 
-\`\`\`sh
-npx create-eth@latest -e sre-challenge-6 challenge-6-multisig
-cd challenge-6-multisig
-\`\`\`
-
-> in the same terminal, start your local network (a blockchain emulator in your computer):
+> Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain

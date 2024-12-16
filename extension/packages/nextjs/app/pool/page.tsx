@@ -37,7 +37,10 @@ const Pool: FC = () => {
     contractName: "MetaMultiSigWallet",
   });
 
-  const historyHashes = useMemo(() => eventsHistory?.map(ev => ev.args.hash) || [], [eventsHistory]);
+  const historyHashes = useMemo(
+    () => eventsHistory?.map((ev) => ev.args.hash) || [],
+    [eventsHistory]
+  );
 
   useInterval(() => {
     const getTransactions = async () => {
@@ -57,7 +60,9 @@ const Pool: FC = () => {
               res[i].signatures[s],
             ])) as `0x${string}`;
 
-            const isOwner = await metaMultiSigWallet?.read.isOwner([signer as string]);
+            const isOwner = await metaMultiSigWallet?.read.isOwner([
+              signer as string,
+            ]);
 
             if (signer && isOwner) {
               validSignatures.push({ signer, signature: res[i].signatures[s] });
@@ -79,9 +84,9 @@ const Pool: FC = () => {
   const lastTx = useMemo(
     () =>
       transactions
-        ?.filter(tx => historyHashes.includes(tx.hash))
+        ?.filter((tx) => historyHashes.includes(tx.hash))
         .sort((a, b) => (BigInt(a.nonce) < BigInt(b.nonce) ? 1 : -1))[0],
-    [historyHashes, transactions],
+    [historyHashes, transactions]
   );
 
   return (
@@ -95,13 +100,18 @@ const Pool: FC = () => {
           <div className="flex flex-col mt-8 gap-4">
             {transactions === undefined
               ? "Loading..."
-              : transactions.map(tx => {
+              : transactions.map((tx) => {
                   return (
                     <TransactionItem
                       key={tx.hash}
                       tx={tx}
-                      completed={historyHashes.includes(tx.hash as `0x${string}`)}
-                      outdated={lastTx?.nonce != undefined && BigInt(tx.nonce) <= BigInt(lastTx?.nonce)}
+                      completed={historyHashes.includes(
+                        tx.hash as `0x${string}`
+                      )}
+                      outdated={
+                        lastTx?.nonce != undefined &&
+                        BigInt(tx.nonce) <= BigInt(lastTx?.nonce)
+                      }
                     />
                   );
                 })}
