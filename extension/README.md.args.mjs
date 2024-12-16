@@ -21,19 +21,19 @@ There is also a 🎥 [Youtube video](https://www.youtube.com/watch?v=eP5w6Ger1EQ
 
 \`\`\`sh
 yarn chain
-  \`\`\`
+\`\`\`
 
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 \`\`\`sh
 yarn deploy
-  \`\`\`
+\`\`\`
 
 > in a third terminal window, start your 📱 frontend:
 
 \`\`\`sh
 yarn start
-  \`\`\`
+\`\`\`
 
 📱 Open http://localhost:3000 to see the app.
 
@@ -45,9 +45,9 @@ yarn start
 
 Navigate to the \`Debug Contracts\` tab, you should see two smart contracts displayed called \`DEX\` and \`Balloons\`.
 
-\`packages / hardhat / contracts / Balloons.sol\` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it.
+\`packages/hardhat/contracts/Balloons.sol\` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it.
 
-\`packages / hardhat / contracts / DEX.sol\` is what we will build in this challenge and you can see it starts instantiating a token (ERC20 interface) that we set in the constructor (on deploy).
+\`packages/hardhat/contracts/DEX.sol\` is what we will build in this challenge and you can see it starts instantiating a token (ERC20 interface) that we set in the constructor (on deploy).
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
@@ -85,7 +85,7 @@ After thinking through the guiding questions, have a look at the solution code!
 
 \`\`\`
 uint256 public totalLiquidity;
-mapping(address => uint256) public liquidity;
+mapping (address => uint256) public liquidity;
 \`\`\`
 
 </details>
@@ -125,13 +125,13 @@ We want this function written in a way that when we send ETH and/or $BAL tokens 
 <details markdown='1'><summary> 👨🏻‍🏫 Solution Code</summary>
 
 \`\`\`
-function init(uint256 tokens) public payable returns(uint256) {
-  require(totalLiquidity == 0, "DEX: init - already has liquidity");
-  totalLiquidity = address(this).balance;
-  liquidity[msg.sender] = totalLiquidity;
-  require(token.transferFrom(msg.sender, address(this), tokens), "DEX: init - transfer did not transact");
-  return totalLiquidity;
-}
+    function init(uint256 tokens) public payable returns (uint256) {
+        require(totalLiquidity == 0, "DEX: init - already has liquidity");
+        totalLiquidity = address(this).balance;
+        liquidity[msg.sender] = totalLiquidity;
+        require(token.transferFrom(msg.sender, address(this), tokens), "DEX: init - transfer did not transact");
+        return totalLiquidity;
+    }
 \`\`\`
 
 </details>
@@ -145,7 +145,7 @@ We can see that the DEX starts empty. We want to be able to call \`init()\` to s
 \`\`\`
   // // paste in your front-end address here to get 10 balloons on deploy:
   // await balloons.transfer("YOUR_FRONTEND_ADDRESS", "" + 10 * 10 ** 18);
-  \`\`\`
+\`\`\`
 
 > Run \`yarn deploy\`.
 
@@ -180,7 +180,7 @@ This works pretty well, but it will be a lot easier if we just call the \`init()
   //   value: hre.ethers.parseEther("5"),
   //   gasLimit: 200000,
   // });
-  \`\`\`
+\`\`\`
 
 Now, when we \`yarn deploy --reset\` then our contract should be initialized as soon as it deploys, and we should have equal reserves of ETH and tokens.
 
@@ -201,8 +201,8 @@ Now that our contract holds reserves of both ETH and tokens, we want to use a si
 Let’s start with the formula \`x * y = k\` where \`x\` and \`y\` are the reserves:
 
 \`\`\`
-  (amount of ETH in DEX) * (amount of tokens in DEX ) = k
-    \`\`\`
+(amount of ETH in DEX ) * ( amount of tokens in DEX ) = k
+\`\`\`
 
 The \`k\` is called an invariant because it doesn’t change during trades. (The \`k\` only changes as liquidity is added.) If we plot this formula, we’ll get a curve that looks something like:
 
@@ -238,16 +238,16 @@ For the math portions of this challenge, you can black-box the math. However, it
 
 \`\`\`
 
-function price(
-  uint256 xInput,
-  uint256 xReserves,
-  uint256 yReserves
-) public pure returns(uint256 yOutput) {
+    function price(
+        uint256 xInput,
+        uint256 xReserves,
+        uint256 yReserves
+    ) public pure returns (uint256 yOutput) {
         uint256 xInputWithFee = xInput * 997;
         uint256 numerator = xInputWithFee * yReserves;
         uint256 denominator = (xReserves * 1000) + xInputWithFee;
-  return (numerator / denominator);
-}
+        return (numerator / denominator);
+    }
 
 \`\`\`
 
@@ -259,7 +259,7 @@ We use the ratio of the input vs output reserve to calculate the price to swap e
 
 \`\`\`
 yarn run deploy
-  \`\`\`
+\`\`\`
 
 Let’s say we have 1 million ETH and 1 million tokens, if we put this into our price formula and ask it the price of 1000 ETH it will be an almost 1:1 ratio:
 
@@ -336,19 +336,19 @@ The basic overview for \`ethToToken()\` is we're going to define our variables t
 <details markdown='1'><summary>👨🏻‍🏫 Solution Code </summary>
 
 \`\`\`
-/**
- * @notice sends Ether to DEX in exchange for $BAL
- */
-function ethToToken() public payable returns(uint256 tokenOutput) {
-  require(msg.value > 0, "cannot swap 0 ETH");
+    /**
+     * @notice sends Ether to DEX in exchange for $BAL
+     */
+    function ethToToken() public payable returns (uint256 tokenOutput) {
+        require(msg.value > 0, "cannot swap 0 ETH");
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = token.balanceOf(address(this));
-  tokenOutput = price(msg.value, ethReserve, tokenReserve);
+        tokenOutput = price(msg.value, ethReserve, tokenReserve);
 
-  require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
+        require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
         emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
-  return tokenOutput;
-}
+        return tokenOutput;
+    }
 
 \`\`\`
 
@@ -405,19 +405,19 @@ function ethToToken() public payable returns(uint256 tokenOutput) {
 <details markdown='1'><summary>👨🏻‍🏫 Solution Code </summary>
 
 \`\`\`
-/**
- * @notice sends $BAL tokens to DEX in exchange for Ether
- */
-function tokenToEth(uint256 tokenInput) public returns(uint256 ethOutput) {
-  require(tokenInput > 0, "cannot swap 0 tokens");
+    /**
+     * @notice sends $BAL tokens to DEX in exchange for Ether
+     */
+    function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
+        require(tokenInput > 0, "cannot swap 0 tokens");
         uint256 tokenReserve = token.balanceOf(address(this));
-  ethOutput = price(tokenInput, tokenReserve, address(this).balance);
-  require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
-  (bool sent, ) = msg.sender.call{ value: ethOutput } ("");
-  require(sent, "tokenToEth: revert in transferring eth to you!");
+        ethOutput = price(tokenInput, tokenReserve, address(this).balance);
+        require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
+        (bool sent, ) = msg.sender.call{ value: ethOutput }("");
+        require(sent, "tokenToEth: revert in transferring eth to you!");
         emit TokenToEthSwap(msg.sender, tokenInput, ethOutput);
-  return ethOutput;
-}
+        return ethOutput;
+    }
 \`\`\`
 
 </details>
@@ -488,7 +488,7 @@ Part 2: Performing Calculations 🤖
 </details>
 
 - [ ] Is \`tokenDeposit\` assigned the value of our equation?
-- [ ] Now is \`liquidityMinted\` looking similar to \`tokenDeposit\` but without the \` + 1\` at the end?
+- [ ] Now is \`liquidityMinted\` looking similar to \`tokenDeposit\` but without the \`+ 1\` at the end?
 
 Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
@@ -525,24 +525,24 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 <details markdown='1'><summary>👩🏽‍🏫 Solution Code </summary>
 
 \`\`\`
-function deposit() public payable returns(uint256 tokensDeposited) {
-  require(msg.value > 0, "Must send value when depositing");
+    function deposit() public payable returns (uint256 tokensDeposited) {
+        require(msg.value > 0, "Must send value when depositing");
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = token.balanceOf(address(this));
         uint256 tokenDeposit;
 
-  tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
+        tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
         // 💡 Discussion on adding 1 wei at end of calculation   ^
         // -> https://t.me/c/1655715571/106
 
         uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
-  liquidity[msg.sender] += liquidityMinted;
-  totalLiquidity += liquidityMinted;
+        liquidity[msg.sender] += liquidityMinted;
+        totalLiquidity += liquidityMinted;
 
-  require(token.transferFrom(msg.sender, address(this), tokenDeposit));
+        require(token.transferFrom(msg.sender, address(this), tokenDeposit));
         emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
-  return tokenDeposit;
-}
+        return tokenDeposit;
+    }
 
 \`\`\`
 
@@ -578,7 +578,7 @@ Part 1: Getting Reserves 🏦
 
 Part 2: Performing Calculations 🤖
 
-> We need to calculate how much of each asset our user is going withdraw, call them \`ethWithdrawn\` and \`tokenAmount\`. The equation is: \`amount * \` reserveOfDesiredUnits \` / totalLiquidity\`
+> We need to calculate how much of each asset our user is going withdraw, call them \`ethWithdrawn\` and \`tokenAmount\`. The equation is: \`amount *\` reserveOfDesiredUnits \`/ totalLiquidity\`
 
 <details markdown='1'><summary>Question Four</summary>
 
@@ -634,23 +634,23 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
 
 \`\`\`
 
-function withdraw(uint256 amount) public returns(uint256 ethAmount, uint256 tokenAmount) {
-  require(liquidity[msg.sender] >= amount, "withdraw: sender does not have enough liquidity to withdraw.");
+    function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tokenAmount) {
+        require(liquidity[msg.sender] >= amount, "withdraw: sender does not have enough liquidity to withdraw.");
         uint256 ethReserve = address(this).balance;
         uint256 tokenReserve = token.balanceOf(address(this));
         uint256 ethWithdrawn;
 
-  ethWithdrawn = amount * ethReserve / totalLiquidity;
+        ethWithdrawn = amount * ethReserve / totalLiquidity;
 
         uint256 tokenAmount = amount * tokenReserve / totalLiquidity;
-  liquidity[msg.sender] -= amount;
-  totalLiquidity -= amount;
-  (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn } ("");
-  require(sent, "withdraw(): revert in transferring eth to you!");
-  require(token.transfer(msg.sender, tokenAmount));
+        liquidity[msg.sender] -= amount;
+        totalLiquidity -= amount;
+        (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
+        require(sent, "withdraw(): revert in transferring eth to you!");
+        require(token.transfer(msg.sender, tokenAmount));
         emit LiquidityRemoved(msg.sender, amount, tokenAmount, ethWithdrawn);
-  return (ethWithdrawn, tokenAmount);
-}
+        return (ethWithdrawn, tokenAmount);
+    }
 
 \`\`\`
 
@@ -688,7 +688,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ## Checkpoint 7: 💾 Deploy your contracts! 🛰
 
-📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages / hardhat / hardhat.config.ts\`
+📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages/hardhat/hardhat.config.ts\`
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
@@ -700,13 +700,13 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 > 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.
 
-> 💬💬 More Hints: For faster loading of your _"Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages / nextjs / app / events / page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/packages/nextjs/app/events/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the \`Contract Creation\` transaction line.
+> 💬💬 More Hints: For faster loading of your _"Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages/nextjs/app/events/page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/packages/nextjs/app/events/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the \`Contract Creation\` transaction line.
 
 ---
 
 ## Checkpoint 8: 🚢 Ship your frontend! 🚁
 
-✏️ Edit your frontend config in \`packages / nextjs / scaffold.config.ts\` to change the \`targetNetwork\` to \`chains.sepolia\` (or \`chains.optimismSepolia\` if you deployed to OP Sepolia)
+✏️ Edit your frontend config in \`packages/nextjs/scaffold.config.ts\` to change the \`targetNetwork\` to \`chains.sepolia\` (or \`chains.optimismSepolia\` if you deployed to OP Sepolia)
 
 💻 View your frontend at http://localhost:3000 and verify you see the correct network.
 
@@ -716,9 +716,9 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 > Follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
 
-> If you want to redeploy to the same production URL you can run \`yarn vercel--prod\`. If you omit the \`--prod\` flag it will deploy it to a preview/test URL.
+> If you want to redeploy to the same production URL you can run \`yarn vercel --prod\`. If you omit the \`--prod\` flag it will deploy it to a preview/test URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`onlyLocalBurnerWallet: false\` in your frontend config (\`scaffold.config.ts\` in \`packages / nextjs / \`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`onlyLocalBurnerWallet: false\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -727,9 +727,9 @@ This is great to complete your **SpeedRunEthereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷\`ALCHEMY_API_KEY\` variable in \`packages / hardhat /.env\` and \`packages / nextjs /.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃\`ETHERSCAN_API_KEY\` variable in \`packages / hardhat /.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -737,7 +737,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ## Checkpoint 9: 📜 Contract Verification
 
-Run the \`yarn verify--network your_network\` command to verify your contracts on etherscan 🛰
+Run the \`yarn verify --network your_network\` command to verify your contracts on etherscan 🛰
 
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
 
