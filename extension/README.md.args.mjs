@@ -678,7 +678,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 ### ⚔️ Side Quests
 
-- [ ] In \`packages\nextjs\app\events\page.tsx\` implement an event and emit for the \`approve()\` function to make it clear when it has been executed.
+- [ ] In \`packages/nextjs/app/events/page.tsx\` implement an event and emit for the \`approve()\` function to make it clear when it has been executed.
 
 ### ⚠️ Test it!
 
