@@ -60,7 +60,7 @@ export const Guru: FC<GuruProps> = ({ challenged, closed, opened, writable }) =>
      * Handle incoming payments from the given client.
      */
     async function processVoucher({ data }: { data: Pick<Voucher, "signature"> & { updatedBalance: string } }) {
-      // recreate a bigint object from the message. v.data.updatedBalance is
+      // recreate a bigint object from the message. data.updatedBalance is
       // a string representation of the bigint for transit over the network
       if (!data.updatedBalance) {
         return;
@@ -72,7 +72,7 @@ export const Guru: FC<GuruProps> = ({ challenged, closed, opened, writable }) =>
        *
        *  currently, this function receives and stores vouchers uncritically.
        *
-       *  recreate the packed, hashed, and arrayified message from reimburseService (above),
+       *  recreate the packed, hashed, and arrayified message from reimburseService (Rube.tsx),
        *  and then use verifyMessage() to confirm that voucher signer was
        *  `clientAddress`. (If it wasn't, log some error message and return).
        */
