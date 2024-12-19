@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "backend-local": "yarn workspace backend-local dev"
+  }
+}
