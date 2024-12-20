@@ -55,6 +55,12 @@ yarn start
 
 ## Checkpoint 1: 🧘‍♀️ Configure Guru & Rube 📃
 
+First, you need to configure the BurnerWallet to use sessionStorage to get a new address when you open each new browser tab. To do this, add this line to \`packages/nextjs/services/web3/wagmiConnectors.tsx\`, after the imports:
+
+\`\`\`
+rainbowkitBurnerWallet.useSessionStorage = true;
+\`\`\`
+
 Like the [token vendor challenge](https://speedrunethereum.com/challenge/token-vendor), we'll be building an \`Ownable\` contract. The contract owner is the **Guru** (the service provider in this application), and you will use multiple browser windows or tabs to assume the roles of Guru and rube (service provider & client).
 
 > 👁 \`contract Streamer\` inherits \`Ownable\` with the \`is\` keyword. \`Ownable\` comes from [openzeppelin-contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) - a collection of high quality smart contract library code.
