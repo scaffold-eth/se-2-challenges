@@ -1,6 +1,6 @@
 import { Voucher } from "./Guru";
 import humanizeDuration from "humanize-duration";
-import { Address, hexToSignature } from "viem";
+import { Address, parseSignature } from "viem";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type CashOutVoucherButtonProps = {
@@ -45,7 +45,7 @@ export const CashOutVoucherButton = ({ clientAddress, challenged, closed, vouche
             await writeContractAsync({
               functionName: "withdrawEarnings",
               // TODO: change to parseSignature when updating viem
-              args: [{ ...voucher, sig: voucher?.signature ? (hexToSignature(voucher.signature) as any) : undefined }],
+              args: [{ ...voucher, sig: parseSignature(voucher.signature) as any }],
             });
           } catch (err) {
             console.error("Error calling withdrawEarnings function");
