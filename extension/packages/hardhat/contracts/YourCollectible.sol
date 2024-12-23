@@ -10,8 +10,6 @@ import "./ToColor.sol";
 
 //learn more: https://docs.openzeppelin.com/contracts/5.x/erc721
 
-// GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
-
 contract YourCollectible is ERC721Enumerable {
     using Strings for uint256;
     using HexStrings for uint160;
