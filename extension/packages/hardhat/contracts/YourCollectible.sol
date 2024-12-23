@@ -82,9 +82,9 @@ contract YourCollectible is ERC721Enumerable {
                 "This Loogie is the color #",
                 color[id].toColor(),
                 " with a chubbiness of ",
-                uint2str(chubbiness[id]),
+                chubbiness[id].toString(),
                 " and mouth length of ",
-                uint2str(mouthLength[id]),
+                mouthLength[id].toString(),
                 "!!!"
             )
         );
@@ -106,9 +106,9 @@ contract YourCollectible is ERC721Enumerable {
                                 '", "attributes": [{"trait_type": "color", "value": "#',
                                 color[id].toColor(),
                                 '"},{"trait_type": "chubbiness", "value": ',
-                                uint2str(chubbiness[id]),
+                                chubbiness[id].toString(),
                                 '},{"trait_type": "mouthLength", "value": ',
-                                uint2str(mouthLength[id]),
+                                mouthLength[id].toString(),
                                 '}], "owner":"',
                                 (uint160(ownerOf(id))).toHexString(20),
                                 '", "image": "',
@@ -167,29 +167,5 @@ contract YourCollectible is ERC721Enumerable {
         );
 
         return render;
-    }
-
-    function uint2str(
-        uint _i
-    ) internal pure returns (string memory _uintAsString) {
-        if (_i == 0) {
-            return "0";
-        }
-        uint j = _i;
-        uint len;
-        while (j != 0) {
-            len++;
-            j /= 10;
-        }
-        bytes memory bstr = new bytes(len);
-        uint k = len;
-        while (_i != 0) {
-            k = k - 1;
-            uint8 temp = (48 + uint8(_i - (_i / 10) * 10));
-            bytes1 b1 = bytes1(temp);
-            bstr[k] = b1;
-            _i /= 10;
-        }
-        return string(bstr);
     }
 }
