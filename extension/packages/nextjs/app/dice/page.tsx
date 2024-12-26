@@ -10,7 +10,7 @@ import {
 } from "viem";
 import { createTestClient, http } from "viem";
 import { hardhat } from "viem/chains";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import {
   Amount,
   Roll,
