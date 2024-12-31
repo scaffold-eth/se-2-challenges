@@ -29,7 +29,7 @@ export const extraContents = `# 🚩 Challenge 5: 📺 A State Channel Applicati
 
 ## Checkpoint 0: 📦 Environment 📚
 
-> in the same terminal, start your local network (a blockchain emulator in your computer):
+> Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
