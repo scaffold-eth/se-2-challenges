@@ -36,7 +36,7 @@ const Streamer: NextPage = () => {
 
   useEffect(() => {
     if (challengedHistoryData?.length !== undefined && challengedHistoryData.length !== challenged.length) {
-      const challengedChannelsAddresses = challengedHistoryData?.map(event => event.args[0]);
+      const challengedChannelsAddresses = challengedHistoryData?.map(event => event.args[0]) as AddressType[];
       setChallenged(challengedChannelsAddresses || []);
     }
   }, [challenged.length, challengedHistoryData]);
@@ -53,7 +53,7 @@ const Streamer: NextPage = () => {
 
   useEffect(() => {
     if (closedHistoryData?.length !== undefined && closedHistoryData?.length !== closed.length) {
-      const closedChannelsAddresses = closedHistoryData?.map(event => event.args[0]);
+      const closedChannelsAddresses = closedHistoryData?.map(event => event.args[0]) as AddressType[];
       setClosed(closedChannelsAddresses);
     }
   }, [closed.length, closedHistoryData]);
@@ -70,7 +70,7 @@ const Streamer: NextPage = () => {
 
   useEffect(() => {
     if (openedHistoryData?.length !== undefined && openedHistoryData?.length !== opened.length) {
-      const openedChannelsAddresses = openedHistoryData?.map(event => event.args[0]).reverse();
+      const openedChannelsAddresses = openedHistoryData?.map(event => event.args[0]).reverse() as AddressType[];
       setOpened(openedChannelsAddresses);
     }
   }, [opened.length, openedHistoryData]);
