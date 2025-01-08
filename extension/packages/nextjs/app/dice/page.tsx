@@ -2,15 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { NextPage } from "next";
-import {
-  Address as AddressType,
-  TestClient,
-  formatEther,
-  parseEther,
-} from "viem";
+import { Address as AddressType, formatEther, parseEther } from "viem";
 import { createTestClient, http } from "viem";
 import { hardhat } from "viem/chains";
-import { useAccount, usePublicClient } from "wagmi";
+import { useAccount } from "wagmi";
 import {
   Amount,
   Roll,
@@ -36,9 +31,7 @@ const DiceGame: NextPage = () => {
 
   const { chain } = useAccount();
 
-  const publicClient = usePublicClient();
-
-  const client = useMemo(
+  const testClient = useMemo(
     () =>
       chain?.id === hardhat.id
         ? createTestClient({
@@ -46,7 +39,7 @@ const DiceGame: NextPage = () => {
             mode: "hardhat",
             transport: http(),
           })
-        : publicClient,
+        : undefined,
     [chain]
   );
 
@@ -75,18 +68,18 @@ const DiceGame: NextPage = () => {
     });
 
   useEffect(() => {
-    if (!client || client.type !== "testClient") return;
+    if (!testClient) return;
 
     const interval = setInterval(async () => {
       try {
-        await (client as TestClient).mine({ blocks: 1 });
+        await testClient.mine({ blocks: 1 });
       } catch (error) {
         console.error("Error mining block:", error);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [client]);
+  }, [testClient]);
 
   useEffect(() => {
     if (
