@@ -2,14 +2,14 @@
 
 import { type FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DEFAULT_TX_DATA, METHODS, Method, PredefinedTxData } from "../owners/page";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Address, parseEther } from "viem";
 import { useChainId, useWalletClient } from "wagmi";
-import * as chains from "wagmi/chains";
 import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { getPoolServerUrl } from "~~/utils/getPoolServerUrl";
+import { DEFAULT_TX_DATA, METHODS, Method, PredefinedTxData } from "~~/utils/methods";
 import { notification } from "~~/utils/scaffold-eth";
 
 export type TransactionData = {
@@ -25,9 +25,6 @@ export type TransactionData = {
   validSignatures?: { signer: Address; signature: Address }[];
   requiredApprovals: bigint;
 };
-
-export const getPoolServerUrl = (id: number) =>
-  id === chains.hardhat.id ? "http://localhost:49832/" : "https://backend.multisig.holdings:49832/";
 
 const CreatePage: FC = () => {
   const isMounted = useIsMounted();
