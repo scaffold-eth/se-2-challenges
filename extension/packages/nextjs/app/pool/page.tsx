@@ -1,7 +1,7 @@
 "use client";
 
 import { type FC, useMemo, useState } from "react";
-import { TransactionData, getPoolServerUrl } from "../create/page";
+import { TransactionData } from "../create/page";
 import { TransactionItem } from "./_components";
 import { useInterval } from "usehooks-ts";
 import { useChainId } from "wagmi";
@@ -12,6 +12,7 @@ import {
   useScaffoldReadContract,
 } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { getPoolServerUrl } from "~~/utils/getPoolServerUrl";
 import { notification } from "~~/utils/scaffold-eth";
 
 const Pool: FC = () => {

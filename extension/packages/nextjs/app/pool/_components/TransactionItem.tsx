@@ -2,7 +2,7 @@ import { type FC } from "react";
 import { Address, BlockieAvatar } from "../../../components/scaffold-eth";
 import { Abi, DecodeFunctionDataReturnType, decodeFunctionData, formatEther } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
-import { TransactionData, getPoolServerUrl } from "~~/app/create/page";
+import { TransactionData } from "~~/app/create/page";
 import {
   useDeployedContractInfo,
   useScaffoldContract,
@@ -10,6 +10,7 @@ import {
   useTransactor,
 } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { getPoolServerUrl } from "~~/utils/getPoolServerUrl";
 import { notification } from "~~/utils/scaffold-eth";
 
 type TransactionItemProps = { tx: TransactionData; completed: boolean; outdated: boolean };
