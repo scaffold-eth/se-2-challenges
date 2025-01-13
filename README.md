@@ -49,7 +49,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@latest -e sre-challenge-7 challenge-7-svg-nft
+npx create-eth@0.1.0 -e challenge-7-svg-nft challenge-7-svg-nft
 cd challenge-7-svg-nft
 ```
 
