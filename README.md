@@ -36,7 +36,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@latest -e sre-challenge-5 challenge-5-state-channels
+npx create-eth@0.1.0 -e challenge-5-state-channels challenge-5-state-channels
 cd challenge-5-state-channels
 ```
 
