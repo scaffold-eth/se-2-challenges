@@ -293,7 +293,7 @@ The basic overview for \`ethToToken()\` is we're going to define our variables t
 
 <details markdown='1'><summary>Question One</summary>
 
-> How would we make sure the value being swapped for balloons is greater than 0?
+> How would we make sure the value being swapped for balloons is greater than 0? Also, how do we check if they have enough ETH and have given sufficient allowance to the contract?
 
 </details>
 
@@ -410,6 +410,8 @@ The basic overview for \`ethToToken()\` is we're going to define our variables t
      */
     function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
         require(tokenInput > 0, "cannot swap 0 tokens");
+        require(token.balanceOf(msg.sender) >= tokenInput, "insufficient token balance");
+        require(token.allowance(msg.sender, address(this)) >= tokenInput, "insufficient allowance");
         uint256 tokenReserve = token.balanceOf(address(this));
         ethOutput = price(tokenInput, tokenReserve, address(this).balance);
         require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
@@ -453,7 +455,7 @@ Part 1: Getting Reserves 🏦
 
 <details markdown='1'><summary>Question One</summary>
 
-> How do we ensure the sender isn't sending 0 ETH?
+> How do we ensure the sender isn't sending 0 ETH? Also, how do we check if they have enough tokens and have given sufficient allowance to the contract?
 
 </details>
 
@@ -534,6 +536,9 @@ Part 3: Updating, Transferring, Emitting, and Returning 🎀
         tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
         // 💡 Discussion on adding 1 wei at end of calculation   ^
         // -> https://t.me/c/1655715571/106
+
+        require(token.balanceOf(msg.sender) >= tokenDeposit, "insufficient token balance");
+        require(token.allowance(msg.sender, address(this)) >= tokenDeposit, "insufficient allowance");
 
         uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
         liquidity[msg.sender] += liquidityMinted;
