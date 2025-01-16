@@ -362,7 +362,7 @@ The basic overview for \`ethToToken()\` is we're going to define our variables t
 
 <details markdown='1'><summary>Question One</summary>
 
-> How would we make sure the value being swapped for ETH is greater than 0?
+> How would we make sure the value being swapped for ETH is greater than 0? Also, how do we check if the user have enough tokens and the contract has enough allowance?
 
 </details>
 
