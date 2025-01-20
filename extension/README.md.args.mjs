@@ -719,7 +719,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 📦 Run \`yarn vercel\` to package up your frontend and deploy.
 
-> You might need to log in to Vercel first by running \`yarn vercel:login\`.
+> You might need to log in to Vercel first by running \`yarn vercel:login\`. Once you log in (email, GitHub, etc), the default options should work.
 
 > If you want to redeploy to the same production URL you can run \`yarn vercel --prod\`. If you omit the \`--prod\` flag it will deploy it to a preview/test URL.
 
