@@ -120,7 +120,6 @@ await yourToken.transfer(vendorAddress, hre.ethers.parseEther("1000"));
 
 ![TokenVendorBuy](https://github.com/user-attachments/assets/6ad1afd1-8073-44e8-b168-6e240deb5043)
 
-
 ### 🥅 Goals
 
 - [ ] Does the `Vendor` address start with a `balanceOf` **1000** in `YourToken` on the `Debug Contracts` tab?
