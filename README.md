@@ -118,7 +118,8 @@ await yourToken.transfer(vendorAddress, hre.ethers.parseEther("1000"));
 
 > You can `yarn deploy --reset` to deploy your contract until you get it right.
 
-![TokenVendorBuy](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7669cc68-e942-4630-95c8-91cd21af5ba0)
+![TokenVendorBuy](https://github.com/user-attachments/assets/6ad1afd1-8073-44e8-b168-6e240deb5043)
+
 
 ### 🥅 Goals
 
