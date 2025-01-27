@@ -85,7 +85,7 @@ Uncomment the \`Buy Tokens\` sections in \`packages/nextjs/app/token-vendor/page
 
 ### 🥅 Goals
 
-- [ ] When you try to buy tokens from the vendor, you should get an error: **'ERC20: transfer amount exceeds balance'**
+- [ ] When you try to buy tokens from the vendor, you should get an error: **'ERC20InsufficientBalance'**
 
 ⚠️ This is because the Vendor contract doesn't have any YourTokens yet!
 
