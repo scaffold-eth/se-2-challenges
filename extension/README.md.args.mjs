@@ -8,7 +8,9 @@ export const extraContents = `# 🚩 Challenge 1: 🔏 Decentralized Staking App
 
 🏦 Build a \`Staker.sol\` contract that collects **ETH** from numerous addresses using a payable \`stake()\` function and keeps track of \`balances\`. After some \`deadline\` if it has at least some \`threshold\` of ETH, it sends it to an \`ExampleExternalContract\` and triggers the \`complete()\` action sending the full balance. If not enough **ETH** is collected, allow users to \`withdraw()\`.
 
-🎛 Building the frontend to display the information and UI is just as important as writing the contract. The goal is to deploy the contract and the app to allow anyone to stake using your app. Use a \`Stake(address,uint256)\` event to list all stakes.
+🎛 Building the frontend to display the information and UI is just as important as writing the contract. The goal is to deploy the contract and the app to allow anyone to stake using your app. Use a \`Stake(address, uint256)\` event to list all stakes.
+
+> 📝 Note: If you use named arguments in your event (e.g. \`event Stake(address indexed staker, uint256 amount)\`), you'll need to update \`/packages/nextjs/app/stakings/page.tsx\` to reference event parameters by their names instead of numeric indices.
 
 🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and stake if the conditions are met, then \`yarn vercel\` your app to a public webserver. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
