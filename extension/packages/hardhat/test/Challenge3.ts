@@ -71,21 +71,15 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
   }
 
   describe("⚙  Setup contracts", function () {
-    console.log("asdf");
-
     it("Should deploy contracts", async function () {
-      console.log("1");
       await deployContracts();
-      console.log("2");
 
       const diceGameAddress = await diceGame.getAddress();
-      console.log("3");
 
       expect(await riggedRoll.diceGame()).to.equal(diceGameAddress);
     });
 
     it(`Should revert if balance is less than ${rollAmountString} ethers`, async function () {
-      console.log("dsssa");
       await expect(riggedRoll.riggedRoll()).to.be.reverted;
     });
 
