@@ -1,6 +1,6 @@
 # 🚩 Challenge 5: 📺 A State Channel Application
 
-![readme-5](https://github.com/user-attachments/assets/218ebf69-7b41-4b4e-afb1-9209f4340623)
+![readme-5](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-5-state-channels/extension/packages/nextjs/public/hero.png)
 
 🐌 The Ethereum blockchain has great decentralization & security properties. These properties come at a price: transaction throughput is low, and transactions can be expensive (search term: blockchain trilemma). This makes many traditional web applications infeasible on a blockchain... or does it?
 
