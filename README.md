@@ -1,6 +1,6 @@
 # 🚩 Challenge 7: 🎁 SVG NFT
 
-![readme-7](https://github.com/scaffold-eth/se-2-challenges/assets/25638585/94178d41-f7ce-4d0f-af9a-488a224d301f)
+![readme-7](https://github.com/user-attachments/assets/3907eaa6-cc20-45f1-a948-c30af896f64d)
 
 🎨 Creating on-chain SVG NFTs is an exciting way to leverage the power of smart contracts for generating unique digital art. This challenge will have you build a contract that generates dynamic SVG images directly on the blockchain. Users will be able to mint their own unique NFTs with customizable SVG graphics and metadata.
 
