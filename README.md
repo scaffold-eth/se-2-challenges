@@ -1,6 +1,6 @@
 # 🚩 Challenge #0: 🎟 Simple NFT Example
 
-![readme-0](https://github.com/user-attachments/assets/afb55d7f-ab18-491c-9d49-2e98957566dd)
+![readme-0](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-0-simple-nft/extension/packages/nextjs/public/hero.png)
 
 📚 This tutorial is meant for developers that already understand the [ 🖍️ basics ](https://www.youtube.com/watch?v=MlJPjJQZtC8).
 
