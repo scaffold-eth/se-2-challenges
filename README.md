@@ -1,6 +1,6 @@
 # 🚩 Challenge 4: ⚖️ Build a DEX
 
-![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/683c02540d2af6cd3a259e19f192bb50e663e049/extension/packages/nextjs/public/hero.png)
+![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-4-dex/extension/packages/nextjs/public/hero.png)
 
 This challenge will help you build/understand a simple decentralized exchange, with one token-pair (ERC20 BALLOONS ($BAL) and ETH). This repo is an updated version of the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) and challenge repos before it. Please read the intro for a background on what we are building first!
 
