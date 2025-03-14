@@ -1,4 +1,3 @@
-export const imports = `import Image from "next/image";`;
 // CHALLENGE-TODO: Update the title, description, and challengeDeliverable to reflect your challenge
 export const description = `
   <div className="flex items-center flex-col flex-grow mt-4">
@@ -7,13 +6,6 @@ export const description = `
         <span className="block text-4xl font-bold">{challengeTitle}</span>
       </h1>
       <div className="flex flex-col items-center justify-center">
-        <Image
-          src="/hero.png"
-          width="727"
-          height="231"
-          alt="challenge banner"
-          className="rounded-xl border-4 border-primary"
-        />
         <div className="max-w-3xl">
           <p className="text-center text-lg mt-8">
             {challengeDescription}
