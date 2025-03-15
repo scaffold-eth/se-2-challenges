@@ -66,51 +66,24 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-5-state-channels
 
 ## 💡 Contributing: Guide and Hints to create New Challenges
 
-- We'd use the [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template) as a starting point for each challenge.
-- UI wise, we'll try to use the https://speedrunethereum.com/ design vibe.
+### 1. Learn about SE-2 Extensions
+Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/createExtensions) and familiarize yourself with the way extensions work by watching the video and reading the overview.
 
-Check out already migrated Challenges to get a better idea of the structure and how to create new ones.
+### 2. Follow the steps to create an extension
+Scroll down to the section titled [Developing An Advanced Extension](https://docs.scaffoldeth.io/extensions/createExtensions#developing-an-advanced-extension) and follow the instructions all the way down to when you run the `yarn cli` command. 
 
-A quick start guide.
+Right after running the command you will have a directory where you can begin to add your changes specific to your challenge but first you may find it helpful to start by copying over the [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template) files inside the `extension` directory as this will help to maintain uniformity with other challenges. The files in the template are marked with `CHALLENGE-TODO` comments to help you find anywhere that needs updating using file search.
 
-### 1. Branch from [base-challenge-template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template)
+Now you can make your challenge-specific edits by adding contracts, tests and front-end file changes.
 
-At `base-challenge-template` branch we will be adding the latest updates from Scaffold ETH 2. We'll also include the learnings we acquire during the Challenges we are adding, as well as the code that may be common to all the Challenges.
+Don't forget to create (or edit existing) [template files](https://docs.scaffoldeth.io/extensions/createExtensions#template-files-and-args) for any changes that require it. If you miss any you will get a warning at the next step that will inform you which files are missing so don't worry too much.
 
-### 2. Edit `pages/index.tsx`
+### 3. Building and testing your extension
+Now when you get to the `yarn create-extension {projectName}` step you should see in the terminal all files that were created and any missing template files. Add any missing template files and continue to follow the instructions, especially the [local testing](https://docs.scaffoldeth.io/extensions/createExtensions#local-testing) section!
 
-The main page should have a banner image (ask for it!) + the Challenge description.
+Don't forget to add a README.md to the top level of your extension. It should match what you put in the `extraContents` variable in `extension/README.md.args.mjs`.
 
-> {challengeHeroImage}
->
-> A {challengeDescription}.
->
-> 🌟 The final deliverable is an app that {challengeDeliverable}.
-> Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
+Iterate as necessary, repeating the steps, to get it just right.
 
-### 3. Implement the Challenge
-
-- Add the contract(s)
-- Add pages / components as you need (UI following the [SpeedRunEthereum.com](https://speedrunethereum.com/) design vibe)
-- Create the test for the Smart Contract(s). The best starting point is to copy the tests from the SE1 Challenge you are migrating. The "envvar" logic there is used by the autograder, so don't remove them.
-
-### 4. Adapt Header / MetaHeader component
-
-Update the site title on `Header.tsx` and title and description of your challenge in `MetaHeader.tsx`.
-
-### 5. Image assets for your Challenge
-
-You will need to add the following image assets in `packages/nextjs/public` folder (ask the designers for it):
-
-- **Thumbnail.** `thumbnail.png`
-  Will be shown in your link previews when shared to others in chat or in social media.
-- **Hero image.** `hero.png`
-  It's a wider version of the Thumbnail with SRE logo at the bottom right. Used as README header, and as `pages/index.tsx` hero image.
-
-### 6. Edit README adapting the [base template](https://github.com/scaffold-eth/se-2-challenges/tree/base-challenge-template#readme)
-
-Adapt the base template README using the SE-1 version as a reference.
-
-### 7. Create a PR against the challenge branch
-
-We can iterate and test there.
+### 4. Submit a PR
+Once you have iterated your challenge to perfection, you can ask a maintainer to add a branch for your challenge and then submit a pull request to that branch. Expect to make a few passes of revisions as we test these challenges extensively.
