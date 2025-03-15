@@ -51,7 +51,7 @@ export const lightTheme = {
   
     ".tooltip": {
       "--tooltip-tail": "6px",
-      "--tooltip-color": "oklch(var(--pc))"
+      "--tooltip-color": "oklch(var(--p))"
     },
     ".link": {
       textUnderlineOffset: "2px"
