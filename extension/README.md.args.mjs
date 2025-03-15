@@ -1,4 +1,8 @@
-# 💳🌽 Over-Collateralized Lending
+export const skipQuickStart = true;
+// CHALLENGE-TODO: Update the readme to reflect your challenge. In the very end you will need a non-template
+// README.md file in the extension root so it is recommended to copy the template in a markdown file and then
+// update extraContents after confirming the template is correct.
+export const extraContents = `# 💳🌽 Over-Collateralized Lending
 
 ❓ How does lending work onchain? First, traditional lending usually involves one party (such as banks) offering up money and another party agreeing to pay interest over-time in order to use that money. The only way this works is because the lending party has some way to hold the borrower accountable. This requires some way to identify the borrower and a legal structure that will help settle things if the borrower decides to stop making interest payments. In the onchain world we don't have a reliable identification system *(yet)* so all lending is "over-collateralized". Borrowers must lock up collateral in order to take out a loan. "Over-collateralized" means you can never borrow more value than you have supplied. I am sure you are wondering, "What is the benefit of a loan if you can't take out more than you put in?" Great question! This form of lending lacks the common use case seen in traditional lending where people may use the loan to buy a house they otherwise couldn't afford but here are a few primary use cases of permissionless lending in DeFi:
 
@@ -29,86 +33,85 @@ Before you begin, you need to install the following tools:
 
 Then download the challenge to your computer and install dependencies by running:
 
-```sh
+\`\`\`sh
 npx create-eth@0.1.0 -e over-collateralized-lending over-collateralized-lending
 cd over-collateralized-lending
-```
+\`\`\`
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
-```sh
+\`\`\`sh
 yarn chain
-```
+\`\`\`
 
 > in a second terminal window, 🛰 deploy your contract (locally):
 
-```sh
+\`\`\`sh
 cd over-collateralized-lending
 yarn deploy
-```
+\`\`\`
 
 > in a third terminal window, start your 📱 frontend:
 
-```sh
+\`\`\`sh
 cd over-collateralized-lending
 yarn start
-```
+\`\`\`
 
 📱 Open http://localhost:3000 to see the app.
 
-> 👩‍💻 Restart `yarn chain` and then run `yarn deploy` whenever you want to deploy new or updated contracts to your local network. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
+> 👩‍💻 Restart \`yarn chain\` and then run \`yarn deploy\` whenever you want to deploy new or updated contracts to your local network. If you haven't made any contract changes, you can run \`yarn deploy --reset\` for a completely fresh deploy.
 
 ---
 
 ## Checkpoint 1: 💳🌽 Lending Contract
 
-Navigate to the `Debug Contracts` tab, you should see four smart contracts displayed called `Corn`, `CornDEX`, `Lending` and `MovePrice`. You don't need to worry about any of these except `Lending` but here is a quick description of each:
+Navigate to the \`Debug Contracts\` tab, you should see four smart contracts displayed called \`Corn\`, \`CornDEX\`, \`Lending\` and \`MovePrice\`. You don't need to worry about any of these except \`Lending\` but here is a quick description of each:
     - Corn ~ This is the ERC20 token that can be borrowed
     - CornDEX ~ This is the DEX contract that is used to swap between ETH and CORN but is also used as a makeshift price oracle
     - Lending ~ This is the contract that facilitates collateral depositing, loan creation and liquidation of loans in bad positions
     - MovePrice ~ This contract is only used for making large swaps in the DEX to change the asset ratio, changing the price reported by the DEX
 
-`packages/hardhat/contracts/Lending.sol` Is where you will spend most of your time.
+\`packages/hardhat/contracts/Lending.sol\` Is where you will spend most of your time.
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
-![DefaultView](https://github.com/user-attachments/assets/7778638f-5652-45e5-8493-485f3df60f57)
+![DefaultView](https://github.com/user-attachments/assets/a13f6f69-5d3f-4c67-a792-7ae341ff3167)
 
-
-> Check out the empty functions in `Lending.sol` to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
+> Check out the empty functions in \`Lending.sol\` to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
 
 ---
 
 ### 🥅 Goals
 
-- [ ] Review all the `Lending.sol` functions and envision how they might work together.
+- [ ] Review all the \`Lending.sol\` functions and envision how they might work together.
 
 ---
 
 ## Checkpoint 2: ➕ Adding and Removing Collateral
 
-👀 Let's take a look at the `addCollateral` function inside `Lending.sol`. 
+👀 Let's take a look at the \`addCollateral\` function inside \`Lending.sol\`. 
 
-It should revert with `Lending_InvalidAmount()` if somebody calls it without value.
+It should revert with \`Lending_InvalidAmount()\` if somebody calls it without value.
 
-It needs to record any value that gets sent to it as being collateral posted by the sender into an existing mapping called `s_userCollateral`.
+It needs to record any value that gets sent to it as being collateral posted by the sender into an existing mapping called \`s_userCollateral\`.
 
-Let's also emit the `CollateralAdded` event with depositor address, amount they deposited and the `i_cornDEX.currentPrice()` which is the current value of ETH in CORN.
+Let's also emit the \`CollateralAdded\` event with depositor address, amount they deposited and the \`i_cornDEX.currentPrice()\` which is the current value of ETH in CORN.
  > ⚠️ We are emitting the price returned by the DEX in every event solely for the front end to be able to visualize things properly.
 
-Very good! Now let's look at the `withdrawCollateral` function. Don't want to send funds in if they can't be retrieved, now do we?!
+Very good! Now let's look at the \`withdrawCollateral\` function. Don't want to send funds in if they can't be retrieved, now do we?!
 
-Let's revert with `Lending_InvalidAmount()` right at the start if someone attempts to use the function with the `amount` parameter set to 0. We also want to revert if the sender doesn't have the `amount` of collateral they are requesting.
+Let's revert with \`Lending_InvalidAmount()\` right at the start if someone attempts to use the function with the \`amount\` parameter set to 0. We also want to revert if the sender doesn't have the \`amount\` of collateral they are requesting.
 
 Now let's reduce the sender's collateral (in the mapping) and send it back to their address.
 
-Emit `CollateralWithdrawn` with the sender's address, the amount they withdrew and the `currentPrice` from the DEX.
+Emit \`CollateralWithdrawn\` with the sender's address, the amount they withdrew and the \`currentPrice\` from the DEX.
 
-Excellent! Re-deploy your contract with `yarn deploy` but first shut down and restart `yarn chain`. We want to do a fresh deploy of all the contracts so that they each have correct constructor parameters. Now try out your methods from the front end and see if you need to make any changes.
+Excellent! Re-deploy your contract with \`yarn deploy\` but first shut down and restart \`yarn chain\`. We want to do a fresh deploy of all the contracts so that they each have correct constructor parameters. Now try out your methods from the front end and see if you need to make any changes.
 
 Don't forget to give yourself some ETH from the faucet!
 
-![faucet](https://github.com/user-attachments/assets/f033bdff-150f-447b-9b8a-639354e72efc)
+![faucet](https://github.com/user-attachments/assets/d3db19a5-c444-4e4c-9a35-bf9c15ceb7ec)
 
 ---
 
@@ -123,27 +126,27 @@ Don't forget to give yourself some ETH from the faucet!
 
 Now we need to add four methods that we will use in other functions to get various details about a user's debt position.
 
-Let's start with `calculateCollateralValue`. This function receives the address of the user in question and returns a uint256 representing the ETH collateral, priced in CORN.
+Let's start with \`calculateCollateralValue\`. This function receives the address of the user in question and returns a uint256 representing the ETH collateral, priced in CORN.
 
-We know how to get the user's collateral and we know the price in CORN is returned by `i_cornDEX.currentPrice()`. Can you figure out how to return the collateral value in CORN?
+We know how to get the user's collateral and we know the price in CORN is returned by \`i_cornDEX.currentPrice()\`. Can you figure out how to return the collateral value in CORN?
 
 <details markdown='1'><summary>🔎 Hint</summary>
 
-> This method just needs to return the users collateral multiplied by the price of CORN (`i_cornDEX.currentPrice()`) *divided by 1e18* (since that is how many decimals CORN has).
+> This method just needs to return the users collateral multiplied by the price of CORN (\`i_cornDEX.currentPrice()\`) *divided by 1e18* (since that is how many decimals CORN has).
 
 <details markdown='1'><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function calculateCollateralValue(address user) public view returns (uint256) {
         uint256 collateralAmount = s_userCollateral[user]; // Get user's collateral amount
         return (collateralAmount * i_cornDEX.currentPrice()) / 1e18; // Calculate collateral value in CORN
     }
-```
+\`\`\`
 
 </details>
 </details>
 
-Let's turn our attention to the internal `_calculatePositionRatio` view function.
+Let's turn our attention to the internal \`_calculatePositionRatio\` view function.
 
 This function takes a user address and returns what we are calling the "position ratio". This is the percentage of collateral to borrowed assets with a caveat, it is returned as the percentage * 1e18. In other words, if the collateral ratio percent is 133 then the returned value would be 133000000000000000000. We do this to enable a higher amount of precision. Try to figure out the math on your own.
 
@@ -153,37 +156,37 @@ This function takes a user address and returns what we are calling the "position
 
 <details markdown='1'><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function _calculatePositionRatio(address user) internal view returns (uint256) {
         uint borrowedAmount = s_userBorrowed[user]; // Get user's borrowed amount
         uint collateralValue = calculateCollateralValue(user); // Calculate user's collateral value
         if (borrowedAmount == 0) return type(uint256).max; // Return max if no corn is borrowed
         return (collateralValue * 1e18) / borrowedAmount; // Calculate position ratio
     }
-```
+\`\`\`
 
 </details>
 </details>
 
-Last helper function! Now we will fill in the details on `isLiquidatable`. This function should return a bool indicating if the position ratio is less than `COLLATERAL_RATIO`. See if you can implement the logic without the hint.
+Last helper function! Now we will fill in the details on \`isLiquidatable\`. This function should return a bool indicating if the position ratio is less than \`COLLATERAL_RATIO\`. See if you can implement the logic without the hint.
 
 <details markdown='1'><summary>🔎 Hint</summary>
 
-> We can use the `_calculatePositionRatio` function we just made to get the current ratio. Then just a simple comparison between that and the COLLATERAL_RATIO to make sure we aren't below the acceptable liquidatable threshold.
+> We can use the \`_calculatePositionRatio\` function we just made to get the current ratio. Then just a simple comparison between that and the COLLATERAL_RATIO to make sure we aren't below the acceptable liquidatable threshold.
 
 <details markdown='1'><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function isLiquidatable(address user) public view returns (bool) {
         uint256 positionRatio = _calculatePositionRatio(user); // Calculate user's position ratio
         return (positionRatio * 100) < COLLATERAL_RATIO * 1e18; // Check if position is unsafe
     }
-```
+\`\`\`
 
 </details>
 </details>
 
-Lastly let's fill in a simple function called `_validatePosition`. This function has one use case: revert with `Lending_UnsafePositionRatio` if the user's position is liquidatable (`isLiquidatable` returns exactly what we need). We can then use this function any place where we need to verify the user's ratio position hasn't been changed to a liquidatable state after changing the user's state.
+Lastly let's fill in a simple function called \`_validatePosition\`. This function has one use case: revert with \`Lending_UnsafePositionRatio\` if the user's position is liquidatable (\`isLiquidatable\` returns exactly what we need). We can then use this function any place where we need to verify the user's ratio position hasn't been changed to a liquidatable state after changing the user's state.
 
 ---
 
@@ -196,32 +199,32 @@ Lastly let's fill in a simple function called `_validatePosition`. This function
 
 ## Checkpoint 4: 🌽 Let's Borrow Some CORN!
 
-👀 Go to the `borrowCorn` function. 
+👀 Go to the \`borrowCorn\` function. 
 
-It should revert with `Lending_InvalidAmount()` if somebody calls it without a `borrowAmount`.
+It should revert with \`Lending_InvalidAmount()\` if somebody calls it without a \`borrowAmount\`.
 
-It should add the borrowed amount to the user's balance in the `s_userBorrowed` mapping.
+It should add the borrowed amount to the user's balance in the \`s_userBorrowed\` mapping.
 
-It should validate the user's position (`_validatePosition`) so that it reverts if they are attempting to borrow more than they are allowed.
+It should validate the user's position (\`_validatePosition\`) so that it reverts if they are attempting to borrow more than they are allowed.
 
-Then it should use the CORN token's `mintTo` function to mint the tokens to the user's address.
+Then it should use the CORN token's \`mintTo\` function to mint the tokens to the user's address.
  > ⚠️ This is an oversimplification on our part. A real lending contract would not be minting the asset that is being borrowed in most cases. This way we only have to deal with one side of the market so it makes it easier to understand.
 
-You should also emit the `AssetBorrowed` event.
+You should also emit the \`AssetBorrowed\` event.
 
-Perfect! Now let's go fill out the `repayCorn` function.
+Perfect! Now let's go fill out the \`repayCorn\` function.
 
-Revert with `Lending_InvalidAmount` if the repayAmount is 0 or if it is more than the user has borrowed.
+Revert with \`Lending_InvalidAmount\` if the repayAmount is 0 or if it is more than the user has borrowed.
 
-Subtract the amount from the `s_userBorrowed` mapping. Then use the CORN token's `burnFrom` function to remove the CORN from the borrower's wallet.
+Subtract the amount from the \`s_userBorrowed\` mapping. Then use the CORN token's \`burnFrom\` function to remove the CORN from the borrower's wallet.
 
-And finally, emit the `AssetRepaid` event.
+And finally, emit the \`AssetRepaid\` event.
 
-Restart `yarn chain` and then `yarn deploy` so you can play with borrowing and repaying on the front end.
+Restart \`yarn chain\` and then \`yarn deploy\` so you can play with borrowing and repaying on the front end.
 
 <details><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function borrowCorn(uint256 borrowAmount) public {
         if (borrowAmount == 0) {
             revert Lending__InvalidAmount(); // Revert if borrow amount is zero
@@ -246,7 +249,7 @@ Restart `yarn chain` and then `yarn deploy` so you can play with borrowing and r
         }
         emit AssetRepaid(msg.sender, repayAmount, i_cornDEX.currentPrice()); // Emit event for repaying
     }
-```
+\`\`\`
 
 </details>
 
@@ -255,7 +258,7 @@ Restart `yarn chain` and then `yarn deploy` so you can play with borrowing and r
 ### 🥅 Goals
 
 - [ ] Can you borrow and repay CORN?
-- [ ] What happens if you repay without having enough tokens to repay? Have you handled that well? (`Lending__RepayingFailed` might be nice to throw...)
+- [ ] What happens if you repay without having enough tokens to repay? Have you handled that well? (\`Lending__RepayingFailed\` might be nice to throw...)
 - [ ] Can you borrow more than 120% of your collateral value? It should revert if you attempt this...
 
 ---
@@ -266,26 +269,26 @@ So we have a way to deposit collateral and borrow against it. Great! But what ha
 
 We need a liquidation mechanism!
 
-Let's go to the `liquidate` function. We want anyone to be able to call this when a position is liquidatable. The caller must have enough CORN to repay the debt. This function should remove the borrower's debt AND the amount of collateral that is needed to cover the debt.
+Let's go to the \`liquidate\` function. We want anyone to be able to call this when a position is liquidatable. The caller must have enough CORN to repay the debt. This function should remove the borrower's debt AND the amount of collateral that is needed to cover the debt.
 
-First let's make sure to revert if the user's position is not liquidatable with `Lending__NotLiquidatable`.
+First let's make sure to revert if the user's position is not liquidatable with \`Lending__NotLiquidatable\`.
 
-Let's transfer the CORN to this contract from the liquidator and then burn it. (`transferFrom` and `burnFrom`).
+Let's transfer the CORN to this contract from the liquidator and then burn it. (\`transferFrom\` and \`burnFrom\`).
 
 Clear the borrower's debt completely.
 
 Calculate the amount of collateral needed to cover the cost of the burned CORN and remove it from the borrower's collateral.
 > Keep in mind, It's not enough to simply have a liquidation mechanism. We need an incentive for people to trigger it!
 
-**So** add the `LIQUIDATOR_REWARD` as a percentage on top of the collateral (but never exceeding the borrower's total collateral) so that the liquidator has a nice incentive to want to liquidate that poor borrower.
+**So** add the \`LIQUIDATOR_REWARD\` as a percentage on top of the collateral (but never exceeding the borrower's total collateral) so that the liquidator has a nice incentive to want to liquidate that poor borrower.
 
 Transfer that amount of collateral to the liquidator.
 
-Finally emit the `Liquidation` event.
+Finally emit the \`Liquidation\` event.
 
 <details markdown='1'><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function liquidate(address user) public {
         if (!isLiquidatable(user)) {
             revert Lending__NotLiquidatable(); // Revert if position is not liquidatable
@@ -318,11 +321,11 @@ Finally emit the `Liquidation` event.
 
         emit Liquidation(user, msg.sender, amountForLiquidator, userDebt, i_cornDEX.currentPrice());
     }
-```
+\`\`\`
 
 </details>
 
-You know the drill. Restart `yarn chain` and then `yarn deploy` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to `localhost:3000` so you can simulate multiple parties.
+You know the drill. Restart \`yarn chain\` and then \`yarn deploy\` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to \`localhost:3000\` so you can simulate multiple parties.
 
 ---
 
@@ -335,11 +338,11 @@ You know the drill. Restart `yarn chain` and then `yarn deploy` so you can try l
 
 ## Checkpoint 6: Final Touches
 
-Throwback to the `withdrawCollateral` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a `_validatePosition` check to make sure that never happens. Skip the check if they don't have any borrowed CORN.
+Throwback to the \`withdrawCollateral\` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a \`_validatePosition\` check to make sure that never happens. Skip the check if they don't have any borrowed CORN.
 
 Great work! Your contract has all the necessary functionality to help people get CORN loans.
 
-🍨 Now you get to see something real special. Restart `yarn chain` and then `yarn deploy` as you usually do. Then run `yarn simulate`. This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
+🍨 Now you get to see something real special. Restart \`yarn chain\` and then \`yarn deploy\` as you usually do. Then run \`yarn simulate\`. This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out \`packages/hardhat/scripts/marketSimulator.ts\` to adjust the default settings or change the logic on the bot accounts.
 
 >👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 
@@ -349,11 +352,11 @@ Great work! Your contract has all the necessary functionality to help people get
 
 Let's implement a fee free flash loan function!
 
-Before we implement the logic we need to crete a new interface called `IFlashLoanRecipient`. You can define it beneath the `Lending`. It should have a function called `executeOperation` that receives the following parameters: `uint256 amount, address initiator, address extraParam` and returns a bool.
+Before we implement the logic we need to crete a new interface called \`IFlashLoanRecipient\`. You can define it beneath the \`Lending\`. It should have a function called \`executeOperation\` that receives the following parameters: \`uint256 amount, address initiator, address extraParam\` and returns a bool.
 
 <details markdown='1'><summary>Interface Code</summary>
 
-```solidity
+\`\`\`solidity
 contract Lending is Ownable {
     // ...
     // Existing code
@@ -364,24 +367,24 @@ contract Lending is Ownable {
 interface IFlashLoanRecipient {
     function executeOperation(uint256 amount, address initiator, address extraParam) external returns (bool);
 }
-```
+\`\`\`
 
 </details>
 
-There isn't any existing `flashLoan` function in `Lending.sol` but that is where we need one. Go ahead and define one that is public. It should receive the following parameters:
-- `IFlashLoanRecipient _recipient` This is because the loan recipient must be a contract that adheres to the `IFlashLoanRecipient` interface -- Not your EOA. You will see why in a minute
-- `uint256 _amount` The amount of CORN to send to the recipient contract
-- `address _extraParam` In a real flash loan function this would probably be a struct with several optional properties allowing people to pass along any data to the recipient contract. See Aave's implementation [here](https://github.com/aave-dao/aave-v3-origin/blob/083bd38a137b42b5df04e22ad4c9e72454365d0d/src/contracts/protocol/libraries/logic/FlashLoanLogic.sol#L184) 
+There isn't any existing \`flashLoan\` function in \`Lending.sol\` but that is where we need one. Go ahead and define one that is public. It should receive the following parameters:
+- \`IFlashLoanRecipient _recipient\` This is because the loan recipient must be a contract that adheres to the \`IFlashLoanRecipient\` interface -- Not your EOA. You will see why in a minute
+- \`uint256 _amount\` The amount of CORN to send to the recipient contract
+- \`address _extraParam\` In a real flash loan function this would probably be a struct with several optional properties allowing people to pass along any data to the recipient contract. See Aave's implementation [here](https://github.com/aave-dao/aave-v3-origin/blob/083bd38a137b42b5df04e22ad4c9e72454365d0d/src/contracts/protocol/libraries/logic/FlashLoanLogic.sol#L184) 
 
 The logic inside the method needs to mint the amount of CORN that is given in the parameter to the recipient address - The IFlashLoanRecipient adhering contract.
 
-Then it will call the `executeOperation` function on the recipient contract and make sure that it returns `true`.
+Then it will call the \`executeOperation\` function on the recipient contract and make sure that it returns \`true\`.
 
-Use the CORN token's `burnFrom` method to destroy the CORN that was minted at the beginning of this function. Burn it from `address(this)` since the recipient should have returned it. If they didn't this burn method will revert when we try to burn tokens that are not held by the lending contract. If it reverts then the CORN will have never been minted to the recipient - no risk of the tokens being stolen.
+Use the CORN token's \`burnFrom\` method to destroy the CORN that was minted at the beginning of this function. Burn it from \`address(this)\` since the recipient should have returned it. If they didn't this burn method will revert when we try to burn tokens that are not held by the lending contract. If it reverts then the CORN will have never been minted to the recipient - no risk of the tokens being stolen.
 
 <details markdown='1'><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function flashLoan(IFlashLoanRecipient _recipient, uint256 _amount, address _extraParam) public {
         // Send the loan to the recipient - No collateral is required since it gets repaid all in the same transaction
         i_corn.mintTo(address(_recipient), _amount);
@@ -393,26 +396,26 @@ Use the CORN token's `burnFrom` method to destroy the CORN that was minted at th
         // Burn the loan - Should revert if it doesn't have enough
         i_corn.burnFrom(address(this), _amount);
     }
-```
+\`\`\`
 
 </details>
 
-Now we need to create a contract that is the recipient of the CORN. Let's create a contract that uses the `flashLoan` method to make it possible to liquidate loans without the liquidator needing to hold CORN tokens.
+Now we need to create a contract that is the recipient of the CORN. Let's create a contract that uses the \`flashLoan\` method to make it possible to liquidate loans without the liquidator needing to hold CORN tokens.
 
-> ❕ Keep in mind, this is just one example of how we could use the `flashLoan` function. There are so many more things you can build with flash loans!
+> ❕ Keep in mind, this is just one example of how we could use the \`flashLoan\` function. There are so many more things you can build with flash loans!
 
-Create a new contract file and call it `FlashLoanLiquidator.sol`
+Create a new contract file and call it \`FlashLoanLiquidator.sol\`
 
-See if you can figure out the correct logic to liquidate a loan inside a function called `executeOperation`. It will need to utilize the DEX to swap ETH for CORN in order to repay the CORN loan after liquidating the position and receiving the ETH. 
-After liquidating the loan the contract should send any remaining ETH back to the original initiator of the `flashLoan` function.
+See if you can figure out the correct logic to liquidate a loan inside a function called \`executeOperation\`. It will need to utilize the DEX to swap ETH for CORN in order to repay the CORN loan after liquidating the position and receiving the ETH. 
+After liquidating the loan the contract should send any remaining ETH back to the original initiator of the \`flashLoan\` function.
 
-Don't forget to let the contract `receive()` ether!
+Don't forget to let the contract \`receive()\` ether!
 
 <details markdown='1'><summary>FlashLoanLiquidator Contract Code</summary>
 
 Here is one example of how to accomplish this:
 
-```solidity
+\`\`\`solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -463,14 +466,14 @@ contract FlashLoanLiquidator {
     receive() external payable {}
 }
 
-```
+\`\`\`
 
 </details>
 
-Now you need to add your new contract to the deployment script. You can just add it beneath all the existing logic in `packages/hardhat/deploy/00_deploy_contracts.ts`.
+Now you need to add your new contract to the deployment script. You can just add it beneath all the existing logic in \`packages/hardhat/deploy/00_deploy_contracts.ts\`.
 <details markdown='1'><summary>Deployment Code</summary>
 
-```typescript
+\`\`\`typescript
 const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     // All existing logic...
@@ -482,15 +485,15 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
         autoMine: true,
     });
 }
-```
+\`\`\`
 
 </details>
 
-Restart `yarn chain` and deploy your contracts with `yarn deploy`.
+Restart \`yarn chain\` and deploy your contracts with \`yarn deploy\`.
 
 Create a debt position that is close to the liquidation line and then increase the price of CORN until the position is liquidatable.
 
-Then go to the Debug Tab and trigger the `Lending.flashLoan` method with your `FlashLoanLiquidator` contract address as the `recipient`, the amount of CORN needed to liquidate as the `amount` and the borrower's address as the `extraParam`.
+Then go to the Debug Tab and trigger the \`Lending.flashLoan\` method with your \`FlashLoanLiquidator\` contract address as the \`recipient\`, the amount of CORN needed to liquidate as the \`amount\` and the borrower's address as the \`extraParam\`.
 
 Pretty cool, huh? You can liquidate any position without needing to have the CORN to pay back the loan!
 
@@ -500,13 +503,13 @@ Pretty cool, huh? You can liquidate any position without needing to have the COR
 
 You can already do this manually but what if we created a contract with some methods that make it easy?
 
-Let's start by adding a couple helper methods to the `Lending.sol` contract.
+Let's start by adding a couple helper methods to the \`Lending.sol\` contract.
 
-First let's add a method called `getMaxBorrowAmount` that takes a uint256 representing the amount of ETH we have to deposit and returns the maximum amount of CORN we can expect to receive. See if you can figure it out without the solution below, then compare if you run into issues.
+First let's add a method called \`getMaxBorrowAmount\` that takes a uint256 representing the amount of ETH we have to deposit and returns the maximum amount of CORN we can expect to receive. See if you can figure it out without the solution below, then compare if you run into issues.
 
 <details markdown='1'><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function getMaxBorrowAmount(uint256 ethCollateralAmount) public view returns (uint256) {
         if (ethCollateralAmount == 0) return 0;
         
@@ -516,17 +519,17 @@ First let's add a method called `getMaxBorrowAmount` that takes a uint256 repres
         // Calculate max borrow amount while maintaining the required collateral ratio
         return (collateralValue * 100) / COLLATERAL_RATIO;
     }
-```
+\`\`\`
 
 </details>
 
 Now let's add a method that will help us when we go to unravel a position.
 
-Create a function called `getMaxWithdrawableCollateral` that receives an address representing the user we want to query. It should return a uint256 representing the amount of ETH that the account has deposited as collateral that is OK to withdraw without putting the position into a liquidatable state. Try to figure it out yourself but feel free to peek at the solution below.
+Create a function called \`getMaxWithdrawableCollateral\` that receives an address representing the user we want to query. It should return a uint256 representing the amount of ETH that the account has deposited as collateral that is OK to withdraw without putting the position into a liquidatable state. Try to figure it out yourself but feel free to peek at the solution below.
 
 <details markdown='1'><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function getMaxWithdrawableCollateral(address user) public view returns (uint256) {
         uint256 borrowedAmount = s_userBorrowed[user];
         uint256 userCollateral = s_userCollateral[user];
@@ -540,17 +543,17 @@ Create a function called `getMaxWithdrawableCollateral` that receives an address
 
         return (ethValueOfPotentialBorrowingAmount * COLLATERAL_RATIO) / 100;
     }
-```
+\`\`\`
 
 </details>
 
 Now let's create a new contract that will use those new view functions to "while loop" until we trigger a stop.
 
-Create a new file in the contracts directory called `Leverage.sol` and copy the following code into it:
+Create a new file in the contracts directory called \`Leverage.sol\` and copy the following code into it:
 
 <details><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -629,19 +632,19 @@ contract Leverage {
 
     receive() external payable {}
 }
-```
+\`\`\`
 
 </details>
 
 Try to fill in the "while loops" in the open and close leveraged position functions.
 
-Notice how the `openLeveragedPosition` receives a uint256 which represents the amount of ETH the caller wants left over as collateral after looping. If none is specified then the the loan will stop right at the liquidation threshold. The smallest movement in CORN going higher could cause you to be liquidated.
+Notice how the \`openLeveragedPosition\` receives a uint256 which represents the amount of ETH the caller wants left over as collateral after looping. If none is specified then the the loan will stop right at the liquidation threshold. The smallest movement in CORN going higher could cause you to be liquidated.
 
-The while loop should add collateral to the `Lending` contract and then borrow the max amount of CORN. Then it should use the DEX to swap that CORN for more ETH. Then the loop should be good to go again. Just make sure you add a condition to check if the amount of ETH is less than or equal to the reserve amount and if so, break out of the loop.
+The while loop should add collateral to the \`Lending\` contract and then borrow the max amount of CORN. Then it should use the DEX to swap that CORN for more ETH. Then the loop should be good to go again. Just make sure you add a condition to check if the amount of ETH is less than or equal to the reserve amount and if so, break out of the loop.
 
 <details><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function openLeveragedPosition(uint256 reserve) public payable onlyOwner {
         uint256 loops = 0;
         while (true) {
@@ -658,15 +661,15 @@ The while loop should add collateral to the `Lending` contract and then borrow t
         }
         emit LeveragedPositionOpened(msg.sender, loops);
     }
-```
+\`\`\`
 
 </details>
 
-`closeLeveragedPosition` Should be similar except it will be withdrawing the maximum amount of collateral, swapping to CORN and repaying the debt until there isn't any more CORN left to repay.
+\`closeLeveragedPosition\` Should be similar except it will be withdrawing the maximum amount of collateral, swapping to CORN and repaying the debt until there isn't any more CORN left to repay.
 
 <details><summary>Solution Code</summary>
 
-```solidity
+\`\`\`solidity
     function closeLeveragedPosition() public onlyOwner {
         uint256 loops = 0;
         while (true) {
@@ -687,63 +690,63 @@ The while loop should add collateral to the `Lending` contract and then borrow t
         }
         emit LeveragedPositionClosed(msg.sender, loops);
     }
-```
+\`\`\`
 
 </details>
 
-The `Leverage` contract has a `claimOwnership` and `withdraw` function so that you can claim ownership of the contract before opening the position because the position is actually owned by this contract.
+The \`Leverage\` contract has a \`claimOwnership\` and \`withdraw\` function so that you can claim ownership of the contract before opening the position because the position is actually owned by this contract.
 
-Lastly, add the deploy logic to the deployment script. Add it beneath all the existing logic in `packages/hardhat/deploy/00_deploy_contracts.ts` like you did with the last side quest.
+Lastly, add the deploy logic to the deployment script. Add it beneath all the existing logic in \`packages/hardhat/deploy/00_deploy_contracts.ts\` like you did with the last side quest.
 <details markdown='1'><summary>Deployment Code</summary>
 
-```typescript
+\`\`\`typescript
   await deploy("Leverage", {
     from: deployer,
     args: [lending.address, cornDEX.target, cornToken.target],
     log: true,
     autoMine: true,
   });
-```
+\`\`\`
 
 </details>
 
-Restart `yarn chain` and deploy your contracts with `yarn deploy`.
+Restart \`yarn chain\` and deploy your contracts with \`yarn deploy\`.
 
 Try opening a leveraged position and see how changing the reserve amount affects your tolerance to changes in the market. Leverage is powerful stuff that will blow up in your face if you aren't careful.
 
 ## Checkpoint 7: 💾 Deploy your contracts! 🛰
 
-📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
+📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages/hardhat/hardhat.config.ts\`
 
-🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
+🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
-👩‍🚀 Use `yarn account` to view your deployer account balances.
+👩‍🚀 Use \`yarn account\` to view your deployer account balances.
 
 ⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
-🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
+🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in \`hardhat.config.ts\`)
 
-> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
+> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.
 
 ---
 
 ## Checkpoint 8: 🚢 Ship your frontend! 🚁
 
-✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia)
+✏️ Edit your frontend config in \`packages/nextjs/scaffold.config.ts\` to change the \`targetNetwork\` to \`chains.sepolia\` (or \`chains.optimismSepolia\` if you deployed to OP Sepolia)
 
 💻 View your frontend at http://localhost:3000 and verify you see the correct network.
 
 📡 When you are ready to ship the frontend app...
 
-📦 Run `yarn vercel` to package up your frontend and deploy.
+📦 Run \`yarn vercel\` to package up your frontend and deploy.
 
-> You might need to log in to Vercel first by running `yarn vercel:login`. Once you log in (email, GitHub, etc), the default options should work.
+> You might need to log in to Vercel first by running \`yarn vercel:login\`. Once you log in (email, GitHub, etc), the default options should work.
 
-> If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
+> If you want to redeploy to the same production URL you can run \`yarn vercel --prod\`. If you omit the \`--prod\` flag it will deploy it to a preview/test URL.
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallet's` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallet's\` are only available on \`hardhat\` . You can enable them on every chain by setting \`onlyLocalBurnerWallet: false\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -752,9 +755,9 @@ This is great to complete your **SpeedRunEthereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -762,7 +765,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ## Checkpoint 9: 📜 Contract Verification
 
-Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
+Run the \`yarn verify --network your_network\` command to verify your contracts on etherscan 🛰
 
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
 
@@ -771,3 +774,4 @@ Run the `yarn verify --network your_network` command to verify your contracts on
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
+`;
