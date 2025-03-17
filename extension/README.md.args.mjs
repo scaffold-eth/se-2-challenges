@@ -76,7 +76,7 @@ Navigate to the \`Debug Contracts\` tab, you should see four smart contracts dis
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
-![DefaultView](https://github.com/user-attachments/assets/a13f6f69-5d3f-4c67-a792-7ae341ff3167)
+![DefaultView](https://github.com/user-attachments/assets/003a5dba-1b00-4a4c-8b07-6fc0564e5124)
 
 > Check out the empty functions in \`Lending.sol\` to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
 
@@ -111,7 +111,7 @@ Excellent! Re-deploy your contract with \`yarn deploy\` but first shut down and 
 
 Don't forget to give yourself some ETH from the faucet!
 
-![faucet](https://github.com/user-attachments/assets/d3db19a5-c444-4e4c-9a35-bf9c15ceb7ec)
+![faucet](https://github.com/user-attachments/assets/e8b8ac20-19fa-45d4-bc5a-8049ac04487e)
 
 ---
 
