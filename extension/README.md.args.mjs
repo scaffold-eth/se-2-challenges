@@ -76,7 +76,7 @@ Navigate to the \`Debug Contracts\` tab, you should see four smart contracts dis
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
-![DefaultView](https://github.com/user-attachments/assets/003a5dba-1b00-4a4c-8b07-6fc0564e5124)
+![DefaultView](https://github.com/user-attachments/assets/58feae80-dbcb-49db-9d7d-4a4bf9cc7766)
 
 > Check out the empty functions in \`Lending.sol\` to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
 
@@ -97,7 +97,26 @@ It should revert with \`Lending_InvalidAmount()\` if somebody calls it without v
 It needs to record any value that gets sent to it as being collateral posted by the sender into an existing mapping called \`s_userCollateral\`.
 
 Let's also emit the \`CollateralAdded\` event with depositor address, amount they deposited and the \`i_cornDEX.currentPrice()\` which is the current value of ETH in CORN.
- > ⚠️ We are emitting the price returned by the DEX in every event solely for the front end to be able to visualize things properly.
+> ⚠️ We are emitting the price returned by the DEX in every event solely for the front end to be able to visualize things properly.
+
+<details markdown='1'><summary>🔎 Hint</summary>
+
+> This method is pretty straight forward, try to solve it by following the description and when you think you have it compare to the solution below.
+
+<details markdown='1'><summary>Solution Code</summary>
+
+\`\`\`solidity
+    function addCollateral() public payable {
+        if (msg.value == 0) {
+            revert Lending__InvalidAmount(); // Revert if no collateral is sent
+        }
+        s_userCollateral[msg.sender] += msg.value; // Update user's collateral balance
+        emit CollateralAdded(msg.sender, msg.value, i_cornDEX.currentPrice()); // Emit event for collateral addition
+    }
+\`\`\`
+
+</details>
+</details>
 
 Very good! Now let's look at the \`withdrawCollateral\` function. Don't want to send funds in if they can't be retrieved, now do we?!
 
@@ -106,6 +125,32 @@ Let's revert with \`Lending_InvalidAmount()\` right at the start if someone atte
 Now let's reduce the sender's collateral (in the mapping) and send it back to their address.
 
 Emit \`CollateralWithdrawn\` with the sender's address, the amount they withdrew and the \`currentPrice\` from the DEX.
+
+<details markdown='1'><summary>🔎 Hint</summary>
+
+> This method is also very straight forward, try to solve it by following the description and when you think you have it compare to the solution below.
+
+<details markdown='1'><summary>Solution Code</summary>
+
+\`\`\`solidity
+    function withdrawCollateral(uint256 amount) public {
+        if (amount == 0 || s_userCollateral[msg.sender] < amount) {
+            revert Lending__InvalidAmount(); // Revert if the amount is invalid
+        }
+
+        // Reduce the user's collateral
+        uint256 newCollateral = s_userCollateral[msg.sender] - amount;
+        s_userCollateral[msg.sender] = newCollateral;
+
+        // Transfer the collateral to the user
+        payable(msg.sender).transfer(amount);
+
+        emit CollateralWithdrawn(msg.sender, amount, i_cornDEX.currentPrice()); // Emit event for collateral withdrawal
+    }
+\`\`\`
+
+</details>
+</details>
 
 Excellent! Re-deploy your contract with \`yarn deploy\` but first shut down and restart \`yarn chain\`. We want to do a fresh deploy of all the contracts so that they each have correct constructor parameters. Now try out your methods from the front end and see if you need to make any changes.
 
