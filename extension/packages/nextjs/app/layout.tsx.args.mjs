@@ -3,3 +3,4 @@ export const metadata = {
     title: "YOUR CHALLENGE TITLE | SpeedRunEthereum",
     description: "Built with 🏗 Scaffold-ETH 2",
   };
+  
