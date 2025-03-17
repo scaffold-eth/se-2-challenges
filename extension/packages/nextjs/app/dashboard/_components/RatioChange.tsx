@@ -41,7 +41,7 @@ const RatioChange = ({ user, ethPrice, inputBorrowAmount }: UserPositionProps) =
   return (
     <div className="text-sm">
       {ratio === "N/A" ? (
-        <span className="text-green-600">∞</span>
+        <span className={`${getRatioColorClass(1000)}`}>∞</span>
       ) : (
         <span className={`${getRatioColorClass(ratio)} mx-0`}>{ratio}%</span>
       )}{" "}

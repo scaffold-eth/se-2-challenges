@@ -3,6 +3,7 @@ import RatioChange from "./RatioChange";
 import TooltipInfo from "./TooltipInfo";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
+import { IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
@@ -68,15 +69,9 @@ const BorrowOperations = () => {
               />
             )}
           </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Amount"
-              className="input input-bordered w-full"
-              value={borrowAmount}
-              onChange={e => setBorrowAmount(e.target.value)}
-            />
-            <button className="btn btn-primary" onClick={handleBorrow} disabled={!borrowAmount}>
+          <div className="flex gap-2 items-center">
+            <IntegerInput value={borrowAmount} onChange={setBorrowAmount} placeholder="Amount" disableMultiplyBy1e18 />
+            <button className="btn btn-sm btn-primary" onClick={handleBorrow} disabled={!borrowAmount}>
               Borrow
             </button>
           </div>
@@ -86,15 +81,9 @@ const BorrowOperations = () => {
           <label className="label">
             <span className="label-text">Repay Debt</span>
           </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Amount"
-              className="input input-bordered w-full"
-              value={repayAmount}
-              onChange={e => setRepayAmount(e.target.value)}
-            />
-            <button className="btn btn-primary" onClick={handleRepay} disabled={!repayAmount}>
+          <div className="flex gap-2 items-center">
+            <IntegerInput value={repayAmount} onChange={setRepayAmount} placeholder="Amount" disableMultiplyBy1e18 />
+            <button className="btn btn-sm btn-primary" onClick={handleRepay} disabled={!repayAmount}>
               Repay
             </button>
           </div>

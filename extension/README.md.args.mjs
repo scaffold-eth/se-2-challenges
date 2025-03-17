@@ -280,6 +280,8 @@ Clear the borrower's debt completely.
 Calculate the amount of collateral needed to cover the cost of the burned CORN and remove it from the borrower's collateral.
 > Keep in mind, It's not enough to simply have a liquidation mechanism. We need an incentive for people to trigger it!
 
+> ⚠️ We have simplified things by not adding any APY incentives (and inversely borrowing fees). These are important incentives in real lending markets that help to keep the market balanced by encouraging people to supply collateral or as a borrower to repay a loan that is requiring a high APR because the collateral is not as safe or nearing the liquidation threshold. These fees are a great place to add logic that generates protocol revenue as well by taking a some of the borrowing APR and letting it accrue to the protocol's token, passing the rest along to the supplier. These incentives, along with the liquidation system, help to make sure there is always more value in collateral than value being borrowed.
+
 **So** add the \`LIQUIDATOR_REWARD\` as a percentage on top of the collateral (but never exceeding the borrower's total collateral) so that the liquidator has a nice incentive to want to liquidate that poor borrower.
 
 Transfer that amount of collateral to the liquidator.
@@ -352,7 +354,7 @@ Great work! Your contract has all the necessary functionality to help people get
 
 Let's implement a fee free flash loan function!
 
-Before we implement the logic we need to crete a new interface called \`IFlashLoanRecipient\`. You can define it beneath the \`Lending\`. It should have a function called \`executeOperation\` that receives the following parameters: \`uint256 amount, address initiator, address extraParam\` and returns a bool.
+Before we implement the logic we need to create a new interface called \`IFlashLoanRecipient\`. You can define it beneath the \`Lending\` contract but in the same file. It should have a function called \`executeOperation\` that receives the following parameters: \`uint256 amount, address initiator, address extraParam\` and returns a bool.
 
 <details markdown='1'><summary>Interface Code</summary>
 

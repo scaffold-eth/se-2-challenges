@@ -97,27 +97,5 @@ contract Lending is Ownable {
      * @dev The caller must have approved this contract to transfer the debt
      */
     function liquidate(address user) public {}
-
-    /**
-     * @notice For Side quest only
-     * @notice Calculates maximum CORN that can be borrowed for a given ETH collateral amount
-     * @param ethCollateralAmount Amount of ETH to use as collateral (in wei)
-     * @return Maximum amount of CORN that can be borrowed while maintaining safe collateral ratio
-     */
-    function getMaxBorrowAmount(uint256 ethCollateralAmount) public view returns (uint256) {}
-
-    /**
-     * @notice For Side quest only
-     * @notice Calculates maximum ETH collateral that can be withdrawn while keeping position safe
-     * @param user The address of the user to calculate for
-     * @return Maximum amount of ETH collateral (in wei) that can be safely withdrawn
-     */
-    function getMaxWithdrawableCollateral(address user) public view returns (uint256) {}
 }
 
-/**
- * @notice For Side quest only
- */
-interface IFlashLoanRecipient {
-    function executeOperation(uint256 amount, address initiator, address extraParam) external returns (bool);
-}

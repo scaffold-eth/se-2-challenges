@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import TooltipInfo from "./TooltipInfo";
 import { parseEther } from "viem";
+import { IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 const CollateralOperations = () => {
@@ -49,15 +50,14 @@ const CollateralOperations = () => {
           <label className="label">
             <span className="label-text">Add Collateral (ETH)</span>
           </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Amount"
-              className="input input-bordered w-full"
+          <div className="flex gap-2 items-center">
+            <IntegerInput
               value={collateralAmount}
-              onChange={e => setCollateralAmount(e.target.value)}
+              onChange={setCollateralAmount}
+              placeholder="Amount"
+              disableMultiplyBy1e18
             />
-            <button className="btn btn-primary" onClick={handleAddCollateral} disabled={!collateralAmount}>
+            <button className="btn btn-sm btn-primary" onClick={handleAddCollateral} disabled={!collateralAmount}>
               Add
             </button>
           </div>
@@ -67,15 +67,14 @@ const CollateralOperations = () => {
           <label className="label">
             <span className="label-text">Withdraw Collateral (ETH)</span>
           </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Amount"
-              className="input input-bordered w-full"
+          <div className="flex gap-2 items-center">
+          <IntegerInput
               value={withdrawAmount}
-              onChange={e => setWithdrawAmount(e.target.value)}
+              onChange={setWithdrawAmount}
+              placeholder="Amount"
+              disableMultiplyBy1e18
             />
-            <button className="btn btn-primary" onClick={handleWithdrawCollateral} disabled={!withdrawAmount}>
+            <button className="btn btn-sm btn-primary" onClick={handleWithdrawCollateral} disabled={!withdrawAmount}>
               Withdraw
             </button>
           </div>
