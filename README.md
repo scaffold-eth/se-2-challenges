@@ -72,7 +72,7 @@ Navigate to the `Debug Contracts` tab, you should see four smart contracts displ
 
 > Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
-![DefaultView](https://github.com/user-attachments/assets/003a5dba-1b00-4a4c-8b07-6fc0564e5124)
+![DefaultView](https://github.com/user-attachments/assets/58feae80-dbcb-49db-9d7d-4a4bf9cc7766)
 
 > Check out the empty functions in `Lending.sol` to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
 
