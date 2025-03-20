@@ -3,4 +3,4 @@
 
 You can use these files to help set up a new extension that matches the style and feel of [SpeedRunEthereum](https://speedrunethereum.com/).
 
-Simply copy the files on top of an in-development extension directly after running `yarn cli` while following these [instructions](https://docs.scaffoldeth.io/extensions/createExtensions).
+There are `// CHALLENGE-TODO:` comments placed throughout that provide instructions on key changes to adapt this template for use with a new challenge.
