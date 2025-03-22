@@ -67,19 +67,25 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-5-state-channels
 ## 💡 Contributing: Guide and Hints to create New Challenges
 
 ### 1. Learn about SE-2 Extensions
+
 Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/createExtensions) and familiarize yourself with the way extensions work by watching the video and reading the overview.
 
 ### 2. Follow the steps to create an extension
+
 1. Make sure you are in the create-eth repo.
+
 #### Setting up things in externalExtensions:
+
 2. cd into `externalExtensions` if it's not present `mkdir externalExtensions && cd externalExtensions`
 
 3. Clone the base-challenge-template with name of your extension inside `externalExtensions`:
+
 ```bash
     git clone -b base-challenge-template https://github.com/scaffold-eth/se-2-challenges.git <my-challenge-name>
 ```
 
 4. cd into `<my-challenge-name>` dir and create a branch of your challenge name.
+
 ```bash
     cd <my-challenge-name> && git switch -c <my-challenge-name>
 ```
@@ -89,12 +95,15 @@ Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/cre
 6. Commit those changes inside as an initial commit: `git add . && git commit -m "fill template"`
 
 #### Commands to be run in create-eth repo:
+
 1. Build the create-eth cli
+
 ```bash
     yarn build:dev
 ```
 
 2. Create an instance with same name as the challenge name directory which was created inside `externalExtensions`:
+
 ```bash
     yarn cli ../<my-challenge-name> -e <my-challenge-name> --dev
 ```
@@ -104,11 +113,13 @@ Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/cre
 4. Tinker in that instance, adding any new files your challenge will use and then committing those changes
 
 5. Run this in create-eth to copy all the changes to you extension:
+
 ```bash
     yarn create-extension ../<my-challenge-name>
 ```
 
 ### 3. Testing your extension
+
 Now that you ran the `create-extension` command you should see in the terminal all files that were created and any missing template files. Add any missing template files and continue to follow the instructions in the [local testing](https://docs.scaffoldeth.io/extensions/createExtensions#local-testing) section!
 
 Don't forget to add a README.md to the top level of your extension. It should match what you put in the `extraContents` variable in `extension/README.md.args.mjs`.
@@ -116,4 +127,5 @@ Don't forget to add a README.md to the top level of your extension. It should ma
 Iterate as necessary, repeating the steps, to get it just right.
 
 ### 4. Submit a PR
+
 Once you have iterated your challenge to perfection, you can ask a maintainer to add a branch for your challenge and then submit a pull request to that branch. Expect to make a few passes of revisions as we test these challenges extensively.
