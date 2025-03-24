@@ -4,6 +4,8 @@ export const skipQuickStart = true;
 // update extraContents after confirming the template is correct.
 export const extraContents = `# 💳🌽 Over-Collateralized Lending
 
+![readme-lending](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/over-collateralized-lending/extension/packages/nextjs/public/hero.png)
+
 ❓ How does lending work onchain? First, traditional lending usually involves one party (such as banks) offering up money and another party agreeing to pay interest over-time in order to use that money. The only way this works is because the lending party has some way to hold the borrower accountable. This requires some way to identify the borrower and a legal structure that will help settle things if the borrower decides to stop making interest payments. In the onchain world we don't have a reliable identification system *(yet)* so all lending is "over-collateralized". Borrowers must lock up collateral in order to take out a loan. "Over-collateralized" means you can never borrow more value than you have supplied. I am sure you are wondering, "What is the benefit of a loan if you can't take out more than you put in?" Great question! This form of lending lacks the common use case seen in traditional lending where people may use the loan to buy a house they otherwise couldn't afford but here are a few primary use cases of permissionless lending in DeFi:
 
 - Maintaining Price Exposure ~ You may have real world bills due but you are *sure* that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH in a stablecoin and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the stablecoin loan.
