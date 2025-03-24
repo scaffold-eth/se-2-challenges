@@ -71,12 +71,14 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-5-state-channels
 Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/createExtensions) and familiarize yourself with the way extensions work by watching the video and reading the overview.
 
 ### 2. Follow the steps to create an extension
-
-1. Make sure you are in the create-eth repo.
+1. Clone the [create-eth repo](https://github.com/scaffold-eth/create-eth) and cd into it.
+```bash
+    git clone https://github.com/scaffold-eth/create-eth
+    cd create-eth
+```
 
 #### Setting up things in externalExtensions:
-
-2. cd into `externalExtensions` if it's not present `mkdir externalExtensions && cd externalExtensions`
+2. cd into `externalExtensions` (if it's not present `mkdir externalExtensions && cd externalExtensions`)
 
 3. Clone the base-challenge-template with name of your extension inside `externalExtensions`:
 
@@ -84,15 +86,14 @@ Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/cre
     git clone -b base-challenge-template https://github.com/scaffold-eth/se-2-challenges.git <my-challenge-name>
 ```
 
-4. cd into `<my-challenge-name>` dir and create a branch of your challenge name.
-
+4. cd into `<my-challenge-name>` dir and create a branch with your challenge name.
 ```bash
     cd <my-challenge-name> && git switch -c <my-challenge-name>
 ```
 
 5. Find all the file comments marked `// CHALLENGE-TODO:` and follow the instructions to prepare your challenge.
 
-6. Commit those changes inside as an initial commit: `git add . && git commit -m "fill template"`
+6. Commit those changes as an initial commit: `git add . && git commit -m "fill template"`
 
 #### Commands to be run in create-eth repo:
 
