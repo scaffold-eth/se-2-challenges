@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "simulate": "yarn workspace @se-2/hardhat simulate"
+  }
+}
