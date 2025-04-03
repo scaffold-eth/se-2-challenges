@@ -4,6 +4,7 @@ import { Address as AddressBlock } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { collateralRatio, tokenName } from "~~/utils/constant";
 import { calculatePositionRatio, getRatioColorClass } from "~~/utils/helpers";
+import { notification } from "~~/utils/scaffold-eth";
 
 type UserPositionProps = {
   user: string;
@@ -61,6 +62,12 @@ const UserPosition = ({ user, ethPrice, connectedAddress }: UserPositionProps) =
         functionName: "liquidate",
         args: [user],
       });
+      notification.success(<>
+        <p className="font-bold mt-0 mb-1">Liquidation successful</p>
+        <p className="m-0">
+          You repaid {userBorrowed} {tokenName} and received the borrower's ETH collateral
+        </p>
+      </>);
     } catch (e) {
       console.error("Error liquidating position:", e);
     }
