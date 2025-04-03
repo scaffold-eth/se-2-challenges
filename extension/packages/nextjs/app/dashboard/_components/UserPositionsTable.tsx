@@ -24,12 +24,10 @@ const UserPositionsTable = () => {
 
   useEffect(() => {
     if (!events) return;
-    console.log(events);
     setUsers(prevUsers => {
       const uniqueUsers = new Set([...prevUsers]);
       events
         .map(event => {
-          console.log(event.args);
           return event.args.user;
         })
         .filter((user): user is string => !!user)

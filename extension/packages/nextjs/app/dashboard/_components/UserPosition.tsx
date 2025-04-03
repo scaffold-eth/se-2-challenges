@@ -62,12 +62,21 @@ const UserPosition = ({ user, ethPrice, connectedAddress }: UserPositionProps) =
         functionName: "liquidate",
         args: [user],
       });
-      notification.success(<>
-        <p className="font-bold mt-0 mb-1">Liquidation successful</p>
-        <p className="m-0">
-          You repaid {userBorrowed} {tokenName} and received the borrower's ETH collateral
-        </p>
-      </>);
+      const borrowedValue = Number(formatEther(userBorrowed || 0n)) / ethPrice;
+      const totalCollateral = Number(formatEther(userCollateral || 0n));
+      const rewardValue =
+        borrowedValue * 1.1 > totalCollateral ? totalCollateral.toFixed(2) : (borrowedValue * 1.1).toFixed(2);
+      const shortAddress = user.slice(0, 6) + "..." + user.slice(-4);
+      notification.success(
+        <>
+          <p className="font-bold mt-0 mb-1">Liquidation successful</p>
+          <p className="m-0">You liquidated {shortAddress}&apos;s position.</p>
+          <p className="m-0">
+            You repaid {Number(formatEther(userBorrowed)).toFixed(2)} {tokenName} and received {rewardValue} in ETH
+            collateral.
+          </p>
+        </>,
+      );
     } catch (e) {
       console.error("Error liquidating position:", e);
     }
