@@ -120,7 +120,7 @@ const CollateralGraph = () => {
       ...acc,
       {
         name: Number(event.blockNumber) || 0,
-        ratio: ratio && Number.isFinite(ratio) ? ratio : 1,
+        ratio: ratio && Number.isFinite(ratio) ? ratio * 100 : 100,
         collateral: collateralInEth,
         debt: debt,
       },
@@ -143,13 +143,18 @@ const CollateralGraph = () => {
             />
             <YAxis
               scale="log"
-              domain={[0.9, 1.5]}
-              tickFormatter={value => `${(value * 100).toFixed(0)}%`}
+              domain={[90, 150]}
+              tickFormatter={value => `${value.toFixed(0)}%`}
               stroke={strokeColor}
               tick={{ fill: strokeColor }}
             />
-            <Tooltip />
-            <ReferenceLine y={collateralRatio / 100} stroke="#ff4d4d" strokeDasharray="3 3" />
+            <Tooltip
+              itemStyle={{ color: "#82ca9d" }}
+              labelStyle={{ color: "#82ca9d" }}
+              formatter={(value: number) => [`${value.toFixed(3)}%`]}
+              labelFormatter={label => `Block ${label}`}
+            />
+            <ReferenceLine y={collateralRatio} stroke="#ff4d4d" strokeDasharray="3 3" />
             <Line type="monotone" dataKey="ratio" stroke="#82ca9d" dot={false} strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
