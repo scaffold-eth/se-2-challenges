@@ -26,13 +26,13 @@ const RatioChange = ({ user, ethPrice, inputBorrowAmount }: UserPositionProps) =
   const ratio =
     borrowedAmount === 0
       ? "N/A"
-      : calculatePositionRatio(Number(formatEther(userCollateral || 0n)), borrowedAmount, ethPrice).toFixed(1);
+      : calculatePositionRatio(Number(formatEther(userCollateral || 0n)), borrowedAmount, ethPrice);
 
   const newRatio = calculatePositionRatio(
     Number(formatEther(userCollateral || 0n)),
     borrowedAmount + inputBorrowAmount,
     ethPrice,
-  ).toFixed(1);
+  );
 
   if (inputBorrowAmount <= 0) {
     return null;
@@ -43,9 +43,9 @@ const RatioChange = ({ user, ethPrice, inputBorrowAmount }: UserPositionProps) =
       {ratio === "N/A" ? (
         <span className={`${getRatioColorClass(1000)}`}>∞</span>
       ) : (
-        <span className={`${getRatioColorClass(ratio)} mx-0`}>{ratio}%</span>
+        <span className={`${getRatioColorClass(ratio)} mx-0`}>{ratio.toFixed(2)}%</span>
       )}{" "}
-      → <span className={getRatioColorClass(newRatio)}>{newRatio}%</span>
+      → <span className={getRatioColorClass(newRatio)}>{newRatio.toFixed(2)}%</span>
     </div>
   );
 };
