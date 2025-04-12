@@ -127,13 +127,21 @@ const CollateralGraph = () => {
     ];
   }, []);
 
+  // Filter the ratioData to keep only the last occurrence of each block number
+  const filteredRatioData = Object.values(
+    ratioData.reduce((acc, dataPoint) => {
+      acc[dataPoint.name] = dataPoint;
+      return acc;
+    }, {} as Record<number, DataPoint>)
+  );
+
   return (
     <div className="card bg-base-100 w-full shadow-xl indicator">
       <TooltipInfo top={3} right={3} infoText="This graph shows the total collateral/debt ratio over time" />
       <div className="card-body h-96 w-full">
         <h2 className="card-title">Total Collateral/Debt Ratio</h2>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart width={500} height={300} data={ratioData}>
+          <LineChart width={500} height={300} data={filteredRatioData}>
             <XAxis
               domain={["auto", "auto"]}
               dataKey="name"

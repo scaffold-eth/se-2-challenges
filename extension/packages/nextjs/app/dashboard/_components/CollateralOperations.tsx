@@ -68,7 +68,7 @@ const CollateralOperations = () => {
             <span className="label-text">Withdraw Collateral (ETH)</span>
           </label>
           <div className="flex gap-2 items-center">
-          <IntegerInput
+            <IntegerInput
               value={withdrawAmount}
               onChange={setWithdrawAmount}
               placeholder="Amount"
