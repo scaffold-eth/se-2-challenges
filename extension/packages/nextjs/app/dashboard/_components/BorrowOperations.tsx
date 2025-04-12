@@ -65,7 +65,7 @@ const BorrowOperations = () => {
               <RatioChange
                 user={address}
                 ethPrice={Number(formatEther(ethPrice || 0n))}
-                inputBorrowAmount={Number(borrowAmount)}
+                inputAmount={Number(borrowAmount)}
               />
             )}
           </label>
@@ -78,8 +78,15 @@ const BorrowOperations = () => {
         </div>
 
         <div className="form-control">
-          <label className="label">
+          <label className="label flex justify-between">
             <span className="label-text">Repay Debt</span>
+            {address && (
+              <RatioChange
+                user={address}
+                ethPrice={Number(formatEther(ethPrice || 0n))}
+                inputAmount={-Number(repayAmount)}
+              />
+            )}
           </label>
           <div className="flex gap-2 items-center">
             <IntegerInput value={repayAmount} onChange={setRepayAmount} placeholder="Amount" disableMultiplyBy1e18 />
