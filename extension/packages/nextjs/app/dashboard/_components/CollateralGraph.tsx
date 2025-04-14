@@ -120,12 +120,20 @@ const CollateralGraph = () => {
       ...acc,
       {
         name: Number(event.blockNumber) || 0,
-        ratio: ratio && Number.isFinite(ratio) ? ratio : 1,
+        ratio: ratio && Number.isFinite(ratio) ? ratio * 100 : 100,
         collateral: collateralInEth,
         debt: debt,
       },
     ];
   }, []);
+
+  // Filter the ratioData to keep only the last occurrence of each block number
+  const filteredRatioData = Object.values(
+    ratioData.reduce((acc, dataPoint) => {
+      acc[dataPoint.name] = dataPoint;
+      return acc;
+    }, {} as Record<number, DataPoint>)
+  );
 
   return (
     <div className="card bg-base-100 w-full shadow-xl indicator">
@@ -133,7 +141,7 @@ const CollateralGraph = () => {
       <div className="card-body h-96 w-full">
         <h2 className="card-title">Total Collateral/Debt Ratio</h2>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart width={500} height={300} data={ratioData}>
+          <LineChart width={500} height={300} data={filteredRatioData}>
             <XAxis
               domain={["auto", "auto"]}
               dataKey="name"
@@ -143,13 +151,18 @@ const CollateralGraph = () => {
             />
             <YAxis
               scale="log"
-              domain={[0.9, 1.5]}
-              tickFormatter={value => `${(value * 100).toFixed(0)}%`}
+              domain={[90, 150]}
+              tickFormatter={value => `${value.toFixed(0)}%`}
               stroke={strokeColor}
               tick={{ fill: strokeColor }}
             />
-            <Tooltip />
-            <ReferenceLine y={collateralRatio / 100} stroke="#ff4d4d" strokeDasharray="3 3" />
+            <Tooltip
+              itemStyle={{ color: "#82ca9d" }}
+              labelStyle={{ color: "#82ca9d" }}
+              formatter={(value: number) => [`${value.toFixed(3)}%`]}
+              labelFormatter={label => `Block ${label}`}
+            />
+            <ReferenceLine y={collateralRatio} stroke="#ff4d4d" strokeDasharray="3 3" />
             <Line type="monotone" dataKey="ratio" stroke="#82ca9d" dot={false} strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
