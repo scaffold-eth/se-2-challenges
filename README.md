@@ -231,6 +231,19 @@ yarn start
 
 ✅ Lastly let's fill in a simple function called `_validatePosition`. This function has one use case: revert with `Lending_UnsafePositionRatio` if the user's position is liquidatable (`isLiquidatable` returns exactly what we need). We can then use this function any place where we need to verify the user's ratio position hasn't been changed to a liquidatable state after updating the user's state.
 
+<details markdown='1'><summary>Solution Code</summary>
+
+```solidity
+    function _validatePosition(address user) internal view {
+        if (isLiquidatable(user)) {
+            revert Lending__UnsafePositionRatio();
+        }
+    }
+```
+
+</details>
+</details>
+
 ---
 
 ### 🥅 Goals
@@ -316,6 +329,8 @@ yarn start
 
 ⚠️ First let's make sure to revert if the user's position is not liquidatable with `Lending__NotLiquidatable`.
 
+❕ Also, Let's make sure the caller has enough CORN to liquidate the borrower's position. If they don't, revert with `Lending__InsufficientLiquidatorCorn`.
+
 🔄 Let's transfer the CORN to this contract from the liquidator and then burn it. (`transferFrom` and `burnFrom`).
 
 🧹 Clear the borrower's debt completely.
@@ -337,6 +352,10 @@ yarn start
     function liquidate(address user) public {
         if (!isLiquidatable(user)) {
             revert Lending__NotLiquidatable(); // Revert if position is not liquidatable
+        }
+
+        if (i_corn.balanceOf(msg.sender) < userDebt) {
+            revert Lending__InsufficientLiquidatorCorn();
         }
 
         uint256 userDebt = s_userBorrowed[user]; // Get user's borrowed amount
@@ -683,7 +702,7 @@ contract Leverage {
 
 🧩 Try to fill in the "while loops" in the open and close leveraged position functions.
 
-📝 Notice how the `openLeveragedPosition` receives a uint256 which represents the amount of ETH the caller wants left over as collateral after looping. If none is specified then the the loan will stop right at the liquidation threshold. The smallest movement in CORN going higher could cause you to be liquidated.
+📝 Notice how `openLeveragedPosition` is payable and expects to receive all the ETH the caller wants to deposit. The only parameter is a uint256 which represents the amount of ETH the caller wants left over as collateral after looping. If none is specified then the the loan will stop right at the liquidation threshold. The smallest movement in CORN going higher could cause you to be liquidated.
 
 🔄 The while loop should add collateral to the `Lending` contract and then borrow the max amount of CORN. Then it should use the DEX to swap that CORN for more ETH. Then the loop should be good to go again. Just make sure you add a condition to check if the amount of ETH is less than or equal to the reserve amount and if so, break out of the loop.
 

@@ -12,6 +12,7 @@ error Lending__BorrowingFailed();
 error Lending__RepayingFailed();
 error Lending__PositionSafe();
 error Lending__NotLiquidatable();
+error Lending__InsufficientLiquidatorCorn();
 
 contract Lending is Ownable {
     uint256 private constant COLLATERAL_RATIO = 120; // 120% collateralization required
