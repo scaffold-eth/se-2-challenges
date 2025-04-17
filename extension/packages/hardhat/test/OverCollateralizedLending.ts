@@ -8,6 +8,7 @@ import { Corn, CornDEX, Lending } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
 describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
+  const contractAddress = process.env.CONTRACT_ADDRESS;
   let cornToken: Corn;
   let cornDEX: CornDEX;
   let lending: Lending;
@@ -32,8 +33,16 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
     await cornToken.approve(cornDEX.target, ethers.parseEther("1000000"));
     await cornDEX.init(ethers.parseEther("1000000"), { value: ethers.parseEther("1000") });
 
-    const Lending = await ethers.getContractFactory("Lending");
-    lending = await Lending.deploy(cornDEX.target, cornToken.target);
+    // For SRE Auto-grader - use the the downloaded contract instead of default contract
+    let contractArtifact = "";
+    if (contractAddress) {
+      contractArtifact = `contracts/download-${contractAddress}.sol:Lending`;
+    } else {
+      contractArtifact = "contracts/Lending.sol:Lending";
+    }
+
+    const Lending = await ethers.getContractFactory(contractArtifact);
+    lending = (await Lending.deploy(cornDEX.target, cornToken.target)) as Lending;
 
     await cornToken.transferOwnership(lending.target);
   });
