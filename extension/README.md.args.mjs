@@ -6,7 +6,13 @@ export const extraContents = `# 💳🌽 Over-Collateralized Lending
 
 ![readme-lending](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/over-collateralized-lending/extension/packages/nextjs/public/hero.png)
 
-❓ How does lending work onchain? First, traditional lending usually involves one party (such as banks) offering up money and another party agreeing to pay interest over-time in order to use that money. The only way this works is because the lending party has some way to hold the borrower accountable. This requires some way to identify the borrower and a legal structure that will help settle things if the borrower decides to stop making interest payments. In the onchain world we don't have a reliable identification system *(yet)* so all lending is "over-collateralized". Borrowers must lock up collateral in order to take out a loan. "Over-collateralized" means you can never borrow more value than you have supplied. I am sure you are wondering, "What is the benefit of a loan if you can't take out more than you put in?" Great question! This form of lending lacks the common use case seen in traditional lending where people may use the loan to buy a house they otherwise couldn't afford but here are a few primary use cases of permissionless lending in DeFi:
+💳 Build your own lending and borrowing platform. Let's write a contract that takes collateral and lets you borrow other assets against the value of the collateral. What happens when the collateral changes in value? We will be able to borrow more if it is higher or if it is lower we will also build a system for liquidating the debt position.
+
+<details markdown='1'><summary>❓ Wondering how lending works onchain? Read the overview here.</summary>
+
+First, traditional lending usually involves one party (such as a bank) offering up money and another party agreeing to pay interest over-time in order to use that money. The only way this works is because the lending party has some way to hold the borrower accountable. This requires some way to identify the borrower and a legal structure that will help settle things if the borrower decides to stop making interest payments. In the onchain world we don't have a reliable identification system *(yet)* so all lending is "over-collateralized". **Borrowers must lock up collateral in order to take out a loan.** "Over-collateralized" means **you can never borrow more value than you have supplied.**
+
+🤔 I am sure you are wondering, "What is the benefit of a loan if you can't take out more than you put in?" Great question! This form of lending lacks the common use case seen in traditional lending where people may use the loan to buy a house they otherwise couldn't afford but here are a few primary use cases of permissionless lending in DeFi:
 
 - 💰 Maintaining Price Exposure ~ You may have real world bills due but you are *sure* that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH in a stablecoin and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the stablecoin loan.
 - 📈 Leverage ~ You could deposit ETH and borrow a stablecoin but only use it to buy more ETH, increasing your exposure to the ETH price movements (to the upside 🎢 or the downside 🔻😰).
@@ -14,9 +20,11 @@ export const extraContents = `# 💳🌽 Over-Collateralized Lending
 
 👍 Now that you know the background of what is and is not possible with onchain lending, let's dive in to the challenge!
 
-💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value or if CORN goes up in value then the borrower's position may be liquidatable by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. 
+</details>
 
-📈 The Lending contract naively uses the price returned by a CORN/ETH DEX contract. This makes it easy for you to change the price of CORN by "moving the market" with large swaps. Shout out to the [DEX challenge](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/README.md)! Using a DEX as the sole price oracle would never work in a production grade system but it will help to demonstrate the different market conditions that affect a lending protocol.
+---
+
+💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value or if CORN goes up in value then the borrower's position may be liquidatable by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. 
 
 🌟 The final deliverable is an app that allows anyone to take out a loan in CORN while making sure it is always backed by it's value in ETH.
 Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
@@ -69,10 +77,10 @@ yarn start
 ## Checkpoint 1: 💳🌽 Lending Contract
 
 🔍 Navigate to the \`Debug Contracts\` tab, you should see four smart contracts displayed called \`Corn\`, \`CornDEX\`, \`Lending\` and \`MovePrice\`. You don't need to worry about any of these except \`Lending\` but here is a quick description of each:
-    - 🌽 Corn ~ This is the ERC20 token that can be borrowed
-    - 🔄 CornDEX ~ This is the DEX contract that is used to swap between ETH and CORN but is also used as a makeshift price oracle
-    - 💰 Lending ~ This is the contract that facilitates collateral depositing, loan creation and liquidation of loans in bad positions
-    - 📊 MovePrice ~ This contract is only used for making large swaps in the DEX to change the asset ratio, changing the price reported by the DEX
+- 🌽 Corn ~ This is the ERC20 token that can be borrowed
+- 🔄 CornDEX ~ This is the DEX contract that is used to swap between ETH and CORN but is also used as a makeshift price oracle
+- 💰 Lending ~ This is the contract that facilitates collateral depositing, loan creation and liquidation of loans in bad positions
+- 📊 MovePrice ~ This contract is only used for making large swaps in the DEX to change the asset ratio, changing the price reported by the DEX
 
 📁 \`packages/hardhat/contracts/Lending.sol\` Is where you will spend most of your time.
 
@@ -91,6 +99,8 @@ yarn start
 ---
 
 ## Checkpoint 2: ➕ Adding and Removing Collateral
+
+> 📈 The Lending contract naively uses the price returned by a CORN/ETH DEX contract. This makes it easy for you to change the price of CORN by "moving the market" with large swaps. Shout out to the [DEX challenge](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/README.md)! Using a DEX as the sole price oracle would never work in a production grade system but it will help to demonstrate the different market conditions that affect a lending protocol.
 
 👀 Let's take a look at the \`addCollateral\` function inside \`Lending.sol\`. 
 
@@ -344,7 +354,7 @@ yarn start
 
 > ⚠️ We have simplified things by not adding any APY incentives (and inversely borrowing fees). These are important incentives in real lending markets that help to keep the market balanced by encouraging people to supply collateral or as a borrower to repay a loan that is requiring a high APR because the collateral is not as safe or nearing the liquidation threshold. These fees are a great place to add logic that generates protocol revenue as well by taking some of the borrowing APR and letting it accrue to the protocol's token, passing the rest along to the supplier. These incentives, along with the liquidation system, help to make sure there is always more value in collateral than value being borrowed.
 
-💰 **So** add the \`LIQUIDATOR_REWARD\` as a percentage on top of the collateral (but never exceeding the borrower's total collateral) so that the liquidator has a nice incentive to want to liquidate that poor borrower.
+💰 Now add the \`LIQUIDATOR_REWARD\` as a percentage on top of the collateral (but never exceeding the borrower's total collateral) so that the liquidator has a nice incentive to want to liquidate that poor borrower.
 
 💸 Transfer that amount of collateral to the liquidator.
 
