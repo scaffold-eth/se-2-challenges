@@ -1,5 +1,4 @@
-// CHALLENGE-TODO: Update the metadata to reflect your challenge
 export const metadata = {
-    title: "YOUR CHALLENGE TITLE | SpeedRunEthereum",
+    title: "Challenge #6 | SpeedRunEthereum",
     description: "Built with 🏗 Scaffold-ETH 2",
-  };
+};
