@@ -1,0 +1,23 @@
+:root,
+[data-theme] {
+  background: oklch(var(--b1)) !important;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @apply font-lexend;
+}
+
+.tooltip:before {
+  @apply bg-accent text-accent-content;
+}
+
+.tooltip:after {
+  @apply border-b-accent;
+}
+
+.border-default {
+  @apply rounded-lg border border-gray-200 dark:border-gray-500;
+}

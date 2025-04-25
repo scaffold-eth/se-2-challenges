@@ -1,68 +1,53 @@
 export const lightTheme = {
-    primary: "#C8F5FF",
-    "primary-content": "#026262",
-    secondary: "#89d7e9",
-    "secondary-content": "#088484",
-    accent: "#026262",
-    "accent-content": "#E9FBFF",
-    neutral: "#088484",
-    "neutral-content": "#F0FCFF",
-    "base-100": "#F0FCFF",
-    "base-200": "#E1FAFF",
-    "base-300": "#C8F5FF",
-    "base-content": "#088484",
-    info: "#026262",
-    success: "#34EEB6",
-    warning: "#FFCF72",
-    error: "#FF8863",
-  
-    "--rounded-btn": "9999rem",
-  
-    ".tooltip": {
-      "--tooltip-tail": "6px"
-    },
-    ".link": {
-      textUnderlineOffset: "2px"
-    },
-    ".link:hover": {
-      opacity: "80%"
-    }
-  };
-  
-  export const darkTheme = {
-    primary: "#026262",
-    "primary-content": "#C8F5FF",
-    secondary: "#107575",
-    "secondary-content": "#E9FBFF",
-    accent: "#C8F5FF",
-    "accent-content": "#088484",
-    neutral: "#E9FBFF",
-    "neutral-content": "#11ACAC",
-    "base-100": "#11ACAC",
-    "base-200": "#088484",
-    "base-300": "#026262",
-    "base-content": "#E9FBFF",
-    info: "#C8F5FF",
-    success: "#34EEB6",
-    warning: "#FFCF72",
-    error: "#FF8863",
-  
-    "--rounded-btn": "9999rem",
-  
-    ".tooltip": {
-      "--tooltip-tail": "6px",
-      "--tooltip-color": "oklch(var(--p))"
-    },
-    ".link": {
-      textUnderlineOffset: "2px"
-    },
-    ".link:hover": {
-      opacity: "80%"
-    }
-  };
-  
-  export const extendTheme = {
-    fontFamily: {
-      "space-grotesk": ["Space Grotesk", "sans-serif"]
-    }
-  };
+  primary: "#529AF2",
+  "primary-content": "oklch(100% 0 0)",
+  secondary: "oklch(77.464% 0.062 217.469)",
+  "secondary-content": "oklch(15.492% 0.012 217.469)",
+  accent: "oklch(72.772% 0.149 33.2)",
+  "accent-content": "oklch(0% 0 0)",
+  neutral: "#212638",
+  "neutral-content": "#ffffff",
+  "base-100": "oklch(100% 0 0)",
+  "base-200": "oklch(96% 0 0)",
+  "base-300": "oklch(92% 0 0)",
+  "base-content": "oklch(35.519% 0.032 262.988",
+  info: "#93BBFB",
+  success: "#34EEB6",
+  warning: "#FFCF72",
+  error: "#FF8863",
+  "--rounded-btn": "9999rem",
+  ".tooltip": { "--tooltip-tail": "6px" },
+  ".link": { textUnderlineOffset: "2px" },
+  ".link:hover": { opacity: "80%" },
+};
+
+export const darkTheme = {
+  primary: "oklch(75.351% 0.138 232.661)",
+  "primary-content": "oklch(15.07% 0.027 232.661)",
+  secondary: "oklch(68.011% 0.158 276.934)",
+  "secondary-content": "oklch(13.602% 0.031 276.934)",
+  accent: "oklch(72.36% 0.176 350.048)",
+  "accent-content": "oklch(14.472% 0.035 350.048)",
+  neutral: "oklch(27.949% 0.036 260.03)",
+  "neutral-content": "oklch(85.589% 0.007 260.03)",
+  "base-100": "oklch(20.768% 0.039 265.754)",
+  "base-200": "oklch(19.314% 0.037 265.754)",
+  "base-300": "oklch(25.86% 0.034 265.754)",
+  "base-content": "oklch(100% 0 0)",
+  info: "oklch(68.455% 0.148 237.251)",
+  success: "oklch(78.452% 0.132 181.911)",
+  warning: "oklch(83.242% 0.139 82.95)",
+  error: "oklch(71.785% 0.17 13.118)",
+  "--rounded-btn": "9999rem",
+  ".tooltip": { "--tooltip-tail": "6px", "--tooltip-color": "oklch(var(--p))" },
+  ".link": { textUnderlineOffset: "2px" },
+  ".link:hover": { opacity: "80%" },
+};
+
+export const extendTheme = {
+  boxShadow: { center: "0 0 12px -2px rgb(0 0 0 / 0.05)" },
+  animation: { "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite" },
+  fontFamily: {
+    lexend: ["var(--font-lexend)"],
+  },
+};
