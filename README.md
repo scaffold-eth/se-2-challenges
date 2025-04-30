@@ -364,11 +364,10 @@ yarn start
             revert Lending__NotLiquidatable(); // Revert if position is not liquidatable
         }
 
+        uint256 userDebt = s_userBorrowed[user]; // Get user's borrowed amount
         if (i_corn.balanceOf(msg.sender) < userDebt) {
             revert Lending__InsufficientLiquidatorCorn();
         }
-
-        uint256 userDebt = s_userBorrowed[user]; // Get user's borrowed amount
         uint256 userCollateral = s_userCollateral[user]; // Get user's collateral balance
         uint256 collateralValue = calculateCollateralValue(user); // Calculate user's collateral value
 
