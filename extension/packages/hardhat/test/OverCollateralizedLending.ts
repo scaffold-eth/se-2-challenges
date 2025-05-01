@@ -59,6 +59,13 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
       expect(await lending.s_userCollateral(user1.address)).to.equal(collateralAmount);
     });
 
+    it("Should require value of added collateral to be more than zero", async function () {
+      await expect(lending.connect(user1).addCollateral({ value: 0 })).to.be.revertedWithCustomError(
+        lending,
+        "Lending__InvalidAmount",
+      );
+    });
+
     it("Should emit CollateralAdded event", async function () {
       await expect(lending.connect(user1).addCollateral({ value: collateralAmount }))
         .to.emit(lending, "CollateralAdded")
@@ -66,9 +73,14 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
     });
 
     it("Should allow withdrawing collateral when no debt", async function () {
+      const balanceInitial = await ethers.provider.getBalance(user1.address);
       await lending.connect(user1).addCollateral({ value: collateralAmount });
+      const balanceAfterAdd = await ethers.provider.getBalance(user1.address);
+      expect(balanceAfterAdd).to.be.lt(balanceInitial);
       await lending.connect(user1).withdrawCollateral(collateralAmount);
       expect(await lending.s_userCollateral(user1.address)).to.equal(0);
+      const balanceAfterWithdraw = await ethers.provider.getBalance(user1.address);
+      expect(balanceAfterWithdraw).to.be.gt(balanceAfterAdd);
     });
 
     it("Should prevent withdrawing more than deposited", async function () {
@@ -76,6 +88,23 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
       await expect(lending.connect(user1).withdrawCollateral(collateralAmount * 2n)).to.be.revertedWithCustomError(
         lending,
         "Lending__InvalidAmount",
+      );
+    });
+
+    it("Should prevent withdrawing zero", async function () {
+      await lending.connect(user1).addCollateral({ value: collateralAmount });
+      await expect(lending.connect(user1).withdrawCollateral(0n)).to.be.revertedWithCustomError(
+        lending,
+        "Lending__InvalidAmount",
+      );
+    });
+
+    it ("Should prevent withdrawing collateral if it makes the position liquidatable", async function () {
+      await lending.connect(user1).addCollateral({ value: collateralAmount });
+      await lending.connect(user1).borrowCorn(borrowAmount);
+      await expect(lending.connect(user1).withdrawCollateral(collateralAmount)).to.be.revertedWithCustomError(
+        lending,
+        "Lending__UnsafePositionRatio",
       );
     });
   });
@@ -97,6 +126,13 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
       await expect(lending.connect(user1).borrowCorn(tooMuchBorrow)).to.be.revertedWithCustomError(
         lending,
         "Lending__UnsafePositionRatio",
+      );
+    });
+
+    it("Should prevent borrowing when amount is zero", async function () {
+      await expect(lending.connect(user1).borrowCorn(0n)).to.be.revertedWithCustomError(
+        lending,
+        "Lending__InvalidAmount",
       );
     });
 
@@ -133,6 +169,13 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
       );
     });
 
+    it("Should prevent repaying when amount is zero", async function () {
+      await expect(lending.connect(user1).repayCorn(0n)).to.be.revertedWithCustomError(
+        lending,
+        "Lending__InvalidAmount",
+      );
+    });
+
     it("Should emit AssetRepaid event", async function () {
       await cornToken.connect(user1).approve(lending.target, borrowAmount);
       await expect(lending.connect(user1).repayCorn(borrowAmount))
@@ -154,12 +197,15 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
     it("Should allow liquidation when position is unsafe", async function () {
       // drop price of eth so that user1 position is below 1.2
       await cornDEX.swap(ethers.parseEther("300"), { value: ethers.parseEther("300") });
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(await lending.isLiquidatable(user1)).to.be.true;
+      // get balance before liquidation
       const beforeBalance = await ethers.provider.getBalance(user2.address);
       await lending.connect(user2).liquidate(user1.address);
+      // get balance after liquidation
       const afterBalance = await ethers.provider.getBalance(user2.address);
+      // check if user1's borrowed amount is 0
       expect(await lending.s_userBorrowed(user1.address)).to.equal(0);
+      // check if user2's ETH balance increased
       expect(afterBalance).to.be.gt(beforeBalance);
     });
 
@@ -169,6 +215,16 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
       await expect(lending.connect(user2).liquidate(user1.address)).to.be.revertedWithCustomError(
         lending,
         "Lending__NotLiquidatable",
+      );
+    });
+
+    it ("Should have enough CORN to liquidate", async function () {
+      await cornDEX.swap(ethers.parseEther("300"), { value: ethers.parseEther("300") });
+      expect(await lending.isLiquidatable(user1)).to.be.true;
+      await cornToken.connect(await ethers.getImpersonatedSigner(lending.target as string)).burnFrom(user2.address, borrowAmount/2n);
+      await expect(lending.connect(user2).liquidate(user1.address)).to.be.revertedWithCustomError(
+        lending,
+        "Lending__InsufficientLiquidatorCorn",
       );
     });
 
