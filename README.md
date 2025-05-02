@@ -44,27 +44,27 @@ Before you begin, you need to install the following tools:
 
 Then download the challenge to your computer and install dependencies by running:
 
-```
+```sh
 npx create-eth@0.1.8 -e prediction-markets prediction-markets
 cd prediction-markets
 ```
 
 in the same terminal, start your local network (a blockchain emulator in your computer):
 
-```
+```sh
 yarn chain
 ```
 
 in a second terminal window, 🛰 deploy your contract (locally):
 
-```
+```sh
 cd prediction-markets
 yarn deploy
 ```
 
 in a third terminal window, start your 📱 frontend:
 
-```
+```sh
 cd prediction-markets
 yarn start
 ```
@@ -75,7 +75,7 @@ yarn start
 
 Head to the **`Debug Contracts`** tab and you should find a smart contract named **`PredictionMarket`**. This is our main contract and the one we'll be working on throughout the challenge. Since we haven't implemented any functions yet, they all shouldn't work neither do you see all necessary state variables.
 
-> 🏎️ 🏁 Since we want to build a prediction market around our car race head to the `User` tab and it! (The race is entirely separate and has no impact on the smart contract.)
+> 🏎️ 🏁 Since we want to build a prediction market around our car race head to the `User` tab and check it out! (The race is entirely separate and has no impact on the smart contract.)
 
 ## **Checkpoint 1: 🔭 The Structure of the protocol 📺**
 
@@ -235,7 +235,7 @@ constructor(
 
 Run the following command to check if you implement all variable and checks correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint2"
 ```
 
@@ -258,8 +258,6 @@ We store the two deployed token contract addresses in the state variables `i_yes
 As the market creator, you'll also choose the **initial probability** of the "Yes" outcome via the variable `i_initialYesProbability`. For example, if you believe the green car has a better chance of winning the race, you might set this to **60%** upfront.
 
 To understand how this works, let's walk through an example:
-
-Suppose we mint 100 "Yes" and 100 "No" tokens. If users buy 60 "Yes" and 40 "No" tokens, the implied probability of "Yes" is:
 
 Suppose we mint 100 "Yes" and 100 "No" tokens. If users buy 60 "Yes" and 40 "No" tokens, the implied probability of "Yes" is:
 
@@ -299,7 +297,9 @@ The locking of tokens serves two purposes:
 
 2. **Smooths price movements** early on. Since the token price is calculated as:
 
-   $$tokenPrice = i\_initialTokenValue * marketProbability$$
+   $$
+   tokenPrice = i\_initialTokenValue * marketProbability
+   $$
 
 > 💡 The percentage can be chosen arbitrarily, it depends on how you want to set up the prediction market. The more you lock from the beginning the lesser are the price swings but also there is less liquidity to trade.
 
@@ -390,7 +390,7 @@ constructor(
 
 Run the following command to check if you implement all variable and checks correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint3"
 ```
 
@@ -400,7 +400,7 @@ Once that's done, you're ready to deploy!
 
 > Run `yarn deploy` and check out the front-end
 
-Once deployed, head over to the **Debug** page to inspect the initialized values. The tab **Liquidity Provider** in the front-end should now also now display the initial question, initial liquidity/probability and further relevant variables (see screenshot below how it should look like).
+Once deployed, head over to the **Debug** page to inspect the initialized values. The tab **Liquidity Provider** in the front-end should now also display the initial question, initial liquidity/probability and further relevant variables (see screenshot below how it should look like).
 
 ![ch-6-lp2](extension/packages/nextjs/public/lp2.png)
 
@@ -495,7 +495,7 @@ function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner {
 
 Run the following command to check if you implement the functions correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint4"
 ```
 
@@ -587,7 +587,7 @@ function report(Outcome _winningOutcome) external predictionNotReported {
 
 Run the following command to check if the report function for the oracle is implemented correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint5"
 ```
 
@@ -696,7 +696,7 @@ function resolveMarketAndWithdraw() external onlyOwner predictionReported return
 
 Run the following command to check if the `resolveMarketAndWithdraw` function is implemented correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint6"
 ```
 
@@ -725,7 +725,7 @@ And then finishing up with:
 - `getBuyPriceInEth`
 - `getSellPriceInEth`
 
-Among these, the most critical is `_calculatePriceInEth`. Every time a user buys or sells a token, this function determines the ETH amount they need to pay (or receive). For simplicity, we'll use a **linear pricing model.**You can always swap this out later for something more advanced, like a logarithmic pricing mechanism (outside the scope of this challenge).
+Among these, the most critical is `_calculatePriceInEth`. Every time a user buys or sells a token, this function determines the ETH amount they need to pay (or receive). For simplicity, we'll use a **linear pricing model.** You can always swap this out later for something more advanced, like a logarithmic pricing mechanism (outside the scope of this challenge).
 
 Check out the table below for how prices behave under different scenarios. Note that the prices of both outcomes always sum to **0.01 ETH**.
 
@@ -787,9 +787,6 @@ When implementing these functions, remember:
 
 The public functions `getBuyPriceInEth` and `getSellPriceInEth` will both call `_calculatePriceInEth`, with a parameter to indicate whether it's a buy or a sell.
 
-$$
-$$
-
 <details markdown='1'><summary>🦉 Guiding Questions</summary>
 
 <details markdown='1'><summary>Question 1</summary>
@@ -812,7 +809,7 @@ $$
 
 <details markdown='1'><summary>Question 4</summary>
 
-> What else should you keep in mind when calculating price? (Hint: Don't forget about decimals andPRECISION constant.)
+> What else should you keep in mind when calculating price? (Hint: Don't forget about decimals and PRECISION constant.)
 
 </details>
 
@@ -905,7 +902,7 @@ function _calculateProbability(uint256 tokensSold, uint256 totalSold) private pu
 
 Run the following command to check if you implemented all the functions correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint7"
 ```
 
@@ -1086,7 +1083,7 @@ function sellTokensForEth(Outcome _outcome, uint256 _tradingAmount)
 
 Run the following command to check if you implemented all the functions correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint8"
 ```
 
@@ -1171,7 +1168,7 @@ function redeemWinningTokens(uint256 _amount) external amountGreaterThanZero(_am
 
 Run the following command to check if you implemented the last function for this challenge correctly.
 
-```
+```sh
 yarn test --grep "Checkpoint9"
 ```
 
