@@ -312,7 +312,7 @@ The locking of tokens serves two purposes:
 2. **Smooths price movements** early on. Since the token price is calculated as:
 
    $$
-   tokenPrice = i\\_initialTokenValue * marketProbability
+   tokenPrice = initialTokenValue * marketProbability
    $$
 
 > 💡 The percentage can be chosen arbitrarily, it depends on how you want to set up the prediction market. The more you lock from the beginning the lesser are the price swings but also there is less liquidity to trade.
@@ -750,7 +750,7 @@ To implement \`_calculatePriceInEth\`, we'll rely on \`_getCurrentReserves\`, wh
 Next, we calculate the prediction market probability using \`_calculateProbability\` both **before** and **after** the trade. We then take the **average** of those two values (\`probabilityAvg\`) to compute the final price using the following formula:
 
 $$
-price = i\\_initialTokenValue \* probabilityAvg \* \\_tradingAmount
+price = initialTokenValue \* probabilityAvg \* tradingAmount
 $$
 
 This pricing mechanism gives users a **volume discount,** the opposite of slippage in DeFi, where typically larger trades get more expensive. 🙂

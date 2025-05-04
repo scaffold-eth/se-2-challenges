@@ -13,7 +13,7 @@ export const menuObjects = `{
     label: "Oracle",
     href: "/oracle",
     icon: <EyeIcon className="h-4 w-4" />,
-  },`;
+  }`;
 
 export const logoTitle = "SRE Challenges";
 export const logoSubtitle = "Prediction Markets";

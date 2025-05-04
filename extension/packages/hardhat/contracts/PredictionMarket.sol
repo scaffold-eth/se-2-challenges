@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import { PredictionMarketToken } from "./PredictionMarketToken.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {PredictionMarketToken} from "./PredictionMarketToken.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PredictionMarket is Ownable {
     /////////////////
@@ -60,6 +60,8 @@ contract PredictionMarket is Ownable {
     /////////////////
 
     /// Checkpoint 5 ///
+
+    /// Checkpoint 6 ///
 
     /// Checkpoint 8 ///
 
@@ -175,11 +177,11 @@ contract PredictionMarket is Ownable {
      * @param _tradingAmount The amount of tokens
      * @param _isSelling Whether this is a sell calculation
      */
-    function _calculatePriceInEth(
-        Outcome _outcome,
-        uint256 _tradingAmount,
-        bool _isSelling
-    ) private view returns (uint256) {
+    function _calculatePriceInEth(Outcome _outcome, uint256 _tradingAmount, bool _isSelling)
+        private
+        view
+        returns (uint256)
+    {
         /// Checkpoint 7 ////
     }
 
