@@ -609,7 +609,7 @@ There's one small step left, since we've added new state variables that need to 
 
 Now you could head over to the oracle tab in the UI and report the outcome (after you watched the race of course:)) 🏎️ 🏁
 
-> 💡 Make sure you're connected with the correct oracle address — check \`00_deploy_your_contract.ts\` to find out which one is being used.
+> 💡 Make sure you're connected with the correct oracle address — check \`00_deploy_your_contract.ts\` to find out which one is being used. (Hint: Add the first Anvil account to your wallet to interact as the oracle or contract owner.)
 
 ![ch-6-oracle2](packages/nextjs/public/oracle2.png)
 
