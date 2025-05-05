@@ -35,7 +35,10 @@ const RaceTrack: React.FC = () => {
 
   // Start the race with a fixed duration
   const startRace = () => {
-    if (raceStarted) return;
+    if (raceStarted || raceFinished) {
+      resetRace();
+      return;
+    }
 
     setCarSpeeds({
       0: 2.5 + Math.random() * 1,
@@ -196,16 +199,9 @@ const RaceTrack: React.FC = () => {
           <div className="space-x-4 flex items-center">
             <button
               onClick={startRace}
-              disabled={raceStarted}
               className="px-4 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white font-bold transition-colors"
             >
-              Start Race
-            </button>
-            <button
-              onClick={resetRace}
-              className="px-4 py-2 bg-[#529AF2] hover:bg-[#4280d9] text-white font-bold rounded-md transition-colors"
-            >
-              Reset Race
+              {raceFinished ? "Race Again" : raceStarted ? "Reset Race" : "Start Race"}
             </button>
           </div>
         </div>
