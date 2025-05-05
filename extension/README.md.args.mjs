@@ -4,7 +4,7 @@ export const skipQuickStart = true;
 // update extraContents after confirming the template is correct.
 export const extraContents = `# 💳🌽 Over-Collateralized Lending
 
-![readme-lending](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/over-collateralized-lending/extension/packages/nextjs/public/hero.png)
+![readme-lending](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-over-collateralized-lending/extension/packages/nextjs/public/hero.png)
 
 💳 Build your own lending and borrowing platform. Let's write a contract that takes collateral and lets you borrow other assets against the value of the collateral. What happens when the collateral changes in value? We will be able to borrow more if it is higher or if it is lower we will also build a system for liquidating the debt position.
 
@@ -24,7 +24,7 @@ First, traditional lending usually involves one party (such as a bank) offering 
 
 ---
 
-💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value or if CORN goes up in value then the borrower's position may be liquidatable by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. 
+💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value (relative to CORN) then the borrower's position may be liquidated by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. This incentive ensures that loans are *"guaranteed"* to be closed out before they are worth less than 100% of the collateral value which keeps the lending protocol from taking on bad debt.
 
 🌟 The final deliverable is an app that allows anyone to take out a loan in CORN while making sure it is always backed by it's value in ETH.
 Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
@@ -44,8 +44,8 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 \`\`\`sh
-npx create-eth@0.1.0 -e over-collateralized-lending over-collateralized-lending
-cd over-collateralized-lending
+npx create-eth@0.1.9 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
+cd challenge-over-collateralized-lending
 \`\`\`
 
 > 💻 in the same terminal, start your local network (a blockchain emulator in your computer):
@@ -57,14 +57,14 @@ yarn chain
 > 🛰️ in a second terminal window, 🛰 deploy your contract (locally):
 
 \`\`\`sh
-cd over-collateralized-lending
+cd challenge-over-collateralized-lending
 yarn deploy
 \`\`\`
 
 > 📱 in a third terminal window, start your 📱 frontend:
 
 \`\`\`sh
-cd over-collateralized-lending
+cd challenge-over-collateralized-lending
 yarn start
 \`\`\`
 
@@ -164,7 +164,7 @@ yarn start
 </details>
 </details>
 
-🎉 Excellent! Re-deploy your contract with \`yarn deploy\` but first shut down and restart \`yarn chain\`. We want to do a fresh deploy of all the contracts so that they each have correct constructor parameters. Now try out your methods from the front end and see if you need to make any changes.
+🎉 Excellent! Re-deploy your contract with \`yarn deploy --reset\`. We want to do a fresh deploy of all the contracts so that they each have correct constructor parameters. Now try out your methods from the front end and see if you need to make any changes.
 
 💰 Don't forget to give yourself some ETH from the faucet!
 
@@ -243,7 +243,7 @@ yarn start
 </details>
 </details>
 
-✅ Lastly let's fill in a simple function called \`_validatePosition\`. This function has one use case: revert with \`Lending_UnsafePositionRatio\` if the user's position is liquidatable (\`isLiquidatable\` returns exactly what we need). We can then use this function any place where we need to verify the user's ratio position hasn't been changed to a liquidatable state after updating the user's state.
+✅ Lastly let's fill in a simple function called \`_validatePosition\`. This function has one use case: revert with \`Lending_UnsafePositionRatio\` if the user's position is liquidatable (\`isLiquidatable\` returns exactly what we need). We can then use this function any place where we need to verify the user's ratio position hasn't been changed to a liquidatable state after updating the user's balance of borrowed assets.
 
 <details markdown='1'><summary>Solution Code</summary>
 
@@ -269,6 +269,8 @@ yarn start
 
 ## Checkpoint 4: 🌽 Let's Borrow Some CORN!
 
+> 💡 Since we added all those complex helper functions in the last step it may be helpful to import "hardhat/console.sol" and use console.logs whenever you get stuck and want to know what is happening as you execute each function.
+
 👀 Go to the \`borrowCorn\` function. 
 
 ⚠️ It should revert with \`Lending_InvalidAmount()\` if somebody calls it without a \`borrowAmount\`.
@@ -290,7 +292,7 @@ yarn start
 
 📢 And finally, emit the \`AssetRepaid\` event.
 
-🔄 Restart \`yarn chain\` and then \`yarn deploy\` so you can play with borrowing and repaying on the front end.
+🔄 Run \`yarn deploy --reset\` so you can play with borrowing and repaying on the front end. You can adjust the price of CORN by pressing the + and - buttons under CORN price in the top right corner. See how your open position's collateral value shifts as the price moves.
 
 <details><summary>Solution Code</summary>
 
@@ -335,9 +337,9 @@ yarn start
 
 ## Checkpoint 5: 📉 Liquidation Mechanism
 
-🏦 So we have a way to deposit collateral and borrow against it. Great! But what happens if the price of CORN goes up and the liquidation threshold is exceeded?
+🏦 So we have a way to deposit collateral and borrow against it. Great! But what happens if the value of our collateral goes down and the liquidation threshold is passed?
 
-🔨 We need a liquidation mechanism!
+🔨 We need a liquidation mechanism! This function will liquidate the loan of the borrower (whose address is used as a param) but the caller must have enough CORN to repay the loan. Once the loan is repaid the caller is given ETH worth the value of the CORN they used + 10%. This ETH comes out of the borrower's deposited collateral. Essentially the borrower is being charged a 10% fee for allowing their loan to get in a liquidatable position. The liquidator is acting on a natural incentive to acquire some CORN from the DEX (or taking out a loan themselves), liquidate the loan, and make a 10% profit.
 
 🔍 Let's go to the \`liquidate\` function. We want anyone to be able to call this when a position is liquidatable. The caller must have enough CORN to repay the debt. This function should remove the borrower's debt AND the amount of collateral that is needed to cover the debt.
 
@@ -350,7 +352,7 @@ yarn start
 🧹 Clear the borrower's debt completely.
 
 🧮 Calculate the amount of collateral needed to cover the cost of the burned CORN and remove it from the borrower's collateral.
-> 💡 Keep in mind, It's not enough to simply have a liquidation mechanism. We need an incentive for people to trigger it!
+> 💡 Keep in mind, It's not enough to simply have a liquidation mechanism. We need an incentive for people to trigger it! By providing a healthy cut of the funds and allowing liquidations when the collateral still has 20% over the actual value of the loan we are providing strong incentive-based guarantees that the protocol won't take on bad debt (i.e. people walking away with borrowed assets that are worth more than the underlying collateral).
 
 > ⚠️ We have simplified things by not adding any APY incentives (and inversely borrowing fees). These are important incentives in real lending markets that help to keep the market balanced by encouraging people to supply collateral or as a borrower to repay a loan that is requiring a high APR because the collateral is not as safe or nearing the liquidation threshold. These fees are a great place to add logic that generates protocol revenue as well by taking some of the borrowing APR and letting it accrue to the protocol's token, passing the rest along to the supplier. These incentives, along with the liquidation system, help to make sure there is always more value in collateral than value being borrowed.
 
@@ -369,6 +371,7 @@ yarn start
         }
 
         uint256 userDebt = s_userBorrowed[user]; // Get user's borrowed amount
+
         if (i_corn.balanceOf(msg.sender) < userDebt) {
             revert Lending__InsufficientLiquidatorCorn();
         }
@@ -403,7 +406,7 @@ yarn start
 
 </details>
 
-🔄 You know the drill. Restart \`yarn chain\` and then \`yarn deploy\` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to \`localhost:3000\` so you can simulate multiple parties.
+🔄 You know the drill. Run \`yarn deploy --reset\` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to \`localhost:3000\` so you can simulate multiple accounts. Notice how the borrower still has their borrowed CORN after they get liquidated. They get to keep their CORN since the liquidator paid their CORN debt back to the protocol on their behalf.
 
 ---
 
@@ -416,11 +419,11 @@ yarn start
 
 ## Checkpoint 6: Final Touches
 
-🔙 Throwback to the \`withdrawCollateral\` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a \`_validatePosition\` check to make sure that never happens. Skip the check if they don't have any borrowed CORN.
+🔙 Throwback to the \`withdrawCollateral\` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a \`_validatePosition\` check to make sure that never happens. You should add it after the \`s_userCollateral\` mapping is updated so that it is checking the final state instead of the current state. Skip the check if they don't have any borrowed CORN.
 
 🎉 Great work! Your contract has all the necessary functionality to help people get CORN loans.
 
-🍨 Now you get to see something real special. Restart \`yarn chain\` and then \`yarn deploy\` as you usually do. Then run \`yarn simulate\`. This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out \`packages/hardhat/scripts/marketSimulator.ts\` to adjust the default settings or change the logic on the bot accounts.
+🍨 Now you get to see something real special. Run \`yarn deploy --reset\` as you usually do. Then run \`yarn simulate\`. This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out \`packages/hardhat/scripts/marketSimulator.ts\` to adjust the default settings or change the logic on the bot accounts.
 
 >👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 
@@ -567,7 +570,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
 </details>
 
-🔄 Restart \`yarn chain\` and deploy your contracts with \`yarn deploy\`.
+🔄 Run \`yarn deploy --reset\`.
 
 📊 Create a debt position that is close to the liquidation line and then increase the price of CORN until the position is liquidatable.
 
@@ -575,7 +578,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
 🎉 Pretty cool, huh? You can liquidate any position without needing to have the CORN to pay back the loan!
 
-### ⚔️ Side Quest 2: Maximum Leverage With A Recursive Borrow > Swap > Deposit Loop
+### ⚔️ Side Quest 2: Maximum Leverage With An Iterative Borrow > Swap > Deposit Loop
 
 🤔 What if you think the price of CORN is going down relative to ETH (*Why in the world would you think that!?* 🤣). You could borrow CORN but then use the DEX to buy more ETH with your CORN. But wait! Now you have more ETH you could technically use it as collateral *again* and then you could borrow more CORN and swap to ETH and repeat that as many times as possible.
 
@@ -674,7 +677,7 @@ contract Leverage {
     }
 
     /**
-     * @notice Open a leveraged position, recursively borrowing CORN, swapping it for ETH, and adding it as collateral
+     * @notice Open a leveraged position, iteratively borrowing CORN, swapping it for ETH, and adding it as collateral
      * @param reserve The amount of ETH that we will keep in the contract as a reserve to prevent liquidation
      */
     function openLeveragedPosition(uint256 reserve) public payable onlyOwner {
@@ -687,7 +690,7 @@ contract Leverage {
     }
 
     /**
-     * @notice Close a leveraged position, recursively withdrawing collateral, swapping it for CORN, and repaying the lending contract until the position is closed
+     * @notice Close a leveraged position, iteratively withdrawing collateral, swapping it for CORN, and repaying the lending contract until the position is closed
      */
     function closeLeveragedPosition() public onlyOwner {
         uint256 loops = 0;
@@ -793,7 +796,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
 </details>
 
-🔄 Restart \`yarn chain\` and deploy your contracts with \`yarn deploy\`.
+🔄 Run \`yarn deploy --reset\` to redeploy your contract and the associated contracts with new constructor parameters.
 
 🚀 Try opening a leveraged position and see how changing the reserve amount affects your tolerance to changes in the market. Leverage is powerful stuff that will blow up in your face if you aren't careful.
 
