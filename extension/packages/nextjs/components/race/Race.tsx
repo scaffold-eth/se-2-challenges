@@ -37,6 +37,46 @@ const RaceTrack: React.FC = () => {
   const startRace = () => {
     if (raceStarted || raceFinished) {
       resetRace();
+
+      // Wait 1 second before starting a new race
+      setTimeout(() => {
+        const newStartTime = Date.now();
+        setStartTime(newStartTime);
+        setCarSpeeds({
+          0: 2.5 + Math.random() * 1,
+          1: 2.5 + Math.random() * 1,
+        });
+        setRaceStarted(true);
+
+        // Clear any existing interval
+        if (raceInterval.current) {
+          clearInterval(raceInterval.current);
+        }
+
+        // Start new interval
+        raceInterval.current = setInterval(() => {
+          const currentTime = (Date.now() - newStartTime) / 1000; // seconds elapsed
+
+          if (currentTime >= RACE_DURATION) {
+            // At race end, set final positions
+            setElapsedTime(RACE_DURATION);
+            setCars([
+              { id: 1, position: carSpeeds[0] * RACE_DURATION, lane: 0, color: "#2ecc71" },
+              { id: 2, position: carSpeeds[1] * RACE_DURATION, lane: 1, color: "#e74c3c" },
+            ]);
+            setRaceFinished(true);
+            if (raceInterval.current) clearInterval(raceInterval.current);
+          } else {
+            setElapsedTime(currentTime);
+            // Update positions based on random speeds
+            setCars([
+              { id: 1, position: carSpeeds[0] * currentTime, lane: 0, color: "#2ecc71" },
+              { id: 2, position: carSpeeds[1] * currentTime, lane: 1, color: "#e74c3c" },
+            ]);
+          }
+        }, 100); // update every 100ms
+      }, 1000); // 1 second delay before starting the new race
+
       return;
     }
 
