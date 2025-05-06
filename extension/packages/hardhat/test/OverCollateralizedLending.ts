@@ -197,6 +197,7 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
     it("Should allow liquidation when position is unsafe", async function () {
       // drop price of eth so that user1 position is below 1.2
       await cornDEX.swap(ethers.parseEther("300"), { value: ethers.parseEther("300") });
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(await lending.isLiquidatable(user1)).to.be.true;
       // get balance before liquidation
       const beforeBalance = await ethers.provider.getBalance(user2.address);
@@ -220,6 +221,7 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
 
     it ("Should have enough CORN to liquidate", async function () {
       await cornDEX.swap(ethers.parseEther("300"), { value: ethers.parseEther("300") });
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(await lending.isLiquidatable(user1)).to.be.true;
       await cornToken.connect(await ethers.getImpersonatedSigner(lending.target as string)).burnFrom(user2.address, borrowAmount/2n);
       await expect(lending.connect(user2).liquidate(user1.address)).to.be.revertedWithCustomError(
