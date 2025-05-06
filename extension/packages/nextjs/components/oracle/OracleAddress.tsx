@@ -16,19 +16,23 @@ export function OracleAddress() {
 
   if (!owner)
     return (
-      <div className="bg-base-100 p-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Prediction Market Info</h2>
-        <p className="text-base-content">No prediction market found</p>
+      <div className="card bg-base-100 w-full shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">Prediction Market Info</h2>
+          <p className="text-base-content">No prediction market found</p>
+        </div>
       </div>
     );
 
   const oracle = prediction?.[3] ?? "0x0000000000000000000000000000000000000000";
 
   return (
-    <div className="bg-base-100 p-4">
-      <h2 className="text-2xl font-bold text-center">Oracle</h2>
-      <div className="mt-4 flex justify-center">
-        <Address size="xl" address={oracle} />
+    <div className="card bg-base-100 w-full shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">Oracle</h2>
+        <div className="mt-4 flex justify-center">
+          <Address size="xl" address={oracle} />
+        </div>
       </div>
     </div>
   );

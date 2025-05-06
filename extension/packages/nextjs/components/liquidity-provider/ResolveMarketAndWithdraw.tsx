@@ -27,9 +27,11 @@ export function ResolveMarketAndWithdraw() {
 
   if (!owner)
     return (
-      <div className="p-6 border-default">
-        <h2 className="text-2xl font-bold text-center mb-4">Resolve Market and Withdraw ETH</h2>
-        <p className="text-base-content text-center">No prediction market found</p>
+      <div className="card bg-base-100 w-full shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title text-center">Resolve Market and Withdraw ETH</h2>
+          <p className="text-base-content text-center">No prediction market found</p>
+        </div>
       </div>
     );
 
@@ -57,30 +59,32 @@ export function ResolveMarketAndWithdraw() {
   const isLiquidityProvider = address === prediction?.[13];
 
   return (
-    <div className="p-6 border-default">
-      {!isLiquidityProvider ? (
-        <div className="max-w-6xl mx-auto p-6 bg-base-100  rounded-xl shadow-lg">
-          <p className="text-xl font-bold text-center ">❗️ Only the liquidity provider can resolve the market</p>
-        </div>
-      ) : (
-        <div>
-          <h2 className="text-2xl font-bold text-center mb-5">Resolve Market and Withdraw ETH</h2>
-          <div className="flex flex-row gap-4 items-center justify-between">
-            <LPFinalTokenBalance
-              tokenAddress={winningToken as string}
-              winningOption={winningOption}
-              address={predictionMarketContract?.address as string}
-              tokenValue={tokenValue}
-              lpRevenue={lpRevenue}
-            />
-            <div className="flex gap-4">
-              <button className="btn btn-primary" onClick={handleWithdraw}>
-                Withdraw ETH
-              </button>
+    <div className="card bg-base-100 w-full shadow-xl indicator">
+      <div className="card-body">
+        {!isLiquidityProvider ? (
+          <div className="max-w-6xl mx-auto bg-base-100 rounded-xl">
+            <p className="text-xl font-bold text-center">❗️ Only the liquidity provider can resolve the market</p>
+          </div>
+        ) : (
+          <div>
+            <h2 className="card-title text-center mb-5 text-2xl">Resolve Market and Withdraw ETH</h2>
+            <div className="flex flex-row gap-4 items-center justify-between">
+              <LPFinalTokenBalance
+                tokenAddress={winningToken as string}
+                winningOption={winningOption}
+                address={predictionMarketContract?.address as string}
+                tokenValue={tokenValue}
+                lpRevenue={lpRevenue}
+              />
+              <div className="flex gap-4">
+                <button className="btn btn-primary text-lg" onClick={handleWithdraw}>
+                  Withdraw ETH
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

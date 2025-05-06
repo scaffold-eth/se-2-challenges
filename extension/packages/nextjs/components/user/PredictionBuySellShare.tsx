@@ -122,7 +122,7 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
                   <input
                     type="number"
                     placeholder="Amount to buy"
-                    className="input input-bordered input-sm w-full rounded-md"
+                    className={`input input-bordered input-sm w-full rounded-md placeholder-${colorScheme}-500 dark:placeholder-white dark:placeholder-opacity-70`}
                     onChange={e => setInputBuyAmount(BigInt(e.target.value))}
                   />
 
@@ -185,7 +185,7 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
                   <input
                     type="number"
                     placeholder="Amount to sell"
-                    className="input input-bordered input-sm w-full rounded-md"
+                    className={`input input-bordered input-sm w-full rounded-md placeholder-${colorScheme}-500 dark:placeholder-white dark:placeholder-opacity-70`}
                     onChange={e => setInputSellAmount(BigInt(e.target.value))}
                   />
 
@@ -214,9 +214,11 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
                       spenderAddress={contractAddress ?? ""}
                       amount={inputSellAmount.toString()}
                       showInput={false}
+                      disabled={!tokenSellAmount || tokenSellAmount === 0n}
                     />
                     <button
                       className="btn btn-sm btn-primary min-w-32"
+                      disabled={!tokenSellAmount || tokenSellAmount === 0n}
                       onClick={async () => {
                         try {
                           await writeYourContractAsync({

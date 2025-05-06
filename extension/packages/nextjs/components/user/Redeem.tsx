@@ -64,10 +64,10 @@ export function Redeem() {
         <input
           type="number"
           placeholder="Amount to redeem"
-          className="input input-bordered flex-1"
+          className="input input-bordered flex-1 dark:placeholder-white"
           onChange={e => setAmount(BigInt(e.target.value))}
         />
-        <button className="btn btn-primary" onClick={handleRedeem}>
+        <button className="btn btn-primary text-lg" onClick={handleRedeem}>
           Redeem Tokens
         </button>
       </div>

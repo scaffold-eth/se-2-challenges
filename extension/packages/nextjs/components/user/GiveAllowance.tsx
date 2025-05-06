@@ -23,11 +23,13 @@ export function GiveAllowance({
   spenderAddress,
   amount = "0",
   showInput = true,
+  disabled = false,
 }: {
   tokenAddress: string;
   spenderAddress: string;
   amount?: string;
   showInput?: boolean;
+  disabled?: boolean;
 }) {
   const [inputAmount, setInputAmount] = useState<string>("");
 
@@ -61,6 +63,7 @@ export function GiveAllowance({
       <button
         className={`btn btn-sm ${showInput ? "w-full" : "min-w-32"} bg-gray-600 hover:bg-gray-700 text-white`}
         onClick={handleApprove}
+        disabled={disabled}
       >
         Approve
       </button>

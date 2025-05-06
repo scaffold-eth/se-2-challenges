@@ -43,9 +43,7 @@ const Oracle: NextPage = () => {
       <div className="p-4 md:p-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <div className="p-6 border-default">
-              <OracleAddress />
-            </div>
+            <OracleAddress />
             <ReportPrediction />
           </div>
           <div>

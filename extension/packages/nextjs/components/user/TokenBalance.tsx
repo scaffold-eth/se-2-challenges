@@ -53,9 +53,9 @@ export function TokenBalance({
         <div className="">
           <h3 className="text-lg font-medium">
             My Token Balance of &quot;{option}&quot;:{" "}
-            <span className="text-gray-700 dark:text-gray-400">{balance ? formatEther(balance) : "0"} tokens</span>
+            <span className="">{balance ? formatEther(balance) : "0"} tokens</span>
           </h3>
-          <p className="mt-0 text-gray-700 dark:text-gray-400 text-sm">
+          <p className="mt-0  text-sm">
             ({tokenBalanceValue ? formatEther(tokenBalanceValue) : "0"} {redeem ? "Ξ worth" : "Ξ worth in case of win"})
           </p>
         </div>

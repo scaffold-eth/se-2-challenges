@@ -220,73 +220,72 @@ const RaceTrack: React.FC = () => {
   }, [raceStarted, raceFinished, startTime, RACE_DURATION, setElapsedTime, setCars, setRaceFinished, carSpeeds]);
 
   return (
-    <div className="bg-base-100 mt-6 p-6 border-default">
-      <div className="w-full max-w-4xl mx-auto relative">
-        <div className="mb-6 flex justify-between items-center">
-          <div className="text-xl font-bold">
-            {raceFinished ? (
-              <span className="flex items-center gap-2">
-                Winner:{" "}
-                <span style={{ color: cars[0].position > cars[1].position ? "#2ecc71" : "#e74c3c" }}>
-                  {cars[0].position > cars[1].position ? "Green" : "Red"} Car
-                </span>{" "}
-                🏆
-              </span>
-            ) : (
-              `Race Time: ${formatTime(elapsedTime)}`
-            )}
-          </div>
-          <div className="space-x-4 flex items-center">
-            <button
-              onClick={startRace}
-              className="px-4 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white font-bold transition-colors"
-            >
-              {raceFinished ? "Race Again" : raceStarted ? "Reset Race" : "Start Race"}
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-lg overflow-hidden">
-          <Image
-            src={resolvedTheme === "dark" ? BackgroundImageDark : BackgroundImage}
-            alt="Mountain Background"
-            width={1000}
-            height={1000}
-            className="w-full h-auto"
-            suppressHydrationWarning
-          />
-          <div className="relative w-full h-[200px] bg-gray-200 dark:bg-gray-700 overflow-hidden">
-            <RaceEffects isRacing={raceStarted && !raceFinished} />
-
-            <div className="absolute top-0 bottom-0 w-4 bg-black" style={{ left: "90%", zIndex: 5 }}>
-              <div className="h-full w-full grid grid-cols-2 grid-rows-4">
-                {[...Array(8)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-full h-full ${(Math.floor(i / 2) + i) % 2 === 0 ? "bg-black" : "bg-white"}`}
-                  />
-                ))}
-              </div>
+    <div className="mt-6 w-full mx-auto">
+      <div className="card bg-base-100 w-full shadow-xl indicator">
+        <div className="card-body">
+          <div className="mb-6 flex justify-between items-center">
+            <h2 className="card-title">
+              {raceFinished ? (
+                <span className="flex items-center gap-2">
+                  Winner:{" "}
+                  <span style={{ color: cars[0].position > cars[1].position ? "#2ecc71" : "#e74c3c" }}>
+                    {cars[0].position > cars[1].position ? "Green" : "Red"} Car
+                  </span>{" "}
+                  🏆
+                </span>
+              ) : (
+                `Race Time: ${formatTime(elapsedTime)}`
+              )}
+            </h2>
+            <div className="space-x-4 flex items-center">
+              <button onClick={startRace} className="btn btn-primary text-lg">
+                {raceFinished ? "Race Again" : raceStarted ? "Restart Race" : "Start Race"}
+              </button>
             </div>
+          </div>
 
-            <div
-              className="absolute left-0 right-[50px] h-[3px]"
-              style={{
-                top: "50%",
-                background:
-                  "repeating-linear-gradient(90deg, transparent 0px, transparent 50px, white 50px, white 100px)",
-              }}
-            ></div>
+          <div className="rounded-lg overflow-hidden">
+            <Image
+              src={resolvedTheme === "dark" ? BackgroundImageDark : BackgroundImage}
+              alt="Mountain Background"
+              width={1000}
+              height={1000}
+              className="w-full h-auto"
+              suppressHydrationWarning
+            />
+            <div className="relative w-full h-[200px] bg-gray-200 dark:bg-gray-700 overflow-hidden">
+              <RaceEffects isRacing={raceStarted && !raceFinished} />
 
-            {cars.map(car => (
-              <Car
-                key={car.id}
-                position={car.position}
-                lane={car.lane}
-                color={car.color}
-                isWinner={raceFinished && car.position === Math.max(...cars.map(c => c.position))}
-              />
-            ))}
+              <div className="absolute top-0 bottom-0 w-4 bg-black" style={{ left: "90%", zIndex: 5 }}>
+                <div className="h-full w-full grid grid-cols-2 grid-rows-4">
+                  {[...Array(8)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-full h-full ${(Math.floor(i / 2) + i) % 2 === 0 ? "bg-black" : "bg-white"}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div
+                className="absolute left-0 right-[50px] h-[3px]"
+                style={{
+                  top: "50%",
+                  background:
+                    "repeating-linear-gradient(90deg, transparent 0px, transparent 50px, white 50px, white 100px)",
+                }}
+              ></div>
+
+              {cars.map(car => (
+                <Car
+                  key={car.id}
+                  position={car.position}
+                  lane={car.lane}
+                  color={car.color}
+                  isWinner={raceFinished && car.position === Math.max(...cars.map(c => c.position))}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

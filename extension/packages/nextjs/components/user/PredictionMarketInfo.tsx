@@ -16,9 +16,11 @@ export function PredictionMarketInfo() {
 
   if (!owner)
     return (
-      <div className="bg-base-100 p-6 rounded-lg max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6 text-center">Prediction Market Info</h2>
-        <p className="text-base-content">No prediction market found</p>
+      <div className="card bg-base-100 w-full shadow-xl indicator">
+        <div className="card-body">
+          <h2 className="card-title">Prediction Market Info</h2>
+          <p className="text-base-content">No prediction market found</p>
+        </div>
       </div>
     );
 
@@ -31,8 +33,8 @@ export function PredictionMarketInfo() {
   const winningOption = winningToken === optionToken1 ? predictionOutcome1 : predictionOutcome2;
 
   return (
-    <div className="bg-base-100 p-6 border-default">
-      <div className="space-y-6">
+    <div className="card bg-base-100 w-full shadow-xl indicator">
+      <div className="card-body">
         <div className="bg-base-200 py-4 px-6 rounded-lg">
           <div className="flex justify-between items-center">
             <div>

@@ -43,7 +43,7 @@ export function LPFinalTokenBalance({
   }, [blockNumber]);
 
   return (
-    <div>
+    <div className="text-lg">
       <p className="mt-0 mb-0">
         Redeemable &quot;{winningOption}&quot; Token Balance: <br />
         <span className="text-gray-700">{balance ? formatEther(balance) : "0"} tokens</span> worth{" "}
