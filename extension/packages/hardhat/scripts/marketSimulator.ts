@@ -199,7 +199,6 @@ async function checkAndPerformLiquidations(lending: Lending, corn: Corn, account
     const liquidatorsWithBalance = await Promise.all(
       liquidators.map(async account => {
         const cornBalance = await corn.balanceOf(account.wallet.address);
-        //console.log(`Account ${account.wallet.address} has ${ethers.formatEther(cornBalance)} CORN. required: ${ethers.formatEther(amountBorrowed)}`);
         return { account, hasEnough: cornBalance >= amountBorrowed };
       })
     );
