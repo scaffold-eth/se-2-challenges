@@ -227,7 +227,7 @@ Your contract will also need to track the following data throughout the life of 
 - **🏆 `s_ethCollateral`**: the total ETH backing the tokens — think of this as your prize pool
 - **💸 `s_lpTradingRevenue`** - tracks the fees earned from users buying/selling tokens — the LP’s reward
 
-> ❗️For easier testing, we set the oracle address to be the same as the liquidity provider during deployment (see `00_deploy_your_contract.ts`). Also, **double-check the parameter values** we're passing into the constructor, like `_question`, etc. (Hint: Add the first Anvil account to your wallet to interact as the oracle or contract owner.)
+> ❗️For easier testing, we set the oracle address to be the same as the liquidity provider during deployment (see `00_deploy_your_contract.ts`). Also, **double-check the parameter values** we're passing into the constructor, like `_question`, etc. (Hint: Add the first Hardhat account to your wallet to interact as the oracle or contract owner.)
 
 > ⏰ 🚨 In a prediction market in production, you would typically include a time-based restriction, a **fixed end date** to ensure that outcomes can only be reported after the predicted event occurs. For simplicity and ease of testing, we omit this time component in this implementation.
 
@@ -778,7 +778,7 @@ But before you hit that deploy button, there’s one last tweak to make:
 
 Now head over to the oracle tab in the UI and report the outcome (after you watched the race of course:)) 🏎️ 🏁
 
-> 💡 Make sure you're connected with the correct oracle address — check `00_deploy_your_contract.ts` to find out which one is being used. (Hint: Add the first Anvil account to your wallet to interact as the oracle or contract owner.)
+> 💡 Make sure you're connected with the correct oracle address — check `00_deploy_your_contract.ts` to find out which one is being used. (Hint: Add the first Hardhat account to your wallet to interact as the oracle or contract owner.)
 
 ![ch-6-oracle2](extension/packages/nextjs/public/oracle2.png)
 
