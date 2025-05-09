@@ -2,7 +2,7 @@
 
 ![readme-lending](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-over-collateralized-lending/extension/packages/nextjs/public/hero.png)
 
-💳 Build your own lending and borrowing platform. Let's write a contract that takes collateral and lets you borrow other assets against the value of the collateral. What happens when the collateral changes in value? We will be able to borrow more if it is higher or if it is lower we will also build a system for liquidating the debt position.
+💳 Build your own lending and borrowing platform. Let's write a contract that takes collateral and lets you borrow other assets against the value of the collateral. What happens when the collateral changes in value? We will be able to borrow more if it is higher, or if it is lower, we will also build a system for liquidating the debt position.
 
 <details markdown='1'><summary>❓ Wondering how lending works onchain? Read the overview here.</summary>
 
@@ -20,7 +20,7 @@ First, traditional lending usually involves one party (such as a bank) offering 
 
 ---
 
-💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value (relative to CORN) then the borrower's position may be liquidated by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. This incentive ensures that loans are *"guaranteed"* to be closed out before they are worth less than 100% of the collateral value which keeps the lending protocol from taking on bad debt (i.e. people walking away with borrowed assets that are worth more than the underlying collateral left in the protocol).
+💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value (relative to CORN) then the borrower's position may be liquidated by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. This incentive ensures that loans are *"guaranteed"* to be closed out before they are worth less than 100% of the collateral value, which keeps the lending protocol from taking on bad debt (i.e. people walking away with borrowed assets that are worth more than the underlying collateral left in the protocol).
 
 🌟 The final deliverable is an app that allows anyone to take out a loan in CORN while making sure it is always backed by it's value in ETH.
 Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
