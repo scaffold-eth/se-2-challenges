@@ -335,7 +335,7 @@ yarn start
 
 🏦 So we have a way to deposit collateral and borrow against it. Great! But what happens if the value of our collateral goes down and the liquidation threshold is passed?
 
-🔨 We need a liquidation mechanism! This function will liquidate the loan of the borrower (whose address is used as a param) but the caller must have enough CORN to repay the loan. Once the loan is repaid the caller is given ETH worth the value of the CORN they used + 10%. This ETH comes out of the borrower's deposited collateral. Essentially the borrower is being charged a 10% fee for allowing their loan to get in a liquidatable position. The liquidator is acting on a natural incentive to acquire some CORN from the DEX (or taking out a loan themselves), liquidate the loan, and make a 10% profit.
+🔨 We need a liquidation mechanism! This function will liquidate the loan of the borrower (whose address is used as a param) but the caller must have enough CORN to repay the loan. Once the loan is repaid the caller is given ETH worth the value of the CORN they used + 10%. This ETH comes out of the borrower's deposited collateral. Essentially the borrower is being charged a 10% fee for allowing their loan to get in a liquidatable position. The liquidator is acting on a natural incentive to acquire some CORN from the DEX (or by taking out a loan themselves), liquidate the loan, and make a 10% profit.
 
 🔍 Let's go to the `liquidate` function. We want anyone to be able to call this when a position is liquidatable. The caller must have enough CORN to repay the debt. This function should remove the borrower's debt AND the amount of collateral that is needed to cover the debt.
 
