@@ -24,7 +24,7 @@ First, traditional lending usually involves one party (such as a bank) offering 
 
 ---
 
-💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value (relative to CORN) then the borrower's position may be liquidated by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. This incentive ensures that loans are *"guaranteed"* to be closed out before they are worth less than 100% of the collateral value which keeps the lending protocol from taking on bad debt.
+💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value (relative to CORN) then the borrower's position may be liquidated by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. This incentive ensures that loans are *"guaranteed"* to be closed out before they are worth less than 100% of the collateral value which keeps the lending protocol from taking on bad debt (i.e. people walking away with borrowed assets that are worth more than the underlying collateral left in the protocol).
 
 🌟 The final deliverable is an app that allows anyone to take out a loan in CORN while making sure it is always backed by it's value in ETH.
 Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
@@ -352,7 +352,7 @@ yarn start
 🧹 Clear the borrower's debt completely.
 
 🧮 Calculate the amount of collateral needed to cover the cost of the burned CORN and remove it from the borrower's collateral.
-> 💡 Keep in mind, It's not enough to simply have a liquidation mechanism. We need an incentive for people to trigger it! By providing a healthy cut of the funds and allowing liquidations when the collateral still has 20% over the actual value of the loan we are providing strong incentive-based guarantees that the protocol won't take on bad debt (i.e. people walking away with borrowed assets that are worth more than the underlying collateral).
+> 💡 Keep in mind, It's not enough to simply have a liquidation mechanism. We need an incentive for people to trigger it! By providing a healthy cut of the funds and allowing liquidations when the collateral still has 20% over the actual value of the loan we are providing strong incentive-based guarantees that the protocol won't take on bad debt.
 
 > ⚠️ We have simplified things by not adding any APY incentives (and inversely borrowing fees). These are important incentives in real lending markets that help to keep the market balanced by encouraging people to supply collateral or as a borrower to repay a loan that is requiring a high APR because the collateral is not as safe or nearing the liquidation threshold. These fees are a great place to add logic that generates protocol revenue as well by taking some of the borrowing APR and letting it accrue to the protocol's token, passing the rest along to the supplier. These incentives, along with the liquidation system, help to make sure there is always more value in collateral than value being borrowed.
 
@@ -406,7 +406,9 @@ yarn start
 
 </details>
 
-🔄 You know the drill. Run \`yarn deploy --reset\` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to \`localhost:3000\` so you can simulate multiple accounts. Notice how the borrower still has their borrowed CORN after they get liquidated. They get to keep their CORN since the liquidator paid their CORN debt back to the protocol on their behalf.
+🔄 You know the drill. Run \`yarn deploy --reset\` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to \`localhost:3000\` so you can simulate multiple accounts. You can also borrow and then switch wallets and use the swap button in the CORN wallet (on the right side of the screen) to acquire some CORN. Now adjust the price using the price controls in the CORN price module and liquidate the borrower.
+
+🫴 Notice how the borrower still has their borrowed CORN after they get liquidated. They get to keep their CORN since the liquidator paid their CORN debt back to the protocol on their behalf.
 
 ---
 
