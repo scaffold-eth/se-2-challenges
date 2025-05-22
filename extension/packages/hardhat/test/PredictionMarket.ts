@@ -11,7 +11,7 @@ describe("📈📉🏎️ Prediction Markets Challenge", function () {
 
   let contractArtifact = "";
   if (process.env.CONTRACT_ADDRESS) {
-    contractArtifact = `contracts/download-${process.env.CONTRACT_ADDRESS}.sol:PredictionMarket1`;
+    contractArtifact = `contracts/download-${process.env.CONTRACT_ADDRESS}.sol:PredictionMarket`;
   } else {
     contractArtifact = "contracts/PredictionMarket.sol:PredictionMarket";
   }
