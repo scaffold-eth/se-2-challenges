@@ -17,7 +17,7 @@ error Engine__TransferFailed();
 contract MyUSDEngine is Ownable {
     uint256 private constant COLLATERAL_RATIO = 150; // 150% collateralization required
     uint256 private constant LIQUIDATOR_REWARD = 10; // 10% reward for liquidators
-    uint256 private constant SECONDS_PER_YEAR = 365 days; // adjust later
+    uint256 private constant SECONDS_PER_YEAR = 365 days;
     uint256 private constant PRECISION = 1e18;
 
     MyUSD private i_myUSD;
