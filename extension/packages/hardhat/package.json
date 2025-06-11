@@ -2,5 +2,10 @@
   "scripts": {
     "simulate": "hardhat run scripts/marketSimulator.ts",
     "interest-rate-controller": "hardhat run scripts/interestRateController.ts"
+  },
+  "devDependencies": {
+    "@types/blessed": "^0.1.25",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0"
   }
 }

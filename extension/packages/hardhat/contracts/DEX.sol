@@ -26,7 +26,10 @@ contract DEX {
      * @notice Emitted when liquidity removed from DEX and decreases LPT count within DEX.
      */
     event LiquidityRemoved(
-        address liquidityRemover, uint256 liquidityWithdrawn, uint256 tokensOutput, uint256 ethOutput
+        address liquidityRemover,
+        uint256 liquidityWithdrawn,
+        uint256 tokensOutput,
+        uint256 ethOutput
     );
 
     /* ========== CONSTRUCTOR ========== */
@@ -70,11 +73,11 @@ contract DEX {
     /**
      * @notice returns the amount you need to put in (xInput) when given the amount of yOutput you want along with the reserves of both assets in the pool
      */
-    function calculateXInput(uint256 yOutput, uint256 xReserves, uint256 yReserves)
-        public
-        pure
-        returns (uint256 xInput)
-    {
+    function calculateXInput(
+        uint256 yOutput,
+        uint256 xReserves,
+        uint256 yReserves
+    ) public pure returns (uint256 xInput) {
         uint256 numerator = yOutput * xReserves;
         uint256 denominator = yReserves - yOutput;
 
@@ -105,7 +108,7 @@ contract DEX {
         uint256 tokenReserve = token.balanceOf(address(this));
         ethOutput = price(tokenInput, tokenReserve, address(this).balance);
         require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
-        (bool sent,) = msg.sender.call{value: ethOutput}("");
+        (bool sent, ) = msg.sender.call{ value: ethOutput }("");
         require(sent, "tokenToEth: revert in transferring eth to you!");
         emit Swap(msg.sender, address(token), tokenInput, address(0), ethOutput);
         return ethOutput;
@@ -135,12 +138,12 @@ contract DEX {
         uint256 tokenReserve = token.balanceOf(address(this));
         uint256 tokenDeposit;
 
-        tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
+        tokenDeposit = ((msg.value * tokenReserve) / ethReserve) + 1;
 
         require(token.balanceOf(msg.sender) >= tokenDeposit, "insufficient token balance");
         require(token.allowance(msg.sender, address(this)) >= tokenDeposit, "insufficient allowance");
 
-        uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
+        uint256 liquidityMinted = (msg.value * totalLiquidity) / ethReserve;
         liquidity[msg.sender] += liquidityMinted;
         totalLiquidity += liquidityMinted;
 
@@ -159,12 +162,12 @@ contract DEX {
         uint256 tokenReserve = token.balanceOf(address(this));
         uint256 ethWithdrawn;
 
-        ethWithdrawn = amount * ethReserve / totalLiquidity;
+        ethWithdrawn = (amount * ethReserve) / totalLiquidity;
 
-        tokenAmount = amount * tokenReserve / totalLiquidity;
+        tokenAmount = (amount * tokenReserve) / totalLiquidity;
         liquidity[msg.sender] -= amount;
         totalLiquidity -= amount;
-        (bool sent,) = payable(msg.sender).call{value: ethWithdrawn}("");
+        (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
         require(sent, "withdraw(): revert in transferring eth to you!");
         require(token.transfer(msg.sender, tokenAmount));
         emit LiquidityRemoved(msg.sender, amount, tokenAmount, ethWithdrawn);

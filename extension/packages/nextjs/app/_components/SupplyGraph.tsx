@@ -102,11 +102,10 @@ const SupplyGraph = () => {
   const supplyData = sortedEvents.reduce<DataPoint[]>((acc, event, idx) => {
     const prevCirculatingSupply = acc[idx - 1]?.circulatingSupply || 0;
     const prevStakedSupply = acc[idx - 1]?.stakedSupply || 0;
-
-    let minted = event.eventName === "DebtSharesMinted" ? Number(formatEther(event.args.amount || 0n)) : 0;
-    const burned = event.eventName === "DebtSharesBurned" ? Number(formatEther(event.args.amount || 0n)) : 0;
-    const staked = event.eventName === "Staked" ? Number(formatEther(event.args.amount || 0n)) : 0;
-    const withdrawn = event.eventName === "Withdrawn" ? Number(formatEther(event.args.amount || 0n)) : 0;
+    let minted = event?.eventName === "DebtSharesMinted" ? Number(formatEther(event?.args?.amount || 0n)) : 0;
+    const burned = event?.eventName === "DebtSharesBurned" ? Number(formatEther(event?.args?.amount || 0n)) : 0;
+    const staked = event?.eventName === "Staked" ? Number(formatEther(event?.args?.amount || 0n)) : 0;
+    const withdrawn = event?.eventName === "Withdrawn" ? Number(formatEther(event?.args?.amount || 0n)) : 0;
 
     const { sent: dexSentMyUSDAmount, received: dexReceivedMyUSDAmount } = calculateDexSwapAmounts(event);
 

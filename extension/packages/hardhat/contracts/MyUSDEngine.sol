@@ -87,13 +87,13 @@ contract MyUSDEngine is Ownable {
     // Checkpoint 3: Interest Calculation System
     function _getCurrentExchangeRate() internal view returns (uint256) {
         if (totalDebtShares == 0) return debtExchangeRate;
-        
+
         uint256 timeElapsed = block.timestamp - lastUpdateTime;
         if (timeElapsed == 0 || borrowRate == 0) return debtExchangeRate;
-        
+
         uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
         uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
-        
+
         return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
     }
 
@@ -102,7 +102,7 @@ contract MyUSDEngine is Ownable {
             lastUpdateTime = block.timestamp;
             return;
         }
-        
+
         debtExchangeRate = _getCurrentExchangeRate();
         lastUpdateTime = block.timestamp;
     }
@@ -191,7 +191,7 @@ contract MyUSDEngine is Ownable {
     function withdrawCollateral(uint256 amount) external {
         if (amount == 0) revert Engine__InvalidAmount();
         if (s_userCollateral[msg.sender] < amount) revert Engine__InsufficientCollateral();
-        
+
         // Temporarily reduce the user's collateral to check if they remain safe
         uint256 newCollateral = s_userCollateral[msg.sender] - amount;
         s_userCollateral[msg.sender] = newCollateral;

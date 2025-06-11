@@ -1,6 +1,6 @@
 # 💰 MyUSD Stablecoin
 
-![readme-stablecoin](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-stablecoin/extension/packages/nextjs/public/hero.png)
+![readme-stablecoin](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-stablecoins/extension/packages/nextjs/public/hero.png)
 
 > 🪙 Build your own decentralized stablecoin! In this challenge, you'll build the core engine for **MyUSD**, a crypto-backed stablecoin designed to maintain a peg to $1 USD. You'll get to wear the hat of a DeFi protocol that wants to maintain price stability while also increasing adoption of your stablecoin product, diving deep into concepts like collateralization, minting, burning, interest rates, and liquidations – all crucial components of a robust stablecoin system.
 
@@ -45,8 +45,8 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@latest -e scaffold-eth/se-2-challenges:challenge-stablecoin challenge-stablecoin 
-cd challenge-stablecoin
+npx create-eth@latest -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins 
+cd challenge-stablecoins
 ```
 
 > 💻 In the same terminal, start your local network (a blockchain emulator in your computer):
@@ -58,14 +58,14 @@ yarn chain
 > 🛰️ In a second terminal window, deploy your contract (locally):
 
 ```sh
-cd challenge-stablecoin
+cd challenge-stablecoins
 yarn deploy
 ```
 
 > 📱 In a third terminal window, start your frontend:
 
 ```sh
-cd challenge-stablecoin
+cd challenge-stablecoins
 yarn start
 ```
 
@@ -1012,7 +1012,7 @@ function setBorrowRate(uint256 newRate) external onlyRateController {
     *   This script spins up several simulated users (actors).
     *   Some actors will look at the `borrowRate`. If it's attractive, they will deposit ETH and mint MyUSD (potentially selling it on the DEX for more ETH, representing leveraged traders).
     *   Other actors will look at the `savingsRate`. If it's attractive, they will buy MyUSD from the DEX and stake it in `MyUSDStaking.sol`.
-    *   Run this script from your `challenge-stablecoin` directory: `yarn simulate`.
+    *   Run this script from your `challenge-stablecoins` directory: `yarn simulate`.
     *   Observe your console and the frontend. You should see activity: collateral deposits, MyUSD mints, stakes, and DEX swaps. The MyUSD price on the DEX will fluctuate.
     *   Experiment: Manually set very high or very low borrow/savings rates using the frontend controls (which use `RateController.sol`) while running `yarn simulate`. How does the MyUSD price react?
 
