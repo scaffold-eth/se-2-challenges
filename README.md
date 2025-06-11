@@ -1,6 +1,6 @@
 # 💰 MyUSD Stablecoin
 
-[TODO: ADD HERO IMAGE]
+![readme-stablecoin](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-stablecoin/extension/packages/nextjs/public/hero.png)
 
 > 🪙 Build your own decentralized stablecoin! In this challenge, you'll build the core engine for **MyUSD**, a crypto-backed stablecoin designed to maintain a peg to $1 USD. You'll get to wear the hat of a DeFi protocol that wants to maintain price stability while also increasing adoption of your stablecoin product, diving deep into concepts like collateralization, minting, burning, interest rates, and liquidations – all crucial components of a robust stablecoin system.
 
@@ -38,7 +38,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 🛠️ Before you begin, you need to install the following tools:
 
-- [Node (v18 LTS)](https://nodejs.org/en/download/)
+- [Node (v22 LTS)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
 

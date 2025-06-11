@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "simulate": "hardhat run scripts/marketSimulator.ts",
+    "interest-rate-controller": "hardhat run scripts/interestRateController.ts"
+  }
+}
