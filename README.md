@@ -201,7 +201,7 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
 
 On the right side of the screen you will see a three icon menu. Hover the top icon to make the collateral menu appear.
 
-[TODO: SHOW IMAGE COLLATERAL OPERATIONS MENU]
+![CollateralOpsMenu](https://github.com/user-attachments/assets/f5a374a2-4788-4e71-995b-46c1e0961674)
 
 ### 🥅 Goals:
 
@@ -523,7 +523,7 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
 
 🧪 Go test the minting functionality on the front end. After depositing collateral, hover the mint icon and input the amount of MyUSD you would like to mint.
 
-[TODO: ADD Mint OPS Image]
+![MintOps](https://github.com/user-attachments/assets/71d0467f-9069-4244-9c7b-1d128eb344fb)
 
 ### 🥅 Goals:
 
@@ -581,7 +581,7 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
 
 🧪 Go try it out on the frontend after redeploying with `yarn deploy --reset`. Click the edit icon next to the borrow rate (inside **Rate Controls**) and set a new rate.
 
-[TODO: ADD Image for editing borrow rate]
+![BorrowRateAdjust](https://github.com/user-attachments/assets/7623ab64-19b8-43fb-adb5-5cf598098be9)
 
 ### 🥅 Goals:
 
@@ -866,6 +866,8 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
 - Use the **swap** button (in the MyUSD Wallet section) to exchange the ETH for enough MyUSD to pay the debt of your first account. Make sure you get more than the amount of MyUSD they minted because they have already accrued more debt in interest.
 - Check if the first account's position is in a liquidatable state. The **Liquidate** button should be enabled.
 - Click the button with your second account to liquidate the position.
+
+![LiquidatableState](https://github.com/user-attachments/assets/8d5474ff-74f8-4b1f-8580-9e30bbd075d7)
 
 > ⚠️ Notice how the first account still has the original MyUSD in their wallet. The second (liquidator) account paid the debt back to the protocol and claimed their collateral plus the bonus.
 
