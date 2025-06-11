@@ -203,7 +203,7 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
 
 On the right side of the screen you will see a three icon menu. Hover the top icon to make the collateral menu appear.
 
-[TODO: SHOW IMAGE COLLATERAL OPERATIONS MENU]
+![CollateralOpsMenu](https://github.com/user-attachments/assets/f5a374a2-4788-4e71-995b-46c1e0961674)
 
 ### 🥅 Goals:
 
@@ -525,7 +525,7 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
 
 🧪 Go test the minting functionality on the front end. After depositing collateral, hover the mint icon and input the amount of MyUSD you would like to mint.
 
-[TODO: ADD Mint OPS Image]
+![MintOps](https://github.com/user-attachments/assets/71d0467f-9069-4244-9c7b-1d128eb344fb)
 
 ### 🥅 Goals:
 
@@ -583,7 +583,7 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
 
 🧪 Go try it out on the frontend after redeploying with \`yarn deploy --reset\`. Click the edit icon next to the borrow rate (inside **Rate Controls**) and set a new rate.
 
-[TODO: ADD Image for editing borrow rate]
+![BorrowRateAdjust](https://github.com/user-attachments/assets/7623ab64-19b8-43fb-adb5-5cf598098be9)
 
 ### 🥅 Goals:
 
@@ -869,6 +869,8 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
 - Check if the first account's position is in a liquidatable state. The **Liquidate** button should be enabled.
 - Click the button with your second account to liquidate the position.
 
+![LiquidatableState](https://github.com/user-attachments/assets/8d5474ff-74f8-4b1f-8580-9e30bbd075d7)
+
 > ⚠️ Notice how the first account still has the original MyUSD in their wallet. The second (liquidator) account paid the debt back to the protocol and claimed their collateral plus the bonus.
 
 ### 🥅 Goals:
@@ -1116,5 +1118,4 @@ Run the \`yarn verify --network your_network\` command to verify your contracts 
 In the case of the original single collateral Dai, MakerDAO was voting weekly to set new rates. Later they overhauled their entire system to allow for multiple collateral types thinking it would increase adoption. Shortly after that, a big shift occurred when they introduced their Peg Stability Module (PSM) which allowed anyone to trade 1 Dai for 1 USDC. This was a controversial change because instead of every Dai being backed by an over-collateralized debt position of assets it was instead reliant on a centralized stablecoin that could be blacklisted at any point.
 
 Other stablecoin systems that match the design we explored here are LUSD(BOLD) and RAI. They both have sets of trade-offs in other areas but you should research to see how they compare to the system you just built! You have high context after building this stablecoin system.
-
 `;
