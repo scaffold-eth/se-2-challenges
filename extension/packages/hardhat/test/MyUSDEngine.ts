@@ -384,6 +384,7 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
   describe("Savings Rate Management", function () {
     beforeEach(async function () {
       await rateController.setBorrowRate(400);
+      expect(await myUSDEngine.borrowRate()).to.equal(400);
     });
 
     it("Should allow rate controller to set savings rate", async function () {
@@ -438,6 +439,9 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
       // Get some MyUSD tokens for testing
       await myUSDEngine.connect(user1).addCollateral({ value: collateralAmount });
       await myUSDEngine.connect(user1).mintMyUSD(borrowAmount);
+
+      // Verify that user1 got the tokens
+      expect(await myUSDToken.balanceOf(user1.address)).to.be.gt(0);
     });
 
     it("Should allow staking MyUSD tokens", async function () {
