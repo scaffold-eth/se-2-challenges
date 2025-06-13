@@ -83,7 +83,7 @@ const UserPosition = ({ user, ethPrice, connectedAddress }: UserPositionProps) =
   };
 
   return (
-    <tr key={user} className={`${connectedAddress === user ? "bg-blue-100 dark:bg-blue-900" : ""}`}>
+    <tr key={user} className={`${connectedAddress === user ? "bg-primary" : ""}`}>
       <td>
         <AddressBlock address={user} disableAddressLink format="short" size="sm" />
       </td>
@@ -93,7 +93,7 @@ const UserPosition = ({ user, ethPrice, connectedAddress }: UserPositionProps) =
       </td>
       <td className={getRatioColorClass(ratio)}>{ratio === "N/A" ? "N/A" : `${ratio}%`}</td>
       <td className="flex justify-center">
-        <button onClick={liquidatePosition} disabled={isPositionSafe} className="btn btn-sm btn-ghost">
+        <button onClick={liquidatePosition} disabled={isPositionSafe} className="btn btn-sm btn-ghost text-accent/70">
           {isLiquidating ? <span className="loading loading-spinner loading-sm"></span> : "Liquidate"}
         </button>
       </td>
