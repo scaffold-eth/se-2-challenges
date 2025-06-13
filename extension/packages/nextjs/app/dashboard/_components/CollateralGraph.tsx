@@ -98,13 +98,13 @@ const CollateralGraph = () => {
   }
 
   const ratioData = sortedEvents.reduce<DataPoint[]>((acc, event, idx) => {
-    const collateralAdded = event.eventName === "CollateralAdded" ? event.args.amount : 0n;
-    const collateralWithdrawn = event.eventName === "CollateralWithdrawn" ? event.args.amount : 0n;
-    const price = "price" in event.args ? event.args.price : getPriceFromEvent(event.blockNumber, priceEvents);
-    const debtAdded = event.eventName === "AssetBorrowed" ? event.args.amount || 0n : 0n;
-    const debtRepaid = event.eventName === "AssetRepaid" ? event.args.amount || 0n : 0n;
-    const amountForLiquidator = event.eventName === "Liquidation" ? event.args.amountForLiquidator || 0n : 0n;
-    const liquidatedDebtAmount = event.eventName === "Liquidation" ? event.args.liquidatedUserDebt || 0n : 0n;
+    const collateralAdded = event?.eventName === "CollateralAdded" ? event?.args.amount : 0n;
+    const collateralWithdrawn = event?.eventName === "CollateralWithdrawn" ? event?.args.amount : 0n;
+    const price = "price" in event?.args ? event?.args.price : getPriceFromEvent(event?.blockNumber, priceEvents);
+    const debtAdded = event?.eventName === "AssetBorrowed" ? event?.args.amount || 0n : 0n;
+    const debtRepaid = event?.eventName === "AssetRepaid" ? event?.args.amount || 0n : 0n;
+    const amountForLiquidator = event?.eventName === "Liquidation" ? event?.args.amountForLiquidator || 0n : 0n;
+    const liquidatedDebtAmount = event?.eventName === "Liquidation" ? event?.args.liquidatedUserDebt || 0n : 0n;
 
     const prevCollateral = acc[idx - 1]?.collateral || 0n;
     const prevDebt = acc[idx - 1]?.debt || 0n;
@@ -119,7 +119,7 @@ const CollateralGraph = () => {
     return [
       ...acc,
       {
-        name: Number(event.blockNumber) || 0,
+        name: Number(event?.blockNumber) || 0,
         ratio: ratio && Number.isFinite(ratio) ? ratio * 100 : 100,
         collateral: collateralInEth,
         debt: debt,
