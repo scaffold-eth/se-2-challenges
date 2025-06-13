@@ -53,7 +53,4 @@ export const postContent = `
   --tt-tailw: 6px;
   --tt-bg: var(--color-primary);
 }
-
-@theme inline: {
-  --font-space-grotesk: var(--font-space-grotesk);
-}`;
+`;
