@@ -120,7 +120,7 @@ const CollateralGraph = () => {
     return [
       ...acc,
       {
-        name: Number(event.blockNumber) || 0,
+        name: Number(event?.blockNumber) || 0,
         ratio: ratio && Number.isFinite(ratio) ? ratio * 100 : 100,
         collateral: collateralInEth,
         debt: debt,

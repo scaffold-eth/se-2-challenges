@@ -194,8 +194,19 @@ async function checkAndPerformLiquidations(lending: Lending, corn: Corn, account
     const isLiquidatable = await lending.isLiquidatable(user);
     if (!isLiquidatable) continue;
 
-    const eligibleLiquidators = accounts.filter(account => account.wallet.address.toLowerCase() !== user.toLowerCase());
+    const liquidators = accounts.filter(account => account.wallet.address.toLowerCase() !== user.toLowerCase());
+    
+    const liquidatorsWithBalance = await Promise.all(
+      liquidators.map(async account => {
+        const cornBalance = await corn.balanceOf(account.wallet.address);
+        return { account, hasEnough: cornBalance >= amountBorrowed };
+      })
+    );
 
+    const eligibleLiquidators = liquidatorsWithBalance
+      .filter(({ hasEnough }) => hasEnough)
+      .map(({ account }) => account);
+      
     if (eligibleLiquidators.length === 0) {
       const randomAccount = accounts[Math.floor(Math.random() * accounts.length)];
       if (randomAccount.wallet.address.toLowerCase() !== user.toLowerCase()) {

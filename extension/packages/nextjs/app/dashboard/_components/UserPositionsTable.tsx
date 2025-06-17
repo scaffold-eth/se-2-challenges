@@ -28,7 +28,7 @@ const UserPositionsTable = () => {
       const uniqueUsers = new Set([...prevUsers]);
       events
         .map(event => {
-          return event.args.user;
+          return event?.args.user;
         })
         .filter((user): user is string => !!user)
         .forEach(user => uniqueUsers.add(user));
@@ -44,7 +44,7 @@ const UserPositionsTable = () => {
         infoText="This table displays all users with a position in the lending pool. It also allows users to liquidate positions that have fallen into the liquidation zone using the provided button"
       />
       <div className="overflow-x-auto">
-        <table className="table">
+        <table className="table overflow-hidden">
           <thead>
             <tr>
               <th>Address</th>
