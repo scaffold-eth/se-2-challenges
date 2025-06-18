@@ -72,6 +72,13 @@ yarn start
 
 ## Checkpoint 1: 💳🌽 Lending Contract
 
+A lending platform needs these three primary functions:
+1. Lending
+2. Borrowing
+3. Liquidation
+
+For this challenge we will not focus on the Lending aspect as much as the other two. We will assume that people have already supplied the Lending contract with the borrowable CORN. In a real system the borrower would be charged interest on the loan so that the lenders have an incentive to deposit assets but here we will just be focusing on the borrow side of the market.
+
 🔍 Navigate to the `Debug Contracts` tab, you should see four smart contracts displayed called `Corn`, `CornDEX`, `Lending` and `MovePrice`. You don't need to worry about any of these except `Lending` but here is a quick description of each:
 - 🌽 Corn ~ This is the ERC20 token that can be borrowed
 - 🔄 CornDEX ~ This is the DEX contract that is used to swap between ETH and CORN but is also used as a makeshift price oracle
