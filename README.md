@@ -10,8 +10,8 @@ First, traditional lending usually involves one party (such as a bank) offering 
 
 🤔 I am sure you are wondering, "What is the benefit of a loan if you can't take out more than you put in?" Great question! This form of lending lacks the common use case seen in traditional lending where people may use the loan to buy a house they otherwise couldn't afford but here are a few primary use cases of permissionless lending in DeFi:
 
-- 💰 Maintaining Price Exposure ~ You may have real world bills due but you are *sure* that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH in a stablecoin and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the stablecoin loan.
-- 📈 Leverage ~ You could deposit ETH and borrow a stablecoin but only use it to buy more ETH, increasing your exposure to the ETH price movements (to the upside 🎢 or the downside 🔻😰).
+- 💰 Maintaining Price Exposure ~ You may have real world bills due but you are *sure* that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the loan.
+- 📈 Leverage ~ You could deposit ETH and borrow an asset but only use it to buy more ETH, increasing your exposure to the ETH price movements (to the upside 🎢 or the downside 🔻😰).
 - 💸 Tax Advantages ~ In many jurisdictions, money obtained from a loan is taxed differently than money obtained other ways. It might be advantageous to avoid outright selling of an asset and instead get a loan against it.
 
 👍 Now that you know the background of what is and is not possible with onchain lending, let's dive in to the challenge!
