@@ -415,7 +415,7 @@ yarn start
 
 ---
 
-## Checkpoint 6: Final Touches
+## Checkpoint 6: Final Touches and Simulation
 
 🔙 Throwback to the `withdrawCollateral` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a `_validatePosition` check to make sure that never happens. You should add it after the `s_userCollateral` mapping is updated so that it is checking the final state instead of the current state. Skip the check if they don't have any borrowed CORN.
 
