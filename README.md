@@ -1,6 +1,6 @@
 # 📈📉🏎️ Prediction Markets Challenge
 
-![readme-4](extension/packages/nextjs/public/hero.png)
+![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/hero.png)
 
 # Introduction
 
@@ -540,7 +540,7 @@ Once deployed, head over to the **Debug** page to inspect the initialized values
 
 The tab **Liquidity Provider** in the front-end should now also display the initial question, initial liquidity/probability and further relevant variables (see screenshot below how it should look like).
 
-![ch-6-lp2](extension/packages/nextjs/public/lp2.png)
+![ch-6-lp2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/lp2.png)
 
 ## **Checkpoint 4: 💦 More Liquidity**
 
@@ -784,7 +784,7 @@ Now head over to the oracle tab in the UI and report the outcome (after you watc
 
 > 💡 Make sure you're connected with the correct oracle address — check `00_deploy_your_contract.ts` to find out which one is being used. (Hint: Add the first Hardhat account to your wallet or add your own account to interact as the oracle or contract owner. You can manually set your address in the deployment script or run `yarn account:import`.)
 
-![ch-6-oracle2](extension/packages/nextjs/public/oracle2.png)
+![ch-6-oracle2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/oracle2.png)
 
 ## **Checkpoint 6: 📉💧 Resolve market and withdraw liquidity and trading revenue**
 
@@ -901,7 +901,7 @@ Then jump over to the Liquidity Provider tab and give your new function a try �
 
 > 🔍 Watch closely as tokens are burned and ETH flows back to the deployer.
 
-![ch-6-lp3](extension/packages/nextjs/public/lp3.png)
+![ch-6-lp3](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/lp3.png)
 
 Now that the **liquidity provider** and the **oracle** are fully implemented, it’s time to open the doors for users to jump in and **trade outcome tokens** — placing their bets and shaping the market in real time! 🛒📈
 
@@ -943,7 +943,7 @@ $$
 
 Check out the table below for how prices behave under different scenarios. Note that the prices of both outcomes always sum to **0.01 ETH**.
 
-![ch-6-priceTable](extension/packages/nextjs/public/priceTable.png)
+![pm-priceTable](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/priceTable.png)
 
 ### 💡 How It Works
 
@@ -1340,7 +1340,7 @@ And then run `yarn deploy` to test it in the front-end and see how the probabili
 
 > ❗️💡 Make sure you **use another account as the liquidity provider**, otherwise you are **restricted from selling the tokens**
 
-![ch-6-user2](extension/packages/nextjs/public/user2.png)
+![ch-6-user2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/user2.png)
 
 ## **Checkpoint 9: Redeem winning tokens as a user**
 
@@ -1443,7 +1443,7 @@ yarn test --grep "Checkpoint9"
 
 Then run `yarn deploy` to test it on the front-end. Make sure to purchase some winning tokens beforehand and report the race. After that, you should be able to redeem your desired amount.
 
-![ch-6-user3](extension/packages/nextjs/public/user3.png)
+![ch-6-user3](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/user3.png)
 
 You’ve now built the full loop: provide liquidity, trade shares, resolve the market, and claim rewards.
 
