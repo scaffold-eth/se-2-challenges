@@ -1,3 +1,6 @@
+// CHALLENGE-TODO: imports and other pre-content
+// export const preContent = ``;
+
 // CHALLENGE-TODO: Update the title, description, and deliverable to reflect your challenge
 export const description = `
   <div className="flex items-center flex-col flex-grow mt-4">
@@ -23,5 +26,6 @@ export const description = `
     </div>
   </div>
 `;
+
 // CHALLENGE-TODO: Update the externalExtensionName to reflect your challenge
 export const externalExtensionName = "SpeedRunEthereum CHALLENGE TITLE";
