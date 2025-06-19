@@ -7,7 +7,6 @@ const spaceGrotesk = Space_Grotesk({
 });
 `;
 
-// CHALLENGE-TODO: Update the metadataOverrides to reflect your challenge
 export const metadataOverrides = {
   title: "Challenge #0 | SpeedRunEthereum",
   description: "Built with 🏗 Scaffold-ETH 2",
