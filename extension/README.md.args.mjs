@@ -45,6 +45,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 \`\`\`sh
 npx create-eth@0.2.4 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
+cd challenge-over-collateralized-lending
 \`\`\`
 
 > 💻 in the same terminal, start your local network (a blockchain emulator in your computer):

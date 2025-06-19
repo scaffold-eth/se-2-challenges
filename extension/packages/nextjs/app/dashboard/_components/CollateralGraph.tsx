@@ -98,6 +98,7 @@ const CollateralGraph = () => {
   }
 
   const ratioData = sortedEvents.reduce<DataPoint[]>((acc, event, idx) => {
+
     const collateralAdded: bigint = event?.eventName === "CollateralAdded" ? event?.args.amount || 0n : 0n;
     const collateralWithdrawn: bigint = event?.eventName === "CollateralWithdrawn" ? event?.args.amount || 0n : 0n;
     const price: bigint =
