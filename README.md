@@ -282,8 +282,8 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ✅ It should validate the user's position (`_validatePosition`) so that it reverts if they are attempting to borrow more than they are allowed.
 
-🪙 Then it should use the CORN token's `mintTo` function to mint the tokens to the user's address.
- > ⚠️ This is an oversimplification on our part. A real lending contract would not be minting the asset that is being borrowed in most cases. This way we only have to deal with one side of the market so it makes it easier to understand.
+🪙 Then it should use the CORN token's `transferFrom` function to move the tokens to the user's address.
+ > ⚠️ As we mentioned above, we are only focusing on the borrow side of the market. We are just "pretending" that people have deposited the CORN in the Lending contract with the intent to make a profit but we haven't provided any real incentives for them to do so.
 
 📢 You should also emit the `AssetBorrowed` event.
 
@@ -291,7 +291,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ⚠️ Revert with `Lending_InvalidAmount` if the repayAmount is 0 or if it is more than the user has borrowed.
 
-🔄 Subtract the amount from the `s_userBorrowed` mapping. Then use the CORN token's `burnFrom` function to remove the CORN from the borrower's wallet.
+🔄 Subtract the amount from the `s_userBorrowed` mapping. Then use the CORN token's `transferFrom` function to remove the CORN from the borrower's wallet back to the Lending contract.
 
 📢 And finally, emit the `AssetRepaid` event.
 
@@ -306,7 +306,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
         }
         s_userBorrowed[msg.sender] += borrowAmount; // Update user's borrowed corn balance
         _validatePosition(msg.sender); // Validate user's position before borrowing
-        bool success = i_corn.mintTo(msg.sender, borrowAmount); // Borrow corn to user
+        bool success = i_corn.transferFrom(address(this), msg.sender, borrowAmount); // Borrow corn to user
         if (!success) {
             revert Lending__BorrowingFailed(); // Revert if borrowing fails
         }
@@ -318,7 +318,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
             revert Lending__InvalidAmount(); // Revert if repay amount is invalid
         }
         s_userBorrowed[msg.sender] -= repayAmount; // Reduce user's borrowed balance
-        bool success = i_corn.burnFrom(msg.sender, repayAmount); // Burn corns from user
+        bool success = i_corn.transferFrom(msg.sender, address(this), repayAmount); // Take CORN from user
         if (!success) {
             revert Lending__RepayingFailed(); // Revert if burning fails
         }
@@ -350,7 +350,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ❕ Also, Let's make sure the caller has enough CORN to liquidate the borrower's position. If they don't, revert with `Lending__InsufficientLiquidatorCorn`.
 
-🔄 Let's transfer the CORN to this contract from the liquidator and then burn it. (`transferFrom` and `burnFrom`).
+🔄 Let's transfer the CORN to this contract from the liquidator. (`transferFrom`).
 
 🧹 Clear the borrower's debt completely.
 
@@ -384,9 +384,6 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
         // transfer value of debt to the contract
         i_corn.transferFrom(msg.sender, address(this), userDebt);
-
-        // burn the transferred corn
-        i_corn.burnFrom(address(this), userDebt);
 
         // Clear user's debt
         s_userBorrowed[user] = 0;
