@@ -44,8 +44,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 \`\`\`sh
-npx create-eth@0.1.8 -e scaffold-eth/se-2-challenges:challenge-over-collateralized-lending challenge-over-collateralized-lending
-cd challenge-over-collateralized-lending
+npx create-eth@0.2.4 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
 \`\`\`
 
 > 💻 in the same terminal, start your local network (a blockchain emulator in your computer):
