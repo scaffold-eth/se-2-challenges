@@ -13,7 +13,7 @@ const StakerRow = ({ staker, connectedAddress }: { staker: string; connectedAddr
   });
 
   return (
-    <tr key={staker} className={`${connectedAddress === staker ? "bg-blue-100 dark:bg-blue-900" : ""}`}>
+    <tr key={staker} className={`${connectedAddress === staker ? "bg-primary" : ""}`}>
       <td>
         <AddressBlock address={staker} disableAddressLink format="short" size="sm" />
       </td>

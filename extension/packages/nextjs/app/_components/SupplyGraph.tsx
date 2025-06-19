@@ -1,11 +1,23 @@
 import React from "react";
 import TooltipInfo from "./TooltipInfo";
 import { useTheme } from "next-themes";
-import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { formatEther } from "viem";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const PURPLE_COLOR = "#8884d8";
+const GREEN_COLOR = "#82ca9d";
 
 const calculateDexSwapAmounts = (event: any) => {
   if (event.eventName !== "Swap") return { sent: 0, received: 0 };
@@ -19,12 +31,44 @@ const calculateDexSwapAmounts = (event: any) => {
   };
 };
 
+const formatDisplayValue = (value: number) => {
+  if (value > 1000000) {
+    return `${(value / 1000000).toFixed(2)}M`;
+  }
+  if (value > 1000) {
+    return `${(value / 1000).toFixed(2)}k`;
+  }
+  return value.toFixed(2);
+};
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+  if (active && payload && payload.length) {
+    const circulating = payload[0]?.value || 0;
+    const staked = payload[1]?.value || 0;
+    const total = circulating + staked;
+
+    return (
+      <div className="bg-base-200 border border-base-300 rounded-lg px-3 my-0 shadow-lg">
+        <p className="font-semibold text-sm mt-2 mb-1">Block {label}</p>
+        <p className="text-sm my-0">
+          <span style={{ color: GREEN_COLOR }}>●</span> Staked: {formatDisplayValue(staked)} MyUSD
+        </p>
+        <p className="text-sm my-0">
+          <span style={{ color: PURPLE_COLOR }}>●</span> Circulating: {formatDisplayValue(circulating)} MyUSD
+        </p>
+        <p className="text-sm font-semibold border-t border-base-300 pt-1 mt-1 mb-2">
+          Total: {formatDisplayValue(total)} MyUSD
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const SupplyGraph = () => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const strokeColor = isDarkMode ? "#ffffff" : "#000000";
-  const purpleColor = "#8884d8";
-  const greenColor = "#82ca9d";
 
   const { data: ethPrice } = useScaffoldReadContract({
     contractName: "Oracle",
@@ -148,15 +192,7 @@ const SupplyGraph = () => {
             <AreaChart width={500} height={300} data={supplyData} margin={{ top: 10, right: 25, bottom: 20, left: 30 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <YAxis
-                tickFormatter={value => {
-                  if (value > 1000000) {
-                    return `${(value / 1000000).toFixed(2)}M`;
-                  }
-                  if (value > 1000) {
-                    return `${(value / 1000).toFixed(2)}k`;
-                  }
-                  return value;
-                }}
+                tickFormatter={formatDisplayValue}
                 label={{
                   value: "MyUSD Amount",
                   angle: -90,
@@ -167,21 +203,22 @@ const SupplyGraph = () => {
                 }}
                 tick={{ fill: strokeColor, fontSize: 12 }}
               />
+              <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="circulatingSupply"
                 name="Circulating"
                 stackId="1"
-                stroke={purpleColor}
-                fill={purpleColor}
+                stroke={PURPLE_COLOR}
+                fill={PURPLE_COLOR}
               />
               <Area
                 type="monotone"
                 dataKey="stakedSupply"
                 name="Staked"
                 stackId="1"
-                stroke={greenColor}
-                fill={greenColor}
+                stroke={GREEN_COLOR}
+                fill={GREEN_COLOR}
               />
               <XAxis
                 domain={["auto", "auto"]}

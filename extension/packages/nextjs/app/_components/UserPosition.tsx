@@ -91,7 +91,7 @@ const UserPosition = ({ user, ethPrice, connectedAddress }: UserPositionProps) =
   if (userCollateral === parseEther("10000000000000000000")) return null;
 
   return (
-    <tr key={user} className={`${connectedAddress === user ? "bg-blue-100 dark:bg-blue-900" : ""}`}>
+    <tr key={user} className={`${connectedAddress === user ? "bg-primary" : ""}`}>
       <td>
         <AddressBlock address={user} disableAddressLink format="short" size="sm" />
       </td>

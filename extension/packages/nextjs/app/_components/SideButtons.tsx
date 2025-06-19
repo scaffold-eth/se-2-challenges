@@ -86,7 +86,7 @@ const SideButtons: React.FC = () => {
 
   return (
     <div
-      className="absolute top-[120px] right-0 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl z-5"
+      className="absolute top-[120px] right-0 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl"
       onMouseEnter={handleContainerEnter}
       onMouseLeave={handleContainerLeave}
     >
@@ -113,7 +113,7 @@ const SideButtons: React.FC = () => {
 
         {/* Hover Windows */}
         <div
-          className={`absolute top-1/2 -translate-y-1/2 right-full mr-4 transition-all duration-300 z-10 ease-in-out ${hoveredButton ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}
+          className={`absolute top-1/2 -translate-y-1/2 right-full mr-4 transition-all duration-300 z-20 ease-in-out ${hoveredButton ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}
           onMouseEnter={handleContainerEnter}
           onMouseLeave={handleContainerLeave}
         >
