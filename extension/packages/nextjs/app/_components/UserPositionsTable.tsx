@@ -41,14 +41,15 @@ const UserPositionsTable = () => {
       <TooltipInfo
         top={3}
         right={3}
-        infoText="Monitor all MyUSDEngine positions and liquidate undercollateralized accounts"
+        infoText="Monitor all MyUSDEngine positions and liquidate undercollateralized accounts. Hover over the values (Collateral and Debt) to see the exact amounts."
       />
       <div className="overflow-x-auto">
         <table className="table">
           <thead>
             <tr>
               <th>Address</th>
-              <th>Debt ({tokenName})</th>
+              <th>Collateral</th>
+              <th>Debt</th>
               <th>Ratio</th>
               <th></th>
             </tr>
@@ -58,6 +59,9 @@ const UserPositionsTable = () => {
               <tr key={"skeleton"}>
                 <td>
                   <div className="skeleton w-36 h-6"></div>
+                </td>
+                <td>
+                  <div className="skeleton w-16 h-6"></div>
                 </td>
                 <td>
                   <div className="skeleton w-16 h-6"></div>

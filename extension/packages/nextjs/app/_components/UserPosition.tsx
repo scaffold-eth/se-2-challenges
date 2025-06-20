@@ -3,7 +3,7 @@ import { formatEther, parseEther } from "viem";
 import { Address as AddressBlock } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { collateralRatio, tokenName } from "~~/utils/constant";
-import { calculatePositionRatio, getRatioColorClass } from "~~/utils/helpers";
+import { calculatePositionRatio, formatDisplayValue, getRatioColorClass } from "~~/utils/helpers";
 import { notification } from "~~/utils/scaffold-eth";
 
 type UserPositionProps = {
@@ -95,7 +95,22 @@ const UserPosition = ({ user, ethPrice, connectedAddress }: UserPositionProps) =
       <td>
         <AddressBlock address={user} disableAddressLink format="short" size="sm" />
       </td>
-      <td>{Number(formatEther(userMinted || 0n)).toFixed(2)}</td>
+      <td>
+        <div
+          className="tooltip tooltip-primary"
+          data-tip={`${Number(formatEther(userCollateral || 0n)).toFixed(2)} ETH`}
+        >
+          {formatDisplayValue(Number(formatEther(userCollateral || 0n)))}
+        </div>
+      </td>
+      <td>
+        <div
+          className="tooltip tooltip-primary"
+          data-tip={`${Number(formatEther(userMinted || 0n)).toFixed(2)} ${tokenName}`}
+        >
+          {formatDisplayValue(Number(formatEther(userMinted || 0n)))}
+        </div>
+      </td>
       <td className={getRatioColorClass(ratio)}>{formattedRatio === "N/A" ? "N/A" : `${formattedRatio}%`}</td>
       <td className="text-center p-1">
         <button onClick={liquidatePosition} disabled={isPositionSafe} className="btn btn-xs btn-ghost">

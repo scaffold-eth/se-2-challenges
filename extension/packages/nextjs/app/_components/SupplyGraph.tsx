@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { formatEther } from "viem";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { formatDisplayValue } from "~~/utils/helpers";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const PURPLE_COLOR = "#8884d8";
@@ -29,16 +30,6 @@ const calculateDexSwapAmounts = (event: any) => {
     sent: isEthToMyUSD ? Number(formatEther(outputAmount || 0n)) : 0,
     received: !isEthToMyUSD ? Number(formatEther(inputAmount || 0n)) : 0,
   };
-};
-
-const formatDisplayValue = (value: number) => {
-  if (value > 1000000) {
-    return `${(value / 1000000).toFixed(2)}M`;
-  }
-  if (value > 1000) {
-    return `${(value / 1000).toFixed(2)}k`;
-  }
-  return value.toFixed(2);
 };
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {

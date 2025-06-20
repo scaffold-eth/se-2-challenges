@@ -85,7 +85,7 @@ const PriceGraph = () => {
     return [
       ...acc,
       {
-        blockNumber: Number(event.blockNumber) || 0,
+        blockNumber: Number(event?.blockNumber) || 0,
         price: price && Number.isFinite(price) ? price : prevPrice,
         borrowRate: borrowRate >= 0 && Number.isFinite(borrowRate) ? borrowRate : prevBorrowRate,
         savingsRate: savingsRate >= 0 && Number.isFinite(savingsRate) ? savingsRate : prevSavingsRate,
@@ -177,9 +177,7 @@ const PriceGraph = () => {
                 verticalAlign="top"
                 wrapperStyle={{ paddingBottom: 10 }}
                 formatter={value => <span style={{ color: strokeColor }}>{value}</span>}
-                payload={showRates ? undefined : [
-                  { value: "Price", type: "line", color: yellowColor }
-                ]}
+                payload={showRates ? undefined : [{ value: "Price", type: "line", color: yellowColor }]}
               />
             </LineChart>
           </ResponsiveContainer>
