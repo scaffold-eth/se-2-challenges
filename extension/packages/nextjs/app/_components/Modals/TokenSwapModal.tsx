@@ -1,4 +1,5 @@
 import { useState } from "react";
+import TooltipInfo from "../TooltipInfo";
 import { Address, parseEther } from "viem";
 import { ArrowDownIcon, ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
 import { Balance, IntegerInput } from "~~/components/scaffold-eth";
@@ -108,9 +109,12 @@ export const TokenSwapModal = ({ tokenBalance, connectedAddress, ETHprice, modal
           {/* dummy input to capture event onclick on modal box */}
           <input className="h-0 w-0 absolute top-0 left-0" />
           <h3 className="text-xl font-bold mb-3">Simple Swap</h3>
-          <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
-            ✕
-          </label>
+          <div className="absolute top-3 right-3 flex items-center space-x-2">
+            <TooltipInfo top={0} right={0} infoText={`Here you can swap ${tokenName} for ETH and vice versa`} />
+            <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle">
+              ✕
+            </label>
+          </div>
           <div className="space-y-3">
             <div className="flex space-x-4">
               <div className="flex flex-col">

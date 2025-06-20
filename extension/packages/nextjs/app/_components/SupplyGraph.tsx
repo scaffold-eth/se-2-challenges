@@ -1,14 +1,35 @@
 import React from "react";
 import TooltipInfo from "./TooltipInfo";
 import { useTheme } from "next-themes";
-import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { formatEther } from "viem";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { formatDisplayValue } from "~~/utils/helpers";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const PURPLE_COLOR = "#8884d8";
+const GREEN_COLOR = "#82ca9d";
+const ORANGE_COLOR = "#ff7300";
+
+type DataPoint = {
+  blockNumber: number;
+  circulatingSupply: number;
+  stakedSupply: number;
+  totalSupply: number;
+};
 
 const calculateDexSwapAmounts = (event: any) => {
-  if (event.eventName !== "Swap") return { sent: 0, received: 0 };
+  if (!event || event.eventName !== "Swap") return { sent: 0, received: 0 };
 
   const { inputToken, inputAmount, outputAmount } = event.args || {};
   const isEthToMyUSD = inputToken === ZERO_ADDRESS;
@@ -19,12 +40,36 @@ const calculateDexSwapAmounts = (event: any) => {
   };
 };
 
+const CustomTooltip = ({ active, payload, label, data }: TooltipProps<number, string> & { data: DataPoint[] }) => {
+  if (active && payload && payload.length) {
+    // Find the data point for this block number
+    const dataPoint = data?.find(d => d.blockNumber === label);
+    const circulating = dataPoint?.circulatingSupply || 0;
+    const staked = payload.find(p => p.dataKey === "stakedSupply")?.value || 0;
+    const total = payload.find(p => p.dataKey === "totalSupply")?.value || 0;
+
+    return (
+      <div className="bg-base-200 border border-base-300 rounded-lg px-3 my-0 shadow-lg">
+        <p className="font-semibold text-sm mt-2 mb-1">Block {label}</p>
+        <p className="text-sm my-0">
+          <span style={{ color: PURPLE_COLOR }}>●</span> Circulating: {formatDisplayValue(circulating)} MyUSD
+        </p>
+        <p className="text-sm my-0">
+          <span style={{ color: GREEN_COLOR }}>●</span> Staked: {formatDisplayValue(staked)} MyUSD
+        </p>
+        <p className="text-sm my-0">
+          <span style={{ color: ORANGE_COLOR }}>●</span> Total: {formatDisplayValue(total)} MyUSD
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const SupplyGraph = () => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const strokeColor = isDarkMode ? "#ffffff" : "#000000";
-  const purpleColor = "#8884d8";
-  const greenColor = "#82ca9d";
 
   const { data: ethPrice } = useScaffoldReadContract({
     contractName: "Oracle",
@@ -93,12 +138,6 @@ const SupplyGraph = () => {
   ];
   const sortedEvents = combinedEvents.sort((a, b) => Number(a.blockNumber - b.blockNumber));
 
-  type DataPoint = {
-    blockNumber: number;
-    circulatingSupply: number;
-    stakedSupply: number;
-  };
-
   const supplyData = sortedEvents.reduce<DataPoint[]>((acc, event, idx) => {
     const prevCirculatingSupply = acc[idx - 1]?.circulatingSupply || 0;
     const prevStakedSupply = acc[idx - 1]?.stakedSupply || 0;
@@ -113,17 +152,22 @@ const SupplyGraph = () => {
       minted = 0;
     }
 
-    const circulatingSupply =
-      prevCirculatingSupply + minted - burned - staked + withdrawn + dexSentMyUSDAmount - dexReceivedMyUSDAmount;
-    const stakedSupply = prevStakedSupply + staked - withdrawn;
+    const circulatingSupply = Math.max(
+      prevCirculatingSupply + minted - burned - staked + withdrawn + dexSentMyUSDAmount - dexReceivedMyUSDAmount,
+      0,
+    );
+    const stakedSupply = Math.max(prevStakedSupply + staked - withdrawn, 0);
+    const totalSupply = circulatingSupply + stakedSupply;
 
     return [
       ...acc,
       {
-        blockNumber: Number(event.blockNumber) || 0,
+        blockNumber: Number(event?.blockNumber) || 0,
         circulatingSupply:
           circulatingSupply && Number.isFinite(circulatingSupply) ? circulatingSupply : prevCirculatingSupply,
         stakedSupply: stakedSupply && Number.isFinite(stakedSupply) ? stakedSupply : prevStakedSupply,
+        totalSupply:
+          totalSupply && Number.isFinite(totalSupply) ? totalSupply : prevCirculatingSupply + prevStakedSupply,
       },
     ];
   }, []);
@@ -145,18 +189,11 @@ const SupplyGraph = () => {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart width={500} height={300} data={supplyData} margin={{ top: 10, right: 25, bottom: 20, left: 30 }}>
+            <LineChart width={500} height={300} data={supplyData} margin={{ top: 10, right: 25, bottom: 20, left: 30 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <YAxis
-                tickFormatter={value => {
-                  if (value > 1000000) {
-                    return `${(value / 1000000).toFixed(2)}M`;
-                  }
-                  if (value > 1000) {
-                    return `${(value / 1000).toFixed(2)}k`;
-                  }
-                  return value;
-                }}
+                tickFormatter={formatDisplayValue}
+                domain={[0, (dataMax: number) => dataMax]}
                 label={{
                   value: "MyUSD Amount",
                   angle: -90,
@@ -167,21 +204,25 @@ const SupplyGraph = () => {
                 }}
                 tick={{ fill: strokeColor, fontSize: 12 }}
               />
-              <Area
+              <Tooltip content={<CustomTooltip data={supplyData} />} />
+              <Line
                 type="monotone"
-                dataKey="circulatingSupply"
-                name="Circulating"
-                stackId="1"
-                stroke={purpleColor}
-                fill={purpleColor}
+                dataKey="totalSupply"
+                name="Total"
+                stroke={ORANGE_COLOR}
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 5 }}
               />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="stakedSupply"
                 name="Staked"
-                stackId="1"
-                stroke={greenColor}
-                fill={greenColor}
+                stroke={GREEN_COLOR}
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 4 }}
+                hide={stakedEvents?.length === 0}
               />
               <XAxis
                 domain={["auto", "auto"]}
@@ -194,8 +235,13 @@ const SupplyGraph = () => {
                 verticalAlign="top"
                 wrapperStyle={{ paddingBottom: 10 }}
                 formatter={value => <span style={{ color: strokeColor }}>{value}</span>}
+                payload={
+                  stakedEvents && stakedEvents?.length > 0
+                    ? undefined
+                    : [{ value: "Total", type: "line", color: ORANGE_COLOR }]
+                }
               />
-            </AreaChart>
+            </LineChart>
           </ResponsiveContainer>
         )}
       </div>

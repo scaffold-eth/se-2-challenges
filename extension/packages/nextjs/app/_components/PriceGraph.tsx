@@ -85,7 +85,7 @@ const PriceGraph = () => {
     return [
       ...acc,
       {
-        blockNumber: Number(event.blockNumber) || 0,
+        blockNumber: Number(event?.blockNumber) || 0,
         price: price && Number.isFinite(price) ? price : prevPrice,
         borrowRate: borrowRate >= 0 && Number.isFinite(borrowRate) ? borrowRate : prevBorrowRate,
         savingsRate: savingsRate >= 0 && Number.isFinite(savingsRate) ? savingsRate : prevSavingsRate,
@@ -133,17 +133,16 @@ const PriceGraph = () => {
                 tick={{ fill: strokeColor, fontSize: 12 }}
                 label={{ value: "Price", angle: -90, position: "insideLeft", fill: strokeColor, offset: -10 }}
               />
-              {showRates && (
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  scale="linear"
-                  domain={[(dataMin: number) => dataMin - 0.5, (dataMax: number) => dataMax + 0.5]}
-                  stroke={strokeColor}
-                  tick={{ fill: strokeColor, fontSize: 12 }}
-                  label={{ value: "Rates (%)", angle: 90, position: "insideRight", fill: strokeColor, dy: 15, dx: -15 }}
-                />
-              )}
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                scale="linear"
+                domain={[(dataMin: number) => dataMin - 0.5, (dataMax: number) => dataMax + 0.5]}
+                stroke={strokeColor}
+                tick={{ fill: strokeColor, fontSize: 12 }}
+                label={{ value: "Rates (%)", angle: 90, position: "insideRight", fill: strokeColor, dy: 15, dx: -15 }}
+                hide={!showRates}
+              />
               <ReferenceLine yAxisId="left" y={1.0} stroke="#71717b" strokeDasharray="5 5" strokeWidth={2} />
               <Line
                 yAxisId="left"
@@ -154,32 +153,31 @@ const PriceGraph = () => {
                 strokeWidth={2}
                 name="Price"
               />
-              {showRates && (
-                <>
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="borrowRate"
-                    stroke={redColor}
-                    dot={false}
-                    strokeWidth={2}
-                    name="Borrow Rate"
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="savingsRate"
-                    stroke={greenColor}
-                    dot={false}
-                    strokeWidth={2}
-                    name="Savings Rate"
-                  />
-                </>
-              )}
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="savingsRate"
+                stroke={greenColor}
+                dot={false}
+                strokeWidth={2}
+                name="Savings Rate"
+                hide={!showRates}
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="borrowRate"
+                stroke={redColor}
+                dot={false}
+                strokeWidth={2}
+                name="Borrow Rate"
+                hide={!showRates}
+              />
               <Legend
                 verticalAlign="top"
                 wrapperStyle={{ paddingBottom: 10 }}
                 formatter={value => <span style={{ color: strokeColor }}>{value}</span>}
+                payload={showRates ? undefined : [{ value: "Price", type: "line", color: yellowColor }]}
               />
             </LineChart>
           </ResponsiveContainer>

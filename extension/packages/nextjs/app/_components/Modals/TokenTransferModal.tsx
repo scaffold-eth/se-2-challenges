@@ -4,6 +4,7 @@ import { BanknotesIcon } from "@heroicons/react/24/outline";
 import { Address, AddressInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
+import TooltipInfo from "../TooltipInfo";
 
 type TokenTransferModalProps = {
   tokenBalance: string;
@@ -43,9 +44,12 @@ export const TokenTransferModal = ({ tokenBalance, connectedAddress, modalId }: 
           {/* dummy input to capture event onclick on modal box */}
           <input className="h-0 w-0 absolute top-0 left-0" />
           <h3 className="text-xl font-bold mb-3">Send {tokenName}</h3>
-          <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
-            ✕
-          </label>
+          <div className="absolute top-3 right-3 flex items-center space-x-2">
+            <TooltipInfo top={0} right={0} infoText={`Here you can send ${tokenName} to another address`} />
+            <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle">
+              ✕
+            </label>
+          </div>
           <div className="space-y-2">
             <div className="flex space-x-4">
               <div>

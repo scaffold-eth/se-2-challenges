@@ -12,3 +12,13 @@ export function calculatePositionRatio(userCollateral: number, mintedAmount: num
   if (mintedAmount === 0) return Number.MAX_SAFE_INTEGER; // Return max if no tokens are minted
   return (collateralValue / mintedAmount) * 100; // Calculate position ratio
 }
+
+export const formatDisplayValue = (value: number) => {
+  if (value > 1000000) {
+    return `${(value / 1000000).toFixed(2)}M`;
+  }
+  if (value > 1000) {
+    return `${(value / 1000).toFixed(2)}k`;
+  }
+  return value.toFixed(2);
+};
