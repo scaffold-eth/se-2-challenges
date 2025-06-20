@@ -2,6 +2,16 @@ export const skipQuickStart = true;
 // CHALLENGE-TODO: Update the readme to reflect your challenge. In the very end you will need a non-template
 // README.md file in the extension root so it is recommended to copy the template in a markdown file and then
 // update extraContents after confirming the template is correct.
+// include following code at the start of checkpoint 0 of the README.md file
+// *Start of the code block*
+// \`\`\`sh
+// npx create-eth@<version> -e {challengeName} {challengeName}
+// cd {challengeName}
+// \`\`\`
+
+// > in the same terminal, start your local network (a blockchain emulator in your computer):
+// *End of the code block*
+
 export const extraContents = `# {challengeEmoji} {challengeTitle}
 
 A {challengeDescription}.
@@ -15,22 +25,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ## Checkpoint 0: 📦 Environment 📚
 
-Before you begin, you need to install the following tools:
-
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-Then download the challenge to your computer and install dependencies by running:
-
-\`\`\`sh
-git clone https://github.com/scaffold-eth/se-2-challenges.git {challengeName}
-cd {challengeName}
-git checkout {challengeName}
-yarn install
-\`\`\`
-
-> in the same terminal, start your local network (a blockchain emulator in your computer):
+Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
