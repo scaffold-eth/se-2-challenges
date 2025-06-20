@@ -29,6 +29,7 @@ const UserPositionsTable = () => {
     setUsers(prevUsers => {
       const uniqueUsers = new Set([...prevUsers]);
       events
+        .filter(event => event && event.args)
         .map(event => event.args.user)
         .filter((user): user is string => !!user)
         .forEach(user => uniqueUsers.add(user));
