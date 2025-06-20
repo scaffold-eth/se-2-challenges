@@ -74,20 +74,7 @@ Let's jump into the challenge.
 
 ## **Checkpoint 0: 📦 Environment 📚**
 
-Before you begin, you need to install the following tools:
-
-- [Node (v18 LTS)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-Then download the challenge to your computer and install dependencies by running:
-
-\`\`\`sh
-npx create-eth@0.2.4 -e challenge-prediction-markets challenge-prediction-markets
-cd challenge-prediction-markets
-\`\`\`
-
-in the same terminal, start your local network (a blockchain emulator in your computer)
+> Start your local network (a blockchain emulator in your computer)
 
 \`\`\`sh
 yarn chain
