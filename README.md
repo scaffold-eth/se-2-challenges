@@ -33,7 +33,7 @@ npx create-eth@0.1.0 -e challenge-0-simple-nft challenge-0-simple-nft
 cd challenge-0-simple-nft
 ```
 
-> in the same terminal, start your local network (a local instance of a blockchain):
+> in the same terminal, start your local network (a blockchain emulator in your computer):
 
 ```sh
 yarn chain
