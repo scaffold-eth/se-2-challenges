@@ -332,7 +332,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ### 🥅 Goals
 
-- [ ] 🧪 Can you borrow and repay CORN?
+- [ ] 🧪 Can you borrow and repay CORN? Don't forget to approve the Lending contract to use your CORN before attempting to repay.
 - [ ] ❓ What happens if you repay without having enough tokens to repay? Have you handled that well? (`Lending__RepayingFailed` might be nice to throw...)
 - [ ] 🛑 Can you borrow more than 120% of your collateral value? It should revert if you attempt this...
 
@@ -425,7 +425,13 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 🎉 Great work! Your contract has all the necessary functionality to help people get CORN loans.
 
-🍨 Now you get to see something real special. Run `yarn deploy --reset` as you usually do. Then run `yarn simulate`. This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
+🍨 Now you get to see something real special. Run `yarn deploy --reset` as you usually do. Then run:
+
+```sh
+yarn simulate
+```
+
+This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
 
 >👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 
