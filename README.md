@@ -31,7 +31,7 @@ npx create-eth@0.1.0 -e challenge-1-decentralized-staking challenge-1-decentrali
 cd challenge-1-decentralized-staking
 ```
 
-> in the same terminal, start your local network (a local instance of a blockchain):
+> in the same terminal, start your local network (a blockchain emulator in your computer):
 
 ```sh
 yarn chain
