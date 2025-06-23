@@ -20,7 +20,7 @@ export const extraContents = `# 🚩 Challenge 3: 🎲 Dice Game
 
 ## Checkpoint 0: 📦 Environment 📚
 
-> Start your local network (a local instance of a blockchain):
+> Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
