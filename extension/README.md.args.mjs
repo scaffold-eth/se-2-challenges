@@ -25,7 +25,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ## Checkpoint 0: 📦 Environment 📚
 
-> Start your local network (a local instance of a blockchain):
+> Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
