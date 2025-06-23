@@ -4,7 +4,7 @@ import TooltipInfo from "./TooltipInfo";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { IntegerInput } from "~~/components/scaffold-eth";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
 const BorrowOperations = () => {
@@ -18,8 +18,22 @@ const BorrowOperations = () => {
     functionName: "currentPrice",
   });
 
+  const { data: basicLendingContract } = useDeployedContractInfo({
+    contractName: "Lending",
+  });
+
   const { writeContractAsync: writeLendingContract } = useScaffoldWriteContract({
     contractName: "Lending",
+  });
+
+  const { writeContractAsync: writeCornContract } = useScaffoldWriteContract({
+    contractName: "Corn",
+  });
+
+  const { data: allowance } = useScaffoldReadContract({
+    contractName: "Corn",
+    functionName: "allowance",
+    args: [address, basicLendingContract?.address],
   });
 
   const handleBorrow = async () => {
@@ -35,10 +49,20 @@ const BorrowOperations = () => {
   };
 
   const handleRepay = async () => {
+    if (allowance === undefined || repayAmount === undefined || basicLendingContract === undefined) return;
     try {
+      const repayAmountWei = repayAmount ? parseEther(repayAmount) : 0n;
+      if (allowance < repayAmountWei) {
+        console.log("Approving corn contract");
+        await writeCornContract({
+          functionName: "approve",
+          args: [basicLendingContract?.address, repayAmountWei],
+        });
+      }
+      console.log("Repaying corn");
       await writeLendingContract({
         functionName: "repayCorn",
-        args: [repayAmount ? parseEther(repayAmount) : 0n],
+        args: [repayAmountWei],
       });
       setRepayAmount("");
     } catch (error) {
