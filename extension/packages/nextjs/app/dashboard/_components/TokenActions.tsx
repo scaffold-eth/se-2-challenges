@@ -7,6 +7,7 @@ import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useAnimationConfig } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
 const TokenActions = () => {
@@ -26,23 +27,39 @@ const TokenActions = () => {
   });
 
   const tokenBalance = `${Math.floor(Number(formatEther(cornBalance || 0n)) * 100) / 100}`;
+  const { showAnimation } = useAnimationConfig(cornBalance);
 
   return (
-    <div className="absolute mt-3 top-[100px] right-5 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl">
-      <div className="w-[150px] py-5 flex flex-col items-center gap-1 indicator">
-        <TooltipInfo top={3} right={3} infoText={`Here you can send ${tokenName} to any address or swap it`} />
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-sm font-bold">{tokenName} Wallet</span>
-          <span className="text-sm">
-            {tokenBalance} {tokenName}
-          </span>
-          <div className="flex gap-2">
-            <label htmlFor={`${transferModalId}`} className="btn btn-circle btn-xs">
-              <PaperAirplaneIcon className="h-3 w-3" />
+    <div className="card bg-base-100 w-96 shadow-xl indicator">
+      <TooltipInfo top={3} right={3} infoText={`Here you can send ${tokenName} to any address or swap it`} />
+      <div className="card-body">
+        <div className="w-full flex justify-between">
+          <h2 className="card-title">Your {tokenName} Wallet</h2>
+        </div>
+
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">Balance</span>
+          </label>
+          <div className="text-lg font-semibold">
+            <span
+              className={`transition bg-transparent ${showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""}`}
+            >
+              {tokenBalance} {tokenName}
+            </span>
+          </div>
+        </div>
+
+        <div className="form-control">
+          <div className="flex gap-2 items-center">
+            <label htmlFor={`${transferModalId}`} className="btn btn-primary flex-1">
+              <PaperAirplaneIcon className="h-4 w-4 mr-2" />
+              Transfer
             </label>
             {ConnectedChain?.id === hardhat.id && (
-              <label htmlFor={`${swapModalId}`} className="btn btn-circle btn-xs">
-                <ArrowsRightLeftIcon className="h-3 w-3" />
+              <label htmlFor={`${swapModalId}`} className="btn btn-primary flex-1">
+                <ArrowsRightLeftIcon className="h-4 w-4 mr-2" />
+                Swap
               </label>
             )}
           </div>
