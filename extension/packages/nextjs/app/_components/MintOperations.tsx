@@ -122,7 +122,7 @@ const MintOperations = () => {
             <div className="flex gap-2 items-center">
               <span className="label-text">Repay</span>
               <button
-                className="btn btn-sm btn-primary text-xs font-medium"
+                className="btn btn-xs btn-primary text-xs font-medium mb-1"
                 disabled={!currentDebtValue}
                 onClick={handleRepayAll}
               >

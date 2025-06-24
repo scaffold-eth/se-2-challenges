@@ -66,11 +66,11 @@ const StakeOperations = () => {
     <div className="card bg-base-100 w-96 shadow-xl indicator">
       <TooltipInfo top={3} right={3} infoText="Use these controls to stake or unstake MyUSD" />
       <div className="card-body">
-        <h2 className="card-title">Stake Operations</h2>
+        <h2 className="card-title">Stake Operations (MyUSD)</h2>
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Stake (MyUSD)</span>
+            <span className="label-text">Stake</span>
           </label>
           <div className="flex gap-2 items-center">
             <IntegerInput value={stakeAmount} onChange={setStakeAmount} placeholder="Amount" disableMultiplyBy1e18 />
@@ -82,7 +82,7 @@ const StakeOperations = () => {
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Withdraw (MyUSD)</span>
+            <span className="label-text">Withdraw</span>
           </label>
           <div className="flex gap-2 items-center">
             <button className="btn btn-sm btn-primary" onClick={handleWithdraw} disabled={withdrawDisabled}>

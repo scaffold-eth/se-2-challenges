@@ -44,11 +44,11 @@ const CollateralOperations = () => {
         infoText="Use these controls to add or withdraw collateral from the MyUSDEngine pool"
       />
       <div className="card-body">
-        <h2 className="card-title">Collateral Operations</h2>
+        <h2 className="card-title">Collateral Operations (ETH)</h2>
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Add Collateral (ETH)</span>
+            <span className="label-text">Add Collateral</span>
           </label>
           <div className="flex gap-2 items-center">
             <IntegerInput
@@ -65,7 +65,7 @@ const CollateralOperations = () => {
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Withdraw Collateral (ETH)</span>
+            <span className="label-text">Withdraw Collateral</span>
           </label>
           <div className="flex gap-2 items-center">
             <IntegerInput
