@@ -6,7 +6,7 @@ import { formatEther } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useAnimationConfig, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
 const TokenActions = () => {
@@ -34,6 +34,7 @@ const TokenActions = () => {
   const myUSDPrice = 1 / (Number(formatEther(ethMyUSDPrice || 0n)) / ethPriceInUSD);
 
   const tokenBalance = `${Math.floor(Number(formatEther(stablecoinBalance || 0n)) * 100) / 100}`;
+  const { showAnimation } = useAnimationConfig(ethMyUSDPrice);
 
   return (
     <div className="absolute mt-10 right-0 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl z-10">
@@ -45,7 +46,12 @@ const TokenActions = () => {
             {tokenBalance} {tokenName}
           </span>
           <span className="flex items-center text-xs">
-            1 {tokenName} = ${myUSDPrice.toFixed(5)}
+            1 {tokenName} =&nbsp;
+            <span
+              className={`transition bg-transparent ${showAnimation || isNaN(myUSDPrice) ? "bg-warning rounded-xs animate-pulse-fast" : ""}`}
+            >
+              {isNaN(myUSDPrice) ? "..." : `$${myUSDPrice.toFixed(5)}`}
+            </span>
           </span>
           <div className="flex gap-2">
             <label htmlFor={`${transferModalId}`} className="btn btn-primary btn-circle btn-xs">

@@ -12,7 +12,7 @@ const PriceGraph = () => {
   const strokeColor = isDarkMode ? "#ffffff" : "#000000";
   const yellowColor = "#f9a73e";
   const redColor = "#bf212f";
-  const greenColor = "#27b376";
+  const greenColor = "#82ca9d";
 
   const { data: ethPrice } = useScaffoldReadContract({
     contractName: "Oracle",
@@ -113,7 +113,7 @@ const PriceGraph = () => {
           </div>
         ) : priceData.length === 0 ? (
           <div className="flex items-center text-center justify-center h-full">
-            <p className="text-lg text-gray-500">No data</p>
+            <p className="text-lg">No data</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
