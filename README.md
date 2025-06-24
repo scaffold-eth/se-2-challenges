@@ -521,7 +521,7 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
 
 ---
 
-🧪 Go test the minting functionality on the front end. After depositing collateral, hover the mint icon and input the amount of MyUSD you would like to mint.
+🧪 Run `yarn deploy --reset` then go test the minting functionality on the front end. After depositing collateral, hover the mint icon and input the amount of MyUSD you would like to mint.
 
 ![MintOps](https://github.com/user-attachments/assets/71d0467f-9069-4244-9c7b-1d128eb344fb)
 
@@ -703,7 +703,7 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
         // Transfer the collateral to the user
         payable(msg.sender).transfer(amount);
 
-        emit CollateralWithdrawn(msg.sender, msg.sender, amount, i_oracle.getETHMyUSDPrice());
+        emit CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice());
     }
     ```
 

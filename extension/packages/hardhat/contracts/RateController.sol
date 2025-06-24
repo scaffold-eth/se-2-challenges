@@ -3,6 +3,8 @@ pragma solidity ^0.8.20;
 
 import "./MyUSDStaking.sol";
 
+error Engine__InvalidBorrowRate();
+
 contract RateController {
     IMyUSDEngine private i_myUSD;
     MyUSDStaking private i_staking;
@@ -17,7 +19,9 @@ contract RateController {
      * @param newRate The new borrow rate to set
      */
     function setBorrowRate(uint256 newRate) external {
-        i_myUSD.setBorrowRate(newRate);
+        try i_myUSD.setBorrowRate(newRate) {} catch {
+            revert Engine__InvalidBorrowRate();
+        }
     }
 
     /**
@@ -25,6 +29,8 @@ contract RateController {
      * @param newRate The new savings rate to set
      */
     function setSavingsRate(uint256 newRate) external {
-        i_staking.setSavingsRate(newRate);
+        try i_staking.setSavingsRate(newRate) {} catch {
+            revert Staking__InvalidSavingsRate();
+        }
     }
 }
