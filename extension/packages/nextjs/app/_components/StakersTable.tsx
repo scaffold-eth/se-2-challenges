@@ -41,6 +41,7 @@ const StakersStable = () => {
     setStakers(prevStakers => {
       const uniqueStakers = new Set([...prevStakers]);
       events
+        .filter(event => event && event.args)
         .map(event => event.args.user)
         .filter((user): user is string => !!user)
         .forEach(staker => uniqueStakers.add(staker));
