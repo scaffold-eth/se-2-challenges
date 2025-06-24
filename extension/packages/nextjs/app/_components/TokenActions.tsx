@@ -34,7 +34,7 @@ const TokenActions = () => {
   const myUSDPrice = 1 / (Number(formatEther(ethMyUSDPrice || 0n)) / ethPriceInUSD);
 
   const tokenBalance = `${Math.floor(Number(formatEther(stablecoinBalance || 0n)) * 100) / 100}`;
-  const { showAnimation } = useAnimationConfig(ethMyUSDPrice);
+  const { showAnimation } = useAnimationConfig(stablecoinBalance);
 
   return (
     <div className="absolute mt-10 right-0 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl z-10">
@@ -42,13 +42,19 @@ const TokenActions = () => {
         <TooltipInfo top={3} right={3} infoText={`Here you can send ${tokenName} to any address or swap it`} />
         <div className="flex flex-col items-center gap-1">
           <span className="text-sm font-bold">{tokenName} Wallet</span>
-          <span className="text-sm">
-            {tokenBalance} {tokenName}
+          <span className="flex text-sm">
+            <span
+              className={`transition bg-transparent ${showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""}`}
+            >
+              {tokenBalance}
+            </span>
+            &nbsp;
+            {tokenName}
           </span>
           <span className="flex items-center text-xs">
-            1 {tokenName} =&nbsp;
+            1 {tokenName} = &nbsp;
             <span
-              className={`transition bg-transparent ${showAnimation || isNaN(myUSDPrice) ? "bg-warning rounded-xs animate-pulse-fast" : ""}`}
+              className={`transition bg-transparent ${isNaN(myUSDPrice) ? "bg-gray-200 rounded animate-pulse" : ""}`}
             >
               {isNaN(myUSDPrice) ? "..." : `$${myUSDPrice.toFixed(5)}`}
             </span>
