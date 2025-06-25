@@ -98,15 +98,13 @@ const CollateralGraph = () => {
   }
 
   const ratioData = sortedEvents.reduce<DataPoint[]>((acc, event, idx) => {
-
-    const collateralAdded: bigint = event?.eventName === "CollateralAdded" ? event?.args.amount || 0n : 0n;
-    const collateralWithdrawn: bigint = event?.eventName === "CollateralWithdrawn" ? event?.args.amount || 0n : 0n;
-    const price: bigint =
-      "price" in event?.args ? event?.args.price : getPriceFromEvent(event?.blockNumber, priceEvents);
-    const debtAdded: bigint = event?.eventName === "AssetBorrowed" ? event?.args.amount || 0n : 0n;
-    const debtRepaid: bigint = event?.eventName === "AssetRepaid" ? event?.args.amount || 0n : 0n;
-    const amountForLiquidator: bigint = event?.eventName === "Liquidation" ? event?.args.amountForLiquidator || 0n : 0n;
-    const liquidatedDebtAmount: bigint = event?.eventName === "Liquidation" ? event?.args.liquidatedUserDebt || 0n : 0n;
+    const collateralAdded = event?.eventName === "CollateralAdded" ? event?.args.amount : 0n;
+    const collateralWithdrawn = event?.eventName === "CollateralWithdrawn" ? event?.args.amount : 0n;
+    const price = "price" in event?.args ? event?.args.price : getPriceFromEvent(event?.blockNumber, priceEvents);
+    const debtAdded = event?.eventName === "AssetBorrowed" ? event?.args.amount || 0n : 0n;
+    const debtRepaid = event?.eventName === "AssetRepaid" ? event?.args.amount || 0n : 0n;
+    const amountForLiquidator = event?.eventName === "Liquidation" ? event?.args.amountForLiquidator || 0n : 0n;
+    const liquidatedDebtAmount = event?.eventName === "Liquidation" ? event?.args.liquidatedUserDebt || 0n : 0n;
 
     const prevCollateral = acc[idx - 1]?.collateral || 0n;
     const prevDebt = acc[idx - 1]?.debt || 0n;
@@ -131,13 +129,10 @@ const CollateralGraph = () => {
 
   // Filter the ratioData to keep only the last occurrence of each block number
   const filteredRatioData = Object.values(
-    ratioData.reduce(
-      (acc, dataPoint) => {
-        acc[dataPoint.name] = dataPoint;
-        return acc;
-      },
-      {} as Record<number, DataPoint>,
-    ),
+    ratioData.reduce((acc, dataPoint) => {
+      acc[dataPoint.name] = dataPoint;
+      return acc;
+    }, {} as Record<number, DataPoint>)
   );
 
   return (

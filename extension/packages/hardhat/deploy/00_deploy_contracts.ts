@@ -63,8 +63,6 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
       `0x${hre.ethers.parseEther("10000000000000000000000").toString(16)}`,
     ]);
     await cornToken.mintTo(movePrice.address, hre.ethers.parseEther("10000000000000000000000"));
-    // Lenders deposit CORN to the lending contract
-    await cornToken.mintTo(lending.address, hre.ethers.parseEther("10000000000000000000000"));
     // Give CORN and ETH to the deployer
     await cornToken.mintTo(deployer, hre.ethers.parseEther("1000000000000"));
     await hre.ethers.provider.send("hardhat_setBalance", [
@@ -72,7 +70,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
       `0x${hre.ethers.parseEther("100000000000").toString(16)}`,
     ]);
 
-    // await cornToken.transferOwnership(lending.address);
+    await cornToken.transferOwnership(lending.address);
     await cornToken.approve(cornDEX.target, hre.ethers.parseEther("1000000000"));
     await cornDEX.init(hre.ethers.parseEther("1000000000"), { value: hre.ethers.parseEther("1000000") });
   }

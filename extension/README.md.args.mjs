@@ -14,8 +14,8 @@ First, traditional lending usually involves one party (such as a bank) offering 
 
 🤔 I am sure you are wondering, "What is the benefit of a loan if you can't take out more than you put in?" Great question! This form of lending lacks the common use case seen in traditional lending where people may use the loan to buy a house they otherwise couldn't afford but here are a few primary use cases of permissionless lending in DeFi:
 
-- 💰 Maintaining Price Exposure ~ You may have real world bills due but you are *sure* that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the loan.
-- 📈 Leverage ~ You could deposit ETH and borrow an asset but only use it to buy more ETH, increasing your exposure to the ETH price movements (to the upside 🎢 or the downside 🔻😰).
+- 💰 Maintaining Price Exposure ~ You may have real world bills due but you are *sure* that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH in a stablecoin and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the stablecoin loan.
+- 📈 Leverage ~ You could deposit ETH and borrow a stablecoin but only use it to buy more ETH, increasing your exposure to the ETH price movements (to the upside 🎢 or the downside 🔻😰).
 - 💸 Tax Advantages ~ In many jurisdictions, money obtained from a loan is taxed differently than money obtained other ways. It might be advantageous to avoid outright selling of an asset and instead get a loan against it.
 
 👍 Now that you know the background of what is and is not possible with onchain lending, let's dive in to the challenge!
@@ -75,13 +75,6 @@ yarn start
 ---
 
 ## Checkpoint 1: 💳🌽 Lending Contract
-
-A lending platform needs these three primary functions:
-1. Lending
-2. Borrowing
-3. Liquidation
-
-For this challenge we will not focus on the Lending aspect as much as the other two. We will assume that people have already supplied the Lending contract with the borrowable CORN. In a real system the borrower would be charged interest on the loan so that the lenders have an incentive to deposit assets but here we will just be focusing on the borrow side of the market.
 
 🔍 Navigate to the \`Debug Contracts\` tab, you should see four smart contracts displayed called \`Corn\`, \`CornDEX\`, \`Lending\` and \`MovePrice\`. You don't need to worry about any of these except \`Lending\` but here is a quick description of each:
 - 🌽 Corn ~ This is the ERC20 token that can be borrowed
@@ -286,8 +279,8 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ✅ It should validate the user's position (\`_validatePosition\`) so that it reverts if they are attempting to borrow more than they are allowed.
 
-🪙 Then it should use the CORN token's \`transferFrom\` function to move the tokens to the user's address.
- > ⚠️ As we mentioned above, we are only focusing on the borrow side of the market. We are just "pretending" that people have deposited the CORN in the Lending contract with the intent to make a profit but we haven't provided any real incentives for them to do so.
+🪙 Then it should use the CORN token's \`mintTo\` function to mint the tokens to the user's address.
+ > ⚠️ This is an oversimplification on our part. A real lending contract would not be minting the asset that is being borrowed in most cases. This way we only have to deal with one side of the market so it makes it easier to understand.
 
 📢 You should also emit the \`AssetBorrowed\` event.
 
@@ -295,7 +288,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ⚠️ Revert with \`Lending_InvalidAmount\` if the repayAmount is 0 or if it is more than the user has borrowed.
 
-🔄 Subtract the amount from the \`s_userBorrowed\` mapping. Then use the CORN token's \`transferFrom\` function to remove the CORN from the borrower's wallet back to the Lending contract.
+🔄 Subtract the amount from the \`s_userBorrowed\` mapping. Then use the CORN token's \`burnFrom\` function to remove the CORN from the borrower's wallet.
 
 📢 And finally, emit the \`AssetRepaid\` event.
 
@@ -310,7 +303,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
         }
         s_userBorrowed[msg.sender] += borrowAmount; // Update user's borrowed corn balance
         _validatePosition(msg.sender); // Validate user's position before borrowing
-        bool success = i_corn.transferFrom(address(this), msg.sender, borrowAmount); // Borrow corn to user
+        bool success = i_corn.mintTo(msg.sender, borrowAmount); // Borrow corn to user
         if (!success) {
             revert Lending__BorrowingFailed(); // Revert if borrowing fails
         }
@@ -322,7 +315,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
             revert Lending__InvalidAmount(); // Revert if repay amount is invalid
         }
         s_userBorrowed[msg.sender] -= repayAmount; // Reduce user's borrowed balance
-        bool success = i_corn.transferFrom(msg.sender, address(this), repayAmount); // Take CORN from user
+        bool success = i_corn.burnFrom(msg.sender, repayAmount); // Burn corns from user
         if (!success) {
             revert Lending__RepayingFailed(); // Revert if burning fails
         }
@@ -336,7 +329,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ### 🥅 Goals
 
-- [ ] 🧪 Can you borrow and repay CORN? Don't forget to approve the Lending contract to use your CORN before attempting to repay.
+- [ ] 🧪 Can you borrow and repay CORN?
 - [ ] ❓ What happens if you repay without having enough tokens to repay? Have you handled that well? (\`Lending__RepayingFailed\` might be nice to throw...)
 - [ ] 🛑 Can you borrow more than 120% of your collateral value? It should revert if you attempt this...
 
@@ -354,7 +347,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ❕ Also, Let's make sure the caller has enough CORN to liquidate the borrower's position. If they don't, revert with \`Lending__InsufficientLiquidatorCorn\`.
 
-🔄 Let's transfer the CORN to this contract from the liquidator. (\`transferFrom\`).
+🔄 Let's transfer the CORN to this contract from the liquidator and then burn it. (\`transferFrom\` and \`burnFrom\`).
 
 🧹 Clear the borrower's debt completely.
 
@@ -388,6 +381,9 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
         // transfer value of debt to the contract
         i_corn.transferFrom(msg.sender, address(this), userDebt);
+
+        // burn the transferred corn
+        i_corn.burnFrom(address(this), userDebt);
 
         // Clear user's debt
         s_userBorrowed[user] = 0;
@@ -423,19 +419,13 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ---
 
-## Checkpoint 6: Final Touches and Simulation
+## Checkpoint 6: Final Touches
 
 🔙 Throwback to the \`withdrawCollateral\` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a \`_validatePosition\` check to make sure that never happens. You should add it after the \`s_userCollateral\` mapping is updated so that it is checking the final state instead of the current state. Skip the check if they don't have any borrowed CORN.
 
 🎉 Great work! Your contract has all the necessary functionality to help people get CORN loans.
 
-🍨 Now you get to see something real special. Run \`yarn deploy --reset\` as you usually do. Then run:
-
-\`\`\`sh
-yarn simulate
-\`\`\`
-
-This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out \`packages/hardhat/scripts/marketSimulator.ts\` to adjust the default settings or change the logic on the bot accounts.
+🍨 Now you get to see something real special. Run \`yarn deploy --reset\` as you usually do. Then run \`yarn simulate\`. This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out \`packages/hardhat/scripts/marketSimulator.ts\` to adjust the default settings or change the logic on the bot accounts.
 
 >👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 
