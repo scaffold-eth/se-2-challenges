@@ -8,7 +8,7 @@
 
 🎫 Create a simple NFT to learn the basics of 🏗 scaffold-eth. You'll use 👷‍♀️ HardHat to compile and deploy smart contracts. Then, you'll use a template React app full of important Ethereum components and hooks. Finally, you'll deploy an NFT to a public network to share with friends! 🚀
 
-https://github.com/scaffold-eth/se-2-challenges/tree/challenge-0-simple-nft
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-0-simple-nft)
 
 ---
 
@@ -16,7 +16,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-0-simple-nft
 
 🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code.
 
-https://github.com/scaffold-eth/se-2-challenges/tree/challenge-1-decentralized-staking
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-1-decentralized-staking)
 
 ---
 
@@ -24,7 +24,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-1-decentralized-s
 
 🤖 Smart contracts are kind of like "always on" vending machines that anyone can access. Let's make a decentralized, digital currency. Then, let's build an unstoppable vending machine that will buy and sell the currency. We'll learn about the "approve" pattern for ERC20s and how contract to contract interactions work.
 
-https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor)
 
 ---
 
@@ -32,7 +32,7 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-2-token-vendor
 
 🎰 Randomness is tricky on a public deterministic blockchain. In this challenge you will explore creating random numbers using block hash and how that may be exploitable. Attack the dice game with your own contract by predicting the randomness ahead of time to always roll a winner!
 
-https://github.com/scaffold-eth/se-2-challenges/tree/challenge-3-dice-game
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-3-dice-game)
 
 ---
 
@@ -40,27 +40,53 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-3-dice-game
 
 💵 Build an exchange that swaps ETH to tokens and tokens to ETH. 💰 This is possible because the smart contract holds reserves of both assets and has a price function based on the ratio of the reserves. Liquidity providers are issued a token that represents their share of the reserves and fees...
 
-DEX Telegram Channel: https://t.me/+_NeUIJ664Tc1MzIx
-
-https://github.com/scaffold-eth/se-2-challenges/tree/challenge-4-dex
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-4-dex)
 
 ---
 
-## 🎉 Checkpoint: Eligible to join 🏰️ BuidlGuidl
+## 🎉 Checkpoint: Onboarding batches
 
-The BuidlGuidl is a curated group of Ethereum builders creating products, prototypes, and tutorials to enrich the web3 ecosystem. A place to show off your builds and meet other builders. Start crafting your Web3 portfolio by submitting your DEX, Multisig or SVG NFT build.
-
-https://buidlguidl.com/
+Dive into end-to-end dApp development, receive mentorship from BG members, and learn how to collaborate with fellow developers in open‑source projects.
 
 ---
 
-## 🚩 Challenge 5: 📺 State Channel Application Challenge
+## 🚩 Challenge 5: 🌽 Over-Collateralized Lending
 
-🛣️ The Ethereum blockchain has great decentralization & security properties but these properties come at a price: transaction throughput is low, and transactions can be expensive. This makes many traditional web applications infeasible on a blockchain... or does it? State channels look to solve these problems by allowing participants to securely transact off-chain while keeping interaction with Ethereum Mainnet at a minimum.
+💳 Build your own lending and borrowing platform. Let's write a contract that takes collateral and lets you borrow other assets against the value of the collateral. What happens when the collateral changes in value? We will be able to borrow more if it is higher, or if it is lower, we will also build a system for liquidating the debt position.
 
-State Channels Telegram Channel: https://t.me/+k0eUYngV2H0zYWUx
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-over-collateralized-lending)
 
-https://github.com/scaffold-eth/se-2-challenges/tree/challenge-5-state-channels
+---
+
+## 🚩 Challenge 6: 📈 Prediction Markets
+
+🔮 Build a prediction market where users can create questions about future outcomes for others to bet on. Users can also participate in existing markets to speculate on event results. 📊 Outcome shares can be traded, with prices adjusting dynamically based on market belief. This is possible because the smart contract acts as an automated market maker (like in the DEX challenge) and adjusts odds based on supply and demand.
+
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-prediction-markets)
+
+---
+
+## 🚩 Challenge 7: ⚡ Deploy to Layer 2
+
+🚀 Ethereum L2s make blockchain apps fast and cheap, bringing us closer to mainstream adoption! Most L2s are EVM compatible, meaning your app should work seamlessly across them with little to no changes—just deploy and go! In this challenge, you will deploy an app across multiple chains, including Optimism, Base, and Arbitrum, and experience the snappy, low-cost transactions while exploring how they make building scalable apps and games easier than ever.
+
+Coming soon...
+
+---
+
+## 🚩 Challenge 8: Multisig Wallet
+
+👩‍👩‍👧‍👧 Using a smart contract as a wallet we can secure assets by requiring multiple accounts to "vote" on transactions. The contract will keep track of transactions in an array of structs and owners will confirm or reject each one. Any transaction with enough confirmations can "execute".
+
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-6-multisig)
+
+---
+
+## 🚩 Challenge 9: SVG NFT
+
+🎨 Create a dynamic SVG NFT using a smart contract. Your contract will generate on-chain SVG images and allow users to mint their unique NFTs. ✨ Customize your SVG graphics and metadata directly within the smart contract. 🚀 Share the minting URL once your project is live!
+
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-7-svg-nft)
 
 ---
 
@@ -71,13 +97,16 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-5-state-channels
 Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/createExtensions) and familiarize yourself with the way extensions work by watching the video and reading the overview.
 
 ### 2. Follow the steps to create an extension
+
 1. Clone the [create-eth repo](https://github.com/scaffold-eth/create-eth) and cd into it.
+
 ```bash
     git clone https://github.com/scaffold-eth/create-eth
     cd create-eth
 ```
 
 #### Setting up things in externalExtensions:
+
 2. cd into `externalExtensions` (if it's not present `mkdir externalExtensions && cd externalExtensions`)
 
 3. Clone the base-challenge-template with name of your extension inside `externalExtensions`:
@@ -87,6 +116,7 @@ Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/cre
 ```
 
 4. cd into `<my-challenge-name>` dir and create a branch with your challenge name.
+
 ```bash
     cd <my-challenge-name> && git switch -c <my-challenge-name>
 ```
