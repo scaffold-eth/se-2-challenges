@@ -39,6 +39,7 @@ contract Lending is Ownable {
     constructor(address _cornDEX, address _corn) Ownable(msg.sender) {
         i_cornDEX = CornDEX(_cornDEX);
         i_corn = Corn(_corn);
+        i_corn.approve(address(this), type(uint256).max);
     }
 
     /**
