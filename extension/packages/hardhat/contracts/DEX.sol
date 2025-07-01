@@ -51,6 +51,7 @@ contract DEX {
         totalLiquidity = address(this).balance;
         liquidity[msg.sender] = totalLiquidity;
         require(token.transferFrom(msg.sender, address(this), tokens), "DEX: init - transfer did not transact");
+        emit PriceUpdated(currentPrice());
         return totalLiquidity;
     }
 
