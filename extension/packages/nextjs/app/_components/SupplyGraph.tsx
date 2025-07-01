@@ -187,6 +187,10 @@ const SupplyGraph = () => {
           <div className="flex items-center text-center justify-center h-full">
             <span className="loading loading-spinner loading-lg"></span>
           </div>
+        ) : supplyData.length === 0 ? (
+          <div className="flex items-center text-center justify-center h-full">
+            <p className="text-lg">No data</p>
+          </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart width={500} height={300} data={supplyData} margin={{ top: 10, right: 25, bottom: 20, left: 30 }}>
