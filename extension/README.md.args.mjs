@@ -1,7 +1,5 @@
 export const skipQuickStart = true;
-// CHALLENGE-TODO: Update the readme to reflect your challenge. In the very end you will need a non-template
-// README.md file in the extension root so it is recommended to copy the template in a markdown file and then
-// update extraContents after confirming the template is correct.
+
 export const extraContents = `# 💳🌽 Over-Collateralized Lending
 
 ![readme-lending](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-over-collateralized-lending/extension/packages/nextjs/public/hero.png)

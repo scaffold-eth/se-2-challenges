@@ -32,5 +32,4 @@ export const description = `
   </div>
 `;
 
-// CHALLENGE-TODO: Update the externalExtensionName to reflect your challenge
 export const externalExtensionName = "SpeedRunEthereum Over-collateralized Lending";
