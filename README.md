@@ -199,7 +199,7 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
 
 ---
 
-🚀 Go ahead and re-deploy your contracts with `yarn deploy --reset` and test your front-end to see if you can add collateral. 
+🚀 Go ahead and re-deploy your contracts with `yarn deploy --reset` and test your front-end to see if you can add collateral.
 
 On the right side of the screen you will see a three icon menu. Hover the top icon to make the collateral menu appear.
 
