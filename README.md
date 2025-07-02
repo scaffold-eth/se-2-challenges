@@ -109,7 +109,7 @@ These are located in `packages/hardhat/contracts`. Go check them out and referen
 
 5. 📊 **Oracle (`Oracle.sol`)**
    - Provides ETH/MyUSD and ETH/USD price feeds
-   - ETH/USD price is **fixed** at time you deploy the contracts
+   - ETH/USD price is **fixed** at the time you deploy the contracts
 
 > ⚠️ The real world ETH price being fixed is just a shortcut on our parts to simplify the overall process of understanding the mechanics at play. It would be substantially harder to track the impact of the peg manipulation devices if we also had to account for a changing ETH price.
 
