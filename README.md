@@ -46,7 +46,7 @@
 
 ## 🎉 Checkpoint: Onboarding batches
 
-Dive into end-to-end dApp development, receive mentorship from BG members, and learn how to collaborate with fellow developers in open‑source projects.
+Dive into end-to-end dApp development, receive mentorship from BuidlGuidl members, and learn how to collaborate with fellow developers in open‑source projects.
 
 ---
 
