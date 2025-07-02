@@ -247,7 +247,7 @@ Think of shares like a "debt token" that represents a portion of the total debt 
 
 ---
 
-Keep in mind, in the absence of decimals we will assume that a borrow rate of 125 is equivalent to a 1.25% annual rate. This will mean we need to multiply by 10000
+Keep in mind, in the absence of decimals we will assume that a borrow rate of 125 is equivalent to a 1.25% annual rate. This will mean we need to divide by 10000 (i.e. 100.00%) any time we have multiplied by the borrow rate.
 
 ### ✏️ Tasks:
 
@@ -541,7 +541,7 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
 
 🛠️ Now let's set up the ability for the rate controller to change the borrow rate.
 
-Whenever the rate is changed we need to "lock-in" all the interest accrued since the last rate change using the `_accrueInterest` method we created in checkpoint 2.
+Whenever the rate is changed we need to "lock-in" all the interest accrued since the last rate change using the `_accrueInterest` method we created in checkpoint 3.
 
 ### ✏️ Tasks:
 

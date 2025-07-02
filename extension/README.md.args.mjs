@@ -4,7 +4,9 @@ export const extraContents = `# 💰 MyUSD Stablecoin
 
 ![readme-stablecoin](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-stablecoins/extension/packages/nextjs/public/hero.png)
 
-> 🪙 Build your own decentralized stablecoin! In this challenge, you'll build the core engine for **MyUSD**, a crypto-backed stablecoin designed to maintain a peg to $1 USD. You'll get to wear the hat of a DeFi protocol that wants to maintain price stability while also increasing adoption of your stablecoin product, diving deep into concepts like collateralization, minting, burning, interest rates, and liquidations – all crucial components of a robust stablecoin system.
+🪙 Build your own decentralized stablecoin! In this challenge, you'll build the core engine for **MyUSD**, a crypto-backed stablecoin designed to maintain a peg to $1 USD.
+
+You'll get to wear the hat of a DeFi protocol that wants to maintain price stability while also increasing adoption of your stablecoin product, diving deep into concepts like **collateralization, minting, burning, interest rates,** and **liquidations** – all crucial components of a robust stablecoin system.
 
 <details markdown='1'><summary>❓ Wondering what a stablecoin is? Read the overview here.</summary>
 
@@ -26,7 +28,7 @@ Stablecoins are cryptocurrencies designed to maintain a stable value relative to
 🌟 The final deliverable is an app that allows users to mint and manage a decentralized stablecoin (MyUSD) backed by ETH collateral, with features for depositing collateral, minting/burning tokens, managing positions, and participating in liquidations.
 Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-🔍 First we should mention there are lots of different types of stablecoins on the market. Some are backed 1-1 with actual USD denominated assets in a bank (USDC, USDT). Others are backed by crypto and use special mechanisms to maintain their peg (Dai, RAI, LUSD/BOLD).
+🔍 First we should mention there are lots of different types of stablecoins on the market. Some are backed 1:1 with actual USD-denominated assets in a bank (USDC, USDT). Others are backed by crypto and use special mechanisms to maintain their peg (Dai, RAI, LUSD/BOLD).
 
 📚 This challenge is modeled after one of the first crypto-backed stablecoins called Dai - back when the only thing backing it was ETH. Later Dai would allow multiple types of collateral and change its design somewhat. The version we are building is commonly referred to as "single collateral Dai".
 
@@ -47,7 +49,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 \`\`\`sh
-npx create-eth@0.2.4 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins 
+npx create-eth@0.2.4 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins
 cd challenge-stablecoins
 \`\`\`
 
@@ -109,7 +111,7 @@ These are located in \`packages/hardhat/contracts\`. Go check them out and refer
 
 5. 📊 **Oracle (\`Oracle.sol\`)**
    - Provides ETH/MyUSD and ETH/USD price feeds
-   - ETH/USD price is **fixed** at time you deploy the contracts
+   - ETH/USD price is **fixed** at the time you deploy the contracts
 
 > ⚠️ The real world ETH price being fixed is just a shortcut on our parts to simplify the overall process of understanding the mechanics at play. It would be substantially harder to track the impact of the peg manipulation devices if we also had to account for a changing ETH price.
 
@@ -199,7 +201,7 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
 
 ---
 
-🚀 Go ahead and re-deploy your contracts with \`yarn deploy --reset\` and test your front-end to see if you can add collateral. 
+🚀 Go ahead and re-deploy your contracts with \`yarn deploy --reset\` and test your front-end to see if you can add collateral.
 
 On the right side of the screen you will see a three icon menu. Hover the top icon to make the collateral menu appear.
 
@@ -247,7 +249,7 @@ Think of shares like a "debt token" that represents a portion of the total debt 
 
 ---
 
-Keep in mind, in the absence of decimals we will assume that a borrow rate of 125 is equivalent to a 1.25% annual rate. This will mean we need to multiply by 10000
+Keep in mind, in the absence of decimals we will assume that a borrow rate of 125 is equivalent to a 1.25% annual rate. This will mean we need to divide by 10000 (i.e. 100.00%) any time we have multiplied by the borrow rate.
 
 ### ✏️ Tasks:
 
@@ -541,7 +543,7 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
 
 🛠️ Now let's set up the ability for the rate controller to change the borrow rate.
 
-Whenever the rate is changed we need to "lock-in" all the interest accrued since the last rate change using the \`_accrueInterest\` method we created in checkpoint 2.
+Whenever the rate is changed we need to "lock-in" all the interest accrued since the last rate change using the \`_accrueInterest\` method we created in checkpoint 3.
 
 ### ✏️ Tasks:
 
