@@ -105,6 +105,8 @@ yarn start
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
+You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
+
 🔐 Generate a deployer address with \`yarn generate\`. This creates a unique deployer address and saves the mnemonic locally.
 
 > This local account will deploy your contracts, allowing you to avoid entering a personal private key.
