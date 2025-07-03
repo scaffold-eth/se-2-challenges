@@ -25,7 +25,7 @@ const Loogies: NextPage = () => {
     functionName: "totalSupply",
   });
 
-  const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "YourCollectible" });
 
   const { data: contract } = useScaffoldContract({
     contractName: "YourCollectible",
