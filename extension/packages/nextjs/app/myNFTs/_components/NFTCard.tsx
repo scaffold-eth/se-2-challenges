@@ -6,7 +6,7 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 export const NFTCard = ({ nft }: { nft: Collectible }) => {
   const [transferToAddress, setTransferToAddress] = useState("");
 
-  const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "YourCollectible" });
 
   return (
     <div className="card card-compact bg-base-100 shadow-lg w-[300px] shadow-secondary">
@@ -53,7 +53,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
                   args: [nft.owner, transferToAddress, BigInt(nft.id.toString())],
                 });
               } catch (err) {
-                console.error("Error calling transferFrom function");
+                console.error("Error calling transferFrom function", err);
               }
             }}
           >
