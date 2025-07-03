@@ -22,8 +22,8 @@ const Dex: NextPage = () => {
   const [approveAmount, setApproveAmount] = useState("");
   const [accountBalanceOf, setAccountBalanceOf] = useState("");
 
-  const { data: DEXInfo } = useDeployedContractInfo("DEX");
-  const { data: BalloonsInfo } = useDeployedContractInfo("Balloons");
+  const { data: DEXInfo } = useDeployedContractInfo({ contractName: "DEX" });
+  const { data: BalloonsInfo } = useDeployedContractInfo({ contractName: "Balloons" });
   const { address: connectedAccount } = useAccount();
 
   const { data: DEXBalloonBalance } = useScaffoldReadContract({
@@ -43,9 +43,9 @@ const Dex: NextPage = () => {
     functionName: "totalLiquidity",
   });
 
-  const { writeContractAsync: writeDexContractAsync } = useScaffoldWriteContract("DEX");
+  const { writeContractAsync: writeDexContractAsync } = useScaffoldWriteContract({ contractName: "DEX" });
 
-  const { writeContractAsync: writeBalloonsContractAsync } = useScaffoldWriteContract("Balloons");
+  const { writeContractAsync: writeBalloonsContractAsync } = useScaffoldWriteContract({ contractName: "Balloons" });
 
   const { data: balanceOfWrite } = useScaffoldReadContract({
     contractName: "Balloons",
@@ -125,7 +125,7 @@ const Dex: NextPage = () => {
                         value: NUMBER_REGEX.test(ethToTokenAmount) ? parseEther(ethToTokenAmount) : 0n,
                       });
                     } catch (err) {
-                      console.error("Error calling ethToToken function");
+                      console.error("Error calling ethToToken function", err);
                     }
                   }}
                 >
@@ -155,7 +155,7 @@ const Dex: NextPage = () => {
                         args: [NUMBER_REGEX.test(tokenToETHAmount) ? parseEther(tokenToETHAmount) : tokenToETHAmount],
                       });
                     } catch (err) {
-                      console.error("Error calling tokenToEth function");
+                      console.error("Error calling tokenToEth function", err);
                     }
                   }}
                 >
@@ -180,7 +180,7 @@ const Dex: NextPage = () => {
                         value: NUMBER_REGEX.test(depositAmount) ? parseEther(depositAmount) : 0n,
                       });
                     } catch (err) {
-                      console.error("Error calling deposit function");
+                      console.error("Error calling deposit function", err);
                     }
                   }}
                 >
@@ -202,7 +202,7 @@ const Dex: NextPage = () => {
                         args: [NUMBER_REGEX.test(withdrawAmount) ? parseEther(withdrawAmount) : withdrawAmount],
                       });
                     } catch (err) {
-                      console.error("Error calling withdraw function");
+                      console.error("Error calling withdraw function", err);
                     }
                   }}
                 >
@@ -251,7 +251,7 @@ const Dex: NextPage = () => {
                         ],
                       });
                     } catch (err) {
-                      console.error("Error calling approve function");
+                      console.error("Error calling approve function", err);
                     }
                   }}
                 >
