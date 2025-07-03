@@ -80,9 +80,13 @@ const DiceGame: NextPage = () => {
     }
   }, [winnerHistoryData, winnerHistoryLoading, winners.length]);
 
-  const { writeContractAsync: writeDiceGameAsync, isError: rollTheDiceError } = useScaffoldWriteContract("DiceGame");
+  const { writeContractAsync: writeDiceGameAsync, isError: rollTheDiceError } = useScaffoldWriteContract({
+    contractName: "DiceGame",
+  });
 
-  const { writeContractAsync: writeRiggedRollAsync, isError: riggedRollError } = useScaffoldWriteContract("RiggedRoll");
+  const { writeContractAsync: writeRiggedRollAsync, isError: riggedRollError } = useScaffoldWriteContract({
+    contractName: "RiggedRoll",
+  });
 
   useEffect(() => {
     if (rollTheDiceError || riggedRollError) {
