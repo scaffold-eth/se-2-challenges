@@ -28,9 +28,9 @@ const TokenVendor: NextPage = () => {
     args: [address],
   });
 
-  const { data: vendorContractData } = useDeployedContractInfo("Vendor");
-  const { writeContractAsync: writeVendorAsync } = useScaffoldWriteContract("Vendor");
-  const { writeContractAsync: writeYourTokenAsync } = useScaffoldWriteContract("YourToken");
+  const { data: vendorContractData } = useDeployedContractInfo({ contractName: "Vendor" });
+  const { writeContractAsync: writeVendorAsync } = useScaffoldWriteContract({ contractName: "Vendor" });
+  const { writeContractAsync: writeYourTokenAsync } = useScaffoldWriteContract({ contractName: "YourToken" });
 
   // const { data: vendorTokenBalance } = useScaffoldReadContract({
   //   contractName: "YourToken",
@@ -91,7 +91,7 @@ const TokenVendor: NextPage = () => {
               try {
                 await writeVendorAsync({ functionName: "buyTokens", value: getTokenPrice(tokensToBuy, tokensPerEth) });
               } catch (err) {
-                console.error("Error calling buyTokens function");
+                console.error("Error calling buyTokens function", err);
               }
             }}
           >
@@ -121,7 +121,7 @@ const TokenVendor: NextPage = () => {
                     args: [toAddress, multiplyTo1e18(tokensToSend)],
                   });
                 } catch (err) {
-                  console.error("Error calling transfer function");
+                  console.error("Error calling transfer function", err);
                 }
               }}
             >
@@ -157,7 +157,7 @@ const TokenVendor: NextPage = () => {
                     });
                     setIsApproved(true);
                   } catch (err) {
-                    console.error("Error calling approve function");
+                    console.error("Error calling approve function", err);
                   }
                 }}
               >
@@ -171,7 +171,7 @@ const TokenVendor: NextPage = () => {
                     await writeVendorAsync({ functionName: "sellTokens", args: [multiplyTo1e18(tokensToSell)] });
                     setIsApproved(false);
                   } catch (err) {
-                    console.error("Error calling sellTokens function");
+                    console.error("Error calling sellTokens function", err);
                   }
                 }}
               >
