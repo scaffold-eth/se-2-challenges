@@ -37,7 +37,7 @@ export const TransactionItem: FC<TransactionItemProps> = ({ tx, completed, outda
     walletClient,
   });
 
-  const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
+  const { data: contractInfo } = useDeployedContractInfo({ contractName: "MetaMultiSigWallet" });
 
   const txnData =
     contractInfo?.abi && tx.data

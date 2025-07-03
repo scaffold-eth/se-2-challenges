@@ -18,7 +18,7 @@ const Owners: FC = () => {
     DEFAULT_TX_DATA,
   );
 
-  const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
+  const { data: contractInfo } = useDeployedContractInfo({ contractName: "MetaMultiSigWallet" });
 
   const { data: signaturesRequired } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
