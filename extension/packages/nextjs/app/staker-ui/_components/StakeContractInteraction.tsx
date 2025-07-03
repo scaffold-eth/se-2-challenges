@@ -45,7 +45,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
     watch: true,
   });
 
-  const { writeContractAsync } = useScaffoldWriteContract("Staker");
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "Staker" });
 
   return (
     <div className="flex items-center flex-col flex-grow w-full px-4 gap-12">
