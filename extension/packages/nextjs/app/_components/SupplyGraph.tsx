@@ -40,11 +40,8 @@ const calculateDexSwapAmounts = (event: any) => {
   };
 };
 
-const CustomTooltip = ({ active, payload, label, data }: TooltipProps<number, string> & { data: DataPoint[] }) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
-    // Find the data point for this block number
-    const dataPoint = data?.find(d => d.blockNumber === label);
-    const circulating = dataPoint?.circulatingSupply || 0;
     const staked = payload.find(p => p.dataKey === "stakedSupply")?.value || 0;
     const total = payload.find(p => p.dataKey === "totalSupply")?.value || 0;
 
@@ -52,13 +49,10 @@ const CustomTooltip = ({ active, payload, label, data }: TooltipProps<number, st
       <div className="bg-base-200 border border-base-300 rounded-lg px-3 my-0 shadow-lg">
         <p className="font-semibold text-sm mt-2 mb-1">Block {label}</p>
         <p className="text-sm my-0">
-          <span style={{ color: PURPLE_COLOR }}>●</span> Circulating: {formatDisplayValue(circulating)} MyUSD
+          <span style={{ color: ORANGE_COLOR }}>●</span> Total: {formatDisplayValue(total)} MyUSD
         </p>
         <p className="text-sm my-0">
           <span style={{ color: GREEN_COLOR }}>●</span> Staked: {formatDisplayValue(staked)} MyUSD
-        </p>
-        <p className="text-sm my-0">
-          <span style={{ color: ORANGE_COLOR }}>●</span> Total: {formatDisplayValue(total)} MyUSD
         </p>
       </div>
     );
@@ -208,7 +202,7 @@ const SupplyGraph = () => {
                 }}
                 tick={{ fill: strokeColor, fontSize: 12 }}
               />
-              <Tooltip content={<CustomTooltip data={supplyData} />} />
+              <Tooltip content={<CustomTooltip />} />
               <Line
                 type="monotone"
                 dataKey="totalSupply"
