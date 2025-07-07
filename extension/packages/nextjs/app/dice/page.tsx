@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { Address as AddressType, formatEther, parseEther } from "viem";
 import { Amount, Roll, RollEvents, Winner, WinnerEvents } from "~~/app/dice/_components";
@@ -88,12 +88,16 @@ const DiceGame: NextPage = () => {
     contractName: "RiggedRoll",
   });
 
+  const immediateStopRolling = useCallback(() => {
+    setIsRolling(false);
+    setRolled(false);
+  }, []);
+
   useEffect(() => {
     if (rollTheDiceError || riggedRollError) {
-      setIsRolling(false);
-      setRolled(false);
+      immediateStopRolling();
     }
-  }, [riggedRollError, rollTheDiceError]);
+  }, [immediateStopRolling, riggedRollError, rollTheDiceError]);
 
   useEffect(() => {
     if (videoRef.current && !isRolling) {
@@ -129,6 +133,7 @@ const DiceGame: NextPage = () => {
                 await writeDiceGameAsync({ functionName: "rollTheDice", value: parseEther(ROLL_ETH_VALUE) });
               } catch (err) {
                 console.error("Error calling rollTheDice function", err);
+                immediateStopRolling();
               }
             }}
             disabled={isRolling}
@@ -156,6 +161,7 @@ const DiceGame: NextPage = () => {
                 await writeRiggedRollAsync({ functionName: "riggedRoll" });
               } catch (err) {
                 console.error("Error calling riggedRoll function", err);
+                immediateStopRolling();
               }
             }}
             disabled={isRolling}
