@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Curve } from "./_components";
 import type { NextPage } from "next";
-import { Address as AddressType, formatEther, parseEther } from "viem";
+import { Address as AddressType, formatEther, isAddress, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { Address, AddressInput, Balance, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -51,6 +51,9 @@ const Dex: NextPage = () => {
     contractName: "Balloons",
     functionName: "balanceOf",
     args: [accountBalanceOf as AddressType],
+    query: {
+      enabled: isAddress(accountBalanceOf),
+    },
   });
 
   const { data: contractBalance } = useScaffoldReadContract({
