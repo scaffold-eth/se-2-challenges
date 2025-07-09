@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "simulate": "yarn workspace @se-2/hardhat simulate",
+    "interest-rate-controller": "yarn workspace @se-2/hardhat interest-rate-controller"
+  }
+}
