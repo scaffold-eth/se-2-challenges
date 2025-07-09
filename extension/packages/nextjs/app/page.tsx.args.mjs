@@ -1,4 +1,4 @@
-export const imports = `import Image from "next/image";`;
+export const preContent = `import Image from "next/image";`;
 
 export const description = `
   <div className="flex items-center flex-col flex-grow mt-4">
