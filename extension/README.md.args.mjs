@@ -20,7 +20,7 @@ export const extraContents = `# 🚩 Challenge 2: 🏵 Token Vendor 🤖
 
 ## Checkpoint 0: 📦 Environment 📚
 
-> Start your local network (a local instance of a blockchain):
+> Start your local network (a blockchain emulator in your computer):
 
 \`\`\`
 yarn chain
