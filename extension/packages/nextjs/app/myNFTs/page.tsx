@@ -12,7 +12,7 @@ import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
 const MyNFTs: NextPage = () => {
   const { address: connectedAddress, isConnected, isConnecting } = useAccount();
 
-  const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "YourCollectible" });
 
   const { data: tokenIdCounter } = useScaffoldReadContract({
     contractName: "YourCollectible",
