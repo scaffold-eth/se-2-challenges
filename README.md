@@ -47,7 +47,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@0.2.6 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins
+npx create-eth@1.0.0 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins
 cd challenge-stablecoins
 ```
 

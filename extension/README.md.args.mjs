@@ -40,20 +40,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ## Checkpoint 0: 📦 Environment 📚
 
-🛠️ Before you begin, you need to install the following tools:
-
-- [Node (>=20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-📥 Then download the challenge to your computer and install dependencies by running:
-
-\`\`\`sh
-npx create-eth@0.2.6 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins
-cd challenge-stablecoins
-\`\`\`
-
-> 💻 In the same terminal, start your local network (a blockchain emulator in your computer):
+> 💻 Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
