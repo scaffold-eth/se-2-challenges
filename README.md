@@ -27,7 +27,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@0.1.0 -e challenge-1-decentralized-staking challenge-1-decentralized-staking
+npx create-eth@1.0.0 -e challenge-1-decentralized-staking challenge-1-decentralized-staking
 cd challenge-1-decentralized-staking
 ```
 
