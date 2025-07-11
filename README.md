@@ -24,7 +24,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@0.1.0 -e challenge-4-dex challenge-4-dex
+npx create-eth@1.0.0 -e challenge-4-dex challenge-4-dex
 cd challenge-4-dex
 ```
 
