@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Curve } from "./_components";
 import type { NextPage } from "next";
-import { Address as AddressType, formatEther, parseEther } from "viem";
+import { Address as AddressType, formatEther, isAddress, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { Address, AddressInput, Balance, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -22,8 +22,8 @@ const Dex: NextPage = () => {
   const [approveAmount, setApproveAmount] = useState("");
   const [accountBalanceOf, setAccountBalanceOf] = useState("");
 
-  const { data: DEXInfo } = useDeployedContractInfo("DEX");
-  const { data: BalloonsInfo } = useDeployedContractInfo("Balloons");
+  const { data: DEXInfo } = useDeployedContractInfo({ contractName: "DEX" });
+  const { data: BalloonsInfo } = useDeployedContractInfo({ contractName: "Balloons" });
   const { address: connectedAccount } = useAccount();
 
   const { data: DEXBalloonBalance } = useScaffoldReadContract({
@@ -43,14 +43,17 @@ const Dex: NextPage = () => {
     functionName: "totalLiquidity",
   });
 
-  const { writeContractAsync: writeDexContractAsync } = useScaffoldWriteContract("DEX");
+  const { writeContractAsync: writeDexContractAsync } = useScaffoldWriteContract({ contractName: "DEX" });
 
-  const { writeContractAsync: writeBalloonsContractAsync } = useScaffoldWriteContract("Balloons");
+  const { writeContractAsync: writeBalloonsContractAsync } = useScaffoldWriteContract({ contractName: "Balloons" });
 
   const { data: balanceOfWrite } = useScaffoldReadContract({
     contractName: "Balloons",
     functionName: "balanceOf",
     args: [accountBalanceOf as AddressType],
+    query: {
+      enabled: isAddress(accountBalanceOf),
+    },
   });
 
   const { data: contractBalance } = useScaffoldReadContract({
@@ -125,7 +128,7 @@ const Dex: NextPage = () => {
                         value: NUMBER_REGEX.test(ethToTokenAmount) ? parseEther(ethToTokenAmount) : 0n,
                       });
                     } catch (err) {
-                      console.error("Error calling ethToToken function");
+                      console.error("Error calling ethToToken function", err);
                     }
                   }}
                 >
@@ -155,7 +158,7 @@ const Dex: NextPage = () => {
                         args: [NUMBER_REGEX.test(tokenToETHAmount) ? parseEther(tokenToETHAmount) : tokenToETHAmount],
                       });
                     } catch (err) {
-                      console.error("Error calling tokenToEth function");
+                      console.error("Error calling tokenToEth function", err);
                     }
                   }}
                 >
@@ -180,7 +183,7 @@ const Dex: NextPage = () => {
                         value: NUMBER_REGEX.test(depositAmount) ? parseEther(depositAmount) : 0n,
                       });
                     } catch (err) {
-                      console.error("Error calling deposit function");
+                      console.error("Error calling deposit function", err);
                     }
                   }}
                 >
@@ -202,7 +205,7 @@ const Dex: NextPage = () => {
                         args: [NUMBER_REGEX.test(withdrawAmount) ? parseEther(withdrawAmount) : withdrawAmount],
                       });
                     } catch (err) {
-                      console.error("Error calling withdraw function");
+                      console.error("Error calling withdraw function", err);
                     }
                   }}
                 >
@@ -251,7 +254,7 @@ const Dex: NextPage = () => {
                         ],
                       });
                     } catch (err) {
-                      console.error("Error calling approve function");
+                      console.error("Error calling approve function", err);
                     }
                   }}
                 >
