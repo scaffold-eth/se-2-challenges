@@ -10,7 +10,7 @@ import {
 } from "~~/hooks/scaffold-eth";
 
 const Multisig: FC = () => {
-  const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
+  const { data: contractInfo } = useDeployedContractInfo({ contractName: "MetaMultiSigWallet" });
 
   const contractAddress = contractInfo?.address;
 

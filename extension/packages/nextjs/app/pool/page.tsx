@@ -20,7 +20,7 @@ const Pool: FC = () => {
   // const [subscriptionEventsHashes, setSubscriptionEventsHashes] = useState<`0x${string}`[]>([]);
   const { targetNetwork } = useTargetNetwork();
   const poolServerUrl = getPoolServerUrl(targetNetwork.id);
-  const { data: contractInfo } = useDeployedContractInfo("MetaMultiSigWallet");
+  const { data: contractInfo } = useDeployedContractInfo({ contractName: "MetaMultiSigWallet" });
   const chainId = useChainId();
   const { data: nonce } = useScaffoldReadContract({
     contractName: "MetaMultiSigWallet",
