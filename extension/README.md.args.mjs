@@ -42,7 +42,7 @@ This challenge is brimming with creative freedom, giving you the opportunity to 
 
 ## Checkpoint 0: 📦 Environment 📚
 
-Start your local network (a blockchain emulator in your computer):
+> Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
