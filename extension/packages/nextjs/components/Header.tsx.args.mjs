@@ -1,10 +1,12 @@
-export const menuIconImports = `import { CubeIcon } from "@heroicons/react/24/outline";`;
+export const preContent = `import { CubeIcon } from "@heroicons/react/24/outline";`;
 
-export const menuObjects = `{
+export const extraMenuLinksObjects = [
+  {
     label: "Dice Game",
     href: "/dice",
-    icon: <CubeIcon className="h-4 w-4" />,
-  }`;
+    icon: '$$<CubeIcon className="h-4 w-4" />$$',
+  },
+];
 
 export const logoTitle = "SRE Challenges";
 export const logoSubtitle = "#3 Dice Game";

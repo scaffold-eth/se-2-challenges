@@ -20,14 +20,14 @@
 
 Before you begin, you need to install the following tools:
 
-- [Node (v18 LTS)](https://nodejs.org/en/download/)
+- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
 
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@0.1.0 -e challenge-3-dice-game challenge-3-dice-game
+npx create-eth@1.0.0 -e challenge-3-dice-game challenge-3-dice-game
 cd challenge-3-dice-game
 ```
 
