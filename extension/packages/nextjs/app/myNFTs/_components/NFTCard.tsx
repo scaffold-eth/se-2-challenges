@@ -6,14 +6,14 @@ import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 export const NFTCard = ({ nft }: { nft: Collectible }) => {
   const [transferToAddress, setTransferToAddress] = useState("");
 
-  const { writeContractAsync } = useScaffoldWriteContract("YourCollectible");
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "YourCollectible" });
 
   return (
     <div className="card card-compact bg-base-100 shadow-lg w-[300px] shadow-secondary">
       <figure className="relative">
         {/* eslint-disable-next-line  */}
         <img src={nft.image} alt="NFT Image" className="h-60 min-w-full" />
-        <figcaption className="glass absolute bottom-4 left-4 p-4 w-25 rounded-xl">
+        <figcaption className="glass absolute bottom-4 left-4 p-4 rounded-xl">
           <span className="text-white "># {nft.id}</span>
         </figcaption>
       </figure>
@@ -22,7 +22,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
           <p className="text-xl p-0 m-0 font-semibold">{nft.name}</p>
           <div className="flex flex-wrap space-x-2 mt-1">
             {nft.attributes?.map((attr, index) => (
-              <span key={index} className="badge badge-primary py-3">
+              <span key={index} className="badge badge-primary px-1.5">
                 {attr.value}
               </span>
             ))}
@@ -53,7 +53,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
                   args: [nft.owner, transferToAddress, BigInt(nft.id.toString())],
                 });
               } catch (err) {
-                console.error("Error calling transferFrom function");
+                console.error("Error calling transferFrom function", err);
               }
             }}
           >
