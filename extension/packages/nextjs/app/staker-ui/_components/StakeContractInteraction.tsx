@@ -11,8 +11,8 @@ import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
 export const StakeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
-  const { data: StakerContract } = useDeployedContractInfo("Staker");
-  const { data: ExampleExternalContact } = useDeployedContractInfo("ExampleExternalContract");
+  const { data: StakerContract } = useDeployedContractInfo({ contractName: "Staker" });
+  const { data: ExampleExternalContact } = useDeployedContractInfo({ contractName: "ExampleExternalContract" });
   const { data: stakerContractBalance } = useWatchBalance({
     address: StakerContract?.address,
   });
@@ -45,7 +45,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
     watch: true,
   });
 
-  const { writeContractAsync } = useScaffoldWriteContract("Staker");
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "Staker" });
 
   return (
     <div className="flex items-center flex-col flex-grow w-full px-4 gap-12">
@@ -101,7 +101,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
                 try {
                   await writeContractAsync({ functionName: "execute" });
                 } catch (err) {
-                  console.error("Error calling execute function");
+                  console.error("Error calling execute function", err);
                 }
               }}
             >
@@ -113,7 +113,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
                 try {
                   await writeContractAsync({ functionName: "withdraw" });
                 } catch (err) {
-                  console.error("Error calling withdraw function");
+                  console.error("Error calling withdraw function", err);
                 }
               }}
             >
@@ -126,7 +126,7 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
               try {
                 await writeContractAsync({ functionName: "stake", value: parseEther("0.5") });
               } catch (err) {
-                console.error("Error calling stake function");
+                console.error("Error calling stake function", err);
               }
             }}
           >
