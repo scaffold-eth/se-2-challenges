@@ -1,6 +1,6 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge 7: 🎁 SVG NFT
+export const extraContents = `# 🚩 Challenge: 🎁 SVG NFT
 
 ![readme-7](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-7-svg-nft/extension/packages/nextjs/public/hero.png)
 
