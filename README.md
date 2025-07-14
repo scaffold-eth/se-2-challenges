@@ -1,4 +1,4 @@
-# 🚩 Challenge 6: 👛 Multisig Wallet
+# 🚩 Challenge: 👛 Multisig Wallet
 
 ![readme-6](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-6-multisig/extension/packages/nextjs/public/hero.png)
 
