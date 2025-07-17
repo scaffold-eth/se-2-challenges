@@ -101,8 +101,7 @@ const CollateralGraph = () => {
 
     const collateralAdded: bigint = event?.eventName === "CollateralAdded" ? event?.args.amount || 0n : 0n;
     const collateralWithdrawn: bigint = event?.eventName === "CollateralWithdrawn" ? event?.args.amount || 0n : 0n;
-    const price: bigint =
-      event?.args && event?.args.price ? event?.args.price : getPriceFromEvent(event?.blockNumber, priceEvents);
+    const price: bigint = event?.args?.price ?? getPriceFromEvent(event?.blockNumber, priceEvents);
     const debtAdded: bigint = event?.eventName === "AssetBorrowed" ? event?.args.amount || 0n : 0n;
     const debtRepaid: bigint = event?.eventName === "AssetRepaid" ? event?.args.amount || 0n : 0n;
     const amountForLiquidator: bigint = event?.eventName === "Liquidation" ? event?.args.amountForLiquidator || 0n : 0n;
