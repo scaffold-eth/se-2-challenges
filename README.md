@@ -158,7 +158,10 @@ For this challenge we will not focus on the Lending aspect as much as the other 
         s_userCollateral[msg.sender] = newCollateral;
 
         // Transfer the collateral to the user
-        payable(msg.sender).transfer(amount);
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        if (!success) {
+            revert Lending__TransferFailed();
+        }
 
         emit CollateralWithdrawn(msg.sender, amount, i_cornDEX.currentPrice()); // Emit event for collateral withdrawal
     }
@@ -397,8 +400,10 @@ For this challenge we will not focus on the Lending aspect as much as the other 
         s_userCollateral[user] = userCollateral - amountForLiquidator;
 
         // transfer 110% of the collateral needed to cover the debt to the liquidator
-        (bool sent,) = payable(msg.sender).call{ value: amountForLiquidator }("");
-        require(sent, "Failed to send Ether");
+        (bool success,) = payable(msg.sender).call{ value: amountForLiquidator }("");
+        if (!success) {
+            revert Lending__TransferFailed();
+        }
 
         emit Liquidation(user, msg.sender, amountForLiquidator, userDebt, i_cornDEX.currentPrice());
     }

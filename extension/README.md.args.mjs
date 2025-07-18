@@ -33,7 +33,20 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ## Checkpoint 0: 📦 Environment 📚
 
-> 💻 Start your local network (a blockchain emulator in your computer):
+🛠️ Before you begin, you need to install the following tools:
+
+- [Node (v18 LTS)](https://nodejs.org/en/download/)
+- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+- [Git](https://git-scm.com/downloads)
+
+📥 Then download the challenge to your computer and install dependencies by running:
+
+\`\`\`sh
+npx create-eth@1.0.0 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
+cd challenge-over-collateralized-lending
+\`\`\`
+
+> 💻 in the same terminal, start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
@@ -42,12 +55,14 @@ yarn chain
 > 🛰️ in a second terminal window, 🛰 deploy your contract (locally):
 
 \`\`\`sh
+cd challenge-over-collateralized-lending
 yarn deploy
 \`\`\`
 
 > 📱 in a third terminal window, start your 📱 frontend:
 
 \`\`\`sh
+cd challenge-over-collateralized-lending
 yarn start
 \`\`\`
 
@@ -145,7 +160,10 @@ For this challenge we will not focus on the Lending aspect as much as the other 
         s_userCollateral[msg.sender] = newCollateral;
 
         // Transfer the collateral to the user
-        payable(msg.sender).transfer(amount);
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        if (!success) {
+            revert Lending__TransferFailed();
+        }
 
         emit CollateralWithdrawn(msg.sender, amount, i_cornDEX.currentPrice()); // Emit event for collateral withdrawal
     }
@@ -384,8 +402,10 @@ For this challenge we will not focus on the Lending aspect as much as the other 
         s_userCollateral[user] = userCollateral - amountForLiquidator;
 
         // transfer 110% of the collateral needed to cover the debt to the liquidator
-        (bool sent,) = payable(msg.sender).call{ value: amountForLiquidator }("");
-        require(sent, "Failed to send Ether");
+        (bool success,) = payable(msg.sender).call{ value: amountForLiquidator }("");
+        if (!success) {
+            revert Lending__TransferFailed();
+        }
 
         emit Liquidation(user, msg.sender, amountForLiquidator, userDebt, i_cornDEX.currentPrice());
     }
