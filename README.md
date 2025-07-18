@@ -1,4 +1,4 @@
-# Backend for Challenge 6 - Multisig
+# Backend for Challenge - Multisig
 
 ## Overview
 
