@@ -1,7 +1,5 @@
-// CHALLENGE-TODO: change for your imports
 export const preContent = `import { PhotoIcon, ArrowPathIcon, ArrowUpTrayIcon, ArrowDownTrayIcon} from "@heroicons/react/24/outline";`;
 
-// CHALLENGE-TODO: change for your extra menu links
 export const extraMenuLinksObjects = [
   {
     label: "My NFTs",
@@ -26,4 +24,4 @@ export const extraMenuLinksObjects = [
 ];
 
 export const logoTitle = "SRE Challenges";
-export const logoSubtitle = "#0 Simple NFT";
+export const logoSubtitle = "Simple NFT";
