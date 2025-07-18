@@ -1,6 +1,6 @@
-# 🚩 Challenge 1: 🔏 Decentralized Staking App
+# 🚩 Challenge: 🔏 Decentralized Staking App
 
-![readme-1](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-1-decentralized-staking/extension/packages/nextjs/public/hero.png)
+![readme-1](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-decentralized-staking/extension/packages/nextjs/public/hero.png)
 
 🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code.
 
@@ -12,7 +12,7 @@
 
 🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and stake if the conditions are met, then `yarn vercel` your app to a public webserver. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-> 💬 Meet other builders working on this challenge and get help in the [Challenge 1 Telegram](https://t.me/joinchat/E6r91UFt4oMJlt01)!
+> 💬 Meet other builders working on this challenge and get help in the [challenge Telegram](https://t.me/joinchat/E6r91UFt4oMJlt01)!
 
 ---
 
@@ -27,8 +27,8 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.0 -e challenge-1-decentralized-staking challenge-1-decentralized-staking
-cd challenge-1-decentralized-staking
+npx create-eth@1.0.0 -e challenge-decentralized-staking challenge-decentralized-staking
+cd challenge-decentralized-staking
 ```
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
@@ -40,14 +40,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd challenge-1-decentralized-staking
+cd challenge-decentralized-staking
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd challenge-1-decentralized-staking
+cd challenge-decentralized-staking
 yarn start
 ```
 
@@ -197,7 +197,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ![allStakings-blockFrom](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/04725dc8-4a8d-4089-ba82-90f9b94bfbda)
 
-> 💬 Hint: For faster loading of your _"Stake Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/app/stakings/page.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-1-decentralized-staking/packages/nextjs/app/stakings/page.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan, find the `More Info` box, find the `Contract Creator` line, click on the `txn`, and find the value for `Block`.
+> 💬 Hint: For faster loading of your _"Stake Events"_ page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/app/stakings/page.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-decentralized-staking/packages/nextjs/app/stakings/page.tsx) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan, find the `More Info` box, find the `Contract Creator` line, click on the `txn`, and find the value for `Block`.
 
 ---
 

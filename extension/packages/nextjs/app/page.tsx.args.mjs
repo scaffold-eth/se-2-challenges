@@ -5,7 +5,7 @@ export const description = `
       <div className="px-5">
         <h1 className="text-center mb-6">
           <span className="block text-2xl mb-2">SpeedRunEthereum</span>
-          <span className="block text-4xl font-bold">Challenge #1: 🔏 Decentralized Staking App</span>
+          <span className="block text-4xl font-bold">Challenge: 🔏 Decentralized Staking App</span>
         </h1>
         <div className="flex flex-col items-center justify-center">
           <Image
@@ -37,4 +37,5 @@ export const description = `
     </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Challenge #1";
+export const externalExtensionName =
+  "SpeedRunEthereum Challenge: Decentralized Staking App";
