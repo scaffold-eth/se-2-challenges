@@ -14,4 +14,4 @@ export const extraMenuLinksObjects = [
 ];
 
 export const logoTitle = "SRE Challenges";
-export const logoSubtitle = "#2 Token Vendor";
+export const logoSubtitle = "Token Vendor";
