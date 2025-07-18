@@ -86,7 +86,7 @@ const Dex: NextPage = () => {
           💦💦: {parseFloat(formatEther(userLiquidity || 0n)).toFixed(4)}
         </span>
         <span className="block text-2xl mb-2">SpeedRunEthereum</span>
-        <span className="block text-4xl font-bold">Challenge 4: ⚖️ Build a DEX </span>
+        <span className="block text-4xl font-bold">Challenge: ⚖️ Build a DEX </span>
       </h1>
       <div className="items-start pt-10 grid grid-cols-1 md:grid-cols-2 content-start">
         <div className="px-5 py-5">

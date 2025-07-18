@@ -1,8 +1,8 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge 4: ⚖️ Build a DEX
+export const extraContents = `# 🚩 Challenge: ⚖️ Build a DEX
 
-![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-4-dex/extension/packages/nextjs/public/hero.png)
+![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-dex/extension/packages/nextjs/public/hero.png)
 
 This challenge will help you build/understand a simple decentralized exchange, with one token-pair (ERC20 BALLOONS ($BAL) and ETH). This repo is an updated version of the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) and challenge repos before it. Please read the intro for a background on what we are building first!
 
@@ -11,7 +11,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 There is also a 🎥 [Youtube video](https://www.youtube.com/watch?v=eP5w6Ger1EQ) that may help you understand the concepts covered within this challenge too:
 
-💬 Meet other builders working on this challenge and get help in the [Challenge 4 Telegram](https://t.me/+_NeUIJ664Tc1MzIx)
+💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+_NeUIJ664Tc1MzIx)
 
 ---
 
@@ -705,7 +705,7 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 > 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.
 
-> 💬💬 More Hints: For faster loading of your _"Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages/nextjs/app/events/page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/packages/nextjs/app/events/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the \`Contract Creation\` transaction line.
+> 💬💬 More Hints: For faster loading of your _"Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages/nextjs/app/events/page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-dex/packages/nextjs/app/events/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the \`Contract Creation\` transaction line.
 
 ---
 
