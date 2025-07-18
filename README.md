@@ -1,6 +1,6 @@
 # 🚩 Challenge: 🎁 SVG NFT
 
-![readme-7](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-7-svg-nft/extension/packages/nextjs/public/hero.png)
+![readme-7](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-svg-nft/extension/packages/nextjs/public/hero.png)
 
 🎨 Creating on-chain SVG NFTs is an exciting way to leverage the power of smart contracts for generating unique digital art. This challenge will have you build a contract that generates dynamic SVG images directly on the blockchain. Users will be able to mint their own unique NFTs with customizable SVG graphics and metadata.
 
@@ -49,8 +49,8 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.0 -e challenge-7-svg-nft challenge-7-svg-nft
-cd challenge-7-svg-nft
+npx create-eth@1.0.0 -e challenge-svg-nft challenge-svg-nft
+cd challenge-svg-nft
 ```
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
@@ -62,14 +62,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd challenge-7-svg-nft
+cd challenge-svg-nft
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd challenge-7-svg-nft
+cd challenge-svg-nft
 yarn start
 ```
 
