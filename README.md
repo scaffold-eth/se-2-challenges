@@ -1,6 +1,6 @@
 # 🚩 Challenge: 👛 Multisig Wallet
 
-![readme-6](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-6-multisig/extension/packages/nextjs/public/hero.png)
+![readme-6](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-multisig/extension/packages/nextjs/public/hero.png)
 
 👩‍👩‍👧‍👧 A multisig wallet is a smart contract that acts like a wallet, allowing us to secure assets by requiring multiple accounts to "vote" on transactions. Think of it as a treasure chest that can only be opened when all key parties agree.
 
@@ -76,8 +76,8 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.0 -e challenge-6-multisig challenge-6-multisig
-cd challenge-6-multisig
+npx create-eth@1.0.0 -e challenge-multisig challenge-multisig
+cd challenge-multisig
 ```
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
@@ -89,14 +89,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd challenge-6-multisig
+cd challenge-multisig
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd challenge-6-multisig
+cd challenge-multisig
 yarn start
 ```
 
