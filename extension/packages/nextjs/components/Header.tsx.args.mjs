@@ -9,4 +9,4 @@ export const extraMenuLinksObjects = [
 ];
 
 export const logoTitle = "SRE Challenges";
-export const logoSubtitle = "#3 Dice Game";
+export const logoSubtitle = "Dice Game";

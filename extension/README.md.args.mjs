@@ -1,8 +1,8 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge 3: 🎲 Dice Game
+export const extraContents = `# 🚩 Challenge: 🎲 Dice Game
 
-![readme-3](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-3-dice-game/extension/packages/nextjs/public/hero.png)
+![readme-3](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-dice-game/extension/packages/nextjs/public/hero.png)
 
 > 🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very weak form of randomness. This challenge will give you an example of a contract using block hash to create random numbers. This randomness is exploitable. Other, stronger forms of randomness include commit/reveal schemes, oracles, or VRF from Chainlink.
 
@@ -14,7 +14,7 @@ export const extraContents = `# 🚩 Challenge 3: 🎲 Dice Game
 
 > 🧨 Your job is to attack the Dice Game contract! You will create a new contract that will predict the randomness ahead of time and only roll the dice when you're guaranteed to be a winner!
 
-> 💬 Meet other builders working on this challenge and get help in the [Challenge 3 telegram](https://t.me/+3StA0aBSArFjNjUx)!
+> 💬 Meet other builders working on this challenge and get help in the [Challenge telegram](https://t.me/+3StA0aBSArFjNjUx)!
 
 ---
 
