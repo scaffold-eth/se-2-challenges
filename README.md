@@ -160,7 +160,7 @@ Here’s what happens when a new market is deployed:
 You’ll implement this logic in Checkpoints 2, 3, 4, and 6, under the Liquidity Provider tab.
 
 <details markdown='1'><summary>Have a look at the Liquidity Provider tab (click to expand)</summary>
-    <img src="extension/packages/nextjs/public/lp1.png" alt="pm-lp1" />
+    <img src="https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/lp1.png" alt="pm-lp1" />
 </details>
 
 > ❗️In the current state your front-end is already implemented but the buttons of the different functions will likely break since there is no implementation code within your smart contracts yet. But soon there will! 🙂
@@ -174,7 +174,7 @@ In Checkpoint 5, you’ll become the Oracle — the one who reports the final ou
 > 🧙‍♂️ Oracles are how off-chain facts (like “Did the green car win?”) make their way into the blockchain world.
 
 <details markdown='1'><summary>Have a look at the Oracle tab (click to expand)</summary>
-    <img src="extension/packages/nextjs/public/oracle1.png" alt="pm-oracle1" />
+    <img src="https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/oracle1.png" alt="pm-oracle1" />
 </details>
 
 ### 👥 Then It's Time to Trade!
@@ -192,7 +192,7 @@ In Checkpoints 7 to 9, you’ll build out the core user actions:
 You’ll have full trading functionality from end to end — all powered by your smart contracts.
 
 <details markdown='1'><summary>Have a look at the User tab (click to expand)</summary>
-    <img src="extension/packages/nextjs/public/user1.png" alt="pm-user1" />
+    <img src="https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/user1.png" alt="pm-user1" />
 </details>
 
 > 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first! Check out the empty PredictionMarket.sol file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
