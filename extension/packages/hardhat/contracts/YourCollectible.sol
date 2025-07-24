@@ -1,49 +1,67 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.2; //Do not change the solidity version as it negatively impacts submission grading
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract YourCollectible is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
-    uint256 public tokenIdCounter;
+contract YourCollectible is
+	ERC721,
+	ERC721Enumerable,
+	ERC721URIStorage,
+	Ownable
+{
+	using Counters for Counters.Counter;
 
-    constructor() ERC721("YourCollectible", "YCB") Ownable(msg.sender) {}
+	Counters.Counter public tokenIdCounter;
 
-    function _baseURI() internal pure override returns (string memory) {
-        return "https://ipfs.io/ipfs/";
-    }
+	constructor() ERC721("YourCollectible", "YCB") {}
 
-    function mintItem(address to, string memory uri) public returns (uint256) {
-        tokenIdCounter++;
-        uint256 tokenId = tokenIdCounter;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-        return tokenId;
-    }
+	function _baseURI() internal pure override returns (string memory) {
+		return "https://ipfs.io/ipfs/";
+	}
 
-    // Override functions from OpenZeppelin ERC721, ERC721Enumerable and ERC721URIStorage
+	function mintItem(address to, string memory uri) public returns (uint256) {
+		tokenIdCounter.increment();
+		uint256 tokenId = tokenIdCounter.current();
+		_safeMint(to, tokenId);
+		_setTokenURI(tokenId, uri);
+		return tokenId;
+	}
 
-    function _update(
-        address to,
-        uint256 tokenId,
-        address auth
-    ) internal override(ERC721, ERC721Enumerable) returns (address) {
-        return super._update(to, tokenId, auth);
-    }
+	// The following functions are overrides required by Solidity.
 
-    function _increaseBalance(address account, uint128 value) internal override(ERC721, ERC721Enumerable) {
-        super._increaseBalance(account, value);
-    }
+	function _beforeTokenTransfer(
+		address from,
+		address to,
+		uint256 tokenId,
+		uint256 quantity
+	) internal override(ERC721, ERC721Enumerable) {
+		super._beforeTokenTransfer(from, to, tokenId, quantity);
+	}
 
-    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-        return super.tokenURI(tokenId);
-    }
+	function _burn(
+		uint256 tokenId
+	) internal override(ERC721, ERC721URIStorage) {
+		super._burn(tokenId);
+	}
 
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721, ERC721Enumerable, ERC721URIStorage) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
+	function tokenURI(
+		uint256 tokenId
+	) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+		return super.tokenURI(tokenId);
+	}
+
+	function supportsInterface(
+		bytes4 interfaceId
+	)
+		public
+		view
+		override(ERC721, ERC721Enumerable, ERC721URIStorage)
+		returns (bool)
+	{
+		return super.supportsInterface(interfaceId);
+	}
 }
