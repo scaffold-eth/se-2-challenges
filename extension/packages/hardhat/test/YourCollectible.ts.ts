@@ -6,7 +6,7 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 import { YourCollectible } from "../typechain-types";
 
-describe("🚩 Challenge 0: 🎟 Simple NFT Example 🤓", function () {
+describe("🚩 Challenge: 🎟 Simple NFT Example 🤓", function () {
   let myContract: YourCollectible;
 
   describe("YourCollectible", function () {

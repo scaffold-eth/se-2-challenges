@@ -26,4 +26,4 @@ export const extraMenuLinksObjects = [
 ];
 
 export const logoTitle = "SRE Challenges";
-export const logoSubtitle = "#0 Simple NFT Example";
+export const logoSubtitle = "Simple NFT Example";
