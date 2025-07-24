@@ -4,7 +4,7 @@ export const description = `
   <div className="flex items-center flex-col flex-grow mt-4">
     <div className="px-5 w-[90%]">
       <h1 className="text-center mb-6">
-        <span className="block text-4xl font-bold">Challenge #0: Simple NFT</span>
+        <span className="block text-4xl font-bold">Challenge #0: Simple NFT Example</span>
       </h1>
       <div className="flex flex-col items-center justify-center">
         <Image
