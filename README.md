@@ -1,6 +1,6 @@
-# 🚩 Challenge #0: 🎟 Simple NFT Example
+# 🚩 Challenge: 🎟 Simple NFT Example
 
-![readme-0](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-0-simple-nft/extension/packages/nextjs/public/hero.png)
+![readme](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-simple-nft-example/extension/packages/nextjs/public/hero.png)
 
 📚 This tutorial is meant for developers that already understand the [ 🖍️ basics ](https://www.youtube.com/watch?v=MlJPjJQZtC8).
 
@@ -14,7 +14,7 @@
 
 🌟 The final deliverable is an app that lets users purchase and transfer NFTs. Deploy your contracts to a testnet, then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
+💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
 🤖 If you have any question during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions. Please reach us in Telegram if something feels wrong!
 
@@ -29,8 +29,8 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.0 -e challenge-0-simple-nft challenge-0-simple-nft
-cd challenge-0-simple-nft
+npx create-eth@1.0.0 -e challenge-simple-nft-example challenge-simple-nft-example
+cd challenge-simple-nft-example
 ```
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
@@ -42,14 +42,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd challenge-0-simple-nft
+cd challenge-simple-nft-example
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd challenge-0-simple-nft
+cd challenge-simple-nft-example
 yarn start
 ```
 
@@ -154,7 +154,7 @@ yarn start
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/f582d311-9b57-4503-8143-bac60346ea33)
 
-> 💬 Hint: For faster loading of your transfer page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/app/transfers/page.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-0-simple-nft/packages/nextjs/app/transfers/page.tsx#L12) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
+> 💬 Hint: For faster loading of your transfer page, consider updating the `fromBlock` passed to `useScaffoldEventHistory` in [`packages/nextjs/app/transfers/page.tsx`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-simple-nft-example/packages/nextjs/app/transfers/page.tsx#L12) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
 
 🚀 Deploy your NextJS App
 

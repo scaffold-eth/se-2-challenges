@@ -1,8 +1,8 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge #0: 🎟 Simple NFT Example
+export const extraContents = `# 🚩 Challenge: 🎟 Simple NFT Example
 
-![readme-0](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-0-simple-nft/extension/packages/nextjs/public/hero.png)
+![readme](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-simple-nft-example/extension/packages/nextjs/public/hero.png)
 
 📚 This tutorial is meant for developers that already understand the [ 🖍️ basics ](https://www.youtube.com/watch?v=MlJPjJQZtC8).
 
@@ -16,7 +16,7 @@ export const extraContents = `# 🚩 Challenge #0: 🎟 Simple NFT Example
 
 🌟 The final deliverable is an app that lets users purchase and transfer NFTs. Deploy your contracts to a testnet, then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-💬 Meet other builders working on this challenge and get help in the [Challenge 0 Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
+💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
 🤖 If you have any question during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions. Please reach us in Telegram if something feels wrong!
 
