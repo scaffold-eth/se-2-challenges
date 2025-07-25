@@ -6,7 +6,7 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
 const { ethers } = hre;
 
-describe("🚩 Challenge 3: 🎲 Dice Game", function () {
+describe("🚩 Challenge: 🎲 Dice Game", function () {
   let diceGame: DiceGame;
   let riggedRoll: RiggedRoll;
   let deployer: HardhatEthersSigner;
@@ -29,7 +29,9 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
     }
 
     const diceGameAddress = await diceGame.getAddress();
-    const RiggedRoll = (await ethers.getContractFactory(contractArtifact)) as RiggedRoll__factory;
+    const RiggedRoll = (await ethers.getContractFactory(
+      contractArtifact
+    )) as RiggedRoll__factory;
     riggedRoll = await RiggedRoll.deploy(diceGameAddress);
   }
 
@@ -55,7 +57,7 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
       const diceGameAddress = await diceGame.getAddress();
       const hash = ethers.solidityPackedKeccak256(
         ["bytes32", "address", "uint256"],
-        [prevHash, diceGameAddress, nonce],
+        [prevHash, diceGameAddress, nonce]
       );
 
       const bigInt = BigInt(hash);
@@ -89,7 +91,10 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
       const riggedRollAddress = await riggedRoll.getAddress();
       const balance = await provider.getBalance(riggedRollAddress);
       console.log("\t", "💲 RiggedRoll balance: ", ethers.formatEther(balance));
-      expect(balance).to.gte(rollAmount, `Error when expecting DiceGame contract to have >= ${rollAmount} eth`);
+      expect(balance).to.gte(
+        rollAmount,
+        `Error when expecting DiceGame contract to have >= ${rollAmount} eth`
+      );
     });
   });
 
@@ -97,19 +102,29 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
     it("Should call diceGame.rollTheDice for a roll <= 5", async () => {
       const getRollLessThanFive = true;
       const expectedRoll = await getRoll(getRollLessThanFive);
-      console.log("\t", "🎲 Expect roll to be less than or equal to 5. Dice Game Roll:", Number(expectedRoll));
+      console.log(
+        "\t",
+        "🎲 Expect roll to be less than or equal to 5. Dice Game Roll:",
+        Number(expectedRoll)
+      );
 
       const tx = await riggedRoll.riggedRoll();
       const riggedRollAddress = await riggedRoll.getAddress();
 
-      await expect(tx).to.emit(diceGame, "Roll").withArgs(riggedRollAddress, rollAmount, expectedRoll);
+      await expect(tx)
+        .to.emit(diceGame, "Roll")
+        .withArgs(riggedRollAddress, rollAmount, expectedRoll);
       await expect(tx).to.emit(diceGame, "Winner");
     });
 
     it("Should not call diceGame.rollTheDice for a roll > 5", async () => {
       const getRollLessThanFive = false;
       const expectedRoll = await getRoll(getRollLessThanFive);
-      console.log("\t", "🎲 Expect roll to be greater than 5. Dice Game Roll:", Number(expectedRoll));
+      console.log(
+        "\t",
+        "🎲 Expect roll to be greater than 5. Dice Game Roll:",
+        Number(expectedRoll)
+      );
       console.log("\t", "◀  Expect riggedRoll to be reverted");
 
       await expect(riggedRoll.riggedRoll()).to.be.reverted;
@@ -120,17 +135,27 @@ describe("🚩 Challenge 3: 🎲 Dice Game", function () {
       await fundRiggedContract();
 
       const deployerPrevBalance = await provider.getBalance(deployer.address);
-      console.log("\t", "💲 Current RiggedRoll balance: ", ethers.formatEther(deployerPrevBalance));
+      console.log(
+        "\t",
+        "💲 Current RiggedRoll balance: ",
+        ethers.formatEther(deployerPrevBalance)
+      );
       const riggedRollAddress = await riggedRoll.getAddress();
       const riggedRollBalance = await provider.getBalance(riggedRollAddress);
       await riggedRoll.withdraw(deployer.address, riggedRollBalance);
 
-      const deployerCurrentBalance = await provider.getBalance(deployer.address);
-      console.log("\t", "💲 New RiggedRoll balance: ", ethers.formatEther(deployerCurrentBalance));
+      const deployerCurrentBalance = await provider.getBalance(
+        deployer.address
+      );
+      console.log(
+        "\t",
+        "💲 New RiggedRoll balance: ",
+        ethers.formatEther(deployerCurrentBalance)
+      );
 
       expect(
         deployerPrevBalance < deployerCurrentBalance,
-        "Error when expecting RiggedRoll balance to increase when calling withdraw",
+        "Error when expecting RiggedRoll balance to increase when calling withdraw"
       ).to.true;
     });
   });
