@@ -14,4 +14,4 @@ export const extraMenuLinksObjects = [
 ];
 
 export const logoTitle = "SRE Challenges";
-export const logoSubtitle = "#4 Build a DEX";
+export const logoSubtitle = "Build a DEX";
