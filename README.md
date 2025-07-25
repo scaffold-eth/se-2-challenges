@@ -27,7 +27,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.0 -e challenge-dice-game challenge-dice-game
+npx create-eth@1.0.2 -e challenge-dice-game challenge-dice-game
 cd challenge-dice-game
 ```
 
