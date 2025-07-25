@@ -3,7 +3,7 @@ export const skipQuickStart = true;
 export const extraContents = `
 # 🚩 Challenge: 👛 Multisig Wallet
 
-![readme-6](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-6-multisig/extension/packages/nextjs/public/hero.png)
+![readme-6](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-multisig/extension/packages/nextjs/public/hero.png)
 
 👩‍👩‍👧‍👧 A multisig wallet is a smart contract that acts like a wallet, allowing us to secure assets by requiring multiple accounts to "vote" on transactions. Think of it as a treasure chest that can only be opened when all key parties agree.
 

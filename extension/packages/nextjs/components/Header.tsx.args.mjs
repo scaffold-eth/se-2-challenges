@@ -24,4 +24,4 @@ export const extraMenuLinksObjects = [
 ];
 
 export const logoTitle = "SRE Challenges";
-export const logoSubtitle = "#6 Multisig Wallet";
+export const logoSubtitle = "Multisig Wallet";
