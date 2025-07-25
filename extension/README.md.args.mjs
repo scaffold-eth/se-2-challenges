@@ -1,8 +1,8 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge 2: 🏵 Token Vendor 🤖
+export const extraContents = `# 🚩 Challenge: 🏵 Token Vendor 🤖
 
-![readme-2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-2-token-vendor/extension/packages/nextjs/public/hero.png)
+![readme-2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-token-vendor/extension/packages/nextjs/public/hero.png)
 
 🤖 Smart contracts are kind of like "always on" _vending machines_ that **anyone** can access. Let's make a decentralized, digital currency. Then, let's build an unstoppable vending machine that will buy and sell the currency. We'll learn about the "approve" pattern for ERC20s and how contract to contract interactions work.
 
@@ -14,7 +14,7 @@ export const extraContents = `# 🚩 Challenge 2: 🏵 Token Vendor 🤖
 
 🌟 The final deliverable is an app that lets users purchase your ERC20 token, transfer it, and sell it back to the vendor. Deploy your contracts on your public chain of choice and then \`yarn vercel\` your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-> 💬 Meet other builders working on this challenge and get help in the [Challenge 2 Telegram](https://t.me/joinchat/IfARhZFc5bfPwpjq)!
+> 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/joinchat/IfARhZFc5bfPwpjq)!
 
 ---
 
@@ -199,7 +199,7 @@ await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
 
 > 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.
 
-> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages/nextjs/app/events/page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-2-token-vendor/packages/nextjs/app/events/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the \`Contract Creation\` transaction line.
+> 💬 Hint: For faster loading of your _"Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages/nextjs/app/events/page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-token-vendor/packages/nextjs/app/events/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the \`Contract Creation\` transaction line.
 
 ---
 

@@ -8,7 +8,7 @@ import { Vendor, YourToken } from "../typechain-types";
 
 const { ethers } = hre;
 
-describe("🚩 Challenge 2: 🏵 Token Vendor 🤖", function () {
+describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
   const contractAddress = process.env.CONTRACT_ADDRESS;
   let yourToken: YourToken;
   let yourTokenAddress = "";
