@@ -29,7 +29,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.0 -e challenge-simple-nft-example challenge-simple-nft-example
+npx create-eth@1.0.2 -e challenge-simple-nft-example challenge-simple-nft-example
 cd challenge-simple-nft-example
 ```
 
