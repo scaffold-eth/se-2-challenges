@@ -14,4 +14,4 @@ export const extraMenuLinksObjects = [
 ];
 
 export const logoTitle = "SRE Challenges";
-export const logoSubtitle = "#1 Decentralized Staking App";
+export const logoSubtitle = "Decentralized Staking App";
