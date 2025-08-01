@@ -30,7 +30,6 @@ const Pool: FC = () => {
   const { data: eventsHistory } = useScaffoldEventHistory({
     contractName: "MetaMultiSigWallet",
     eventName: "ExecuteTransaction",
-    fromBlock: 0n,
     watch: true,
   });
 
