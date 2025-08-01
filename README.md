@@ -111,7 +111,7 @@ yarn backend-local
 
 ```
 
-When deployed to any other chain, it will automatically use our deployed backend ([repo](https://github.com/scaffold-eth/se-2-challenges/tree/multisig-backend)) from `https://backend.multisig.holdings:49832/`.
+When deployed to any other chain, it will automatically use our deployed backend ([repo](https://github.com/scaffold-eth/se-2-challenges/tree/multisig-backend)) from `https://multisigs.buidlguidl.com:49832/`.
 
 > 👩‍💻 Rerun `yarn deploy --reset` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
 
