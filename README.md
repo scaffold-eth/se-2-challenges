@@ -202,8 +202,6 @@ You won't be able to sign it because on creation it already has one signature (f
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
 
-> 💬 Hint: For faster loading of the Multisig tabs, consider updating the `fromBlock` passed to `useScaffoldEventHistory` (in the different components we're using it) to `blocknumber - 10` at which your contract was deployed. Example: `fromBlock: 3750241n` (where `n` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan and find the `Contract Creation` transaction line.
-
 ---
 
 ## Checkpoint 4: 🚢 Ship your frontend! 🚁
