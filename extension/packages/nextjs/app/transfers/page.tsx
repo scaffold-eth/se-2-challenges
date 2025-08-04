@@ -8,8 +8,6 @@ const Transfers: NextPage = () => {
   const { data: transferEvents, isLoading } = useScaffoldEventHistory({
     contractName: "YourCollectible",
     eventName: "Transfer",
-    // Specify the starting block number from which to read events, this is a bigint.
-    fromBlock: 0n,
   });
 
   if (isLoading)
