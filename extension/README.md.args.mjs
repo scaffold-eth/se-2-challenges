@@ -184,8 +184,6 @@ Your \`Staker UI\` tab should be almost done and working at this point.
 
 ![allStakings-blockFrom](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/04725dc8-4a8d-4089-ba82-90f9b94bfbda)
 
-> 💬 Hint: For faster loading of your _"Stake Events"_ page, consider updating the \`fromBlock\` passed to \`useScaffoldEventHistory\` in [\`packages/nextjs/app/stakings/page.tsx\`](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-decentralized-staking/packages/nextjs/app/stakings/page.tsx) to \`blocknumber - 10\` at which your contract was deployed. Example: \`fromBlock: 3750241n\` (where \`n\` represents its a [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)). To find this blocknumber, search your contract's address on Etherscan, find the \`More Info\` box, find the \`Contract Creator\` line, click on the \`txn\`, and find the value for \`Block\`.
-
 ---
 
 ## Checkpoint 5: 🚢 Ship your frontend! 🚁
