@@ -28,7 +28,6 @@ const StakersStable = () => {
   const { data: events, isLoading } = useScaffoldEventHistory({
     contractName: "MyUSDStaking",
     eventName: "Staked",
-    fromBlock: 0n, // should be the block number where the contract was deployed
     watch: true,
     blockData: false,
     transactionData: false,

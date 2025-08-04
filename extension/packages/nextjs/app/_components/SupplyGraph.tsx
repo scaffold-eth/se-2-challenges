@@ -75,7 +75,6 @@ const SupplyGraph = () => {
   const { data: debtSharesMintedEvents, isLoading: isDebtSharesMintedLoading } = useScaffoldEventHistory({
     contractName: "MyUSDEngine",
     eventName: "DebtSharesMinted",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: false,
@@ -85,7 +84,6 @@ const SupplyGraph = () => {
   const { data: debtSharesBurnedEvents, isLoading: isDebtSharesBurnedLoading } = useScaffoldEventHistory({
     contractName: "MyUSDEngine",
     eventName: "DebtSharesBurned",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: false,
@@ -95,7 +93,6 @@ const SupplyGraph = () => {
   const { data: stakedEvents, isLoading: isStakedLoading } = useScaffoldEventHistory({
     contractName: "MyUSDStaking",
     eventName: "Staked",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: false,
@@ -105,7 +102,6 @@ const SupplyGraph = () => {
   const { data: withdrawnEvents, isLoading: isWithdrawnLoading } = useScaffoldEventHistory({
     contractName: "MyUSDStaking",
     eventName: "Withdrawn",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: false,
@@ -115,7 +111,6 @@ const SupplyGraph = () => {
   const { data: swapEvents, isLoading: isSwapLoading } = useScaffoldEventHistory({
     contractName: "DEX",
     eventName: "Swap",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
   });

@@ -23,7 +23,6 @@ const PriceGraph = () => {
   const { data: priceEvents, isLoading: isPriceLoading } = useScaffoldEventHistory({
     contractName: "DEX",
     eventName: "PriceUpdated",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: false,
@@ -33,7 +32,6 @@ const PriceGraph = () => {
   const { data: borrowRateUpdatedEvents, isLoading: isBorrowRateLoading } = useScaffoldEventHistory({
     contractName: "MyUSDEngine",
     eventName: "BorrowRateUpdated",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: false,
@@ -43,7 +41,6 @@ const PriceGraph = () => {
   const { data: savingsRateUpdatedEvents, isLoading: isSavingsRateLoading } = useScaffoldEventHistory({
     contractName: "MyUSDStaking",
     eventName: "SavingsRateUpdated",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: false,

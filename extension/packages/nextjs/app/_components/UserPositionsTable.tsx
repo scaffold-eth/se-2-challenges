@@ -12,7 +12,6 @@ const UserPositionsTable = () => {
   const { data: events, isLoading } = useScaffoldEventHistory({
     contractName: "MyUSDEngine",
     eventName: "CollateralAdded",
-    fromBlock: 0n, // should be the block number where the contract was deployed
     watch: true,
     blockData: false,
     transactionData: false,
