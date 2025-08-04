@@ -23,7 +23,6 @@ const CollateralGraph = () => {
   const { data: addEvents } = useScaffoldEventHistory({
     contractName: "Lending",
     eventName: "CollateralAdded",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: true,
@@ -33,7 +32,6 @@ const CollateralGraph = () => {
   const { data: withdrawEvents } = useScaffoldEventHistory({
     contractName: "Lending",
     eventName: "CollateralWithdrawn",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: true,
@@ -43,7 +41,6 @@ const CollateralGraph = () => {
   const { data: borrowEvents } = useScaffoldEventHistory({
     contractName: "Lending",
     eventName: "AssetBorrowed",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: true,
@@ -53,7 +50,6 @@ const CollateralGraph = () => {
   const { data: repaidEvents } = useScaffoldEventHistory({
     contractName: "Lending",
     eventName: "AssetRepaid",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: true,
@@ -63,7 +59,6 @@ const CollateralGraph = () => {
   const { data: liquidatedEvents } = useScaffoldEventHistory({
     contractName: "Lending",
     eventName: "Liquidation",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: true,
@@ -73,7 +68,6 @@ const CollateralGraph = () => {
   const { data: priceEvents } = useScaffoldEventHistory({
     contractName: "CornDEX",
     eventName: "PriceUpdated",
-    fromBlock: 0n,
     watch: true,
     blockData: true,
     transactionData: true,
