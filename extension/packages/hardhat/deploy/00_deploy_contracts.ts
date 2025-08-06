@@ -45,30 +45,35 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
   await deploy("RateController", {
     from: deployer,
     args: [futureEngineAddress, futureStakingAddress],
+    log: true,
   });
   const rateController = await hre.ethers.getContract<Contract>("RateController", deployer);
 
   await deploy("MyUSD", {
     from: deployer,
     args: [futureEngineAddress, futureStakingAddress],
+    log: true,
   });
   const stablecoin = await hre.ethers.getContract<Contract>("MyUSD", deployer);
 
   await deploy("DEX", {
     from: deployer,
     args: [stablecoin.target],
+    log: true,
   });
   const DEX = await hre.ethers.getContract<Contract>("DEX", deployer);
 
   await deploy("Oracle", {
     from: deployer,
     args: [DEX.target, ethPrice],
+    log: true,
   });
   const oracle = await hre.ethers.getContract<Contract>("Oracle", deployer);
 
   await deploy("MyUSDStaking", {
     from: deployer,
     args: [stablecoin.target, futureEngineAddress, rateController.target],
+    log: true,
   });
   const staking = await hre.ethers.getContract<Contract>("MyUSDStaking", deployer);
 
@@ -76,6 +81,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
   await deploy("MyUSDEngine", {
     from: deployer,
     args: [oracle.target, stablecoin.target, staking.target, rateController.target],
+    log: true,
   });
   const engine = await hre.ethers.getContract<Contract>("MyUSDEngine", deployer);
 
@@ -121,7 +127,3 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 };
 
 export default deployContracts;
-
-// Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags YourContract
-// deployYourContract.tags = ["YourContract"];
