@@ -2,6 +2,10 @@ export const skipQuickStart = true;
 
 export const extraContents = `# 🚩 Challenge: 🎁 SVG NFT
 
+This guide will walk you through creating an SVG NFT. Feel free to use it as inspiration to build your unique version with your personal touch. If you're proud of the result, we encourage you to upload it to your profile builds to share it with the community.
+
+---
+
 ![readme-7](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-svg-nft/extension/packages/nextjs/public/hero.png)
 
 🎨 Creating on-chain SVG NFTs is an exciting way to leverage the power of smart contracts for generating unique digital art. This challenge will have you build a contract that generates dynamic SVG images directly on the blockchain. Users will be able to mint their own unique NFTs with customizable SVG graphics and metadata.
