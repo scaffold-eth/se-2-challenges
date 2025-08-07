@@ -51,14 +51,14 @@ Smart contract generates dynamic SVG NFTs entirely on-chain using deterministic 
 **🎨 SVG Generation:**
 
 - `tokenURI()` creates Base64-encoded JSON metadata with embedded SVG image
-- `renderTokenById()` builds dynamic SVG art with eyes, head, and mouth positioned using trait-driven calculations
+- `renderTokenById()` builds dynamic SVG art with eyes, head, and mouth positioned using trait-driven calculations (marked as `public` to enable composition by other contracts)
 
 **🚀 Technical Highlights:**
 
 - 🔒 Deterministic randomness: generates predictable yet unique traits for each mint
-- 💎 Scarcity economics: price grows exponentially with each mint
+- 💎 Dynamic pricing: price increases by 0.2% after each mint, creating scarcity economics
 - 🔗 Zero dependencies: no IPFS, no external APIs - pure on-chain storage
-- ⚡ Gas efficient: SVG built with string concatenation, Base64 encoding in-contract
+- ⚡ Gas efficient: SVG built using `abi.encodePacked()` concatenation, Base64 encoding in-contract
 
 ---
 
