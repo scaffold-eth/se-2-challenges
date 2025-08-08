@@ -57,4 +57,11 @@ export const postContent = `
 
 @theme inline {
   --font-space-grotesk: var(--font-space-grotesk);
+}
+
+/* Fix for Debug Contracts tooltips - allows text wrapping for long paths */
+.tooltip.tooltip-accent::before {
+  white-space: normal;
+  max-width: 320px;
+  word-wrap: break-word;
 }`;
