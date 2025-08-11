@@ -42,7 +42,9 @@ This challenge is brimming with creative freedom, giving you the opportunity to 
 
 ## 👇🏼 Quick Loogies NFT Breakdown 🎨
 
-Smart contract generates dynamic SVG NFTs entirely on-chain using deterministic randomness, dynamic pricing, and real-time SVG generation.
+A fully-on-chain SVG NFT puts both the artwork and its metadata directly onto the blockchain, guaranteeing that the image can be reconstructed forever without IPFS or web servers.
+
+Loogies NFT contract shows how to generate dynamic SVG NFTs entirely on-chain using deterministic randomness, dynamic pricing, and real-time SVG generation.
 
 **🔄 Minting Flow:**
 
