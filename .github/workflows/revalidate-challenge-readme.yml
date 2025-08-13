@@ -36,7 +36,7 @@ jobs:
 
           echo "Branch name: $BRANCH_NAME"
 
-          # Extract challenge name from branch (e.g., challenge-0-simple-nft -> 0-simple-nft)
+          # Extract challenge name from branch (e.g., challenge-simple-nft-example -> simple-nft-example)
           if [[ $BRANCH_NAME =~ ^challenge-(.+)$ ]]; then
             CHALLENGE_NAME="${BASH_REMATCH[1]}"
             echo "Extracted challenge name: $CHALLENGE_NAME"

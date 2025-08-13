@@ -18,7 +18,7 @@ The workflow (`revalidate-challenge-readme.yml`) triggers when:
 
 **Supported branches:**
 
-- Any branch matching the pattern `challenge-*` (e.g., `challenge-0-simple-nft`, `challenge-1-decentralized-staking`)
+- Any branch matching the pattern `challenge-*` (e.g., `challenge-simple-nft-example`, `challenge-decentralized-staking`)
 
 ### Setup Requirements
 
