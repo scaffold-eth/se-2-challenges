@@ -46,7 +46,7 @@ Loogies NFT contract shows how to generate dynamic SVG NFTs entirely on-chain us
 
 **🔄 Minting Flow:**
 
-1. User calls `mintItem()` with ETH payment that meets current price
+1. User calls `mintItem()` with ETH payment that meets the current price
 2. Contract generates unique traits (color, chubbiness, mouth length) and auto-increases price for next mint
 3. Payment forwarded to recipient, NFT minted to user
 
