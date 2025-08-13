@@ -457,38 +457,38 @@ interface IFlashLoanRecipient {
 - 💰 \`uint256 _amount\` The amount of CORN to send to the recipient contract
 - 🔗 \`address _extraParam\` In a real flash loan function this would probably be a struct with several optional properties allowing people to pass along any data to the recipient contract. See Aave's implementation [here](https://github.com/aave-dao/aave-v3-origin/blob/083bd38a137b42b5df04e22ad4c9e72454365d0d/src/contracts/protocol/libraries/logic/FlashLoanLogic.sol#L184) 
 
-🪙 The logic inside the method needs to mint the amount of CORN that is given in the parameter to the recipient address - The IFlashLoanRecipient adhering contract.
+🪙 The logic inside the method needs to \`transfer\` the amount of CORN that is given in the parameter to the recipient address - The IFlashLoanRecipient adhering contract.
 
 🔄 Then it will call the \`executeOperation\` function on the recipient contract and make sure that it returns \`true\`.
 
-🔥 Use the CORN token's \`burnFrom\` method to destroy the CORN that was minted at the beginning of this function. Burn it from \`address(this)\` since the recipient should have returned it. If they didn't this burn method will revert when we try to burn tokens that are not held by the lending contract. If it reverts then the CORN will have never been minted to the recipient - no risk of the tokens being stolen.
+⬇️ Then we will use the Corn token's \`transferFrom\` method to get back the CORN that was sent at the beginning of this function. Retrieve it from the \`_recipient\` contract address that we sent the tokens to at the start. If they don't have enough tokens or haven't approved the Lending contract to use them then this method will revert when we try to retrieve the tokens. If it reverts then the CORN will have never been sent to the recipient - no risk of the tokens being stolen.
 
 <details markdown='1'><summary>Solution Code</summary>
 
 \`\`\`solidity
     function flashLoan(IFlashLoanRecipient _recipient, uint256 _amount, address _extraParam) public {
         // Send the loan to the recipient - No collateral is required since it gets repaid all in the same transaction
-        i_corn.mintTo(address(_recipient), _amount);
+        i_corn.transfer(address(_recipient), _amount);
 
-        // Execute the operation - It should return the loan amount back to this contract
+        // Execute the operation
         bool success = _recipient.executeOperation(_amount, msg.sender, _extraParam);
         require(success, "Operation was unsuccessful");
 
-        // Burn the loan - Should revert if it doesn't have enough
-        i_corn.burnFrom(address(this), _amount);
+        // Get the loan back - Should revert if it doesn't have enough
+        i_corn.transferFrom(address(_recipient), address(this), _amount);
     }
 \`\`\`
 
 </details>
 
-🏗️ Now we need to create a contract that is the recipient of the CORN. Let's create a contract that uses the \`flashLoan\` method to make it possible to liquidate loans without the liquidator needing to hold CORN tokens.
+🏗️ Now we need to create a contract that does something with the flash loaned CORN. Let's create a contract that will make it possible to liquidate loans without the liquidator needing to hold CORN tokens.
 
 > ❕ Keep in mind, this is just one example of how we could use the \`flashLoan\` function. There are so many more things you can build with flash loans!
 
 📝 Create a new contract file and call it \`FlashLoanLiquidator.sol\`
 
-🧩 See if you can figure out the correct logic to liquidate a loan inside a function called \`executeOperation\`. It will need to utilize the DEX to swap ETH for CORN in order to repay the CORN loan after liquidating the position and receiving the ETH. 
-After liquidating the loan the contract should send any remaining ETH back to the original initiator of the \`flashLoan\` function.
+🧩 See if you can figure out the correct logic to liquidate a loan inside a function called \`executeOperation\`. It will need to utilize the DEX to swap ETH for CORN in order to repay the CORN loan after liquidating the position and receiving the ETH. Don't forget that you will need to \`approve\` the Lending contract to use *both* the CORN used in the liquidation and the CORN needed to repay the Flashloan.
+After liquidating the loan and swapping the received ETH for the correct amount of CORN needed to repay, the contract should send any remaining ETH back to the original initiator of the \`flashLoan\` function.
 
 💰 Don't forget to let the contract \`receive()\` ether!
 
@@ -518,11 +518,11 @@ contract FlashLoanLiquidator {
         i_lending = Lending(_lending);
         i_cornDEX = CornDEX(_cornDEX);
         i_corn = Corn(_corn);
+        // Approve the lending contract to spend the tokens
+        i_corn.approve(address(i_lending), type(uint256).max);
     }
 
     function executeOperation(uint256 amount, address initiator, address toLiquidate) public returns (bool) {
-        // Approve the lending contract to spend the tokens
-        i_corn.approve(address(i_lending), amount);
         // First liquidate to get the collateral tokens
         i_lending.liquidate(toLiquidate);
         
@@ -531,11 +531,10 @@ contract FlashLoanLiquidator {
         uint256 tokenReserves = i_corn.balanceOf(address(i_cornDEX));
         uint256 requiredETHInput = i_cornDEX.calculateXInput(amount, ethReserves, tokenReserves);
         
-        // Execute the swap
+        // Execute the swap so we have the exact amount to repay the flash loan
         i_cornDEX.swap{value: requiredETHInput}(requiredETHInput); // Swap ETH for tokens
-        // Send the tokens back to Lending to repay the flash loan
-        i_corn.transfer(address(i_lending), i_corn.balanceOf(address(this)));
-        // Send the ETH back to the initiator
+
+        // Send remaining ETH back to the initiator
         if (address(this).balance > 0) {
             (bool success, ) = payable(initiator).call{value: address(this).balance}("");
             require(success, "Failed to send ETH back to initiator");
@@ -576,7 +575,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
 🚀 Then go to the Debug Tab and trigger the \`Lending.flashLoan\` method with your \`FlashLoanLiquidator\` contract address as the \`recipient\`, the amount of CORN needed to liquidate as the \`amount\` and the borrower's address as the \`extraParam\`.
 
-🎉 Pretty cool, huh? You can liquidate any position without needing to have the CORN to pay back the loan!
+🎉 Pretty cool, huh? You can liquidate any position without needing to have the CORN to pay back the loan! Not only does this mean you can liquidate without having CORN but it means you can liquidate *without enough value (ETH or CORN)* to cover the total amount of borrowed CORN.
 
 ### ⚔️ Side Quest 2: Maximum Leverage With An Iterative Borrow > Swap > Deposit Loop
 
@@ -665,8 +664,9 @@ contract Leverage {
         i_lending = Lending(_lending);
         i_cornDEX = CornDEX(_cornDEX);
         i_corn = Corn(_corn);
-        // Approve the DEX to spend the user's CORN
+        // Approve DEX and Lending to spend the user's CORN
         i_corn.approve(address(i_cornDEX), type(uint256).max);
+        i_corn.approve(address(i_lending), type(uint256).max);
     }
     
     /**
@@ -798,7 +798,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
 🔄 Run \`yarn deploy --reset\` to redeploy your contract and the associated contracts with new constructor parameters.
 
-🚀 Try opening a leveraged position and see how changing the reserve amount affects your tolerance to changes in the market. Leverage is powerful stuff that will blow up in your face if you aren't careful.
+🚀 Try opening a leveraged position in the Debug tab and see how changing the reserve amount affects your tolerance to changes in the market. Leverage is powerful stuff that will blow up in your face if you aren't careful.
 
 ## Checkpoint 7: 💾 Deploy your contracts! 🛰
 
