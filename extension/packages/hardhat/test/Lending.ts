@@ -222,9 +222,8 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
       await cornDEX.swap(ethers.parseEther("300"), { value: ethers.parseEther("300") });
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(await lending.isLiquidatable(user1)).to.be.true;
-      await cornToken
-        .connect(await ethers.getImpersonatedSigner(owner.address as string))
-        .burnFrom(user2.address, borrowAmount / 2n);
+      // transfer half of the needed CORN to another account
+      await cornToken.connect(user2).transfer(owner.address, borrowAmount / 2n);
       await expect(lending.connect(user2).liquidate(user1.address)).to.be.revertedWithCustomError(
         lending,
         "Lending__InsufficientLiquidatorCorn",
