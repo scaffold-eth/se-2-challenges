@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "simulate:whitelist": "hardhat run scripts/runWhitelistOracleBots.ts",
+        "simulate:staking": "hardhat run scripts/runStakingOracleBots.ts",
+        "simulate:optimistic": "hardhat run scripts/runOptimisticBots.ts"
+    },
+    "dependencies": {
+        "@nomicfoundation/hardhat-viem": "^2.0.6"
+    }
+}
