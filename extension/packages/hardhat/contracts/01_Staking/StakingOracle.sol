@@ -102,7 +102,7 @@ contract StakingOracle {
         require(rewardAmount > 0, "No rewards available");
 
         nodes[msg.sender].lastClaimedTimestamp = block.timestamp;
-        rewardNode(msg.sender, rewardAmount * 10**18);
+        rewardNode(msg.sender, rewardAmount * 10 ** 18);
     }
 
     function slashNodes() public {
@@ -112,8 +112,8 @@ contract StakingOracle {
             slasherReward += slashNode(addressesToSlash[i], 1 ether);
         }
 
-        (bool sent,) = msg.sender.call{value: slasherReward}("");
-        require(sent, "Failed to send reward");        
+        (bool sent, ) = msg.sender.call{ value: slasherReward }("");
+        require(sent, "Failed to send reward");
     }
 
     /* ========== Price Calculation Functions ========== */
