@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import { Arrays } from "@openzeppelin/contracts/utils/Arrays.sol";
 import "./OracleToken.sol";
 
 contract StakingOracle {
@@ -103,7 +102,7 @@ contract StakingOracle {
         require(rewardAmount > 0, "No rewards available");
 
         nodes[msg.sender].lastClaimedTimestamp = block.timestamp;
-        rewardNode(msg.sender, rewardAmount * 10 ** 18);
+        rewardNode(msg.sender, rewardAmount * 10**18);
     }
 
     function slashNodes() public {
@@ -113,8 +112,8 @@ contract StakingOracle {
             slasherReward += slashNode(addressesToSlash[i], 1 ether);
         }
 
-        (bool sent, ) = msg.sender.call{ value: slasherReward }("");
-        require(sent, "Failed to send reward");
+        (bool sent,) = msg.sender.call{value: slasherReward}("");
+        require(sent, "Failed to send reward");        
     }
 
     /* ========== Price Calculation Functions ========== */
@@ -178,12 +177,27 @@ contract StakingOracle {
         (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
         uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
         require(validPrices.length > 0, "No valid prices available");
-        Arrays.sort(validPrices);
+        sort(validPrices);
         return getMedian(validPrices);
     }
 
     function getNodeAddresses() public view returns (address[] memory) {
         return nodeAddresses;
+    }
+
+    function sort(uint256[] memory arr) internal pure {
+        uint256 n = arr.length;
+        for (uint256 i = 0; i < n; i++) {
+            uint256 minIndex = i;
+            for (uint256 j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            if (minIndex != i) {
+                (arr[i], arr[minIndex]) = (arr[minIndex], arr[i]);
+            }
+        }
     }
 
     // Notably missing a way to unstake and exit your node but not needed for the challenge
