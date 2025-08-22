@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useRef } from "react";
 import { parseEther } from "viem";
 import { hardhat } from "viem/chains";

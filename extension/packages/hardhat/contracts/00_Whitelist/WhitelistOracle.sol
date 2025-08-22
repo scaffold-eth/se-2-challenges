@@ -67,7 +67,7 @@ contract WhitelistOracle {
             validPrices[i] = prices[i];
         }
 
-        // NOTE: It is not efficient to sort onchain, but since we only have 10 oracles 
+        // NOTE: It is not efficient to sort onchain, but since we only have 10 oracles
         // and this is mimicking the early MakerDAO Medianizer exactly, it's fine
         sort(validPrices);
 

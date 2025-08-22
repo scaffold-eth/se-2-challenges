@@ -2,7 +2,14 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 contract OptimisticOracle {
-    enum State { Invalid, Asserted, Proposed, Disputed, Settled, Expired }
+    enum State {
+        Invalid,
+        Asserted,
+        Proposed,
+        Disputed,
+        Settled,
+        Expired
+    }
 
     error AssertionNotFound();
     error AssertionProposed();
@@ -72,39 +79,25 @@ contract OptimisticOracle {
         return assertions[assertionId];
     }
 
-    function assertEvent(string memory description, uint256 startTime, uint256 endTime) external payable returns (uint256) {
+    function assertEvent(
+        string memory description,
+        uint256 startTime,
+        uint256 endTime
+    ) external payable returns (uint256) {}
 
-    }
+    function proposeOutcome(uint256 assertionId, bool outcome) external payable {}
 
-    function proposeOutcome(uint256 assertionId, bool outcome) external payable {
+    function disputeOutcome(uint256 assertionId) external payable {}
 
-    }
+    function claimUndisputedReward(uint256 assertionId) external {}
 
-    function disputeOutcome(uint256 assertionId) external payable {
-  
-    }
+    function claimDisputedReward(uint256 assertionId) external {}
 
-    function claimUndisputedReward(uint256 assertionId) external {
+    function claimRefund(uint256 assertionId) external {}
 
-    }
+    function settleAssertion(uint256 assertionId, bool resolvedOutcome) external onlyDecider {}
 
-    function claimDisputedReward(uint256 assertionId) external {
+    function getState(uint256 assertionId) external view returns (State) {}
 
-    }
-
-    function claimRefund(uint256 assertionId) external {
-
-    }
-
-    function settleAssertion(uint256 assertionId, bool resolvedOutcome) external onlyDecider {
-
-    }
-
-    function getState(uint256 assertionId) external view returns (State) {
-
-    }
-
-    function getResolution(uint256 assertionId) external view returns (bool) {
-
-    }
+    function getResolution(uint256 assertionId) external view returns (bool) {}
 }
