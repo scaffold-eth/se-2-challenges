@@ -7,7 +7,7 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useChallengeState } from "~~/services/store/challengeStore";
 
 // This component is used to monitor the block timestamp and trigger a transaction if the timestamp has not changed for 3 seconds
-export const MonitorAndTriggerTx = () => {
+export const MonitorAndTriggerTx = ({ children }: { children: React.ReactNode }) => {
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   const { targetNetwork } = useTargetNetwork();
@@ -62,5 +62,5 @@ export const MonitorAndTriggerTx = () => {
     return () => clearInterval(interval);
   }, [publicClient, walletClient, isLocalNetwork, isBurnerWallet, setTimestamp, refetchAssertionStates]);
 
-  return null;
+  return <>{children}</>;
 };
