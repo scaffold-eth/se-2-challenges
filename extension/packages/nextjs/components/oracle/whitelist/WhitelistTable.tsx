@@ -33,14 +33,12 @@ export const WhitelistTable = () => {
   const { data: oraclesAdded, isLoading: isLoadingOraclesAdded } = useScaffoldEventHistory({
     contractName: "WhitelistOracle",
     eventName: "OracleAdded",
-    fromBlock: 0n,
     watch: true,
   });
 
   const { data: oraclesRemoved, isLoading: isLoadingOraclesRemoved } = useScaffoldEventHistory({
     contractName: "WhitelistOracle",
     eventName: "OracleRemoved",
-    fromBlock: 0n,
     watch: true,
   });
 

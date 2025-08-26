@@ -46,65 +46,69 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
   const whitelistOracleAddress = whitelistOracleDeployment.address as `0x${string}`;
   const whitelistOracleAbi = whitelistOracleDeployment.abi;
 
-  // Add all SimpleOracle addresses to WhitelistOracle
-  console.log("Adding SimpleOracle instances to WhitelistOracle...");
-  const deployerAccount = accounts.find(a => a.account.address.toLowerCase() === deployer.toLowerCase());
-  if (!deployerAccount) throw new Error("Deployer account not found in wallet clients");
+  // Skip the rest of the setup if we are on a live network
+  if (hre.network.name === "localhost") {
+    // Add all SimpleOracle addresses to WhitelistOracle
+    console.log("Adding SimpleOracle instances to WhitelistOracle...");
+    const deployerAccount = accounts.find(a => a.account.address.toLowerCase() === deployer.toLowerCase());
+    if (!deployerAccount) throw new Error("Deployer account not found in wallet clients");
 
-  try {
-    for (let i = 0; i < simpleOracleAddresses.length; i++) {
-      const oracleAddress = simpleOracleAddresses[i] as `0x${string}`;
-      console.log(`Adding SimpleOracle ${i + 1}/10: ${oracleAddress}`);
-      await deployerAccount.writeContract({
-        address: whitelistOracleAddress,
-        abi: whitelistOracleAbi,
-        functionName: "addOracle",
-        args: [oracleAddress],
+    try {
+      for (let i = 0; i < simpleOracleAddresses.length; i++) {
+        const oracleAddress = simpleOracleAddresses[i] as `0x${string}`;
+        console.log(`Adding SimpleOracle ${i + 1}/10: ${oracleAddress}`);
+        await deployerAccount.writeContract({
+          address: whitelistOracleAddress,
+          abi: whitelistOracleAbi,
+          functionName: "addOracle",
+          args: [oracleAddress],
+        });
+      }
+    } catch (error: any) {
+      if (hre.network.name === "localhost") {
+        if (error.message?.includes("Oracle already exists")) {
+          console.error("\n❌ Deployment failed: Oracle contracts already exist!\n");
+          console.error("🔧 Please retry with:");
+          console.error("yarn deploy --reset\n");
+          process.exit(1);
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    // Set initial prices for each SimpleOracle
+    console.log("Setting initial prices for each SimpleOracle...");
+    const initialPrice = await fetchPriceFromUniswap();
+    for (let i = 0; i < nodeAccounts.length; i++) {
+      const account = nodeAccounts[i];
+      const simpleOracleDeployment = await hre.deployments.get(`SimpleOracle_${i + 1}`);
+      const simpleOracleAbi = simpleOracleDeployment.abi;
+      const simpleOracleAddress = simpleOracleDeployment.address as `0x${string}`;
+      await account.writeContract({
+        address: simpleOracleAddress,
+        abi: simpleOracleAbi,
+        functionName: "setPrice",
+        args: [initialPrice],
       });
+
+      await publicClient.transport.request({
+        method: "evm_mine",
+      });
+
+      console.log(`Set price for SimpleOracle_${i + 1} to: ${initialPrice}`);
     }
-  } catch (error: any) {
-    if (error.message?.includes("Oracle already exists")) {
-      console.error("\n❌ Deployment failed: Oracle contracts already exist!\n");
-      console.error("🔧 Please retry with:");
-      console.error("yarn deploy --reset\n");
-      process.exit(1);
-    } else {
-      throw error;
-    }
-  }
 
-  // Set initial prices for each SimpleOracle
-  console.log("Setting initial prices for each SimpleOracle...");
-  const initialPrice = await fetchPriceFromUniswap();
-  for (let i = 0; i < nodeAccounts.length; i++) {
-    const account = nodeAccounts[i];
-    const simpleOracleDeployment = await hre.deployments.get(`SimpleOracle_${i + 1}`);
-    const simpleOracleAbi = simpleOracleDeployment.abi;
-    const simpleOracleAddress = simpleOracleDeployment.address as `0x${string}`;
-    await account.writeContract({
-      address: simpleOracleAddress,
-      abi: simpleOracleAbi,
-      functionName: "setPrice",
-      args: [initialPrice],
+    // Calculate initial median price
+    console.log("Calculating initial median price...");
+    const medianPrice = await publicClient.readContract({
+      address: whitelistOracleAddress,
+      abi: whitelistOracleAbi,
+      functionName: "getPrice",
+      args: [],
     });
-
-    await publicClient.transport.request({
-      method: "evm_mine",
-    });
-
-    console.log(`Set price for SimpleOracle_${i + 1} to: ${initialPrice}`);
+    console.log(`Initial median price: ${medianPrice.toString()}`);
   }
-
-  // Calculate initial median price
-  console.log("Calculating initial median price...");
-  const medianPrice = await publicClient.readContract({
-    address: whitelistOracleAddress,
-    abi: whitelistOracleAbi,
-    functionName: "getPrice",
-    args: [],
-  });
-  console.log(`Initial median price: ${medianPrice.toString()}`);
-
   console.log("All oracle contracts deployed and configured successfully!");
 };
 
