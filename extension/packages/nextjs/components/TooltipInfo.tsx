@@ -10,7 +10,7 @@ interface TooltipInfoProps {
 
 // Note: The relative positioning is required for the tooltip to work.
 const TooltipInfo: React.FC<TooltipInfoProps> = ({ top, right, infoText, className = "" }) => {
-  const baseClasses = "tooltip tooltip-secondary font-normal";
+  const baseClasses = "tooltip tooltip-secondary font-normal [--radius-field:0.25rem]";
   const tooltipClasses = className ? `${baseClasses} ${className}` : `${baseClasses} tooltip-right`;
 
   if (top !== undefined && right !== undefined) {
