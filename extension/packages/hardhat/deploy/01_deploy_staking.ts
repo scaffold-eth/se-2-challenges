@@ -57,9 +57,11 @@ const deployStakingOracle: DeployFunction = async function (hre: HardhatRuntimeE
     }
   }
 
-  await publicClient.transport.request({
-    method: "evm_mine",
-  });
+  if (hre.network.name === "localhost") {
+    await publicClient.transport.request({
+      method: "evm_mine",
+    });
+  }
 
   await Promise.all(
     nodeAccounts.map(account => {
@@ -72,9 +74,11 @@ const deployStakingOracle: DeployFunction = async function (hre: HardhatRuntimeE
     }),
   );
 
-  await publicClient.transport.request({
-    method: "evm_mine",
-  });
+  if (hre.network.name === "localhost") {
+    await publicClient.transport.request({
+      method: "evm_mine",
+    });
+  }
 };
 
 export default deployStakingOracle;
