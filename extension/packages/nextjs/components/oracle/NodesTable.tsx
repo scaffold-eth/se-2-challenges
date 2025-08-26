@@ -71,7 +71,7 @@ export const NodesTable = () => {
                 <th>Node Address</th>
                 <th>
                   <div className="flex items-center gap-1">
-                    Staked Amount (ETH)
+                    Staked ETH
                     <TooltipInfo infoText="Red shows slashing event" />
                   </div>
                 </th>
