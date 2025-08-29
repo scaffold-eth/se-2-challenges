@@ -1,0 +1,93 @@
+name: Grader update challenge
+
+on:
+  push:
+    paths:
+      - "extension/packages/hardhat/test/**"
+    branches:
+      - "challenge-*"
+  pull_request:
+    paths:
+      - "extension/packages/hardhat/test/**"
+    branches:
+      - "challenge-*"
+    types: [closed]
+
+jobs:
+  notify-autograder:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract challenge ID from branch
+        id: extract_challenge
+        run: |
+          # Get the branch name
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+
+          echo "Branch name: $BRANCH_NAME"
+
+          # Use the full branch name as challenge ID (e.g., challenge-simple-nft-example)
+          if [[ $BRANCH_NAME =~ ^challenge-.+$ ]]; then
+            CHALLENGE_ID="$BRANCH_NAME"
+            echo "challenge_id=$CHALLENGE_ID" >> $GITHUB_OUTPUT
+            echo "Challenge ID: $CHALLENGE_ID"
+          else
+            echo "Branch name does not match challenge pattern: $BRANCH_NAME"
+            exit 1
+          fi
+
+      - name: Update test files on autograding server
+        if: steps.extract_challenge.outputs.challenge_id != ''
+        run: |
+          CHALLENGE_ID="${{ steps.extract_challenge.outputs.challenge_id }}"
+
+          echo "Updating test files on autograding server for challenge: $CHALLENGE_ID"
+          echo "Autograding server URL: ${{ secrets.AUTOGRADER_URL }}/install"
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.AUTOGRADER_URL }}/install" \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: ${{ secrets.AUTOGRADER_API_KEY }}" \
+            -d "{\"challengeId\": \"$CHALLENGE_ID\"}")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          RESPONSE_BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "HTTP Status Code: $HTTP_CODE"
+          echo "Response: $RESPONSE_BODY"
+
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Successfully updated test files on autograding server for challenge $CHALLENGE_ID"
+          else
+            echo "❌ Failed to update test files on autograding server for challenge $CHALLENGE_ID (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: Add summary
+        if: always()
+        run: |
+          if [ "${{ steps.extract_challenge.outputs.challenge_id }}" != "" ]; then
+            echo "## 🧪 Test Files Update" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Challenge ID:** \`${{ steps.extract_challenge.outputs.challenge_id }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "**Autograding Server:** \`${{ secrets.AUTOGRADER_URL }}/install\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ job.status }}" = "success" ]; then
+              echo "✅ **Status:** Successfully updated test files on autograding server" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Status:** Failed to update test files on autograding server" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "## 🧪 Test Files Update" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Status:** Could not extract challenge ID from branch" >> $GITHUB_STEP_SUMMARY
+          fi
