@@ -2,12 +2,19 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./SimpleOracle.sol";
+import { StatisticsUtils } from "../utils/StatisticsUtils.sol";
 
 contract WhitelistOracle {
+    using StatisticsUtils for uint256[];
+
+    error OnlyOwner();
+    error IndexOutOfBounds();
+    error NoOraclesAvailable();
+
     address public owner;
     SimpleOracle[] public oracles;
 
-    event OracleAdded(address oracleAddress);
+    event OracleAdded(address oracleAddress, address oracleOwner);
     event OracleRemoved(address oracleAddress);
 
     constructor() {
@@ -16,21 +23,20 @@ contract WhitelistOracle {
 
     modifier onlyOwner() {
         // Intentionally removing the owner requirement to make it easy for you to impersonate the owner
-        // require(msg.sender == owner, "Not the owner");
+        // if (msg.sender != owner) revert OnlyOwner();
         _;
     }
 
-    function addOracle(address oracle) public onlyOwner {
-        require(oracle != address(0), "Invalid oracle address");
-        for (uint256 i = 0; i < oracles.length; i++) {
-            require(address(oracles[i]) != oracle, "Oracle already exists");
-        }
-        oracles.push(SimpleOracle(oracle));
-        emit OracleAdded(oracle);
+    function addOracle(address _owner) public onlyOwner {
+        SimpleOracle newOracle = new SimpleOracle(_owner);
+        address oracleAddress = address(newOracle);
+
+        oracles.push(newOracle);
+        emit OracleAdded(oracleAddress, _owner);
     }
 
     function removeOracle(uint256 index) public onlyOwner {
-        require(index < oracles.length, "Index out of bounds");
+        if (index >= oracles.length) revert IndexOutOfBounds();
 
         address oracleAddress = address(oracles[index]);
 
@@ -44,7 +50,7 @@ contract WhitelistOracle {
     }
 
     function getPrice() public view returns (uint256) {
-        require(oracles.length > 0, "No oracles available");
+        if (oracles.length == 0) revert NoOraclesAvailable();
 
         // Collect prices and timestamps from all oracles
         uint256[] memory prices = new uint256[](oracles.length);
@@ -60,26 +66,13 @@ contract WhitelistOracle {
             }
         }
 
-        require(validCount > 0, "No valid prices available");
-
         uint256[] memory validPrices = new uint256[](validCount);
         for (uint256 i = 0; i < validCount; i++) {
             validPrices[i] = prices[i];
         }
 
-        // NOTE: It is not efficient to sort onchain, but since we only have 10 oracles
-        // and this is mimicking the early MakerDAO Medianizer exactly, it's fine
-        sort(validPrices);
-
-        uint256 median;
-        if (validCount % 2 == 0) {
-            uint256 midIndex = validCount / 2;
-            median = (validPrices[midIndex - 1] + validPrices[midIndex]) / 2;
-        } else {
-            median = validPrices[validCount / 2];
-        }
-
-        return median;
+        validPrices.sort();
+        return validPrices.getMedian();
     }
 
     function getActiveOracleNodes() public view returns (address[] memory) {
@@ -100,26 +93,5 @@ contract WhitelistOracle {
         }
 
         return activeNodes;
-    }
-
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0), "New owner cannot be zero address");
-        require(newOwner != owner, "New owner cannot be the same as current owner");
-        owner = newOwner;
-    }
-
-    function sort(uint256[] memory arr) internal pure {
-        uint256 n = arr.length;
-        for (uint256 i = 0; i < n; i++) {
-            uint256 minIndex = i;
-            for (uint256 j = i + 1; j < n; j++) {
-                if (arr[j] < arr[minIndex]) {
-                    minIndex = j;
-                }
-            }
-            if (minIndex != i) {
-                (arr[i], arr[minIndex]) = (arr[minIndex], arr[i]);
-            }
-        }
     }
 }
