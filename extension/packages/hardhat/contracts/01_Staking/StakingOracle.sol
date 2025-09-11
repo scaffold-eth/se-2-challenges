@@ -2,8 +2,19 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./OracleToken.sol";
+import { StatisticsUtils } from "../utils/StatisticsUtils.sol";
 
 contract StakingOracle {
+    using StatisticsUtils for uint256[];
+
+    error NodeNotRegistered();
+    error InsufficientStake();
+    error NodeAlreadyRegistered();
+    error NotEnoughStake();
+    error NoRewardsAvailable();
+    error FailedToSendReward();
+    error NoValidPricesAvailable();
+
     ORA public oracleToken;
 
     struct OracleNode {
@@ -33,7 +44,7 @@ contract StakingOracle {
     address public oracleTokenAddress;
 
     modifier onlyNode() {
-        require(nodes[msg.sender].nodeAddress != address(0), "Node not registered");
+        if (nodes[msg.sender].nodeAddress == address(0)) revert NodeNotRegistered();
         _;
     }
 
@@ -43,8 +54,8 @@ contract StakingOracle {
 
     /* ========== Oracle Node Operation Functions ========== */
     function registerNode(uint256 initialPrice) public payable {
-        require(msg.value >= MINIMUM_STAKE, "Insufficient stake");
-        require(nodes[msg.sender].nodeAddress == address(0), "Node already registered");
+        if (msg.value < MINIMUM_STAKE) revert InsufficientStake();
+        if (nodes[msg.sender].nodeAddress != address(0)) revert NodeAlreadyRegistered();
 
         nodes[msg.sender] = OracleNode({
             nodeAddress: msg.sender,
@@ -63,7 +74,7 @@ contract StakingOracle {
 
     function reportPrice(uint256 price) public onlyNode {
         OracleNode storage node = nodes[msg.sender];
-        require(node.stakedAmount >= MINIMUM_STAKE, "Not enough stake");
+        if (node.stakedAmount < MINIMUM_STAKE) revert NotEnoughStake();
         node.lastReportedPrice = price;
         node.lastReportedTimestamp = block.timestamp;
 
@@ -99,7 +110,7 @@ contract StakingOracle {
             rewardAmount = block.timestamp - node.lastClaimedTimestamp;
         }
 
-        require(rewardAmount > 0, "No rewards available");
+        if (rewardAmount == 0) revert NoRewardsAvailable();
 
         nodes[msg.sender].lastClaimedTimestamp = block.timestamp;
         rewardNode(msg.sender, rewardAmount * 10 ** 18);
@@ -113,17 +124,7 @@ contract StakingOracle {
         }
 
         (bool sent, ) = msg.sender.call{ value: slasherReward }("");
-        require(sent, "Failed to send reward");
-    }
-
-    /* ========== Price Calculation Functions ========== */
-    function getMedian(uint256[] memory arr) internal pure returns (uint256) {
-        uint256 length = arr.length;
-        if (length % 2 == 0) {
-            return (arr[length / 2 - 1] + arr[length / 2]) / 2;
-        } else {
-            return arr[length / 2];
-        }
+        if (!sent) revert FailedToSendReward();
     }
 
     function separateStaleNodes(
@@ -176,28 +177,14 @@ contract StakingOracle {
     function getPrice() public view returns (uint256) {
         (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
         uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
-        require(validPrices.length > 0, "No valid prices available");
-        sort(validPrices);
-        return getMedian(validPrices);
+        if (validPrices.length == 0) revert NoValidPricesAvailable();
+        
+        validPrices.sort();
+        return validPrices.getMedian();
     }
 
     function getNodeAddresses() public view returns (address[] memory) {
         return nodeAddresses;
-    }
-
-    function sort(uint256[] memory arr) internal pure {
-        uint256 n = arr.length;
-        for (uint256 i = 0; i < n; i++) {
-            uint256 minIndex = i;
-            for (uint256 j = i + 1; j < n; j++) {
-                if (arr[j] < arr[minIndex]) {
-                    minIndex = j;
-                }
-            }
-            if (minIndex != i) {
-                (arr[i], arr[minIndex]) = (arr[minIndex], arr[i]);
-            }
-        }
     }
 
     // Notably missing a way to unstake and exit your node but not needed for the challenge

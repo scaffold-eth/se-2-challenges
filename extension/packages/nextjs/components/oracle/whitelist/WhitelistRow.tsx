@@ -39,8 +39,9 @@ export const WhitelistRow = ({ address, isActive }: WhitelistRowProps) => {
     watch: true,
   }) as { data: bigint | undefined };
 
+  const isNotReported = data !== undefined && data[0] === 0n && data[1] === 0n;
   const lastReportedPriceFormatted =
-    data !== undefined ? Number(parseFloat(formatEther(data[0])).toFixed(2)) : "Not reported";
+    data === undefined || isNotReported ? "Not reported" : Number(parseFloat(formatEther(data?.[0] ?? 0n)).toFixed(2));
 
   return (
     <tr className={`table-fixed ${isActive ? "" : "opacity-40"}`}>

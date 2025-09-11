@@ -92,9 +92,9 @@ export const WhitelistTable = () => {
               ) : oracleAddresses?.length === 0 ? (
                 <NoNodesRow />
               ) : (
-                oracleAddresses?.map((item, arrayIndex) => (
+                oracleAddresses?.map(item => (
                   <WhitelistRow
-                    key={arrayIndex}
+                    key={item.address}
                     index={item.originalIndex}
                     address={item.address}
                     isActive={activeOracleNodes?.includes(item.address) ?? false}

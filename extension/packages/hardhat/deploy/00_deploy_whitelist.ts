@@ -22,18 +22,18 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
   const simpleOracleAddresses: string[] = [];
 
   // Deploy 10 SimpleOracle contracts, each owned by a different account
-  for (let i = 0; i < nodeAccounts.length; i++) {
-    const account = nodeAccounts[i];
-    console.log(`Deploying SimpleOracle ${i + 1}/10 from account: ${account.account.address}`);
-    const simpleOracle = await deploy(`SimpleOracle_${i + 1}`, {
-      contract: "SimpleOracle",
-      from: account.account.address,
-      args: [],
-      log: true,
-      autoMine: true,
-    });
-    simpleOracleAddresses.push(simpleOracle.address);
-  }
+  // for (let i = 0; i < nodeAccounts.length; i++) {
+  //   const account = nodeAccounts[i];
+  //   console.log(`Deploying SimpleOracle ${i + 1}/10 from account: ${account.account.address}`);
+  //   const simpleOracle = await deploy(`SimpleOracle_${i + 1}`, {
+  //     contract: "SimpleOracle",
+  //     from: account.account.address,
+  //     args: [],
+  //     log: true,
+  //     autoMine: true,
+  //   });
+  //   simpleOracleAddresses.push(simpleOracle.address);
+  // }
 
   console.log("Deploying WhitelistOracle...");
 
@@ -50,32 +50,38 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
   if (hre.network.name === "localhost") {
     // Add all SimpleOracle addresses to WhitelistOracle
     console.log("Adding SimpleOracle instances to WhitelistOracle...");
-    const deployerAccount = accounts.find(a => a.account.address.toLowerCase() === deployer.toLowerCase());
-    if (!deployerAccount) throw new Error("Deployer account not found in wallet clients");
+    const createdOracleAddresses: string[] = [];
+    // const deployerAccount = accounts.find(a => a.account.address.toLowerCase() === deployer.toLowerCase());
+    // if (!deployerAccount) throw new Error("Deployer account not found in wallet clients");
 
-    try {
-      for (let i = 0; i < simpleOracleAddresses.length; i++) {
-        const oracleAddress = simpleOracleAddresses[i] as `0x${string}`;
-        console.log(`Adding SimpleOracle ${i + 1}/10: ${oracleAddress}`);
-        await deployerAccount.writeContract({
+    // try {
+      for (let i = 0; i < nodeAccounts.length; i++) {
+        const account = nodeAccounts[i];
+        console.log(`Adding SimpleOracle ${i + 1}/10: ${account.account.address}`);
+        const txHash = await account.writeContract({
           address: whitelistOracleAddress,
           abi: whitelistOracleAbi,
           functionName: "addOracle",
-          args: [oracleAddress],
+          args: [account.account.address],
         });
+
+        const receipt = await publicClient.waitForTransactionReceipt({
+          hash: txHash,
+        });
+        const
       }
-    } catch (error: any) {
-      if (hre.network.name === "localhost") {
-        if (error.message?.includes("Oracle already exists")) {
-          console.error("\n❌ Deployment failed: Oracle contracts already exist!\n");
-          console.error("🔧 Please retry with:");
-          console.error("yarn deploy --reset\n");
-          process.exit(1);
-        } else {
-          throw error;
-        }
-      }
-    }
+    // } catch (error: any) {
+    //   if (hre.network.name === "localhost") {
+    //     if (error.message?.includes("Oracle already exists")) {
+    //       console.error("\n❌ Deployment failed: Oracle contracts already exist!\n");
+    //       console.error("🔧 Please retry with:");
+    //       console.error("yarn deploy --reset\n");
+    //       process.exit(1);
+    //     } else {
+    //       throw error;
+    //     }
+    //   }
+    // }
 
     // Set initial prices for each SimpleOracle
     console.log("Setting initial prices for each SimpleOracle...");
