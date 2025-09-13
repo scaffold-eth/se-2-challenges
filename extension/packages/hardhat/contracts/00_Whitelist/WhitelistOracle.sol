@@ -21,6 +21,7 @@ contract WhitelistOracle {
 
     address public owner;
     SimpleOracle[] public oracles;
+    uint256 public constant STALE_DATA_WINDOW = 24 seconds;
 
     ////////////////
     /// Events /////
@@ -89,7 +90,7 @@ contract WhitelistOracle {
 
     /**
      * @notice Returns the aggregated price from all active oracles using median calculation
-     * @dev Filters oracles with timestamps older than 10 seconds, then calculates median
+     * @dev Filters oracles with timestamps older than STALE_DATA_WINDOW, then calculates median
      *      of remaining valid prices. Uses StatisticsUtils for sorting and median calculation.
      * @return The median price from all active oracles
      */
@@ -103,8 +104,8 @@ contract WhitelistOracle {
 
         for (uint256 i = 0; i < oracles.length; i++) {
             (uint256 price, uint256 timestamp) = oracles[i].getPrice();
-            // Check if the timestamp is within the last 10 seconds
-            if (currentTime - timestamp < 10) {
+            // Check if the timestamp is within the last STALE_DATA_WINDOW
+            if (currentTime - timestamp < STALE_DATA_WINDOW) {
                 prices[validCount] = price;
                 validCount++;
             }
@@ -120,8 +121,8 @@ contract WhitelistOracle {
     }
 
     /**
-     * @notice Returns the addresses of all oracles that have updated their price within the last 10 seconds
-     * @dev Iterates through all oracles and filters those with recent timestamps (within 10 seconds).
+     * @notice Returns the addresses of all oracles that have updated their price within the last STALE_DATA_WINDOW
+     * @dev Iterates through all oracles and filters those with recent timestamps (within STALE_DATA_WINDOW).
      *      Uses a temporary array to collect active nodes, then creates a right-sized return array
      *      for gas optimization.
      * @return An array of addresses representing the currently active oracle contracts
@@ -132,7 +133,7 @@ contract WhitelistOracle {
 
         for (uint256 i = 0; i < oracles.length; i++) {
             (, uint256 timestamp) = oracles[i].getPrice();
-            if (timestamp > block.timestamp - 10) {
+            if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
                 tempNodes[count] = address(oracles[i]);
                 count++;
             }

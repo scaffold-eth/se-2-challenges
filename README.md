@@ -4,7 +4,7 @@
 
 🔗 Build your own decentralized oracle systems! In this challenge, you'll explore three fundamental oracle architectures that power the decentralized web: **Whitelist Oracle**, **Staking Oracle**, and **Optimistic Oracle**.
 
-🧠 You'll dive deep into the mechanics of bringing real-world data onto the blockchain, understanding the critical trade-offs between security, decentralization, and efficiency. Each oracle design represents a different approach to solving the fundamental problem: how do we trust data that comes from outside the blockchain?
+🧠 You'll dive deep into the mechanics of bringing real-world data onto the blockchain, understanding the critical trade-offs between security, decentralization, and efficiency. Each oracle design represents a different approach to solving the fundamental problem: How can we trust data from outside the blockchain, and how do we securely bring it on-chain?
 
 <details markdown='1'><summary>❓ Wondering what an oracle is? Read the overview here.</summary>
 
@@ -175,7 +175,7 @@ SimpleOracle[] public oracles;  // Array of SimpleOracle contract instances
 
    * 📡 Calls `getPrice()` on each SimpleOracle to get `(price, timestamp)`
 
-   * 🧹 Filters out stale prices (older than 10 seconds)
+   * 🧹 Filters out stale prices (older than STALE_DATA_WINDOW = 24 seconds, which is 2x Ethereum's block time to account for network variations)
 
    * ⛔️ Reverts if all prices are stale
 
@@ -459,7 +459,7 @@ sequenceDiagram
 
 🔗 Look at how [UMA](https://uma.xyz/) does this with their Optimistic Oracle (OO). **This contract is based UMA's OO design**.
 
-## Checkpoint 4: ⚡ Optimistic Oracle - Dispute Resolution
+## Checkpoint 4: ⚡ Optimistic Oracle - Core Functions
 
 👩‍💻 Now it's (finally) time to build! Unlike the previous checkpoints where you explored existing implementations, this section challenges you to implement the optimistic oracle system from scratch. You'll write the core functions that handle assertions, proposals, disputes, and settlements.
 
@@ -644,9 +644,28 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 ---
 
-4. **Implement `claimUndisputedReward(uint256 assertionId)`**
+### 🥅 Goals:
 
-We need to allow the proposer to claim the reward when no dispute occurs before the deadline.
+- Users can assert events with descriptions and time windows
+- Users can propose outcomes for asserted events
+- Users can dispute proposed outcomes
+- The system correctly handles timing constraints
+- Bond amounts are properly validated
+
+## Checkpoint 5: 💰 Optimistic Oracle - Reward Claims
+
+🎯 **Your Mission**: Implement the reward claiming mechanisms that allow participants to collect their earnings based on the outcomes of assertions, proposals, and disputes.
+
+💡 **Key Concept**: The optimistic oracle has three different scenarios for claiming rewards:
+- **Undisputed proposals**: Proposer gets reward + bond back
+- **Disputed proposals**: Winner (determined by decider) gets reward + bond back
+- **Refunds**: Asserter gets reward back when no proposals are made
+
+### ✏️ Tasks:
+
+1. **Implement `claimUndisputedReward(uint256 assertionId)`**
+
+The proposer can claim the reward only after the deadline, as long as no dispute was submitted before it.
 
 * 🧩 A proposal must exist (revert with `NotProposedAssertion`)
 
@@ -702,7 +721,7 @@ We need to allow the proposer to claim the reward when no dispute occurs before 
 
 ---
 
-5. **Implement `claimDisputedReward(uint256 assertionId)`**
+2. **Implement `claimDisputedReward(uint256 assertionId)`**
 
 Very similar to the last function except this one allows the winner of the dispute to claim *only after the Decider has resolved the dispute*.
 
@@ -760,7 +779,7 @@ Very similar to the last function except this one allows the winner of the dispu
 
 ---
 
-6. **Implement `claimRefund(uint256 assertionId)`**
+3. **Implement `claimRefund(uint256 assertionId)`**
 
 This function enables the asserter to get a refund of their posted reward when no proposal arrives by the deadline.
 
@@ -807,9 +826,24 @@ This function enables the asserter to get a refund of their posted reward when n
 </details>
 </details>
 
+### 🥅 Goals:
+
+- Proposers can claim rewards for undisputed assertions
+- Winners can claim rewards after disputes are settled
+- Asserters can claim refunds when no proposals are made
+- The system prevents double-claiming and re-entrancy attacks
+- All transfers are handled safely with proper error checking
+
+
 ---
 
-7. **Implement `settleAssertion(uint256 assertionId, bool resolvedOutcome)`**
+## Checkpoint 6: 🧑‍⚖️ Optimistic Oracle - Settlement & State Management
+
+🎯 **Your Mission**: Implement the final pieces of the optimistic oracle: dispute settlement by the decider and utility functions for querying assertion states and resolutions.
+
+### ✏️ Tasks:
+
+1. **Implement `settleAssertion(uint256 assertionId, bool resolvedOutcome)`**
 
 This is the method that the decider will call to settle whether the proposer or disputer are correct.
 
@@ -860,7 +894,7 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 </details>
 </details>
 
-8. **Implement `getState(uint256 assertionId)`**
+2. **Implement `getState(uint256 assertionId)`**
 
 This function returns a simple state machine view for UI/testing.
 
@@ -916,7 +950,7 @@ Try to deduce the rest without any help.
 
 ---
 
-9. **Implement `getResolution(uint256 assertionId)`**
+3. **Implement `getResolution(uint256 assertionId)`**
 
 This function will help everyone know the exact outcome of the assertion.
 
@@ -973,15 +1007,14 @@ yarn simulate:optimistic
 
 ### 🥅 Goals:
 
-- Users can assert events with descriptions and time windows
-- Users can propose outcomes for asserted events
-- Users can dispute proposed outcomes
-- Undisputed assertions can be claimed after the dispute window
-- The system correctly handles timing constraints
-- Bond amounts are properly validated
+- The decider can settle disputed assertions
+- The system provides clear state information for all assertions
+- Users can query resolved outcomes for both disputed and undisputed assertions
+- All functions handle edge cases and invalid states appropriately
+- The complete optimistic oracle system works end-to-end
 ---
 
-## Checkpoint 5: 🔍 Oracle Comparison & Trade-offs
+## Checkpoint 7: 🔍 Oracle Comparison & Trade-offs
 
 🧠 Now let's analyze the strengths and weaknesses of each oracle design.
 
@@ -1032,13 +1065,13 @@ yarn simulate:optimistic
 
 Each oracle design solves different problems:
 
-- **Whitelist Oracle**: Best for simple, low-value use cases where speed is more important than decentralization
-- **Staking Oracle**: Best for high-value DeFi applications where decentralization and security are crucial
-- **Optimistic Oracle**: Best for complex, high-stakes applications where absolute truth is paramount
+- **Whitelist Oracle**: Best for simple, low-value use cases where speed is more important than decentralization. Works well for binary or predefined questions (e.g., “Is asset X above price Y?”).
+- **Staking Oracle**: Best for high-value DeFi applications where decentralization and security are crucial. Handles yes/no and numerical data questions that require strong guarantees (e.g., “What is the ETH/USD price?”).
+- **Optimistic Oracle**: Best for complex, high-stakes applications where absolute truth is paramount. Flexible enough to resolve open-ended questions that don’t have a strict binary format (e.g., “Which team won the match?”).
 
 ---
 
-## Checkpoint 6: 💾 Deploy your contracts! 🛰
+## Checkpoint 8: 💾 Deploy your contracts! 🛰
 
 🎉 Well done on building the optimistic oracle system! Now, let's get it on a public testnet.
 
@@ -1089,7 +1122,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-## Checkpoint 8: 📜 Contract Verification
+## Checkpoint 9: 📜 Contract Verification
 
 📝 Run the `yarn verify --network your_network` command to verify your optimistic oracle contracts on Etherscan 🛰.
 
@@ -1103,7 +1136,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
 
-## Checkpoint 9: More On Oracles
+## Checkpoint 10: More On Oracles
 
 Oracles are fundamental infrastructure for the decentralized web. They enable smart contracts to interact with real-world data, making blockchain applications truly useful beyond simple token transfers.
 

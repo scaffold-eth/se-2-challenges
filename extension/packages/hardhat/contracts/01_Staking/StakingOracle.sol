@@ -38,7 +38,7 @@ contract StakingOracle {
     address[] public nodeAddresses;
 
     uint256 public constant MINIMUM_STAKE = 1 ether;
-    uint256 public constant STALE_DATA_WINDOW = 5 seconds;
+    uint256 public constant STALE_DATA_WINDOW = 24 seconds;
     uint256 public constant SLASHER_REWARD_PERCENTAGE = 10;
 
     ////////////////
