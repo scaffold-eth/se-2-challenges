@@ -118,37 +118,6 @@ contract StakingOracle {
     }
 
     /**
-     * @notice Internal function to mint oracle tokens as rewards to a node
-     * @dev Mints ORA tokens to the specified node address and emits reward event
-     * @param nodeAddress The address of the node to reward
-     * @param reward The amount of ORA tokens to mint as reward
-     */
-    function rewardNode(address nodeAddress, uint256 reward) internal {
-        oracleToken.mint(nodeAddress, reward);
-        emit NodeRewarded(nodeAddress, reward);
-    }
-
-    /**
-     * @notice Internal function to slash a node's stake for providing stale data
-     * @dev Reduces the node's staked amount and calculates slasher reward as percentage of penalty.
-     *      Cannot slash more than the node's current stake.
-     * @param nodeToSlash The address of the node to penalize
-     * @param penalty The amount of ETH to slash from the node's stake
-     * @return The reward amount for the slasher (percentage of actual penalty)
-     */
-    function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint256) {
-        OracleNode storage node = nodes[nodeToSlash];
-        uint256 actualPenalty = penalty > node.stakedAmount ? node.stakedAmount : penalty;
-        node.stakedAmount -= actualPenalty;
-
-        uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
-
-        emit NodeSlashed(nodeToSlash, actualPenalty);
-
-        return reward;
-    }
-
-    /**
      * @notice Allows registered nodes to claim accumulated ORA token rewards
      * @dev Calculates rewards based on time elapsed since last claim. Slashed nodes
      *      can only claim rewards up to their last slash timestamp.
@@ -185,6 +154,25 @@ contract StakingOracle {
 
         (bool sent, ) = msg.sender.call{ value: slasherReward }("");
         if (!sent) revert FailedToSendReward();
+    }
+
+    ////////////////////////
+    /// View Functions /////
+    ////////////////////////
+
+    /**
+     * @notice Returns the aggregated price from all active oracle nodes using median calculation
+     * @dev Filters out stale nodes, extracts their prices, sorts them, and calculates median.
+     *      Uses StatisticsUtils for sorting and median calculation.
+     * @return The median price from all nodes with fresh data
+     */
+    function getPrice() public view returns (uint256) {
+        (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
+        uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
+        if (validPrices.length == 0) revert NoValidPricesAvailable();
+
+        validPrices.sort();
+        return validPrices.getMedian();
     }
 
     /**
@@ -232,6 +220,50 @@ contract StakingOracle {
     }
 
     /**
+     * @notice Returns the array of all registered oracle node addresses
+     * @dev Provides access to the complete list of node addresses for external monitoring
+     * @return Array of all registered node addresses
+     */
+    function getNodeAddresses() public view returns (address[] memory) {
+        return nodeAddresses;
+    }
+
+    ////////////////////////
+    /// Internal Helpers ///
+    ////////////////////////
+
+    /**
+     * @notice Internal function to mint oracle tokens as rewards to a node
+     * @dev Mints ORA tokens to the specified node address and emits reward event
+     * @param nodeAddress The address of the node to reward
+     * @param reward The amount of ORA tokens to mint as reward
+     */
+    function rewardNode(address nodeAddress, uint256 reward) internal {
+        oracleToken.mint(nodeAddress, reward);
+        emit NodeRewarded(nodeAddress, reward);
+    }
+
+    /**
+     * @notice Internal function to slash a node's stake for providing stale data
+     * @dev Reduces the node's staked amount and calculates slasher reward as percentage of penalty.
+     *      Cannot slash more than the node's current stake.
+     * @param nodeToSlash The address of the node to penalize
+     * @param penalty The amount of ETH to slash from the node's stake
+     * @return The reward amount for the slasher (percentage of actual penalty)
+     */
+    function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint256) {
+        OracleNode storage node = nodes[nodeToSlash];
+        uint256 actualPenalty = penalty > node.stakedAmount ? node.stakedAmount : penalty;
+        node.stakedAmount -= actualPenalty;
+
+        uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
+
+        emit NodeSlashed(nodeToSlash, actualPenalty);
+
+        return reward;
+    }
+
+    /**
      * @notice Internal function to extract price values from an array of node addresses
      * @dev Iterates through provided addresses and retrieves their last reported prices
      * @param addresses Array of node addresses to get prices from
@@ -246,30 +278,6 @@ contract StakingOracle {
         }
 
         return prices;
-    }
-
-    /**
-     * @notice Returns the aggregated price from all active oracle nodes using median calculation
-     * @dev Filters out stale nodes, extracts their prices, sorts them, and calculates median.
-     *      Uses StatisticsUtils for sorting and median calculation.
-     * @return The median price from all nodes with fresh data
-     */
-    function getPrice() public view returns (uint256) {
-        (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
-        uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
-        if (validPrices.length == 0) revert NoValidPricesAvailable();
-        
-        validPrices.sort();
-        return validPrices.getMedian();
-    }
-
-    /**
-     * @notice Returns the array of all registered oracle node addresses
-     * @dev Provides access to the complete list of node addresses for external monitoring
-     * @return Array of all registered node addresses
-     */
-    function getNodeAddresses() public view returns (address[] memory) {
-        return nodeAddresses;
     }
 
     // Notably missing a way to unstake and exit your node but not needed for the challenge
