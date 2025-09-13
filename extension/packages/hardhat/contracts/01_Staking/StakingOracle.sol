@@ -84,77 +84,28 @@ contract StakingOracle {
      *      Requires minimum stake amount and prevents duplicate registrations.
      * @param initialPrice The initial price value this oracle node will report
      */
-    function registerNode(uint256 initialPrice) public payable {
-        if (msg.value < MINIMUM_STAKE) revert InsufficientStake();
-        if (nodes[msg.sender].nodeAddress != address(0)) revert NodeAlreadyRegistered();
-
-        nodes[msg.sender] = OracleNode({
-            nodeAddress: msg.sender,
-            stakedAmount: msg.value,
-            lastReportedPrice: initialPrice,
-            lastReportedTimestamp: block.timestamp,
-            lastClaimedTimestamp: block.timestamp,
-            lastSlashedTimestamp: 0
-        });
-
-        nodeAddresses.push(msg.sender);
-
-        emit NodeRegistered(msg.sender, msg.value);
-        emit PriceReported(msg.sender, initialPrice);
-    }
+    function registerNode(uint256 initialPrice) public payable {}
 
     /**
      * @notice Updates the price reported by an oracle node (only registered nodes)
      * @dev Updates the node's lastReportedPrice and timestamp. Requires sufficient stake.
      * @param price The new price value to report
      */
-    function reportPrice(uint256 price) public onlyNode {
-        OracleNode storage node = nodes[msg.sender];
-        if (node.stakedAmount < MINIMUM_STAKE) revert NotEnoughStake();
-        node.lastReportedPrice = price;
-        node.lastReportedTimestamp = block.timestamp;
-
-        emit PriceReported(msg.sender, price);
-    }
+    function reportPrice(uint256 price) public onlyNode {}
 
     /**
      * @notice Allows registered nodes to claim accumulated ORA token rewards
      * @dev Calculates rewards based on time elapsed since last claim. Slashed nodes
      *      can only claim rewards up to their last slash timestamp.
      */
-    function claimReward() public onlyNode {
-        OracleNode memory node = nodes[msg.sender];
-        uint256 rewardAmount = 0;
-
-        if (node.stakedAmount < MINIMUM_STAKE) {
-            if (node.lastClaimedTimestamp < node.lastSlashedTimestamp) {
-                rewardAmount = node.lastSlashedTimestamp - node.lastClaimedTimestamp;
-            }
-        } else {
-            rewardAmount = block.timestamp - node.lastClaimedTimestamp;
-        }
-
-        if (rewardAmount == 0) revert NoRewardsAvailable();
-
-        nodes[msg.sender].lastClaimedTimestamp = block.timestamp;
-        rewardNode(msg.sender, rewardAmount * 10 ** 18);
-    }
+    function claimReward() public onlyNode {}
 
     /**
      * @notice Public function to slash all nodes with stale data and reward the caller
      * @dev Identifies stale nodes, slashes them, and sends accumulated slasher rewards to caller.
      *      Anyone can call this function to maintain oracle data freshness.
      */
-    function slashNodes() public {
-        (, address[] memory addressesToSlash) = separateStaleNodes(nodeAddresses);
-        uint256 slasherReward;
-        for (uint i = 0; i < addressesToSlash.length; i++) {
-            slasherReward += slashNode(addressesToSlash[i], 1 ether);
-        }
-
-        (bool sent, ) = msg.sender.call{ value: slasherReward }("");
-        if (!sent) revert FailedToSendReward();
-    }
+    function slashNodes() public {}
 
     ////////////////////////
     /// View Functions /////
@@ -166,14 +117,7 @@ contract StakingOracle {
      *      Uses StatisticsUtils for sorting and median calculation.
      * @return The median price from all nodes with fresh data
      */
-    function getPrice() public view returns (uint256) {
-        (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
-        uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
-        if (validPrices.length == 0) revert NoValidPricesAvailable();
-
-        validPrices.sort();
-        return validPrices.getMedian();
-    }
+    function getPrice() public view returns (uint256) {}
 
     /**
      * @notice Separates oracle nodes into fresh and stale categories based on data recency
@@ -185,39 +129,7 @@ contract StakingOracle {
      */
     function separateStaleNodes(
         address[] memory nodesToSeparate
-    ) public view returns (address[] memory fresh, address[] memory stale) {
-        address[] memory freshNodeAddresses = new address[](nodesToSeparate.length);
-        address[] memory staleNodeAddresses = new address[](nodesToSeparate.length);
-        uint256 freshCount = 0;
-        uint256 staleCount = 0;
-
-        for (uint i = 0; i < nodesToSeparate.length; i++) {
-            address nodeAddress = nodesToSeparate[i];
-            OracleNode memory node = nodes[nodeAddress];
-            uint256 timeElapsed = block.timestamp - node.lastReportedTimestamp;
-            bool dataIsStale = timeElapsed > STALE_DATA_WINDOW;
-
-            if (dataIsStale) {
-                staleNodeAddresses[staleCount] = nodeAddress;
-                staleCount++;
-            } else {
-                freshNodeAddresses[freshCount] = nodeAddress;
-                freshCount++;
-            }
-        }
-
-        address[] memory trimmedFreshNodes = new address[](freshCount);
-        address[] memory trimmedStaleNodes = new address[](staleCount);
-
-        for (uint i = 0; i < freshCount; i++) {
-            trimmedFreshNodes[i] = freshNodeAddresses[i];
-        }
-        for (uint i = 0; i < staleCount; i++) {
-            trimmedStaleNodes[i] = staleNodeAddresses[i];
-        }
-
-        return (trimmedFreshNodes, trimmedStaleNodes);
-    }
+    ) public view returns (address[] memory fresh, address[] memory stale) {}
 
     /**
      * @notice Returns the array of all registered oracle node addresses
@@ -238,10 +150,7 @@ contract StakingOracle {
      * @param nodeAddress The address of the node to reward
      * @param reward The amount of ORA tokens to mint as reward
      */
-    function rewardNode(address nodeAddress, uint256 reward) internal {
-        oracleToken.mint(nodeAddress, reward);
-        emit NodeRewarded(nodeAddress, reward);
-    }
+    function rewardNode(address nodeAddress, uint256 reward) internal {}
 
     /**
      * @notice Internal function to slash a node's stake for providing stale data
@@ -251,17 +160,7 @@ contract StakingOracle {
      * @param penalty The amount of ETH to slash from the node's stake
      * @return The reward amount for the slasher (percentage of actual penalty)
      */
-    function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint256) {
-        OracleNode storage node = nodes[nodeToSlash];
-        uint256 actualPenalty = penalty > node.stakedAmount ? node.stakedAmount : penalty;
-        node.stakedAmount -= actualPenalty;
-
-        uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
-
-        emit NodeSlashed(nodeToSlash, actualPenalty);
-
-        return reward;
-    }
+    function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint256) {}
 
     /**
      * @notice Internal function to extract price values from an array of node addresses
@@ -269,16 +168,7 @@ contract StakingOracle {
      * @param addresses Array of node addresses to get prices from
      * @return Array of price values corresponding to the input addresses
      */
-    function getPricesFromAddresses(address[] memory addresses) internal view returns (uint256[] memory) {
-        uint256[] memory prices = new uint256[](addresses.length);
-
-        for (uint256 i = 0; i < addresses.length; i++) {
-            OracleNode memory node = nodes[addresses[i]];
-            prices[i] = node.lastReportedPrice;
-        }
-
-        return prices;
-    }
+    function getPricesFromAddresses(address[] memory addresses) internal view returns (uint256[] memory) {}
 
     // Notably missing a way to unstake and exit your node but not needed for the challenge
 }

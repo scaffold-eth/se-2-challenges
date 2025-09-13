@@ -454,90 +454,347 @@ yarn simulate:whitelist
 - Users can query which oracle nodes are currently active
 - The system correctly handles edge cases and invalid states
 - Understand the benefits of aggregating multiple data sources
-- Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), [Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
+- Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), 
+[Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
 ---
 
 ## Checkpoint 2: 💰 Staking Oracle - Economic Incentives
 
 🧭 Now let's explore a decentralized oracle that uses economic incentives to ensure honest behavior. Nodes stake ETH to participate and can be slashed for bad behavior. We will also issue rewards in the form of an ERC20 token called ORA to incentivise participation in the system.
 
-🔍 Open the `packages/hardhat/contracts/01_Staking/StakingOracle.sol` file to examine the staking oracle implementation.
+👩‍💻 This section challenges you to implement the staking oracle system from scratch. You'll write the core functions that handle node registration, price reporting, reward distribution, and slashing mechanisms.
 
-#### 📖 Understanding the Code:
+🎯 **Your Mission**: Complete the missing function implementations in the `StakingOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you need to fill in the logic.
 
-🧩 The `StakingOracle` contract implements a decentralized economic incentive model:
+🔍 Open the `packages/hardhat/contracts/01_Staking/StakingOracle.sol` file to implement the staking oracle functionality.
 
-1. **`registerNode(uint256 initialPrice)`** - Allows users to register as oracle nodes
+### ✏️ Tasks:
 
-   * ⚠️ Requires a minimum stake of 1 ETH
+1. **Implement `registerNode(uint256 initialPrice)`**
 
-   * 🧪 Checks that the node is not already registered
+* 🏗️ This function allows users to register as oracle nodes by staking ETH
 
-   * 🏗️ Creates a new `OracleNode` struct with the provided data
+* ⚠️ It should require a minimum stake of 1 ETH, otherwise revert with `InsufficientStake`
 
-   * ➕ Adds the node to the `nodeAddresses` array
+* 🧪 It should check that the node is not already registered, otherwise revert with `NodeAlreadyRegistered`
 
-   * 📣 Emits the `NodeRegistered` and `PriceReported` events
+* 🏗️ It should create a new `OracleNode` struct with the provided data
 
-2. **`reportPrice(uint256 price)`** - Allows registered nodes to report new prices
+* ➕ It should add the node address to the `nodeAddresses` array
 
-   * 🧪 Checks that the caller is a registered node
+* 📣 It should emit both `NodeRegistered` and `PriceReported` events
 
-   * 🔍 Verifies the node has sufficient stake
+<details markdown='1'>
 
-   * 🔄 Updates the node's last reported price and timestamp
+<summary>💡 Hint: Node Registration</summary>
 
-   * 📣 Emits the `PriceReported` event
+Here's what you need to set in the OracleNode struct:
+- nodeAddress should be `msg.sender`
+- stakedAmount should be `msg.value`
+- lastReportedPrice should be `initialPrice`
+- lastReportedTimestamp should be `block.timestamp`
+- lastClaimedTimestamp should be `block.timestamp`
+- lastSlashedTimestamp should be `0`
 
-3. **`separateStaleNodes(address[] memory nodesToSeparate)`** - Categorizes nodes into fresh and stale based on data recency
+<details markdown='1'>
 
-   * 📦 Takes an array of node addresses to categorize
+<summary>🎯 Solution</summary>
 
-   * ⏱️ Checks each node's last reported timestamp against `STALE_DATA_WINDOW` (5 seconds)
+```solidity
+function registerNode(uint256 initialPrice) public payable {
+    if (msg.value < MINIMUM_STAKE) revert InsufficientStake();
+    if (nodes[msg.sender].nodeAddress != address(0)) revert NodeAlreadyRegistered();
 
-   * 📊 Separates nodes into two arrays: fresh (recent data) and stale (old data)
+    nodes[msg.sender] = OracleNode({
+        nodeAddress: msg.sender,
+        stakedAmount: msg.value,
+        lastReportedPrice: initialPrice,
+        lastReportedTimestamp: block.timestamp,
+        lastClaimedTimestamp: block.timestamp,
+        lastSlashedTimestamp: 0
+    });
 
-   * 🧹 Returns trimmed arrays containing only the relevant addresses
+    nodeAddresses.push(msg.sender);
 
-   * 🔍 Used internally by other functions to filter active vs inactive nodes
+    emit NodeRegistered(msg.sender, msg.value);
+    emit PriceReported(msg.sender, initialPrice);
+}
+```
 
-4. **`claimReward()`** - Allows registered nodes to claim their ORA token rewards
+</details>
+</details>
 
-   * 🧪 Checks that the caller is a registered node
+---
 
-   * 🔍 Calculates reward amount based on time elapsed since last claim
+2. **Implement `reportPrice(uint256 price)`**
 
-   * 💰 For active nodes (sufficient stake): rewards based on time since last claim
+* 🧪 This function allows registered nodes to report new prices (uses `onlyNode` modifier)
 
-   * ⚠️ For slashed nodes (insufficient stake): limited rewards only up to when they were slashed
+* 🔍 It should verify the node has sufficient stake, otherwise revert with `NotEnoughStake`
 
-   * 🎁 Mints ORA tokens as rewards (time-based, scaled by 10^18)
+* 🔄 It should update the node's last reported price and timestamp
 
-   * 📣 Emits the `NodeRewarded` event
+* 📣 It should emit the `PriceReported` event
 
-5. **`slashNodes()`** - Allows anyone to slash nodes that haven't reported recently
+<details markdown='1'>
 
-   * 🔎 Identifies nodes with stale data (older than 5 seconds)
+<summary>💡 Hint: Price Reporting</summary>
 
-   * ✂️ Slashes each stale node by 1 ETH
+- Get a storage reference to the node using `nodes[msg.sender]`
+- Check if `stakedAmount` is at least `MINIMUM_STAKE`
+- Update `lastReportedPrice` and `lastReportedTimestamp`
+- Emit event with sender and new price
 
-   * 🏅 Rewards the slasher with 10% of the slashed amount so we can guarantee bad nodes are always slashed
+<details markdown='1'>
 
-   * 📣 Emits the `NodeSlashed` event for each slashed node
+<summary>🎯 Solution</summary>
 
-6. **`getPrice()`** - Aggregates prices from all active nodes
+```solidity
+function reportPrice(uint256 price) public onlyNode {
+    OracleNode storage node = nodes[msg.sender];
+    if (node.stakedAmount < MINIMUM_STAKE) revert NotEnoughStake();
+    node.lastReportedPrice = price;
+    node.lastReportedTimestamp = block.timestamp;
 
-   * 📦 Collects prices from all active nodes
+    emit PriceReported(msg.sender, price);
+}
+```
 
-   * 🧹 Filters out nodes with stale data
+</details>
+</details>
 
-   * 🧮 Calculates the median of all valid prices
+---
 
-   * ⛔️ Reverts if no valid prices are available
+3. **Implement `claimReward()` and `rewardNode()`**
+
+* 🧪 This function allows registered nodes to claim their ORA token rewards (uses `onlyNode` modifier)
+
+* 🔍 It should calculate reward amount based on time elapsed since last claim
+
+* 💰 For active nodes (sufficient stake): rewards based on time since last claim
+
+* ⚠️ For slashed nodes (insufficient stake): limited rewards only up to when they were slashed
+
+* 🎁 It should mint ORA tokens as rewards (time-based, scaled by 10^18) using the internal `rewardNode()` helper
+
+* 🔒 It should revert with `NoRewardsAvailable` if no rewards are available
+
+* 📣 It should update `lastClaimedTimestamp` and emit `NodeRewarded` event
+
+<details markdown='1'>
+
+<summary>💡 Hint: Reward Implementation</summary>
+
+You need to implement both functions:
+
+**claimReward()** logic:
+- If node has insufficient stake AND was previously slashed: reward = time between lastClaimedTimestamp and lastSlashedTimestamp
+- If node has sufficient stake: reward = time between lastClaimedTimestamp and now
+- Scale reward by 10^18 for token decimals
+- Update lastClaimedTimestamp to current time
+- Call rewardNode() to mint tokens
+
+**rewardNode()** logic:
+- Simple internal function that mints ORA tokens and emits event
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function claimReward() public onlyNode {
+    OracleNode memory node = nodes[msg.sender];
+    uint256 rewardAmount = 0;
+
+    if (node.stakedAmount < MINIMUM_STAKE) {
+        if (node.lastClaimedTimestamp < node.lastSlashedTimestamp) {
+            rewardAmount = node.lastSlashedTimestamp - node.lastClaimedTimestamp;
+        }
+    } else {
+        rewardAmount = block.timestamp - node.lastClaimedTimestamp;
+    }
+
+    if (rewardAmount == 0) revert NoRewardsAvailable();
+
+    nodes[msg.sender].lastClaimedTimestamp = block.timestamp;
+    rewardNode(msg.sender, rewardAmount * 10 ** 18);
+}
+
+function rewardNode(address nodeAddress, uint256 reward) internal {
+    oracleToken.mint(nodeAddress, reward);
+    emit NodeRewarded(nodeAddress, reward);
+}
+```
+
+</details>
+</details>
+
+---
+
+4. **Implement `slashNodes()`, `separateStaleNodes()`, and `slashNode()`**
+
+* 🔎 This function allows anyone to slash nodes with stale data and get rewarded
+
+* 📊 It should identify stale nodes by categorizing them into fresh and stale based on data recency
+
+* ✂️ It should slash each stale node by 1 ETH and calculate slasher rewards
+
+* 🏅 It should accumulate slasher rewards and send them to the caller
+
+* ⚠️ It should revert with `FailedToSendReward` if the transfer fails
+
+<details markdown='1'>
+
+<summary>💡 Hint: Complete Slashing Implementation</summary>
+
+You need to implement all three functions:
+
+**slashNodes()** - public entry point:
+- Use separateStaleNodes to get stale addresses
+- Loop through and slash each one
+- Send accumulated rewards to caller
+
+**separateStaleNodes()** - categorization logic:
+- Check timestamps against STALE_DATA_WINDOW
+- Return fresh and stale address arrays
+
+**slashNode()** - internal slashing logic:
+- Reduce stake, update timestamp, calculate reward
+- Return slasher reward (10% of penalty)
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function slashNodes() public {
+    (, address[] memory addressesToSlash) = separateStaleNodes(nodeAddresses);
+    uint256 slasherReward;
+    for (uint i = 0; i < addressesToSlash.length; i++) {
+        slasherReward += slashNode(addressesToSlash[i], 1 ether);
+    }
+
+    (bool sent, ) = msg.sender.call{ value: slasherReward }("");
+    if (!sent) revert FailedToSendReward();
+}
+
+function separateStaleNodes(
+    address[] memory nodesToSeparate
+) public view returns (address[] memory fresh, address[] memory stale) {
+    address[] memory freshNodeAddresses = new address[](nodesToSeparate.length);
+    address[] memory staleNodeAddresses = new address[](nodesToSeparate.length);
+    uint256 freshCount = 0;
+    uint256 staleCount = 0;
+
+    for (uint i = 0; i < nodesToSeparate.length; i++) {
+        address nodeAddress = nodesToSeparate[i];
+        OracleNode memory node = nodes[nodeAddress];
+        uint256 timeElapsed = block.timestamp - node.lastReportedTimestamp;
+        bool dataIsStale = timeElapsed > STALE_DATA_WINDOW;
+
+        if (dataIsStale) {
+            staleNodeAddresses[staleCount] = nodeAddress;
+            staleCount++;
+        } else {
+            freshNodeAddresses[freshCount] = nodeAddress;
+            freshCount++;
+        }
+    }
+
+    address[] memory trimmedFreshNodes = new address[](freshCount);
+    address[] memory trimmedStaleNodes = new address[](staleCount);
+
+    for (uint i = 0; i < freshCount; i++) {
+        trimmedFreshNodes[i] = freshNodeAddresses[i];
+    }
+    for (uint i = 0; i < staleCount; i++) {
+        trimmedStaleNodes[i] = staleNodeAddresses[i];
+    }
+
+    return (trimmedFreshNodes, trimmedStaleNodes);
+}
+
+function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint256) {
+    OracleNode storage node = nodes[nodeToSlash];
+    uint256 actualPenalty = penalty > node.stakedAmount ? node.stakedAmount : penalty;
+    node.stakedAmount -= actualPenalty;
+    node.lastSlashedTimestamp = block.timestamp;
+
+    uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
+
+    emit NodeSlashed(nodeToSlash, actualPenalty);
+
+    return reward;
+}
+```
+
+</details>
+</details>
+
+---
+
+5. **Implement `getPrice()` and `getPricesFromAddresses()`**
+
+* 📦 This function aggregates prices from all active nodes using median calculation
+
+* 🧹 It should filter out nodes with stale data using `separateStaleNodes()`
+
+* 🔍 It should extract prices from valid addresses using the internal `getPricesFromAddresses()` helper
+
+* ⛔️ It should revert with `NoValidPricesAvailable` if no valid prices exist
+
+* 🧮 It should sort and calculate the median using StatisticsUtils
+
+<details markdown='1'>
+
+<summary>💡 Hint: Price Aggregation Implementation</summary>
+
+You need to implement both functions:
+
+**getPrice()** logic:
+- Get valid (fresh) addresses from separateStaleNodes
+- Get prices from those addresses using getPricesFromAddresses
+- Check if any valid prices exist
+- Sort prices and return median
+
+**getPricesFromAddresses()** logic:
+- Create array same size as input addresses
+- Loop through addresses and get each node's lastReportedPrice
+- Return the prices array
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getPrice() public view returns (uint256) {
+    (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
+    uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
+    if (validPrices.length == 0) revert NoValidPricesAvailable();
+
+    validPrices.sort();
+    return validPrices.getMedian();
+}
+
+function getPricesFromAddresses(address[] memory addresses) internal view returns (uint256[] memory) {
+    uint256[] memory prices = new uint256[](addresses.length);
+
+    for (uint256 i = 0; i < addresses.length; i++) {
+        OracleNode memory node = nodes[addresses[i]];
+        prices[i] = node.lastReportedPrice;
+    }
+
+    return prices;
+}
+```
+</details>
+</details>
+
+---
 
 ### 🤔 Key Insights:
 
-- **Economic Incentives**: Nodes stake ETH and can be slashed for bad behavior, where in contrast, good behavior rewards the nodes with ORA token
+- **Economic Incentives**: Nodes stake ETH and can be slashed for bad behavior, while good behavior rewards nodes with ORA tokens
 - **Decentralized**: Anyone can participate by staking, no central authority needed
 - **Self-Correcting**: Slashing mechanism punishes inactive or malicious nodes
 - **Freshness Enforcement**: Stale data is automatically filtered out
@@ -557,11 +814,13 @@ yarn simulate:staking
 
 ### 🥅 Goals:
 
-- Understand how economic incentives drive honest behavior
-- See how slashing mechanisms enforce data freshness
-- Observe the decentralized nature of the system
-- Recognize the trade-offs and risks associated with this type of oracle
-- Oracles that require staking include [Chainlink](https://chain.link) and [PYTH](https://www.pyth.network/)
+- Users can register as oracle nodes by staking ETH
+- Registered nodes can report prices and claim ORA token rewards
+- Anyone can slash nodes with stale data and earn rewards
+- System aggregates prices from active nodes using median calculation
+- Economic incentives drive honest behavior and data freshness
+- Understand the trade-offs between decentralization and complexity
+- See examples in the wild: [Chainlink](https://chain.link) and [PYTH](https://www.pyth.network/)
 
 ---
 
