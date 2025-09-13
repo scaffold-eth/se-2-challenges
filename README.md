@@ -112,7 +112,9 @@ yarn start
 
 🧩 The `SimpleOracle` contract is the fundamental building block of this oracle system:
 
-1. **`setPrice(uint256 _newPrice)`** - This function allows the contract owner to update the current price
+1. **Constructor** - Takes an `_owner` address parameter to set who can update the oracle price
+
+2. **`setPrice(uint256 _newPrice)`** - This function allows the contract owner to update the current price
 
    * 🔄 Updates the `price` state variable with the new value
 
@@ -120,7 +122,7 @@ yarn start
 
    * 📣 Emits the `PriceUpdated` event with the new price
 
-2. **`getPrice()`** - This function returns both the current price and timestamp
+3. **`getPrice()`** - This function returns both the current price and timestamp
 
    * ↩️ Returns them as a tuple: `(price, timestamp)`
 
@@ -132,11 +134,13 @@ yarn start
 
 ### 🏛️ Whitelist Oracle - Aggregating Multiple Sources
 
-🔍 Open the `packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol` file to examine how multiple SimpleOracle contracts are aggregated.
+🎯 **Your Mission**: Complete the missing function implementations in the `WhitelistOracle.sol` contract.
+
+🔍 Open the `packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol` file to implement the whitelist oracle functionality.
 
 #### 📖 Understanding the Relationship:
 
-The `WhitelistOracle` contract **aggregates data from multiple SimpleOracle contracts**:
+The `WhitelistOracle` contract **creates and manages multiple SimpleOracle contracts**:
 
 ```solidity
 
@@ -146,46 +150,217 @@ SimpleOracle[] public oracles;  // Array of SimpleOracle contract instances
 
 🏗️ This creates a **hierarchical oracle system**:
 
-- **Individual Level**: Each SimpleOracle contract is managed by a trusted (theoretically) data provider
-- **Aggregation Level**: The WhitelistOracle collects and processes data from all whitelisted SimpleOracle contracts
+- **Individual Level**: Each SimpleOracle contract is managed by a trusted data provider (set during oracle creation)
+- **Aggregation Level**: The WhitelistOracle creates, manages, and processes data from all whitelisted SimpleOracle contracts
 
-#### 📖 Understanding the Code:
+### ✏️ Tasks:
 
-1. **`addOracle(address oracle)`** - Adds a SimpleOracle contract to the whitelist
+1. **Implement `addOracle(address _owner)`**
 
-   * ✔️ Validates the oracle address is not zero
+* 🏭 This function allows the contract owner to add a new oracle to the whitelist by deploying a SimpleOracle contract
 
-   * 🧪 Checks for duplicates in the existing list
+* 🧩 It should create a new `SimpleOracle` instance with the specified `_owner`
 
-   * ➕ Adds the SimpleOracle to the `oracles` array
+* ➕ It should add the newly created SimpleOracle to the `oracles` array
 
-   * 📣 Emits the `OracleAdded` event
+* 📣 It should emit the `OracleAdded` event with both the oracle address and its owner
 
-2. **`removeOracle(uint256 index)`** - Removes a SimpleOracle from the whitelist
+<details markdown='1'>
 
-   * ✔️ Validates the index is within bounds
+<summary>💡 Hint: Creating and Adding Oracles</summary>
 
-   * ➖ Efficiently removes the oracle (swaps with last element)
+Here's what you need to do:
+- Create a new SimpleOracle contract instance using `new SimpleOracle(_owner)`
+- Get the address of the newly created oracle using `address(newOracle)`
+- Push the oracle instance to the `oracles` array
+- Emit the `OracleAdded` event with the oracle address and owner
 
-   * 📣 Emits the `OracleRemoved` event
+<details markdown='1'>
 
-3. **`getPrice()`** - Aggregates prices from all whitelisted SimpleOracle contracts
+<summary>🎯 Solution</summary>
 
-   * 🔁 Loops through each SimpleOracle in the whitelist
+```solidity
+function addOracle(address _owner) public onlyOwner {
+    SimpleOracle newOracle = new SimpleOracle(_owner);
+    address oracleAddress = address(newOracle);
 
-   * 📡 Calls `getPrice()` on each SimpleOracle to get `(price, timestamp)`
+    oracles.push(newOracle);
+    emit OracleAdded(oracleAddress, _owner);
+}
+```
 
-   * 🧹 Filters out stale prices (older than STALE_DATA_WINDOW = 24 seconds, which is 2x Ethereum's block time to account for network variations)
+</details>
+</details>
 
-   * ⛔️ Reverts if all prices are stale
+---
 
-   * 🧮 Calculates the median of valid prices
+2. **Implement `removeOracle(uint256 index)`**
 
-#### 🤔 Key Insights:
+* ✔️ This function allows the contract owner to remove an oracle from the whitelist by its array index
 
-- **Composition Pattern**: WhitelistOracle is composed of multiple SimpleOracle contracts
+* 🔍 It should validate that the provided index is within bounds, otherwise revert with `IndexOutOfBounds`
+
+* 📝 It should record the oracle address before removal for the event
+
+* ➖ It should efficiently remove the oracle using swap-and-pop pattern (swap with last element, then pop)
+
+* 📣 It should emit the `OracleRemoved` event with the oracle address
+
+<details markdown='1'>
+
+<summary>💡 Hint: Safe Array Removal</summary>
+
+The swap-and-pop pattern:
+- Check if index is valid (< oracles.length)
+- Store the oracle address for the event
+- If not the last element, swap with the last element
+- Pop the last element
+- Emit the removal event
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function removeOracle(uint256 index) public onlyOwner {
+    if (index >= oracles.length) revert IndexOutOfBounds();
+
+    address oracleAddress = address(oracles[index]);
+
+    if (index != oracles.length - 1) {
+        oracles[index] = oracles[oracles.length - 1];
+    }
+
+    oracles.pop();
+
+    emit OracleRemoved(oracleAddress);
+}
+```
+
+</details>
+</details>
+
+---
+
+3. **Implement `getPrice()`**
+
+* 📊 This function aggregates prices from all active oracles using median calculation
+
+* ⛔️ It should revert with `NoOraclesAvailable` if no oracles exist in the whitelist
+
+* 🔁 It should loop through each oracle and call `getPrice()` to get `(price, timestamp)`
+
+* 🧹 It should filter out stale prices (older than `STALE_DATA_WINDOW = 24 seconds`)
+
+* 📦 It should collect only fresh prices into a properly sized array
+
+* 🧮 It should use StatisticsUtils library to sort prices and calculate the median
+
+<details markdown='1'>
+
+<summary>💡 Hint: Price Aggregation with Freshness Check</summary>
+
+Here's the process:
+- Check if any oracles exist
+- Create a temporary array to collect fresh prices
+- Loop through all oracles, get their (price, timestamp)
+- Check if timestamp is within STALE_DATA_WINDOW of current time
+- Collect valid prices and count them
+- Create a right-sized array with only valid prices
+- Sort and get median using StatisticsUtils
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getPrice() public view returns (uint256) {
+    if (oracles.length == 0) revert NoOraclesAvailable();
+
+    // Collect prices and timestamps from all oracles
+    uint256[] memory prices = new uint256[](oracles.length);
+    uint256 validCount = 0; // Count of valid prices
+    uint256 currentTime = block.timestamp;
+
+    for (uint256 i = 0; i < oracles.length; i++) {
+        (uint256 price, uint256 timestamp) = oracles[i].getPrice();
+        // Check if the timestamp is within the last STALE_DATA_WINDOW
+        if (currentTime - timestamp < STALE_DATA_WINDOW) {
+            prices[validCount] = price;
+            validCount++;
+        }
+    }
+
+    uint256[] memory validPrices = new uint256[](validCount);
+    for (uint256 i = 0; i < validCount; i++) {
+        validPrices[i] = prices[i];
+    }
+
+    validPrices.sort();
+    return validPrices.getMedian();
+}
+```
+
+</details>
+</details>
+
+---
+
+4. **Implement `getActiveOracleNodes()`**
+
+* 📊 This function returns the addresses of all oracles that have updated their price within the last `STALE_DATA_WINDOW`
+
+* 🔍 It should iterate through all oracles and filter those with recent timestamps
+
+* 📦 It should use a temporary array to collect active nodes, then create a right-sized return array for gas optimization
+
+* 🎯 It should return an array of addresses representing the currently active oracle contracts
+
+<details markdown='1'>
+
+<summary>💡 Hint: Active Node Filtering</summary>
+
+Similar to getPrice(), but instead of collecting prices, collect oracle addresses:
+- Create temporary array to store addresses
+- Loop through oracles, check timestamp freshness
+- Count and collect active oracle addresses
+- Create properly sized result array
+- Return the active oracle addresses
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getActiveOracleNodes() public view returns (address[] memory) {
+    address[] memory tempNodes = new address[](oracles.length);
+    uint256 count = 0;
+
+    for (uint256 i = 0; i < oracles.length; i++) {
+        (, uint256 timestamp) = oracles[i].getPrice();
+        if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
+            tempNodes[count] = address(oracles[i]);
+            count++;
+        }
+    }
+
+    address[] memory activeNodes = new address[](count);
+    for (uint256 j = 0; j < count; j++) {
+        activeNodes[j] = tempNodes[j];
+    }
+
+    return activeNodes;
+}
+```
+
+</details>
+</details>
+
+### 🤔 Key Insights:
+
+- **Factory Pattern**: WhitelistOracle creates and manages SimpleOracle contracts
 - **Centralized Authority**: Only the owner can add/remove SimpleOracle contracts
-- **Consensus Mechanism**: Uses median calculation to resist outliers from individual SimpleOracle contracts
+- **Consensus Mechanism**: Uses median calculation with StatisticsUtils library to resist outliers
 - **Freshness Check**: Filters out stale data from any SimpleOracle
 - **Trust Model**: Requires trust in the whitelist authority and each SimpleOracle provider
 - **Use Cases**: Good for controlled environments where you trust the authority and data providers
@@ -208,7 +383,7 @@ SimpleOracle C → setPrice(98)  → getPrice() → (98, timestamp)
 
 ```
 
-WhitelistOracle → getPrice() → [100, 102, 98] → median(100) → 100
+WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] → median(100) → 100
 
 ```
 
@@ -256,7 +431,7 @@ WhitelistOracle → getPrice() → [100, 102, 98] → median(100) → 100
 
 1. **Change Prices**: Use the frontend to modify individual oracle prices
 
-2. **Add New Nodes**: Deploy and add new SimpleOracle contracts to the whitelist
+2. **Add New Nodes**: Create new SimpleOracle contracts through the whitelist oracle
 
 3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles
 
@@ -272,8 +447,12 @@ yarn simulate:whitelist
 
 ### 🥅 Goals:
 
-- See how WhitelistOracle aggregates multiple nodes
-- Observe how median calculation provides consensus from multiple sources
+- User can add new SimpleOracle instances to the whitelist
+- User can remove oracles
+- System aggregates prices from active oracles using median calculation
+- Stale data is automatically filtered out based on timestamps
+- Users can query which oracle nodes are currently active
+- The system correctly handles edge cases and invalid states
 - Understand the benefits of aggregating multiple data sources
 - Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), [Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
 ---
@@ -461,7 +640,7 @@ sequenceDiagram
 
 ## Checkpoint 4: ⚡ Optimistic Oracle - Core Functions
 
-👩‍💻 Now it's (finally) time to build! Unlike the previous checkpoints where you explored existing implementations, this section challenges you to implement the optimistic oracle system from scratch. You'll write the core functions that handle assertions, proposals, disputes, and settlements.
+👩‍💻 This section challenges you to implement the optimistic oracle system from scratch. You'll write the core functions that handle assertions, proposals, disputes, and settlements.
 
 🎯 **Your Mission**: Complete the missing function implementations in the `OptimisticOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you just need to fill in the logic.
 
