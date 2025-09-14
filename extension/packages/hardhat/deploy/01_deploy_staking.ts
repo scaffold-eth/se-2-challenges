@@ -63,8 +63,14 @@ const deployStakingOracle: DeployFunction = async function (hre: HardhatRuntimeE
     });
   }
 
+  const nodeAddresses = await publicClient.readContract({
+    address: stakingOracleAddress,
+    abi: deployment.abi,
+    functionName: "getNodeAddresses",
+    args: [],
+  });
   await Promise.all(
-    nodeAccounts.map(account => {
+    nodeAddresses.map(account => {
       return account.writeContract({
         address: stakingOracleAddress,
         abi: deployment.abi,
