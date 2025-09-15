@@ -1,6 +1,6 @@
 # 🚩 Challenge: 👛 Multisig Wallet
 
-<div class="alert alert-success shadow-lg rounded-xl">
+<div class="alert info">
   <span>This guide will walk you through creating a Multisig Wallet. Feel free to use it as inspiration to build your unique version with your personal touch. If you're proud of the result, we encourage you to upload it to your profile builds to share it with the community.
 </span>
 </div>
