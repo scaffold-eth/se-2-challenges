@@ -1,9 +1,8 @@
 # 🚩 Challenge: 👛 Multisig Wallet
 
-<div class="alert alert-info">
-  <span>
-    This guide will walk you through creating a Multisig Wallet. Feel free to use it as inspiration to build your unique version with your personal touch. If you're proud of the result, we encourage you to upload it to your profile builds to share it with the community.
-  </span>
+<div class="alert alert-warning shadow-lg rounded-xl">
+  <span>This guide will walk you through creating a Multisig Wallet. Feel free to use it as inspiration to build your unique version with your personal touch. If you're proud of the result, we encourage you to upload it to your profile builds to share it with the community.
+</span>
 </div>
 
 ![readme-6](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-multisig/extension/packages/nextjs/public/hero.png)
