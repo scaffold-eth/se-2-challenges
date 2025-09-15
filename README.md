@@ -1264,24 +1264,9 @@ This function enables the asserter to get a refund of their posted reward when n
 </details>
 </details>
 
-### 🥅 Goals:
-
-- Proposers can claim rewards for undisputed assertions
-- Winners can claim rewards after disputes are settled
-- Asserters can claim refunds when no proposals are made
-- The system prevents double-claiming and re-entrancy attacks
-- All transfers are handled safely with proper error checking
-
-
 ---
 
-## Checkpoint 6: 🧑‍⚖️ Optimistic Oracle - Settlement & State Management
-
-🎯 **Your Mission**: Implement the final pieces of the optimistic oracle: dispute settlement by the decider and utility functions for querying assertion states and resolutions.
-
-### ✏️ Tasks:
-
-1. **Implement `settleAssertion(uint256 assertionId, bool resolvedOutcome)`**
+4. **Implement `settleAssertion(uint256 assertionId, bool resolvedOutcome)`**
 
 This is the method that the decider will call to settle whether the proposer or disputer are correct.
 
@@ -1332,7 +1317,25 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 </details>
 </details>
 
-2. **Implement `getState(uint256 assertionId)`**
+### 🥅 Goals:
+
+- Proposers can claim rewards for undisputed assertions
+- Winners can claim rewards after disputes are settled
+- Asserters can claim refunds when no proposals are made
+- The decider can settle disputed assertions
+- The system prevents double-claiming and re-entrancy attacks
+- All transfers are handled safely with proper error checking
+
+
+---
+
+## Checkpoint 6: 🧑‍⚖️ Optimistic Oracle - State Management
+
+🎯 **Your Mission**: Implement the final pieces of the optimistic oracle: utility functions for querying assertion states and resolutions.
+
+### ✏️ Tasks:
+
+1. **Implement `getState(uint256 assertionId)`**
 
 This function returns a simple state machine view for UI/testing.
 
@@ -1388,7 +1391,7 @@ Try to deduce the rest without any help.
 
 ---
 
-3. **Implement `getResolution(uint256 assertionId)`**
+2. **Implement `getResolution(uint256 assertionId)`**
 
 This function will help everyone know the exact outcome of the assertion.
 
@@ -1445,7 +1448,6 @@ yarn simulate:optimistic
 
 ### 🥅 Goals:
 
-- The decider can settle disputed assertions
 - The system provides clear state information for all assertions
 - Users can query resolved outcomes for both disputed and undisputed assertions
 - All functions handle edge cases and invalid states appropriately
