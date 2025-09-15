@@ -435,6 +435,14 @@ WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] �
 
 3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles
 
+🔍 Run the following command to check if you implement the functions correctly.
+
+```sh
+
+yarn test --grep "Checkpoint1"
+
+```
+
 🧪 **Live Simulation**: Run the `yarn simulate:whitelist` command to see what a live version of this protocol might look like in action:
 
 ```sh
@@ -800,6 +808,14 @@ function getPricesFromAddresses(address[] memory addresses) internal view return
 - **Freshness Enforcement**: Stale data is automatically filtered out
 - **Use Cases**: Excellent for DeFi applications where economic alignment is crucial
 
+🔍 Run the following command to check if you implement the functions correctly.
+
+```sh
+
+yarn test --grep "Checkpoint2"
+
+```
+
 🔄 Run `yarn deploy --reset` then test the staking oracle. Try registering nodes, reporting prices, and slashing inactive nodes.
 
 🧪 **Live Simulation**: Run the `yarn simulate:staking` command to watch a live simulation of staking oracle behavior with multiple nodes:
@@ -1082,6 +1098,14 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 ---
 
+🔍 Run the following command to check if you implement the functions correctly.
+
+```sh
+
+yarn test --grep "Checkpoint4"
+
+```
+
 ### 🥅 Goals:
 
 - Users can assert events with descriptions and time windows
@@ -1317,6 +1341,14 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 </details>
 </details>
 
+🔍 Run the following command to check if you implement the functions correctly.
+
+```sh
+
+yarn test --grep "Checkpoint5"
+
+```
+
 ### 🥅 Goals:
 
 - Proposers can claim rewards for undisputed assertions
@@ -1431,6 +1463,14 @@ The important thing here is that it reverts if it is not settled and if it has b
 </details>
 
 ---
+
+🔍 Run the following command to check if you implement the functions correctly.
+
+```sh
+
+yarn test --grep "Checkpoint6"
+
+```
 
 ✅ Make sure you have implemented everything correctly by running tests with `yarn test`. You can dig into any errors by viewing the tests at `packages/hardhat/test/OptimisticOracle.ts`.
 
