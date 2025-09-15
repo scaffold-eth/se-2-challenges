@@ -74,8 +74,6 @@ yarn chain
 
 ```sh
 
-cd challenge-oracles
-
 yarn deploy
 
 ```
@@ -83,8 +81,6 @@ yarn deploy
 > 📱 In a third terminal window, start your frontend:
 
 ```sh
-
-cd challenge-oracles
 
 yarn start
 

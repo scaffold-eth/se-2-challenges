@@ -57,14 +57,12 @@ yarn chain
 > 🛰️ In a second terminal window, deploy your contract (locally):
 
 \`\`\`sh
-cd challenge-oracles
 yarn deploy
 \`\`\`
 
 > 📱 In a third terminal window, start your frontend:
 
 \`\`\`sh
-cd challenge-oracles
 yarn start
 \`\`\`
 
