@@ -6,7 +6,7 @@ export const extraContents = `# 🔮 Oracles
 
 🔗 Build your own decentralized oracle systems! In this challenge, you'll explore three fundamental oracle architectures that power the decentralized web: **Whitelist Oracle**, **Staking Oracle**, and **Optimistic Oracle**.
 
-🧠 You'll dive deep into the mechanics of bringing real-world data onto the blockchain, understanding the critical trade-offs between security, decentralization, and efficiency. Each oracle design represents a different approach to solving the fundamental problem: how do we trust data that comes from outside the blockchain?
+🧠 You'll dive deep into the mechanics of bringing real-world data onto the blockchain, understanding the critical trade-offs between security, decentralization, and efficiency. Each oracle design represents a different approach to solving the fundamental problem: How can we trust data from outside the blockchain, and how do we securely bring it on-chain?
 
 <details markdown='1'><summary>❓ Wondering what an oracle is? Read the overview here.</summary>
 
@@ -57,14 +57,12 @@ yarn chain
 > 🛰️ In a second terminal window, deploy your contract (locally):
 
 \`\`\`sh
-cd challenge-oracles
 yarn deploy
 \`\`\`
 
 > 📱 In a third terminal window, start your frontend:
 
 \`\`\`sh
-cd challenge-oracles
 yarn start
 \`\`\`
 
@@ -90,7 +88,9 @@ yarn start
 
 🧩 The \`SimpleOracle\` contract is the fundamental building block of this oracle system:
 
-1. **\`setPrice(uint256 _newPrice)\`** - This function allows the contract owner to update the current price
+1. **Constructor** - Takes an \`_owner\` address parameter to set who can update the oracle price
+
+2. **\`setPrice(uint256 _newPrice)\`** - This function allows the contract owner to update the current price
 
    * 🔄 Updates the \`price\` state variable with the new value
 
@@ -98,7 +98,7 @@ yarn start
 
    * 📣 Emits the \`PriceUpdated\` event with the new price
 
-2. **\`getPrice()\`** - This function returns both the current price and timestamp
+3. **\`getPrice()\`** - This function returns both the current price and timestamp
 
    * ↩️ Returns them as a tuple: \`(price, timestamp)\`
 
@@ -110,11 +110,13 @@ yarn start
 
 ### 🏛️ Whitelist Oracle - Aggregating Multiple Sources
 
-🔍 Open the \`packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol\` file to examine how multiple SimpleOracle contracts are aggregated.
+🎯 **Your Mission**: Complete the missing function implementations in the \`WhitelistOracle.sol\` contract.
+
+🔍 Open the \`packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol\` file to implement the whitelist oracle functionality.
 
 #### 📖 Understanding the Relationship:
 
-The \`WhitelistOracle\` contract **aggregates data from multiple SimpleOracle contracts**:
+The \`WhitelistOracle\` contract **creates and manages multiple SimpleOracle contracts**:
 
 \`\`\`solidity
 
@@ -124,46 +126,217 @@ SimpleOracle[] public oracles;  // Array of SimpleOracle contract instances
 
 🏗️ This creates a **hierarchical oracle system**:
 
-- **Individual Level**: Each SimpleOracle contract is managed by a trusted (theoretically) data provider
-- **Aggregation Level**: The WhitelistOracle collects and processes data from all whitelisted SimpleOracle contracts
+- **Individual Level**: Each SimpleOracle contract is managed by a trusted data provider (set during oracle creation)
+- **Aggregation Level**: The WhitelistOracle creates, manages, and processes data from all whitelisted SimpleOracle contracts
 
-#### 📖 Understanding the Code:
+### ✏️ Tasks:
 
-1. **\`addOracle(address oracle)\`** - Adds a SimpleOracle contract to the whitelist
+1. **Implement \`addOracle(address _owner)\`**
 
-   * ✔️ Validates the oracle address is not zero
+* 🏭 This function allows the contract owner to add a new oracle to the whitelist by deploying a SimpleOracle contract
 
-   * 🧪 Checks for duplicates in the existing list
+* 🧩 It should create a new \`SimpleOracle\` instance with the specified \`_owner\`
 
-   * ➕ Adds the SimpleOracle to the \`oracles\` array
+* ➕ It should add the newly created SimpleOracle to the \`oracles\` array
 
-   * 📣 Emits the \`OracleAdded\` event
+* 📣 It should emit the \`OracleAdded\` event with both the oracle address and its owner
 
-2. **\`removeOracle(uint256 index)\`** - Removes a SimpleOracle from the whitelist
+<details markdown='1'>
 
-   * ✔️ Validates the index is within bounds
+<summary>💡 Hint: Creating and Adding Oracles</summary>
 
-   * ➖ Efficiently removes the oracle (swaps with last element)
+Here's what you need to do:
+- Create a new SimpleOracle contract instance using \`new SimpleOracle(_owner)\`
+- Get the address of the newly created oracle using \`address(newOracle)\`
+- Push the oracle instance to the \`oracles\` array
+- Emit the \`OracleAdded\` event with the oracle address and owner
 
-   * 📣 Emits the \`OracleRemoved\` event
+<details markdown='1'>
 
-3. **\`getPrice()\`** - Aggregates prices from all whitelisted SimpleOracle contracts
+<summary>🎯 Solution</summary>
 
-   * 🔁 Loops through each SimpleOracle in the whitelist
+\`\`\`solidity
+function addOracle(address _owner) public onlyOwner {
+    SimpleOracle newOracle = new SimpleOracle(_owner);
+    address oracleAddress = address(newOracle);
 
-   * 📡 Calls \`getPrice()\` on each SimpleOracle to get \`(price, timestamp)\`
+    oracles.push(newOracle);
+    emit OracleAdded(oracleAddress, _owner);
+}
+\`\`\`
 
-   * 🧹 Filters out stale prices (older than 10 seconds)
+</details>
+</details>
 
-   * ⛔️ Reverts if all prices are stale
+---
 
-   * 🧮 Calculates the median of valid prices
+2. **Implement \`removeOracle(uint256 index)\`**
 
-#### 🤔 Key Insights:
+* ✔️ This function allows the contract owner to remove an oracle from the whitelist by its array index
 
-- **Composition Pattern**: WhitelistOracle is composed of multiple SimpleOracle contracts
+* 🔍 It should validate that the provided index is within bounds, otherwise revert with \`IndexOutOfBounds\`
+
+* 📝 It should record the oracle address before removal for the event
+
+* ➖ It should efficiently remove the oracle using swap-and-pop pattern (swap with last element, then pop)
+
+* 📣 It should emit the \`OracleRemoved\` event with the oracle address
+
+<details markdown='1'>
+
+<summary>💡 Hint: Safe Array Removal</summary>
+
+The swap-and-pop pattern:
+- Check if index is valid (< oracles.length)
+- Store the oracle address for the event
+- If not the last element, swap with the last element
+- Pop the last element
+- Emit the removal event
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+function removeOracle(uint256 index) public onlyOwner {
+    if (index >= oracles.length) revert IndexOutOfBounds();
+
+    address oracleAddress = address(oracles[index]);
+
+    if (index != oracles.length - 1) {
+        oracles[index] = oracles[oracles.length - 1];
+    }
+
+    oracles.pop();
+
+    emit OracleRemoved(oracleAddress);
+}
+\`\`\`
+
+</details>
+</details>
+
+---
+
+3. **Implement \`getPrice()\`**
+
+* 📊 This function aggregates prices from all active oracles using median calculation
+
+* ⛔️ It should revert with \`NoOraclesAvailable\` if no oracles exist in the whitelist
+
+* 🔁 It should loop through each oracle and call \`getPrice()\` to get \`(price, timestamp)\`
+
+* 🧹 It should filter out stale prices (older than \`STALE_DATA_WINDOW = 24 seconds\`)
+
+* 📦 It should collect only fresh prices into a properly sized array
+
+* 🧮 It should use StatisticsUtils library to sort prices and calculate the median
+
+<details markdown='1'>
+
+<summary>💡 Hint: Price Aggregation with Freshness Check</summary>
+
+Here's the process:
+- Check if any oracles exist
+- Create a temporary array to collect fresh prices
+- Loop through all oracles, get their (price, timestamp)
+- Check if timestamp is within STALE_DATA_WINDOW of current time
+- Collect valid prices and count them
+- Create a right-sized array with only valid prices
+- Sort and get median using StatisticsUtils
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+function getPrice() public view returns (uint256) {
+    if (oracles.length == 0) revert NoOraclesAvailable();
+
+    // Collect prices and timestamps from all oracles
+    uint256[] memory prices = new uint256[](oracles.length);
+    uint256 validCount = 0; // Count of valid prices
+    uint256 currentTime = block.timestamp;
+
+    for (uint256 i = 0; i < oracles.length; i++) {
+        (uint256 price, uint256 timestamp) = oracles[i].getPrice();
+        // Check if the timestamp is within the last STALE_DATA_WINDOW
+        if (currentTime - timestamp < STALE_DATA_WINDOW) {
+            prices[validCount] = price;
+            validCount++;
+        }
+    }
+
+    uint256[] memory validPrices = new uint256[](validCount);
+    for (uint256 i = 0; i < validCount; i++) {
+        validPrices[i] = prices[i];
+    }
+
+    validPrices.sort();
+    return validPrices.getMedian();
+}
+\`\`\`
+
+</details>
+</details>
+
+---
+
+4. **Implement \`getActiveOracleNodes()\`**
+
+* 📊 This function returns the addresses of all oracles that have updated their price within the last \`STALE_DATA_WINDOW\`
+
+* 🔍 It should iterate through all oracles and filter those with recent timestamps
+
+* 📦 It should use a temporary array to collect active nodes, then create a right-sized return array for gas optimization
+
+* 🎯 It should return an array of addresses representing the currently active oracle contracts
+
+<details markdown='1'>
+
+<summary>💡 Hint: Active Node Filtering</summary>
+
+Similar to getPrice(), but instead of collecting prices, collect oracle addresses:
+- Create temporary array to store addresses
+- Loop through oracles, check timestamp freshness
+- Count and collect active oracle addresses
+- Create properly sized result array
+- Return the active oracle addresses
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+function getActiveOracleNodes() public view returns (address[] memory) {
+    address[] memory tempNodes = new address[](oracles.length);
+    uint256 count = 0;
+
+    for (uint256 i = 0; i < oracles.length; i++) {
+        (, uint256 timestamp) = oracles[i].getPrice();
+        if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
+            tempNodes[count] = address(oracles[i]);
+            count++;
+        }
+    }
+
+    address[] memory activeNodes = new address[](count);
+    for (uint256 j = 0; j < count; j++) {
+        activeNodes[j] = tempNodes[j];
+    }
+
+    return activeNodes;
+}
+\`\`\`
+
+</details>
+</details>
+
+### 🤔 Key Insights:
+
+- **Factory Pattern**: WhitelistOracle creates and manages SimpleOracle contracts
 - **Centralized Authority**: Only the owner can add/remove SimpleOracle contracts
-- **Consensus Mechanism**: Uses median calculation to resist outliers from individual SimpleOracle contracts
+- **Consensus Mechanism**: Uses median calculation with StatisticsUtils library to resist outliers
 - **Freshness Check**: Filters out stale data from any SimpleOracle
 - **Trust Model**: Requires trust in the whitelist authority and each SimpleOracle provider
 - **Use Cases**: Good for controlled environments where you trust the authority and data providers
@@ -186,7 +359,7 @@ SimpleOracle C → setPrice(98)  → getPrice() → (98, timestamp)
 
 \`\`\`
 
-WhitelistOracle → getPrice() → [100, 102, 98] → median(100) → 100
+WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] → median(100) → 100
 
 \`\`\`
 
@@ -234,9 +407,17 @@ WhitelistOracle → getPrice() → [100, 102, 98] → median(100) → 100
 
 1. **Change Prices**: Use the frontend to modify individual oracle prices
 
-2. **Add New Nodes**: Deploy and add new SimpleOracle contracts to the whitelist
+2. **Add New Nodes**: Create new SimpleOracle contracts through the whitelist oracle
 
 3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles
+
+🔍 Run the following command to check if you implement the functions correctly.
+
+\`\`\`sh
+
+yarn test --grep "Checkpoint1"
+
+\`\`\`
 
 🧪 **Live Simulation**: Run the \`yarn simulate:whitelist\` command to see what a live version of this protocol might look like in action:
 
@@ -250,97 +431,366 @@ yarn simulate:whitelist
 
 ### 🥅 Goals:
 
-- See how WhitelistOracle aggregates multiple nodes
-- Observe how median calculation provides consensus from multiple sources
+- User can add new SimpleOracle instances to the whitelist
+- User can remove oracles
+- System aggregates prices from active oracles using median calculation
+- Stale data is automatically filtered out based on timestamps
+- Users can query which oracle nodes are currently active
+- The system correctly handles edge cases and invalid states
 - Understand the benefits of aggregating multiple data sources
-- Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), [Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
+- Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), 
+[Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
 ---
 
 ## Checkpoint 2: 💰 Staking Oracle - Economic Incentives
 
 🧭 Now let's explore a decentralized oracle that uses economic incentives to ensure honest behavior. Nodes stake ETH to participate and can be slashed for bad behavior. We will also issue rewards in the form of an ERC20 token called ORA to incentivise participation in the system.
 
-🔍 Open the \`packages/hardhat/contracts/01_Staking/StakingOracle.sol\` file to examine the staking oracle implementation.
+👩‍💻 This section challenges you to implement the staking oracle system from scratch. You'll write the core functions that handle node registration, price reporting, reward distribution, and slashing mechanisms.
 
-#### 📖 Understanding the Code:
+🎯 **Your Mission**: Complete the missing function implementations in the \`StakingOracle.sol\` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you need to fill in the logic.
 
-🧩 The \`StakingOracle\` contract implements a decentralized economic incentive model:
+🔍 Open the \`packages/hardhat/contracts/01_Staking/StakingOracle.sol\` file to implement the staking oracle functionality.
 
-1. **\`registerNode(uint256 initialPrice)\`** - Allows users to register as oracle nodes
+### ✏️ Tasks:
 
-   * ⚠️ Requires a minimum stake of 1 ETH
+1. **Implement \`registerNode(uint256 initialPrice)\`**
 
-   * 🧪 Checks that the node is not already registered
+* 🏗️ This function allows users to register as oracle nodes by staking ETH
 
-   * 🏗️ Creates a new \`OracleNode\` struct with the provided data
+* ⚠️ It should require a minimum stake of 1 ETH, otherwise revert with \`InsufficientStake\`
 
-   * ➕ Adds the node to the \`nodeAddresses\` array
+* 🧪 It should check that the node is not already registered, otherwise revert with \`NodeAlreadyRegistered\`
 
-   * 📣 Emits the \`NodeRegistered\` and \`PriceReported\` events
+* 🏗️ It should create a new \`OracleNode\` struct with the provided data
 
-2. **\`reportPrice(uint256 price)\`** - Allows registered nodes to report new prices
+* ➕ It should add the node address to the \`nodeAddresses\` array
 
-   * 🧪 Checks that the caller is a registered node
+* 📣 It should emit both \`NodeRegistered\` and \`PriceReported\` events
 
-   * 🔍 Verifies the node has sufficient stake
+<details markdown='1'>
 
-   * 🔄 Updates the node's last reported price and timestamp
+<summary>💡 Hint: Node Registration</summary>
 
-   * 📣 Emits the \`PriceReported\` event
+Here's what you need to set in the OracleNode struct:
+- nodeAddress should be \`msg.sender\`
+- stakedAmount should be \`msg.value\`
+- lastReportedPrice should be \`initialPrice\`
+- lastReportedTimestamp should be \`block.timestamp\`
+- lastClaimedTimestamp should be \`block.timestamp\`
+- lastSlashedTimestamp should be \`0\`
 
-3. **\`separateStaleNodes(address[] memory nodesToSeparate)\`** - Categorizes nodes into fresh and stale based on data recency
+<details markdown='1'>
 
-   * 📦 Takes an array of node addresses to categorize
+<summary>🎯 Solution</summary>
 
-   * ⏱️ Checks each node's last reported timestamp against \`STALE_DATA_WINDOW\` (5 seconds)
+\`\`\`solidity
+function registerNode(uint256 initialPrice) public payable {
+    if (msg.value < MINIMUM_STAKE) revert InsufficientStake();
+    if (nodes[msg.sender].nodeAddress != address(0)) revert NodeAlreadyRegistered();
 
-   * 📊 Separates nodes into two arrays: fresh (recent data) and stale (old data)
+    nodes[msg.sender] = OracleNode({
+        nodeAddress: msg.sender,
+        stakedAmount: msg.value,
+        lastReportedPrice: initialPrice,
+        lastReportedTimestamp: block.timestamp,
+        lastClaimedTimestamp: block.timestamp,
+        lastSlashedTimestamp: 0
+    });
 
-   * 🧹 Returns trimmed arrays containing only the relevant addresses
+    nodeAddresses.push(msg.sender);
 
-   * 🔍 Used internally by other functions to filter active vs inactive nodes
+    emit NodeRegistered(msg.sender, msg.value);
+    emit PriceReported(msg.sender, initialPrice);
+}
+\`\`\`
 
-4. **\`claimReward()\`** - Allows registered nodes to claim their ORA token rewards
+</details>
+</details>
 
-   * 🧪 Checks that the caller is a registered node
+---
 
-   * 🔍 Calculates reward amount based on time elapsed since last claim
+2. **Implement \`reportPrice(uint256 price)\`**
 
-   * 💰 For active nodes (sufficient stake): rewards based on time since last claim
+* 🧪 This function allows registered nodes to report new prices (uses \`onlyNode\` modifier)
 
-   * ⚠️ For slashed nodes (insufficient stake): limited rewards only up to when they were slashed
+* 🔍 It should verify the node has sufficient stake, otherwise revert with \`NotEnoughStake\`
 
-   * 🎁 Mints ORA tokens as rewards (time-based, scaled by 10^18)
+* 🔄 It should update the node's last reported price and timestamp
 
-   * 📣 Emits the \`NodeRewarded\` event
+* 📣 It should emit the \`PriceReported\` event
 
-5. **\`slashNodes()\`** - Allows anyone to slash nodes that haven't reported recently
+<details markdown='1'>
 
-   * 🔎 Identifies nodes with stale data (older than 5 seconds)
+<summary>💡 Hint: Price Reporting</summary>
 
-   * ✂️ Slashes each stale node by 1 ETH
+- Get a storage reference to the node using \`nodes[msg.sender]\`
+- Check if \`stakedAmount\` is at least \`MINIMUM_STAKE\`
+- Update \`lastReportedPrice\` and \`lastReportedTimestamp\`
+- Emit event with sender and new price
 
-   * 🏅 Rewards the slasher with 10% of the slashed amount so we can guarantee bad nodes are always slashed
+<details markdown='1'>
 
-   * 📣 Emits the \`NodeSlashed\` event for each slashed node
+<summary>🎯 Solution</summary>
 
-6. **\`getPrice()\`** - Aggregates prices from all active nodes
+\`\`\`solidity
+function reportPrice(uint256 price) public onlyNode {
+    OracleNode storage node = nodes[msg.sender];
+    if (node.stakedAmount < MINIMUM_STAKE) revert NotEnoughStake();
+    node.lastReportedPrice = price;
+    node.lastReportedTimestamp = block.timestamp;
 
-   * 📦 Collects prices from all active nodes
+    emit PriceReported(msg.sender, price);
+}
+\`\`\`
 
-   * 🧹 Filters out nodes with stale data
+</details>
+</details>
 
-   * 🧮 Calculates the median of all valid prices
+---
 
-   * ⛔️ Reverts if no valid prices are available
+3. **Implement \`claimReward()\` and \`rewardNode()\`**
+
+* 🧪 This function allows registered nodes to claim their ORA token rewards (uses \`onlyNode\` modifier)
+
+* 🔍 It should calculate reward amount based on time elapsed since last claim
+
+* 💰 For active nodes (sufficient stake): rewards based on time since last claim
+
+* ⚠️ For slashed nodes (insufficient stake): limited rewards only up to when they were slashed
+
+* 🎁 It should mint ORA tokens as rewards (time-based, scaled by 10^18) using the internal \`rewardNode()\` helper
+
+* 🔒 It should revert with \`NoRewardsAvailable\` if no rewards are available
+
+* 📣 It should update \`lastClaimedTimestamp\` and emit \`NodeRewarded\` event
+
+<details markdown='1'>
+
+<summary>💡 Hint: Reward Implementation</summary>
+
+You need to implement both functions:
+
+**claimReward()** logic:
+- If node has insufficient stake AND was previously slashed: reward = time between lastClaimedTimestamp and lastSlashedTimestamp
+- If node has sufficient stake: reward = time between lastClaimedTimestamp and now
+- Scale reward by 10^18 for token decimals
+- Update lastClaimedTimestamp to current time
+- Call rewardNode() to mint tokens
+
+**rewardNode()** logic:
+- Simple internal function that mints ORA tokens and emits event
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+function claimReward() public onlyNode {
+    OracleNode memory node = nodes[msg.sender];
+    uint256 rewardAmount = 0;
+
+    if (node.stakedAmount < MINIMUM_STAKE) {
+        if (node.lastClaimedTimestamp < node.lastSlashedTimestamp) {
+            rewardAmount = node.lastSlashedTimestamp - node.lastClaimedTimestamp;
+        }
+    } else {
+        rewardAmount = block.timestamp - node.lastClaimedTimestamp;
+    }
+
+    if (rewardAmount == 0) revert NoRewardsAvailable();
+
+    nodes[msg.sender].lastClaimedTimestamp = block.timestamp;
+    rewardNode(msg.sender, rewardAmount * 10 ** 18);
+}
+
+function rewardNode(address nodeAddress, uint256 reward) internal {
+    oracleToken.mint(nodeAddress, reward);
+    emit NodeRewarded(nodeAddress, reward);
+}
+\`\`\`
+
+</details>
+</details>
+
+---
+
+4. **Implement \`slashNodes()\`, \`separateStaleNodes()\`, and \`slashNode()\`**
+
+* 🔎 This function allows anyone to slash nodes with stale data and get rewarded
+
+* 📊 It should identify stale nodes by categorizing them into fresh and stale based on data recency
+
+* ✂️ It should slash each stale node by 1 ETH and calculate slasher rewards
+
+* 🏅 It should accumulate slasher rewards and send them to the caller
+
+* ⚠️ It should revert with \`FailedToSendReward\` if the transfer fails
+
+<details markdown='1'>
+
+<summary>💡 Hint: Complete Slashing Implementation</summary>
+
+You need to implement all three functions:
+
+**slashNodes()** - public entry point:
+- Use separateStaleNodes to get stale addresses
+- Loop through and slash each one
+- Send accumulated rewards to caller
+
+**separateStaleNodes()** - categorization logic:
+- Check timestamps against STALE_DATA_WINDOW
+- Return fresh and stale address arrays
+
+**slashNode()** - internal slashing logic:
+- Reduce stake, update timestamp, calculate reward
+- Return slasher reward (10% of penalty)
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+function slashNodes() public {
+    (, address[] memory addressesToSlash) = separateStaleNodes(nodeAddresses);
+    uint256 slasherReward;
+    for (uint i = 0; i < addressesToSlash.length; i++) {
+        slasherReward += slashNode(addressesToSlash[i], 1 ether);
+    }
+
+    (bool sent, ) = msg.sender.call{ value: slasherReward }("");
+    if (!sent) revert FailedToSendReward();
+}
+
+function separateStaleNodes(
+    address[] memory nodesToSeparate
+) public view returns (address[] memory fresh, address[] memory stale) {
+    address[] memory freshNodeAddresses = new address[](nodesToSeparate.length);
+    address[] memory staleNodeAddresses = new address[](nodesToSeparate.length);
+    uint256 freshCount = 0;
+    uint256 staleCount = 0;
+
+    for (uint i = 0; i < nodesToSeparate.length; i++) {
+        address nodeAddress = nodesToSeparate[i];
+        OracleNode memory node = nodes[nodeAddress];
+        uint256 timeElapsed = block.timestamp - node.lastReportedTimestamp;
+        bool dataIsStale = timeElapsed > STALE_DATA_WINDOW;
+
+        if (dataIsStale) {
+            staleNodeAddresses[staleCount] = nodeAddress;
+            staleCount++;
+        } else {
+            freshNodeAddresses[freshCount] = nodeAddress;
+            freshCount++;
+        }
+    }
+
+    address[] memory trimmedFreshNodes = new address[](freshCount);
+    address[] memory trimmedStaleNodes = new address[](staleCount);
+
+    for (uint i = 0; i < freshCount; i++) {
+        trimmedFreshNodes[i] = freshNodeAddresses[i];
+    }
+    for (uint i = 0; i < staleCount; i++) {
+        trimmedStaleNodes[i] = staleNodeAddresses[i];
+    }
+
+    return (trimmedFreshNodes, trimmedStaleNodes);
+}
+
+function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint256) {
+    OracleNode storage node = nodes[nodeToSlash];
+    uint256 actualPenalty = penalty > node.stakedAmount ? node.stakedAmount : penalty;
+    node.stakedAmount -= actualPenalty;
+    node.lastSlashedTimestamp = block.timestamp;
+
+    uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
+
+    emit NodeSlashed(nodeToSlash, actualPenalty);
+
+    return reward;
+}
+\`\`\`
+
+</details>
+</details>
+
+---
+
+5. **Implement \`getPrice()\` and \`getPricesFromAddresses()\`**
+
+* 📦 This function aggregates prices from all active nodes using median calculation
+
+* 🧹 It should filter out nodes with stale data using \`separateStaleNodes()\`
+
+* 🔍 It should extract prices from valid addresses using the internal \`getPricesFromAddresses()\` helper
+
+* ⛔️ It should revert with \`NoValidPricesAvailable\` if no valid prices exist
+
+* 🧮 It should sort and calculate the median using StatisticsUtils
+
+<details markdown='1'>
+
+<summary>💡 Hint: Price Aggregation Implementation</summary>
+
+You need to implement both functions:
+
+**getPrice()** logic:
+- Get valid (fresh) addresses from separateStaleNodes
+- Get prices from those addresses using getPricesFromAddresses
+- Check if any valid prices exist
+- Sort prices and return median
+
+**getPricesFromAddresses()** logic:
+- Create array same size as input addresses
+- Loop through addresses and get each node's lastReportedPrice
+- Return the prices array
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+function getPrice() public view returns (uint256) {
+    (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
+    uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
+    if (validPrices.length == 0) revert NoValidPricesAvailable();
+
+    validPrices.sort();
+    return validPrices.getMedian();
+}
+
+function getPricesFromAddresses(address[] memory addresses) internal view returns (uint256[] memory) {
+    uint256[] memory prices = new uint256[](addresses.length);
+
+    for (uint256 i = 0; i < addresses.length; i++) {
+        OracleNode memory node = nodes[addresses[i]];
+        prices[i] = node.lastReportedPrice;
+    }
+
+    return prices;
+}
+\`\`\`
+</details>
+</details>
+
+---
 
 ### 🤔 Key Insights:
 
-- **Economic Incentives**: Nodes stake ETH and can be slashed for bad behavior, where in contrast, good behavior rewards the nodes with ORA token
+- **Economic Incentives**: Nodes stake ETH and can be slashed for bad behavior, while good behavior rewards nodes with ORA tokens
 - **Decentralized**: Anyone can participate by staking, no central authority needed
 - **Self-Correcting**: Slashing mechanism punishes inactive or malicious nodes
 - **Freshness Enforcement**: Stale data is automatically filtered out
 - **Use Cases**: Excellent for DeFi applications where economic alignment is crucial
+
+🔍 Run the following command to check if you implement the functions correctly.
+
+\`\`\`sh
+
+yarn test --grep "Checkpoint2"
+
+\`\`\`
 
 🔄 Run \`yarn deploy --reset\` then test the staking oracle. Try registering nodes, reporting prices, and slashing inactive nodes.
 
@@ -356,11 +806,13 @@ yarn simulate:staking
 
 ### 🥅 Goals:
 
-- Understand how economic incentives drive honest behavior
-- See how slashing mechanisms enforce data freshness
-- Observe the decentralized nature of the system
-- Recognize the trade-offs and risks associated with this type of oracle
-- Oracles that require staking include [Chainlink](https://chain.link) and [PYTH](https://www.pyth.network/)
+- Users can register as oracle nodes by staking ETH
+- Registered nodes can report prices and claim ORA token rewards
+- Anyone can slash nodes with stale data and earn rewards
+- System aggregates prices from active nodes using median calculation
+- Economic incentives drive honest behavior and data freshness
+- Understand the trade-offs between decentralization and complexity
+- See examples in the wild: [Chainlink](https://chain.link) and [PYTH](https://www.pyth.network/)
 
 ---
 
@@ -437,9 +889,9 @@ sequenceDiagram
 
 🔗 Look at how [UMA](https://uma.xyz/) does this with their Optimistic Oracle (OO). **This contract is based UMA's OO design**.
 
-## Checkpoint 4: ⚡ Optimistic Oracle - Dispute Resolution
+## Checkpoint 4: ⚡ Optimistic Oracle - Core Functions
 
-👩‍💻 Now it's (finally) time to build! Unlike the previous checkpoints where you explored existing implementations, this section challenges you to implement the optimistic oracle system from scratch. You'll write the core functions that handle assertions, proposals, disputes, and settlements.
+👩‍💻 This section challenges you to implement the optimistic oracle system from scratch. You'll write the core functions that handle assertions, proposals, disputes, and settlements.
 
 🎯 **Your Mission**: Complete the missing function implementations in the \`OptimisticOracle.sol\` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you just need to fill in the logic.
 
@@ -622,9 +1074,36 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 ---
 
-4. **Implement \`claimUndisputedReward(uint256 assertionId)\`**
+🔍 Run the following command to check if you implement the functions correctly.
 
-We need to allow the proposer to claim the reward when no dispute occurs before the deadline.
+\`\`\`sh
+
+yarn test --grep "Checkpoint4"
+
+\`\`\`
+
+### 🥅 Goals:
+
+- Users can assert events with descriptions and time windows
+- Users can propose outcomes for asserted events
+- Users can dispute proposed outcomes
+- The system correctly handles timing constraints
+- Bond amounts are properly validated
+
+## Checkpoint 5: 💰 Optimistic Oracle - Reward Claims
+
+🎯 **Your Mission**: Implement the reward claiming mechanisms that allow participants to collect their earnings based on the outcomes of assertions, proposals, and disputes.
+
+💡 **Key Concept**: The optimistic oracle has three different scenarios for claiming rewards:
+- **Undisputed proposals**: Proposer gets reward + bond back
+- **Disputed proposals**: Winner (determined by decider) gets reward + bond back
+- **Refunds**: Asserter gets reward back when no proposals are made
+
+### ✏️ Tasks:
+
+1. **Implement \`claimUndisputedReward(uint256 assertionId)\`**
+
+The proposer can claim the reward only after the deadline, as long as no dispute was submitted before it.
 
 * 🧩 A proposal must exist (revert with \`NotProposedAssertion\`)
 
@@ -680,7 +1159,7 @@ We need to allow the proposer to claim the reward when no dispute occurs before 
 
 ---
 
-5. **Implement \`claimDisputedReward(uint256 assertionId)\`**
+2. **Implement \`claimDisputedReward(uint256 assertionId)\`**
 
 Very similar to the last function except this one allows the winner of the dispute to claim *only after the Decider has resolved the dispute*.
 
@@ -738,7 +1217,7 @@ Very similar to the last function except this one allows the winner of the dispu
 
 ---
 
-6. **Implement \`claimRefund(uint256 assertionId)\`**
+3. **Implement \`claimRefund(uint256 assertionId)\`**
 
 This function enables the asserter to get a refund of their posted reward when no proposal arrives by the deadline.
 
@@ -787,7 +1266,7 @@ This function enables the asserter to get a refund of their posted reward when n
 
 ---
 
-7. **Implement \`settleAssertion(uint256 assertionId, bool resolvedOutcome)\`**
+4. **Implement \`settleAssertion(uint256 assertionId, bool resolvedOutcome)\`**
 
 This is the method that the decider will call to settle whether the proposer or disputer are correct.
 
@@ -838,7 +1317,33 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 </details>
 </details>
 
-8. **Implement \`getState(uint256 assertionId)\`**
+🔍 Run the following command to check if you implement the functions correctly.
+
+\`\`\`sh
+
+yarn test --grep "Checkpoint5"
+
+\`\`\`
+
+### 🥅 Goals:
+
+- Proposers can claim rewards for undisputed assertions
+- Winners can claim rewards after disputes are settled
+- Asserters can claim refunds when no proposals are made
+- The decider can settle disputed assertions
+- The system prevents double-claiming and re-entrancy attacks
+- All transfers are handled safely with proper error checking
+
+
+---
+
+## Checkpoint 6: 🧑‍⚖️ Optimistic Oracle - State Management
+
+🎯 **Your Mission**: Implement the final pieces of the optimistic oracle: utility functions for querying assertion states and resolutions.
+
+### ✏️ Tasks:
+
+1. **Implement \`getState(uint256 assertionId)\`**
 
 This function returns a simple state machine view for UI/testing.
 
@@ -894,7 +1399,7 @@ Try to deduce the rest without any help.
 
 ---
 
-9. **Implement \`getResolution(uint256 assertionId)\`**
+2. **Implement \`getResolution(uint256 assertionId)\`**
 
 This function will help everyone know the exact outcome of the assertion.
 
@@ -935,6 +1440,14 @@ The important thing here is that it reverts if it is not settled and if it has b
 
 ---
 
+🔍 Run the following command to check if you implement the functions correctly.
+
+\`\`\`sh
+
+yarn test --grep "Checkpoint6"
+
+\`\`\`
+
 ✅ Make sure you have implemented everything correctly by running tests with \`yarn test\`. You can dig into any errors by viewing the tests at \`packages/hardhat/test/OptimisticOracle.ts\`.
 
 🔄 Run \`yarn deploy --reset\` then test the optimistic oracle. Try creating assertions, proposing outcomes, and disputing them.
@@ -951,15 +1464,13 @@ yarn simulate:optimistic
 
 ### 🥅 Goals:
 
-- Users can assert events with descriptions and time windows
-- Users can propose outcomes for asserted events
-- Users can dispute proposed outcomes
-- Undisputed assertions can be claimed after the dispute window
-- The system correctly handles timing constraints
-- Bond amounts are properly validated
+- The system provides clear state information for all assertions
+- Users can query resolved outcomes for both disputed and undisputed assertions
+- All functions handle edge cases and invalid states appropriately
+- The complete optimistic oracle system works end-to-end
 ---
 
-## Checkpoint 5: 🔍 Oracle Comparison & Trade-offs
+## Checkpoint 7: 🔍 Oracle Comparison & Trade-offs
 
 🧠 Now let's analyze the strengths and weaknesses of each oracle design.
 
@@ -1010,13 +1521,13 @@ yarn simulate:optimistic
 
 Each oracle design solves different problems:
 
-- **Whitelist Oracle**: Best for simple, low-value use cases where speed is more important than decentralization
-- **Staking Oracle**: Best for high-value DeFi applications where decentralization and security are crucial
-- **Optimistic Oracle**: Best for complex, high-stakes applications where absolute truth is paramount
+- **Whitelist Oracle**: Best for simple, low-value use cases where speed is more important than decentralization. Works well for binary or predefined questions (e.g., “Is asset X above price Y?”).
+- **Staking Oracle**: Best for high-value DeFi applications where decentralization and security are crucial. Handles yes/no and numerical data questions that require strong guarantees (e.g., “What is the ETH/USD price?”).
+- **Optimistic Oracle**: Best for complex, high-stakes applications where absolute truth is paramount. Flexible enough to resolve open-ended questions that don’t have a strict binary format (e.g., “Which team won the match?”).
 
 ---
 
-## Checkpoint 6: 💾 Deploy your contracts! 🛰
+## Checkpoint 8: 💾 Deploy your contracts! 🛰
 
 🎉 Well done on building the optimistic oracle system! Now, let's get it on a public testnet.
 
@@ -1067,7 +1578,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-## Checkpoint 8: 📜 Contract Verification
+## Checkpoint 9: 📜 Contract Verification
 
 📝 Run the \`yarn verify --network your_network\` command to verify your optimistic oracle contracts on Etherscan 🛰.
 
@@ -1081,7 +1592,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
 
-## Checkpoint 9: More On Oracles
+## Checkpoint 10: More On Oracles
 
 Oracles are fundamental infrastructure for the decentralized web. They enable smart contracts to interact with real-world data, making blockchain applications truly useful beyond simple token transfers.
 

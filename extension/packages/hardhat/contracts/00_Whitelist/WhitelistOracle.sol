@@ -2,124 +2,88 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./SimpleOracle.sol";
+import { StatisticsUtils } from "../utils/StatisticsUtils.sol";
 
 contract WhitelistOracle {
+    using StatisticsUtils for uint256[];
+
+    /////////////////
+    /// Errors //////
+    /////////////////
+
+    error OnlyOwner();
+    error IndexOutOfBounds();
+    error NoOraclesAvailable();
+
+    //////////////////////
+    /// State Variables //
+    //////////////////////
+
     address public owner;
     SimpleOracle[] public oracles;
+    uint256 public constant STALE_DATA_WINDOW = 24 seconds;
 
-    event OracleAdded(address oracleAddress);
+    ////////////////
+    /// Events /////
+    ////////////////
+
+    event OracleAdded(address oracleAddress, address oracleOwner);
     event OracleRemoved(address oracleAddress);
+
+    ///////////////////
+    /// Modifiers /////
+    ///////////////////
+
+    /**
+     * @notice Modifier to restrict function access to the contract owner
+     * @dev Currently disabled to make it easy for you to impersonate the owner
+     */
+    modifier onlyOwner() {
+        // if (msg.sender != owner) revert OnlyOwner();
+        _;
+    }
+
+    ///////////////////
+    /// Constructor ///
+    ///////////////////
 
     constructor() {
         owner = msg.sender;
     }
 
-    modifier onlyOwner() {
-        // Intentionally removing the owner requirement to make it easy for you to impersonate the owner
-        // require(msg.sender == owner, "Not the owner");
-        _;
-    }
+    ///////////////////
+    /// Functions /////
+    ///////////////////
 
-    function addOracle(address oracle) public onlyOwner {
-        require(oracle != address(0), "Invalid oracle address");
-        for (uint256 i = 0; i < oracles.length; i++) {
-            require(address(oracles[i]) != oracle, "Oracle already exists");
-        }
-        oracles.push(SimpleOracle(oracle));
-        emit OracleAdded(oracle);
-    }
+    /**
+     * @notice Adds a new oracle to the whitelist by deploying a SimpleOracle contract (only contract owner)
+     * @dev Creates a new SimpleOracle instance and adds it to the oracles array.
+     * @param _owner The address that will own the newly created oracle and can update its price
+     */
+    function addOracle(address _owner) public onlyOwner {}
 
-    function removeOracle(uint256 index) public onlyOwner {
-        require(index < oracles.length, "Index out of bounds");
+    /**
+     * @notice Removes an oracle from the whitelist by its array index (only contract owner)
+     * @dev Uses swap-and-pop pattern for gas-efficient removal. Order is not preserved.
+     *      Reverts with IndexOutOfBounds, if the provided index is >= oracles.length.
+     * @param index The index of the oracle to remove from the oracles array
+     */
+    function removeOracle(uint256 index) public onlyOwner {}
 
-        address oracleAddress = address(oracles[index]);
+    /**
+     * @notice Returns the aggregated price from all active oracles using median calculation
+     * @dev Filters oracles with timestamps older than STALE_DATA_WINDOW, then calculates median
+     *      of remaining valid prices. Uses StatisticsUtils for sorting and median calculation.
+     * @return The median price from all active oracles
+     */
+    function getPrice() public view returns (uint256) {}
 
-        if (index != oracles.length - 1) {
-            oracles[index] = oracles[oracles.length - 1];
-        }
-
-        oracles.pop();
-
-        emit OracleRemoved(oracleAddress);
-    }
-
-    function getPrice() public view returns (uint256) {
-        require(oracles.length > 0, "No oracles available");
-
-        // Collect prices and timestamps from all oracles
-        uint256[] memory prices = new uint256[](oracles.length);
-        uint256 validCount = 0; // Count of valid prices
-        uint256 currentTime = block.timestamp;
-
-        for (uint256 i = 0; i < oracles.length; i++) {
-            (uint256 price, uint256 timestamp) = oracles[i].getPrice();
-            // Check if the timestamp is within the last 10 seconds
-            if (currentTime - timestamp < 10) {
-                prices[validCount] = price;
-                validCount++;
-            }
-        }
-
-        require(validCount > 0, "No valid prices available");
-
-        uint256[] memory validPrices = new uint256[](validCount);
-        for (uint256 i = 0; i < validCount; i++) {
-            validPrices[i] = prices[i];
-        }
-
-        // NOTE: It is not efficient to sort onchain, but since we only have 10 oracles
-        // and this is mimicking the early MakerDAO Medianizer exactly, it's fine
-        sort(validPrices);
-
-        uint256 median;
-        if (validCount % 2 == 0) {
-            uint256 midIndex = validCount / 2;
-            median = (validPrices[midIndex - 1] + validPrices[midIndex]) / 2;
-        } else {
-            median = validPrices[validCount / 2];
-        }
-
-        return median;
-    }
-
-    function getActiveOracleNodes() public view returns (address[] memory) {
-        address[] memory tempNodes = new address[](oracles.length);
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < oracles.length; i++) {
-            (, uint256 timestamp) = oracles[i].getPrice();
-            if (timestamp > block.timestamp - 10) {
-                tempNodes[count] = address(oracles[i]);
-                count++;
-            }
-        }
-
-        address[] memory activeNodes = new address[](count);
-        for (uint256 j = 0; j < count; j++) {
-            activeNodes[j] = tempNodes[j];
-        }
-
-        return activeNodes;
-    }
-
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0), "New owner cannot be zero address");
-        require(newOwner != owner, "New owner cannot be the same as current owner");
-        owner = newOwner;
-    }
-
-    function sort(uint256[] memory arr) internal pure {
-        uint256 n = arr.length;
-        for (uint256 i = 0; i < n; i++) {
-            uint256 minIndex = i;
-            for (uint256 j = i + 1; j < n; j++) {
-                if (arr[j] < arr[minIndex]) {
-                    minIndex = j;
-                }
-            }
-            if (minIndex != i) {
-                (arr[i], arr[minIndex]) = (arr[minIndex], arr[i]);
-            }
-        }
-    }
+    /**
+     * @notice Returns the addresses of all oracles that have updated their price within the last STALE_DATA_WINDOW
+     * @dev Iterates through all oracles and filters those with recent timestamps (within STALE_DATA_WINDOW).
+     *      Uses a temporary array to collect active nodes, then creates a right-sized return array
+     *      for gas optimization.
+     * @return An array of addresses representing the currently active oracle contracts
+     */
+    function getActiveOracleNodes() public view returns (address[] memory) {}
 }

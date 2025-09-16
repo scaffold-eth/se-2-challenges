@@ -1,9 +1,10 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { decodeEventLog } from "viem";
 import { fetchPriceFromUniswap } from "../scripts/fetchPriceFromUniswap";
 
 /**
- * Deploys SimpleOracle instances and a WhitelistOracle contract using viem
+ * Deploys a WhitelistOracle contract and creates SimpleOracle instances through it
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
@@ -14,29 +15,7 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
 
   const publicClient = await viem.getPublicClient();
 
-  console.log("Deploying WhitelistOracle contracts...");
-
-  // Get 10 wallet clients (accounts)
-  const accounts = await viem.getWalletClients();
-  const nodeAccounts = accounts.slice(0, 10);
-  const simpleOracleAddresses: string[] = [];
-
-  // Deploy 10 SimpleOracle contracts, each owned by a different account
-  for (let i = 0; i < nodeAccounts.length; i++) {
-    const account = nodeAccounts[i];
-    console.log(`Deploying SimpleOracle ${i + 1}/10 from account: ${account.account.address}`);
-    const simpleOracle = await deploy(`SimpleOracle_${i + 1}`, {
-      contract: "SimpleOracle",
-      from: account.account.address,
-      args: [],
-      log: true,
-      autoMine: true,
-    });
-    simpleOracleAddresses.push(simpleOracle.address);
-  }
-
-  console.log("Deploying WhitelistOracle...");
-
+  console.log("Deploying WhitelistOracle contract...");
   const whitelistOracleDeployment = await deploy("WhitelistOracle", {
     from: deployer,
     args: [],
@@ -48,45 +27,71 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
 
   // Skip the rest of the setup if we are on a live network
   if (hre.network.name === "localhost") {
-    // Add all SimpleOracle addresses to WhitelistOracle
-    console.log("Adding SimpleOracle instances to WhitelistOracle...");
+    // Get 10 wallet clients (accounts) to be oracle owners
+    const accounts = await viem.getWalletClients();
+    const nodeAccounts = accounts.slice(0, 10);
+
+    console.log("Creating SimpleOracle instances through WhitelistOracle...");
     const deployerAccount = accounts.find(a => a.account.address.toLowerCase() === deployer.toLowerCase());
     if (!deployerAccount) throw new Error("Deployer account not found in wallet clients");
 
-    try {
-      for (let i = 0; i < simpleOracleAddresses.length; i++) {
-        const oracleAddress = simpleOracleAddresses[i] as `0x${string}`;
-        console.log(`Adding SimpleOracle ${i + 1}/10: ${oracleAddress}`);
-        await deployerAccount.writeContract({
-          address: whitelistOracleAddress,
-          abi: whitelistOracleAbi,
-          functionName: "addOracle",
-          args: [oracleAddress],
-        });
-      }
-    } catch (error: any) {
-      if (hre.network.name === "localhost") {
-        if (error.message?.includes("Oracle already exists")) {
-          console.error("\n❌ Deployment failed: Oracle contracts already exist!\n");
-          console.error("🔧 Please retry with:");
-          console.error("yarn deploy --reset\n");
-          process.exit(1);
-        } else {
-          throw error;
+    // Create SimpleOracle instances through WhitelistOracle.addOracle()
+    // This creates new SimpleOracle contracts owned by the specified addresses
+    const createdOracleAddresses: string[] = [];
+
+    for (let i = 0; i < nodeAccounts.length; i++) {
+      const ownerAddress = nodeAccounts[i].account.address;
+      console.log(`Creating SimpleOracle ${i + 1}/10 with owner: ${ownerAddress}`);
+
+      // Call addOracle which creates a new SimpleOracle instance
+      const txHash = await deployerAccount.writeContract({
+        address: whitelistOracleAddress,
+        abi: whitelistOracleAbi,
+        functionName: "addOracle",
+        args: [ownerAddress],
+      });
+
+      // Wait for transaction and get the created oracle address from event
+      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+      const oracleAddedEvent = receipt.logs.find(log => {
+        try {
+          const decoded = decodeEventLog({
+            abi: whitelistOracleAbi,
+            data: log.data,
+            topics: log.topics,
+          }) as { eventName: string; args: { oracleAddress: string; oracleOwner: string } };
+          return decoded.eventName === "OracleAdded";
+        } catch {
+          return false;
         }
+      });
+
+      if (oracleAddedEvent) {
+        const decoded = decodeEventLog({
+          abi: whitelistOracleAbi,
+          data: oracleAddedEvent.data,
+          topics: oracleAddedEvent.topics,
+        }) as { eventName: string; args: { oracleAddress: string; oracleOwner: string } };
+        const oracleAddress = decoded.args.oracleAddress;
+        createdOracleAddresses.push(oracleAddress);
+        console.log(`✅ Created SimpleOracle at: ${oracleAddress}`);
       }
     }
 
-    // Set initial prices for each SimpleOracle
+    // Set initial prices for each created SimpleOracle
     console.log("Setting initial prices for each SimpleOracle...");
     const initialPrice = await fetchPriceFromUniswap();
-    for (let i = 0; i < nodeAccounts.length; i++) {
+
+    for (let i = 0; i < createdOracleAddresses.length; i++) {
       const account = nodeAccounts[i];
-      const simpleOracleDeployment = await hre.deployments.get(`SimpleOracle_${i + 1}`);
+      const oracleAddress = createdOracleAddresses[i] as `0x${string}`;
+
+      // Get SimpleOracle ABI from deployments
+      const simpleOracleDeployment = await hre.deployments.getArtifact("SimpleOracle");
       const simpleOracleAbi = simpleOracleDeployment.abi;
-      const simpleOracleAddress = simpleOracleDeployment.address as `0x${string}`;
+
       await account.writeContract({
-        address: simpleOracleAddress,
+        address: oracleAddress,
         abi: simpleOracleAbi,
         functionName: "setPrice",
         args: [initialPrice],
@@ -96,7 +101,7 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
         method: "evm_mine",
       });
 
-      console.log(`Set price for SimpleOracle_${i + 1} to: ${initialPrice}`);
+      console.log(`Set price for SimpleOracle ${i + 1} to: ${initialPrice}`);
     }
 
     // Calculate initial median price
@@ -109,7 +114,7 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
     });
     console.log(`Initial median price: ${medianPrice.toString()}`);
   }
-  console.log("All oracle contracts deployed and configured successfully!");
+  console.log("WhitelistOracle contract deployed and configured successfully!");
 };
 
 export default deployWhitelistOracleContracts;
