@@ -427,6 +427,8 @@ yarn test --grep "Checkpoint1"
 
 \`\`\`
 
+🔄 Run \`yarn deploy --reset\` then test the whitelist oracle. Try adding and removing oracles, and observing how the aggregated price changes.
+
 🧪 **Live Simulation**: Run the \`yarn simulate:whitelist\` command to see what a live version of this protocol might look like in action:
 
 \`\`\`sh
@@ -919,7 +921,7 @@ sequenceDiagram
 
 * ⏳ It should accept 0 for \`endTime\` and default to \`startTime + MINIMUM_ASSERTION_WINDOW\`
 
-* 🕰️ It should check that the given \`startTime\` is less than the current time (\`block.timestamp\`) and revert with \`InvalidTime\` if it is not
+* 🕰️ It should check that the given \`startTime\` is less than the current time (\`block.timestamp\`) and revert with \`InvalidTime\` if it is
 
 * 🧭 It should validate the time window given is >= \`MINIMUM_ASSERTION_WINDOW\`, otherwise revert with \`InvalidTime\`
 
@@ -1553,7 +1555,7 @@ Each oracle design solves different problems:
 
 ---
 
-## Checkpoint 7: 🚢 Ship your frontend! 🚁
+## Checkpoint 9: 🚢 Ship your frontend! 🚁
 
 ✏️ Edit your frontend config in \`packages/nextjs/scaffold.config.ts\` to change the \`targetNetwork\` to \`chains.sepolia\` (or your chosen deployed network).
 
@@ -1586,7 +1588,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-## Checkpoint 9: 📜 Contract Verification
+## Checkpoint 10: 📜 Contract Verification
 
 📝 Run the \`yarn verify --network your_network\` command to verify your optimistic oracle contracts on Etherscan 🛰.
 
@@ -1600,7 +1602,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
 
-## Checkpoint 10: More On Oracles
+## Checkpoint 11: More On Oracles
 
 Oracles are fundamental infrastructure for the decentralized web. They enable smart contracts to interact with real-world data, making blockchain applications truly useful beyond simple token transfers.
 
