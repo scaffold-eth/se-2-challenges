@@ -8,14 +8,13 @@
 
 ---
 
-🎫 Tokenize unique items with ERC‑721:
+🎫 Tokenize unique items:
 
 👷‍♀️ You'll compile and deploy your first smart contracts. Then, you'll use a template NextJS app full of important Ethereum components and hooks. Finally, you'll deploy a non-fungible token to a public network where you can send it to anyone! 🚀
 
 🌟 The final deliverable is an app that lets users mint and transfer NFTs and understand onchain ownership. Deploy your contracts to a testnet, then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-TODO: UPDATE TG Channel
-💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
+💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+bstCpWY7yPBhOWUx)!
 
 🤖 If you have any questions during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions. Please reach us in Telegram if something feels wrong!
 
@@ -29,13 +28,15 @@ Tokenization is like giving anything a digital passport you can carry in your wa
 – **Blockchain‑native assets**: Some things are born onchain — art, game items, ENS names, fully‑onchain media, and even concert tickets designed for onchain verification. Here, the token is the thing. That makes them globally transferable, permissionless, and composable — plug them into marketplaces, auctions, lending, or games. As the world moves onchain we’ll see more native experiences — like tickets that verify at the door, auto‑split royalties on resales, and unlock perks across apps.
 </details>
 
+---
+
 🚫 **"Wait, aren't NFTs just monkey JPEGS?"** That couldn't be further from the truth! While some NFTs are nothing more than metadata pointing to an image, the important part is to realize how assets on Ethereum unlock composability. 
 
-🌐 Look at how ENS is improving upon the Domain Name System (DNS aka website addresses). These are just NFTs but they carry a lot of value. The same value that is unlocked by not having to remember to type 64.233.180.138 to get to Google.com is unlocked by these ENS names but the usefulness goes further than that. You can use these ENS names to alias wallet addresses as well. Check out the ENS record for [vitalik.eth](https://app.ens.domains/vitalik.eth) to see how there are many records - some for addresses, some for content. Try going to [vitalik.eth.limo](https://vitalik.eth.limo) and see how the contentHash record resolves to his personal webpage. 
+🌐 Look at how ENS is improving upon the Domain Name System (DNS aka website addresses). These are just NFTs but they carry a lot of usefulness. The same usefulness that is unlocked by not having to remember to type 64.233.180.138 to get to Google.com is unlocked by these ENS names but the usefulness goes further than that. You can use these ENS names to alias wallet addresses as well. Check out the ENS record for [vitalik.eth](https://app.ens.domains/vitalik.eth) to see how there are many records - some for addresses, some for content. Try going to [vitalik.eth.limo](https://vitalik.eth.limo) and see how the contentHash record resolves to his personal webpage. 
 
 🦄 Or checkout how Uniswap V3 is [using NFTs](https://uniswapv3book.com/milestone_6/nft-manager.html) to track each liquidity providers portion in the pool. Don't worry if you don't understand all those words yet, just realize that this is a big deal to represent ownership of assets this way. 
 
-♻️ Even if the NFT itself is completely inert and reflects complete speculation on a "worthless" image, you can still use that NFT in other smart contracts to build interesting projects like what they have done at [PunkStrategy](https://www.punkstrategy.fun/) where you can buy tokens in a protocol that gives you fractional exposure to CryptoPunk NFTs while also having part in a strategy that automatically uses profit from token sales and buys the lowest valued Punk on the market, then relisting at a 20% premium - over and over again, forever! 
+♻️ Even if the NFT itself is completely inert and reflects complete speculation on a "worthless" image, you can still use that NFT in other smart contracts to build interesting projects like what they have done at [PunkStrategy](https://www.punkstrategy.fun/) where you can buy tokens in a protocol that gives you fractional exposure to CryptoPunk NFTs while also having part in a strategy that automatically uses profit from token sales to buy the lowest valued Punk on the market, then relists it at a 20% premium - over and over again, forever! 
 
 🔓 Composability unlocks all of this and so much more!
 
@@ -109,7 +110,7 @@ yarn start
 
 ## Checkpoint 2: 🖨 Minting
 
-🦓 In this challenge we will be minting (or creating) collectible Buffalo and Zebra NFTs. Their metadata is stored on [IPFS](https://ipfs.tech/). These won't feign any real value but what price can you put on your own understanding of intricate blockchain ownership designs? Face it, it's **priceless!**
+🦓 In this challenge we will be minting (or creating) collectible Buffalo, Zebra and Rhino NFTs. Their metadata is stored on [IPFS](https://ipfs.tech/). These won't feign any real value but what price can you put on your own understanding of intricate blockchain ownership designs? Face it, it's **priceless!**
 
 > ✏️ Time to create something new. Click **MINT NFT** in the `My NFTs` tab to mint an ERC‑721 token — your unique, onchain collectible.
 
