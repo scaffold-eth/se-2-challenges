@@ -1,6 +1,6 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🔮 Oracles
+export const extraContents = `# 🔮 Oracle Challenge
 
 ![readme-oracle](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-oracles/extension/packages/nextjs/public/hero.png)
 
@@ -51,19 +51,25 @@ Oracles are bridges between blockchains and the external world. They solve a fun
 > 💻 Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
+
 yarn chain
+
 \`\`\`
 
 > 🛰️ In a second terminal window, deploy your contract (locally):
 
 \`\`\`sh
+
 yarn deploy
+
 \`\`\`
 
 > 📱 In a third terminal window, start your frontend:
 
 \`\`\`sh
+
 yarn start
+
 \`\`\`
 
 📱 Open http://localhost:3000 to see the app.
@@ -347,7 +353,7 @@ function getActiveOracleNodes() public view returns (address[] memory) {
 - **Consensus Mechanism**: Uses median calculation with StatisticsUtils library to resist outliers
 - **Freshness Check**: Filters out stale data from any SimpleOracle
 - **Trust Model**: Requires trust in the whitelist authority and each SimpleOracle provider
-- **Use Cases**: Good for controlled environments where you trust the authority and data providers
+- **Use Cases**: Good for controlled environments where you trust the centralized entity or where things fall back to the rule of law (RWAs)
 
 ### 🔄 How They Work Together:
 
@@ -411,15 +417,7 @@ WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] �
 
 </details>
 
-👊 **Manual Testing**: Notice how the onlyOwner modifiers are commented out to allow you to have full control. Try manually changing the price of individual SimpleOracle contracts and adding new oracle nodes to see how the aggregated price changes:
-
-1. **Change Prices**: Use the frontend to modify individual oracle prices
-
-2. **Add New Nodes**: Create new SimpleOracle contracts through the whitelist oracle
-
-3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles
-
-🔍 Run the following command to check if you implement the functions correctly.
+🔍 Run the following command to check if you implemented the functions correctly.
 
 \`\`\`sh
 
@@ -427,7 +425,15 @@ yarn test --grep "Checkpoint1"
 
 \`\`\`
 
-🔄 Run \`yarn deploy --reset\` then test the whitelist oracle. Try adding and removing oracles, and observing how the aggregated price changes.
+🔄 If it passes all the tests then run \`yarn deploy --reset\` to deploy your contract to your local chain.
+
+👊 **Manual Testing**: Notice how the onlyOwner modifiers are commented out to allow you to have full control. Go to your browser and switch to the **Whitelist** page. Make sure you connect with the built-in burner wallet so that you can trigger transactions seamlessly. Now try manually changing the price of individual SimpleOracle contracts and adding new oracle nodes to see how the aggregated price changes:
+
+1. **Change Prices**: Use the frontend to modify individual oracle prices
+
+2. **Add New Nodes**: Create new SimpleOracle contracts through the whitelist oracle
+
+3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles and report different prices
 
 🧪 **Live Simulation**: Run the \`yarn simulate:whitelist\` command to see what a live version of this protocol might look like in action:
 
@@ -441,11 +447,11 @@ yarn simulate:whitelist
 
 ### 🥅 Goals:
 
-- User can add new SimpleOracle instances to the whitelist
-- User can remove oracles
+- You can add new SimpleOracle instances to the whitelist
+- You can remove oracles
 - System aggregates prices from active oracles using median calculation
 - Stale data is automatically filtered out based on timestamps
-- Users can query which oracle nodes are currently active
+- You can query which oracle nodes are currently active
 - The system correctly handles edge cases and invalid states
 - Understand the benefits of aggregating multiple data sources
 - Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), 
@@ -561,7 +567,7 @@ function reportPrice(uint256 price) public onlyNode {
 
 3. **Implement \`claimReward()\` and \`rewardNode()\`**
 
-* 🧪 This function allows registered nodes to claim their ORA token rewards (uses \`onlyNode\` modifier)
+* 🧪 These functions allow registered nodes to claim their ORA token rewards (uses \`onlyNode\` modifier)
 
 * 🔍 It should calculate reward amount based on time elapsed since last claim
 
@@ -627,7 +633,7 @@ function rewardNode(address nodeAddress, uint256 reward) internal {
 
 4. **Implement \`slashNodes()\`, \`separateStaleNodes()\`, and \`slashNode()\`**
 
-* 🔎 This function allows anyone to slash nodes with stale data and get rewarded
+* 🔎 These functions work together to allow anyone to slash nodes with stale data and get rewarded
 
 * 📊 It should identify stale nodes by categorizing them into fresh and stale based on data recency
 
@@ -729,11 +735,11 @@ function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint2
 
 5. **Implement \`getPrice()\` and \`getPricesFromAddresses()\`**
 
-* 📦 This function aggregates prices from all active nodes using median calculation
+* 📦 These functions work together to aggregates prices from all active nodes using median calculation
 
 * 🧹 It should filter out nodes with stale data using \`separateStaleNodes()\`
 
-* 🔍 It should extract prices from valid addresses using the internal \`getPricesFromAddresses()\` helper
+* 🔍 It should extract prices reported by the nodes at valid addresses using the internal \`getPricesFromAddresses()\` helper
 
 * ⛔️ It should revert with \`NoValidPricesAvailable\` if no valid prices exist
 
@@ -752,7 +758,7 @@ You need to implement both functions:
 - Sort prices and return median
 
 **getPricesFromAddresses()** logic:
-- Create array same size as input addresses
+- Create an array the same size as the input addresses
 - Loop through addresses and get each node's lastReportedPrice
 - Return the prices array
 
@@ -790,11 +796,12 @@ function getPricesFromAddresses(address[] memory addresses) internal view return
 
 - **Economic Incentives**: Nodes stake ETH and can be slashed for bad behavior, while good behavior rewards nodes with ORA tokens
 - **Decentralized**: Anyone can participate by staking, no central authority needed
-- **Self-Correcting**: Slashing mechanism punishes inactive or malicious nodes
+- **Self-Correcting**: Slashing mechanism punishes inactive nodes
 - **Freshness Enforcement**: Stale data is automatically filtered out
 - **Use Cases**: Excellent for DeFi applications where economic alignment is crucial
+- **Improvements**: This could be enhanced by adding slashing for outlier prices that indicate manipulation
 
-🔍 Run the following command to check if you implement the functions correctly.
+🔍 Run the following command to check if you implemented the functions correctly.
 
 \`\`\`sh
 
@@ -802,7 +809,7 @@ yarn test --grep "Checkpoint2"
 
 \`\`\`
 
-🔄 Run \`yarn deploy --reset\` then test the staking oracle. Try registering nodes, reporting prices, and slashing inactive nodes.
+🔄 Run \`yarn deploy --reset\` then test the staking oracle. Go to the Staking page in your browser and try registering nodes, reporting prices, and slashing inactive nodes.
 
 🧪 **Live Simulation**: Run the \`yarn simulate:staking\` command to watch a live simulation of staking oracle behavior with multiple nodes:
 
@@ -816,7 +823,7 @@ yarn simulate:staking
 
 ### 🥅 Goals:
 
-- Users can register as oracle nodes by staking ETH
+- You can register as oracle nodes by staking ETH
 - Registered nodes can report prices and claim ORA token rewards
 - Anyone can slash nodes with stale data and earn rewards
 - System aggregates prices from active nodes using median calculation
@@ -891,7 +898,7 @@ sequenceDiagram
 
 💡 If someone knows the answer within the correct time then they **propose** the answer, posting a bond. This bond is a risk to them because if their answer is thought to be wrong by someone else then they might lose it. This keeps people economically tied to the **proposals** they make.
 
-⏳ Then if no one **disputes** the proposal before the dispute window is over then the proposal is considered to be true, and the proposer may claim the reward and their bond. The dispute window should give anyone ample time to submit a dispute.
+⏳ Then if no one **disputes** the proposal before the dispute window is over the proposal is considered to be true, and the proposer may claim the reward and get back their bond. The dispute window should give anyone ample time to submit a dispute.
 
 ⚖️ If someone does **dispute** during the dispute window then they must also post a bond equal to the proposer's bond. This kicks the assertion out of any particular timeline and puts it in a state where it is waiting for a decision from the **decider**. Once the decider contract has **settled** the assertion, the winner can claim the reward and their posted bond. The decider gets the loser's bond.
 
@@ -927,7 +934,7 @@ sequenceDiagram
 
 * 🏗️ It should create a new \`EventAssertion\` struct with relevant properties set - see if you can figure it out
 
-* 🗂️ That struct should be stored in the \`assertions\` mapping. You can use \`nextAssertionId\` but don't forget to increment it!
+* 🗂️ That struct should be stored in the \`assertions\` mapping. You can use \`nextAssertionId\` but don't forget to increment it afterwards!
 
 * 📣 It should emit the \`EventAsserted\` event
 
@@ -1084,7 +1091,7 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 ---
 
-🔍 Run the following command to check if you implement the functions correctly.
+🔍 Run the following command to check if you implemented the functions correctly.
 
 \`\`\`sh
 
@@ -1094,9 +1101,9 @@ yarn test --grep "Checkpoint4"
 
 ### 🥅 Goals:
 
-- Users can assert events with descriptions and time windows
-- Users can propose outcomes for asserted events
-- Users can dispute proposed outcomes
+- You can assert events with descriptions and time windows
+- You can propose outcomes for asserted events
+- You can dispute proposed outcomes
 - The system correctly handles timing constraints
 - Bond amounts are properly validated
 
@@ -1327,7 +1334,7 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 </details>
 </details>
 
-🔍 Run the following command to check if you implement the functions correctly.
+🔍 Run the following command to check if you implemented the functions correctly.
 
 \`\`\`sh
 
@@ -1450,7 +1457,7 @@ The important thing here is that it reverts if it is not settled and if it has b
 
 ---
 
-🔍 Run the following command to check if you implement the functions correctly.
+🔍 Run the following command to check if you implemented the functions correctly.
 
 \`\`\`sh
 
@@ -1460,7 +1467,7 @@ yarn test --grep "Checkpoint6"
 
 ✅ Make sure you have implemented everything correctly by running tests with \`yarn test\`. You can dig into any errors by viewing the tests at \`packages/hardhat/test/OptimisticOracle.ts\`.
 
-🔄 Run \`yarn deploy --reset\` then test the optimistic oracle. Try creating assertions, proposing outcomes, and disputing them.
+🔄 Run \`yarn deploy --reset\` then test the optimistic oracle. Go to the Optimistic page and try creating assertions, proposing outcomes, and disputing them.
 
 🧪 **Live Simulation**: Run the \`yarn simulate:optimistic\` command to see the full optimistic oracle lifecycle in action:
 
@@ -1475,7 +1482,7 @@ yarn simulate:optimistic
 ### 🥅 Goals:
 
 - The system provides clear state information for all assertions
-- Users can query resolved outcomes for both disputed and undisputed assertions
+- You can query resolved outcomes for both disputed and undisputed assertions
 - All functions handle edge cases and invalid states appropriately
 - The complete optimistic oracle system works end-to-end
 ---
@@ -1487,10 +1494,10 @@ yarn simulate:optimistic
 ### 📊 Comparison Table:
 | Aspect | Whitelist Oracle | Staking Oracle | Optimistic Oracle |
 |--------|------------------|----------------|-------------------|
-| **Speed** | Fast | Medium | Slow |
-| **Security** | Low (trusted authority) | Medium (economic incentives) | High (dispute resolution) |
+| **Speed** | Fast | Fast | Slower |
+| **Security** | Low (trusted authority) | High (economic incentives) | High (dispute resolution) |
 | **Decentralization** | Low | High | Depends on Decider Implementation |
-| **Cost** | Low | Medium | High |
+| **Cost** | Low | High (stake) | High (rewards and bonds) |
 | **Complexity** | Simple | Medium | Complex |
 
 ### 🤔 Key Trade-offs:
@@ -1531,9 +1538,9 @@ yarn simulate:optimistic
 
 Each oracle design solves different problems:
 
-- **Whitelist Oracle**: Best for simple, low-value use cases where speed is more important than decentralization. Works well for binary or predefined questions (e.g., “Is asset X above price Y?”).
-- **Staking Oracle**: Best for high-value DeFi applications where decentralization and security are crucial. Handles yes/no and numerical data questions that require strong guarantees (e.g., “What is the ETH/USD price?”).
-- **Optimistic Oracle**: Best for complex, high-stakes applications where absolute truth is paramount. Flexible enough to resolve open-ended questions that don’t have a strict binary format (e.g., “Which team won the match?”).
+- **Whitelist Oracle**: Best for setups with trusted intermediaries already in the loop such as RWAs where speed and accuracy are more important than decentralization.
+- **Staking Oracle**: Best for low-latency, high-value DeFi applications where decentralization and security are crucial.
+- **Optimistic Oracle**: Best for complex, high-stakes applications where absolute truth is paramount and higher latency is not a huge downside. Flexible enough to resolve open-ended questions that don’t have a strict binary format (e.g., “Which team won the match?”).
 
 ---
 
