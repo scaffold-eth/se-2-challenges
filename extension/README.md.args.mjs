@@ -1,4 +1,6 @@
-# 🔮 Oracle Challenge
+export const skipQuickStart = true;
+
+export const extraContents = `# 🔮 Oracle Challenge
 
 ![readme-oracle](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-oracles/extension/packages/nextjs/public/hero.png)
 
@@ -46,49 +48,33 @@ Oracles are bridges between blockchains and the external world. They solve a fun
 
 ## Checkpoint 0: 📦 Environment 📚
 
-🛠️ Before you begin, make sure you have the following tools installed:
+> 💻 Start your local network (a blockchain emulator in your computer):
 
-- [Node (>=20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-📥 Then download the challenge to your computer and install dependencies by running:
-
-```sh
-
-npx create-eth@1.0.2 -e scaffold-eth/se-2-challenges:challenge-oracles challenge-oracles
-
-cd challenge-oracles
-
-```
-
-> 💻 In the same terminal, start your local network (a blockchain emulator in your computer):
-
-```sh
+\`\`\`sh
 
 yarn chain
 
-```
+\`\`\`
 
 > 🛰️ In a second terminal window, deploy your contract (locally):
 
-```sh
+\`\`\`sh
 
 yarn deploy
 
-```
+\`\`\`
 
 > 📱 In a third terminal window, start your frontend:
 
-```sh
+\`\`\`sh
 
 yarn start
 
-```
+\`\`\`
 
 📱 Open http://localhost:3000 to see the app.
 
-> 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
+> 👩‍💻 Rerun \`yarn deploy\` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run \`yarn deploy --reset\` for a completely fresh deploy.
 
 ---
 
@@ -96,31 +82,31 @@ yarn start
 
 🔍 Let's start with the simplest of the three oracle designs we'll cover: the Whitelist Oracle. This design uses a centralized authority to control which data sources can provide information, making it simple and fast but requiring trust.
 
-💰 The implementation we'll be looking at is a **price** oracle. Price oracles are one of the most common and critical types of oracles in DeFi, as they enable smart contracts to make decisions based on real-world asset prices. Our whitelist price oracle collects price reports from multiple trusted sources (instances of `SimpleOracle`) and returns their median value.
+💰 The implementation we'll be looking at is a **price** oracle. Price oracles are one of the most common and critical types of oracles in DeFi, as they enable smart contracts to make decisions based on real-world asset prices. Our whitelist price oracle collects price reports from multiple trusted sources (instances of \`SimpleOracle\`) and returns their median value.
 
 🧭 Let's understand how this oracle system works. We'll examine both the basic building block (SimpleOracle) and how multiple simple oracles can be combined into a more robust system (WhitelistOracle).
 
 ### 🔗 Simple Oracle - The Building Block
 
-🔍 Open the `packages/hardhat/contracts/00_Whitelist/SimpleOracle.sol` file to examine the basic oracle functionality.
+🔍 Open the \`packages/hardhat/contracts/00_Whitelist/SimpleOracle.sol\` file to examine the basic oracle functionality.
 
 #### 📖 Understanding the Code:
 
-🧩 The `SimpleOracle` contract is the fundamental building block of this oracle system:
+🧩 The \`SimpleOracle\` contract is the fundamental building block of this oracle system:
 
-1. **Constructor** - Takes an `_owner` address parameter to set who can update the oracle price
+1. **Constructor** - Takes an \`_owner\` address parameter to set who can update the oracle price
 
-2. **`setPrice(uint256 _newPrice)`** - This function allows the contract owner to update the current price
+2. **\`setPrice(uint256 _newPrice)\`** - This function allows the contract owner to update the current price
 
-   * 🔄 Updates the `price` state variable with the new value
+   * 🔄 Updates the \`price\` state variable with the new value
 
-   * ⏱️ Updates the `timestamp` to the current block timestamp
+   * ⏱️ Updates the \`timestamp\` to the current block timestamp
 
-   * 📣 Emits the `PriceUpdated` event with the new price
+   * 📣 Emits the \`PriceUpdated\` event with the new price
 
-3. **`getPrice()`** - This function returns both the current price and timestamp
+3. **\`getPrice()\`** - This function returns both the current price and timestamp
 
-   * ↩️ Returns them as a tuple: `(price, timestamp)`
+   * ↩️ Returns them as a tuple: \`(price, timestamp)\`
 
 #### 🤔 Key Insights:
 
@@ -130,19 +116,19 @@ yarn start
 
 ### 🏛️ Whitelist Oracle - Aggregating Multiple Sources
 
-🎯 **Your Mission**: Complete the missing function implementations in the `WhitelistOracle.sol` contract.
+🎯 **Your Mission**: Complete the missing function implementations in the \`WhitelistOracle.sol\` contract.
 
-🔍 Open the `packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol` file to implement the whitelist oracle functionality.
+🔍 Open the \`packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol\` file to implement the whitelist oracle functionality.
 
 #### 📖 Understanding the Relationship:
 
-The `WhitelistOracle` contract **creates and manages multiple SimpleOracle contracts**:
+The \`WhitelistOracle\` contract **creates and manages multiple SimpleOracle contracts**:
 
-```solidity
+\`\`\`solidity
 
 SimpleOracle[] public oracles;  // Array of SimpleOracle contract instances
 
-```
+\`\`\`
 
 🏗️ This creates a **hierarchical oracle system**:
 
@@ -151,31 +137,31 @@ SimpleOracle[] public oracles;  // Array of SimpleOracle contract instances
 
 ### ✏️ Tasks:
 
-1. **Implement `addOracle(address _owner)`**
+1. **Implement \`addOracle(address _owner)\`**
 
 * 🏭 This function allows the contract owner to add a new oracle to the whitelist by deploying a SimpleOracle contract
 
-* 🧩 It should create a new `SimpleOracle` instance with the specified `_owner`
+* 🧩 It should create a new \`SimpleOracle\` instance with the specified \`_owner\`
 
-* ➕ It should add the newly created SimpleOracle to the `oracles` array
+* ➕ It should add the newly created SimpleOracle to the \`oracles\` array
 
-* 📣 It should emit the `OracleAdded` event with both the oracle address and its owner
+* 📣 It should emit the \`OracleAdded\` event with both the oracle address and its owner
 
 <details markdown='1'>
 
 <summary>💡 Hint: Creating and Adding Oracles</summary>
 
 Here's what you need to do:
-- Create a new SimpleOracle contract instance using `new SimpleOracle(_owner)`
-- Get the address of the newly created oracle using `address(newOracle)`
-- Push the oracle instance to the `oracles` array
-- Emit the `OracleAdded` event with the oracle address and owner
+- Create a new SimpleOracle contract instance using \`new SimpleOracle(_owner)\`
+- Get the address of the newly created oracle using \`address(newOracle)\`
+- Push the oracle instance to the \`oracles\` array
+- Emit the \`OracleAdded\` event with the oracle address and owner
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function addOracle(address _owner) public onlyOwner {
     SimpleOracle newOracle = new SimpleOracle(_owner);
     address oracleAddress = address(newOracle);
@@ -183,24 +169,24 @@ function addOracle(address _owner) public onlyOwner {
     oracles.push(newOracle);
     emit OracleAdded(oracleAddress, _owner);
 }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-2. **Implement `removeOracle(uint256 index)`**
+2. **Implement \`removeOracle(uint256 index)\`**
 
 * ✔️ This function allows the contract owner to remove an oracle from the whitelist by its array index
 
-* 🔍 It should validate that the provided index is within bounds, otherwise revert with `IndexOutOfBounds`
+* 🔍 It should validate that the provided index is within bounds, otherwise revert with \`IndexOutOfBounds\`
 
 * 📝 It should record the oracle address before removal for the event
 
 * ➖ It should efficiently remove the oracle using swap-and-pop pattern (swap with last element, then pop)
 
-* 📣 It should emit the `OracleRemoved` event with the oracle address
+* 📣 It should emit the \`OracleRemoved\` event with the oracle address
 
 <details markdown='1'>
 
@@ -217,7 +203,7 @@ The swap-and-pop pattern:
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function removeOracle(uint256 index) public onlyOwner {
     if (index >= oracles.length) revert IndexOutOfBounds();
 
@@ -231,22 +217,22 @@ function removeOracle(uint256 index) public onlyOwner {
 
     emit OracleRemoved(oracleAddress);
 }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-3. **Implement `getPrice()`**
+3. **Implement \`getPrice()\`**
 
 * 📊 This function aggregates prices from all active oracles using median calculation
 
-* ⛔️ It should revert with `NoOraclesAvailable` if no oracles exist in the whitelist
+* ⛔️ It should revert with \`NoOraclesAvailable\` if no oracles exist in the whitelist
 
-* 🔁 It should loop through each oracle and call `getPrice()` to get `(price, timestamp)`
+* 🔁 It should loop through each oracle and call \`getPrice()\` to get \`(price, timestamp)\`
 
-* 🧹 It should filter out stale prices (older than `STALE_DATA_WINDOW = 24 seconds`)
+* 🧹 It should filter out stale prices (older than \`STALE_DATA_WINDOW = 24 seconds\`)
 
 * 📦 It should collect only fresh prices into a properly sized array
 
@@ -269,7 +255,7 @@ Here's the process:
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function getPrice() public view returns (uint256) {
     if (oracles.length == 0) revert NoOraclesAvailable();
 
@@ -295,16 +281,16 @@ function getPrice() public view returns (uint256) {
     validPrices.sort();
     return validPrices.getMedian();
 }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-4. **Implement `getActiveOracleNodes()`**
+4. **Implement \`getActiveOracleNodes()\`**
 
-* 📊 This function returns the addresses of all oracles that have updated their price within the last `STALE_DATA_WINDOW`
+* 📊 This function returns the addresses of all oracles that have updated their price within the last \`STALE_DATA_WINDOW\`
 
 * 🔍 It should iterate through all oracles and filter those with recent timestamps
 
@@ -327,7 +313,7 @@ Similar to getPrice(), but instead of collecting prices, collect oracle addresse
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function getActiveOracleNodes() public view returns (address[] memory) {
     address[] memory tempNodes = new address[](oracles.length);
     uint256 count = 0;
@@ -347,7 +333,7 @@ function getActiveOracleNodes() public view returns (address[] memory) {
 
     return activeNodes;
 }
-```
+\`\`\`
 
 </details>
 </details>
@@ -365,7 +351,7 @@ function getActiveOracleNodes() public view returns (address[] memory) {
 
 1. **Data Flow**:
 
-```
+\`\`\`
 
 SimpleOracle A → setPrice(100) → getPrice() → (100, timestamp)
 
@@ -373,15 +359,15 @@ SimpleOracle B → setPrice(102) → getPrice() → (102, timestamp)
 
 SimpleOracle C → setPrice(98)  → getPrice() → (98, timestamp)
 
-```
+\`\`\`
 
 2. **Aggregation**:
 
-```
+\`\`\`
 
 WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] → median(100) → 100
 
-```
+\`\`\`
 
 3. **Benefits**:
 
@@ -425,13 +411,13 @@ WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] �
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
+\`\`\`sh
 
 yarn test --grep "Checkpoint1"
 
-```
+\`\`\`
 
-🔄 If it passes all the tests then run `yarn deploy --reset` to deploy your contract to your local chain.
+🔄 If it passes all the tests then run \`yarn deploy --reset\` to deploy your contract to your local chain.
 
 👊 **Manual Testing**: Notice how the onlyOwner modifiers are commented out to allow you to have full control. Go to your browser and switch to the **Whitelist** page. Make sure you connect with the built-in burner wallet so that you can trigger transactions seamlessly. Now try manually changing the price of individual SimpleOracle contracts and adding new oracle nodes to see how the aggregated price changes:
 
@@ -441,13 +427,13 @@ yarn test --grep "Checkpoint1"
 
 3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles and report different prices
 
-🧪 **Live Simulation**: Run the `yarn simulate:whitelist` command to see what a live version of this protocol might look like in action:
+🧪 **Live Simulation**: Run the \`yarn simulate:whitelist\` command to see what a live version of this protocol might look like in action:
 
-```sh
+\`\`\`sh
 
 yarn simulate:whitelist
 
-```
+\`\`\`
 
 🤖 This will start automated bots that simulate real oracle behavior, showing you how the system would work in production with multiple active price feeds.
 
@@ -470,43 +456,43 @@ yarn simulate:whitelist
 
 👩‍💻 This section challenges you to implement the staking oracle system from scratch. You'll write the core functions that handle node registration, price reporting, reward distribution, and slashing mechanisms.
 
-🎯 **Your Mission**: Complete the missing function implementations in the `StakingOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you need to fill in the logic.
+🎯 **Your Mission**: Complete the missing function implementations in the \`StakingOracle.sol\` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you need to fill in the logic.
 
-🔍 Open the `packages/hardhat/contracts/01_Staking/StakingOracle.sol` file to implement the staking oracle functionality.
+🔍 Open the \`packages/hardhat/contracts/01_Staking/StakingOracle.sol\` file to implement the staking oracle functionality.
 
 ### ✏️ Tasks:
 
-1. **Implement `registerNode(uint256 initialPrice)`**
+1. **Implement \`registerNode(uint256 initialPrice)\`**
 
 * 🏗️ This function allows users to register as oracle nodes by staking ETH
 
-* ⚠️ It should require a minimum stake of 1 ETH, otherwise revert with `InsufficientStake`
+* ⚠️ It should require a minimum stake of 1 ETH, otherwise revert with \`InsufficientStake\`
 
-* 🧪 It should check that the node is not already registered, otherwise revert with `NodeAlreadyRegistered`
+* 🧪 It should check that the node is not already registered, otherwise revert with \`NodeAlreadyRegistered\`
 
-* 🏗️ It should create a new `OracleNode` struct with the provided data
+* 🏗️ It should create a new \`OracleNode\` struct with the provided data
 
-* ➕ It should add the node address to the `nodeAddresses` array
+* ➕ It should add the node address to the \`nodeAddresses\` array
 
-* 📣 It should emit both `NodeRegistered` and `PriceReported` events
+* 📣 It should emit both \`NodeRegistered\` and \`PriceReported\` events
 
 <details markdown='1'>
 
 <summary>💡 Hint: Node Registration</summary>
 
 Here's what you need to set in the OracleNode struct:
-- nodeAddress should be `msg.sender`
-- stakedAmount should be `msg.value`
-- lastReportedPrice should be `initialPrice`
-- lastReportedTimestamp should be `block.timestamp`
-- lastClaimedTimestamp should be `block.timestamp`
-- lastSlashedTimestamp should be `0`
+- nodeAddress should be \`msg.sender\`
+- stakedAmount should be \`msg.value\`
+- lastReportedPrice should be \`initialPrice\`
+- lastReportedTimestamp should be \`block.timestamp\`
+- lastClaimedTimestamp should be \`block.timestamp\`
+- lastSlashedTimestamp should be \`0\`
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function registerNode(uint256 initialPrice) public payable {
     if (msg.value < MINIMUM_STAKE) revert InsufficientStake();
     if (nodes[msg.sender].nodeAddress != address(0)) revert NodeAlreadyRegistered();
@@ -525,37 +511,37 @@ function registerNode(uint256 initialPrice) public payable {
     emit NodeRegistered(msg.sender, msg.value);
     emit PriceReported(msg.sender, initialPrice);
 }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-2. **Implement `reportPrice(uint256 price)`**
+2. **Implement \`reportPrice(uint256 price)\`**
 
-* 🧪 This function allows registered nodes to report new prices (uses `onlyNode` modifier)
+* 🧪 This function allows registered nodes to report new prices (uses \`onlyNode\` modifier)
 
-* 🔍 It should verify the node has sufficient stake, otherwise revert with `NotEnoughStake`
+* 🔍 It should verify the node has sufficient stake, otherwise revert with \`NotEnoughStake\`
 
 * 🔄 It should update the node's last reported price and timestamp
 
-* 📣 It should emit the `PriceReported` event
+* 📣 It should emit the \`PriceReported\` event
 
 <details markdown='1'>
 
 <summary>💡 Hint: Price Reporting</summary>
 
-- Get a storage reference to the node using `nodes[msg.sender]`
-- Check if `stakedAmount` is at least `MINIMUM_STAKE`
-- Update `lastReportedPrice` and `lastReportedTimestamp`
+- Get a storage reference to the node using \`nodes[msg.sender]\`
+- Check if \`stakedAmount\` is at least \`MINIMUM_STAKE\`
+- Update \`lastReportedPrice\` and \`lastReportedTimestamp\`
 - Emit event with sender and new price
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function reportPrice(uint256 price) public onlyNode {
     OracleNode storage node = nodes[msg.sender];
     if (node.stakedAmount < MINIMUM_STAKE) revert NotEnoughStake();
@@ -564,16 +550,16 @@ function reportPrice(uint256 price) public onlyNode {
 
     emit PriceReported(msg.sender, price);
 }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-3. **Implement `claimReward()` and `rewardNode()`**
+3. **Implement \`claimReward()\` and \`rewardNode()\`**
 
-* 🧪 These functions allow registered nodes to claim their ORA token rewards (uses `onlyNode` modifier)
+* 🧪 These functions allow registered nodes to claim their ORA token rewards (uses \`onlyNode\` modifier)
 
 * 🔍 It should calculate reward amount based on time elapsed since last claim
 
@@ -581,11 +567,11 @@ function reportPrice(uint256 price) public onlyNode {
 
 * ⚠️ For slashed nodes (insufficient stake): limited rewards only up to when they were slashed
 
-* 🎁 It should mint ORA tokens as rewards (time-based, scaled by 10^18) using the internal `rewardNode()` helper
+* 🎁 It should mint ORA tokens as rewards (time-based, scaled by 10^18) using the internal \`rewardNode()\` helper
 
-* 🔒 It should revert with `NoRewardsAvailable` if no rewards are available
+* 🔒 It should revert with \`NoRewardsAvailable\` if no rewards are available
 
-* 📣 It should update `lastClaimedTimestamp` and emit `NodeRewarded` event
+* 📣 It should update \`lastClaimedTimestamp\` and emit \`NodeRewarded\` event
 
 <details markdown='1'>
 
@@ -607,7 +593,7 @@ You need to implement both functions:
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function claimReward() public onlyNode {
     OracleNode memory node = nodes[msg.sender];
     uint256 rewardAmount = 0;
@@ -630,14 +616,14 @@ function rewardNode(address nodeAddress, uint256 reward) internal {
     oracleToken.mint(nodeAddress, reward);
     emit NodeRewarded(nodeAddress, reward);
 }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-4. **Implement `slashNodes()`, `separateStaleNodes()`, and `slashNode()`**
+4. **Implement \`slashNodes()\`, \`separateStaleNodes()\`, and \`slashNode()\`**
 
 * 🔎 These functions work together to allow anyone to slash nodes with stale data and get rewarded
 
@@ -647,7 +633,7 @@ function rewardNode(address nodeAddress, uint256 reward) internal {
 
 * 🏅 It should accumulate slasher rewards and send them to the caller
 
-* ⚠️ It should revert with `FailedToSendReward` if the transfer fails
+* ⚠️ It should revert with \`FailedToSendReward\` if the transfer fails
 
 <details markdown='1'>
 
@@ -672,7 +658,7 @@ You need to implement all three functions:
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function slashNodes() public {
     (, address[] memory addressesToSlash) = separateStaleNodes(nodeAddresses);
     uint256 slasherReward;
@@ -732,22 +718,22 @@ function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint2
 
     return reward;
 }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-5. **Implement `getPrice()` and `getPricesFromAddresses()`**
+5. **Implement \`getPrice()\` and \`getPricesFromAddresses()\`**
 
 * 📦 These functions work together to aggregates prices from all active nodes using median calculation
 
-* 🧹 It should filter out nodes with stale data using `separateStaleNodes()`
+* 🧹 It should filter out nodes with stale data using \`separateStaleNodes()\`
 
-* 🔍 It should extract prices reported by the nodes at valid addresses using the internal `getPricesFromAddresses()` helper
+* 🔍 It should extract prices reported by the nodes at valid addresses using the internal \`getPricesFromAddresses()\` helper
 
-* ⛔️ It should revert with `NoValidPricesAvailable` if no valid prices exist
+* ⛔️ It should revert with \`NoValidPricesAvailable\` if no valid prices exist
 
 * 🧮 It should sort and calculate the median using StatisticsUtils
 
@@ -772,7 +758,7 @@ You need to implement both functions:
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
 function getPrice() public view returns (uint256) {
     (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
     uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
@@ -792,7 +778,7 @@ function getPricesFromAddresses(address[] memory addresses) internal view return
 
     return prices;
 }
-```
+\`\`\`
 </details>
 </details>
 
@@ -809,21 +795,21 @@ function getPricesFromAddresses(address[] memory addresses) internal view return
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
+\`\`\`sh
 
 yarn test --grep "Checkpoint2"
 
-```
+\`\`\`
 
-🔄 Run `yarn deploy --reset` then test the staking oracle. Go to the Staking page in your browser and try registering nodes, reporting prices, and slashing inactive nodes.
+🔄 Run \`yarn deploy --reset\` then test the staking oracle. Go to the Staking page in your browser and try registering nodes, reporting prices, and slashing inactive nodes.
 
-🧪 **Live Simulation**: Run the `yarn simulate:staking` command to watch a live simulation of staking oracle behavior with multiple nodes:
+🧪 **Live Simulation**: Run the \`yarn simulate:staking\` command to watch a live simulation of staking oracle behavior with multiple nodes:
 
-```sh
+\`\`\`sh
 
 yarn simulate:staking
 
-```
+\`\`\`
 
 🤖 This will start automated bots that simulate honest and malicious node behavior, frequent and stale reports, and demonstrate how slashing and median aggregation impact the reported price. You can update the price variance and skip probability from the front-end as well.
 
@@ -868,7 +854,7 @@ yarn simulate:staking
 **Incentives**:
 - Reward + a bond refund flow to the winner; the loser's bond goes to the decider in disputes
 
-```mermaid
+\`\`\`mermaid
 
 sequenceDiagram
   participant A as Asserter
@@ -892,10 +878,10 @@ sequenceDiagram
       O-->>Winner: claimDisputedReward() -> reward + bond refund
     end
   end
-```
+\`\`\`
 
 🧩 The way this system works is someone creates an **assertion**;
-- Something that needs a boolean answer (`true` or `false`)
+- Something that needs a boolean answer (\`true\` or \`false\`)
 - After a certain time
 - Before a specific deadline
 - With a reward
@@ -916,52 +902,52 @@ sequenceDiagram
 
 👩‍💻 This section challenges you to implement the optimistic oracle system from scratch. You'll write the core functions that handle assertions, proposals, disputes, and settlements.
 
-🎯 **Your Mission**: Complete the missing function implementations in the `OptimisticOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you just need to fill in the logic.
+🎯 **Your Mission**: Complete the missing function implementations in the \`OptimisticOracle.sol\` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you just need to fill in the logic.
 
-🧪 **Testing Strategy**: Each function you implement can be tested individually using the provided test suite. Run `yarn test` after implementing each function to verify your solution works correctly.
+🧪 **Testing Strategy**: Each function you implement can be tested individually using the provided test suite. Run \`yarn test\` after implementing each function to verify your solution works correctly.
 
-🔍 Open the `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol` file to implement the optimistic oracle functionality.
+🔍 Open the \`packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol\` file to implement the optimistic oracle functionality.
 
 ### ✏️ Tasks:
 
-1. **Implement `assertEvent(string memory description, uint256 startTime, uint256 endTime)`**
+1. **Implement \`assertEvent(string memory description, uint256 startTime, uint256 endTime)\`**
 
 * 📣 This function allows users to assert that an event will have a true/false outcome
 
-* 💸 It should require that the reward (`msg.value`) is greater than 0 . If it is not then revert with `NotEnoughValue`
+* 💸 It should require that the reward (\`msg.value\`) is greater than 0 . If it is not then revert with \`NotEnoughValue\`
 
-* ⏱️ It should accept 0 for `startTime` and set it to `block.timestamp`
+* ⏱️ It should accept 0 for \`startTime\` and set it to \`block.timestamp\`
 
-* ⏳ It should accept 0 for `endTime` and default to `startTime + MINIMUM_ASSERTION_WINDOW`
+* ⏳ It should accept 0 for \`endTime\` and default to \`startTime + MINIMUM_ASSERTION_WINDOW\`
 
-* 🕰️ It should check that the given `startTime` is less than the current time (`block.timestamp`) and revert with `InvalidTime` if it is
+* 🕰️ It should check that the given \`startTime\` is less than the current time (\`block.timestamp\`) and revert with \`InvalidTime\` if it is
 
-* 🧭 It should validate the time window given is >= `MINIMUM_ASSERTION_WINDOW`, otherwise revert with `InvalidTime`
+* 🧭 It should validate the time window given is >= \`MINIMUM_ASSERTION_WINDOW\`, otherwise revert with \`InvalidTime\`
 
-* 🏗️ It should create a new `EventAssertion` struct with relevant properties set - see if you can figure it out
+* 🏗️ It should create a new \`EventAssertion\` struct with relevant properties set - see if you can figure it out
 
-* 🗂️ That struct should be stored in the `assertions` mapping. You can use `nextAssertionId` but don't forget to increment it afterwards!
+* 🗂️ That struct should be stored in the \`assertions\` mapping. You can use \`nextAssertionId\` but don't forget to increment it afterwards!
 
-* 📣 It should emit the `EventAsserted` event
+* 📣 It should emit the \`EventAsserted\` event
 
 <details markdown='1'>
 
 <summary>💡 Hint: Asserting Events</summary>
 
 Here are more granular instructions on setting up the EventAssertion struct:
-- asserter should be `msg.sender`
-- reward should be `msg.value`
+- asserter should be \`msg.sender\`
+- reward should be \`msg.value\`
 - bond should be the reward x 2 (You will know why as you understand the economics and game theory)
-- startTime = `startTime`
-- endTime = `endTime`
-- description = `description`
-- any remaining properties can be initialized with the default values (`false`, `address(0)`, etc.)
+- startTime = \`startTime\`
+- endTime = \`endTime\`
+- description = \`description\`
+- any remaining properties can be initialized with the default values (\`false\`, \`address(0)\`, etc.)
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function assertEvent(string memory description, uint256 startTime, uint256 endTime) external payable returns (uint256) {
         uint256 assertionId = nextAssertionId;
         nextAssertionId++;
@@ -996,43 +982,43 @@ Here are more granular instructions on setting up the EventAssertion struct:
         emit EventAsserted(assertionId, msg.sender, description, msg.value);
         return assertionId;
     }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-2. **Implement `proposeOutcome(uint256 assertionId, bool outcome)`**
+2. **Implement \`proposeOutcome(uint256 assertionId, bool outcome)\`**
 
 * 🗳️ This function allows users to propose the outcome for an asserted event
 
-* 🔍 It should check that the assertion exists and hasn't been proposed yet. Otherwise revert with `AssertionNotFound` or `AssertionProposed`
+* 🔍 It should check that the assertion exists and hasn't been proposed yet. Otherwise revert with \`AssertionNotFound\` or \`AssertionProposed\`
 
-* ⏱️ It should validate the timing constraints - it has to be after `startTime` but before the `endTime` or else revert with `InvalidTime`
+* ⏱️ It should validate the timing constraints - it has to be after \`startTime\` but before the \`endTime\` or else revert with \`InvalidTime\`
 
-* 💸 It should enforce the correct bond amount is provided or revert with `NotEnoughValue`
+* 💸 It should enforce the correct bond amount is provided or revert with \`NotEnoughValue\`
 
 * ✍️ It should update the assertion with the proposal
 
-* ⏳ It should set the `endTime` to `block.timestamp + MINIMUM_DISPUTE_WINDOW`
+* ⏳ It should set the \`endTime\` to \`block.timestamp + MINIMUM_DISPUTE_WINDOW\`
 
-* 📣 It should emit `OutcomeProposed`
+* 📣 It should emit \`OutcomeProposed\`
 
 <details markdown='1'>
 
 <summary>💡 Hint: Proposing Outcomes</summary>
 
 You want to set these properties on the assertion:
-- proposer should be `msg.sender`
-- proposedOutcome should be `outcome`
-- endTime should be updated to `block.timestamp + MINIMUM_DISPUTE_WINDOW`
+- proposer should be \`msg.sender\`
+- proposedOutcome should be \`outcome\`
+- endTime should be updated to \`block.timestamp + MINIMUM_DISPUTE_WINDOW\`
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function proposeOutcome(uint256 assertionId, bool outcome) external payable {
         EventAssertion storage assertion = assertions[assertionId];
 
@@ -1048,20 +1034,20 @@ You want to set these properties on the assertion:
 
         emit OutcomeProposed(assertionId, msg.sender, outcome);
     }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-3. **Implement `disputeOutcome(uint256 assertionId)`**
+3. **Implement \`disputeOutcome(uint256 assertionId)\`**
 
 * ⚖️ This function allows users to dispute a proposed outcome
 
-* 🔍 It should check that a proposal exists and hasn't been disputed yet, if not then revert with `NotProposedAssertion` or `ProposalDisputed`
+* 🔍 It should check that a proposal exists and hasn't been disputed yet, if not then revert with \`NotProposedAssertion\` or \`ProposalDisputed\`
 
-* ⏳ It should validate the timing constraints to make sure the `endTime` has not been passed or else it should revert with `InvalidTime`
+* ⏳ It should validate the timing constraints to make sure the \`endTime\` has not been passed or else it should revert with \`InvalidTime\`
 
 * 💸 It should require the correct bond amount (as set on the assertion)
 
@@ -1077,7 +1063,7 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function disputeOutcome(uint256 assertionId) external payable {
         EventAssertion storage assertion = assertions[assertionId];
 
@@ -1090,7 +1076,7 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
         emit OutcomeDisputed(assertionId, msg.sender);
     }
-```
+\`\`\`
 
 </details>
 </details>
@@ -1099,11 +1085,11 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
+\`\`\`sh
 
 yarn test --grep "Checkpoint4"
 
-```
+\`\`\`
 
 ### 🥅 Goals:
 
@@ -1124,21 +1110,21 @@ yarn test --grep "Checkpoint4"
 
 ### ✏️ Tasks:
 
-1. **Implement `claimUndisputedReward(uint256 assertionId)`**
+1. **Implement \`claimUndisputedReward(uint256 assertionId)\`**
 
 The proposer can claim the reward only after the deadline, as long as no dispute was submitted before it.
 
-* 🧩 A proposal must exist (revert with `NotProposedAssertion`)
+* 🧩 A proposal must exist (revert with \`NotProposedAssertion\`)
 
-* 🚫 No dispute must have been raised (revert with `ProposalDisputed`)
+* 🚫 No dispute must have been raised (revert with \`ProposalDisputed\`)
 
-* ⏰ Current time must be after the dispute `endTime` (revert with `InvalidTime`)
+* ⏰ Current time must be after the dispute \`endTime\` (revert with \`InvalidTime\`)
 
-* 🔒 Not already claimed (revert with `AlreadyClaimed`)
+* 🔒 Not already claimed (revert with \`AlreadyClaimed\`)
 
-* 💸 Transfer `reward + proposer bond` to the proposer
+* 💸 Transfer \`reward + proposer bond\` to the proposer
 
-* 📣 Emit `RewardClaimed`
+* 📣 Emit \`RewardClaimed\`
 
 <details markdown='1'>
 
@@ -1147,15 +1133,15 @@ The proposer can claim the reward only after the deadline, as long as no dispute
 - Validate the assertion has a proposer and no disputer
 - Check the deadline has passed
 - Mark as claimed first
-- Set `resolvedOutcome` to the proposed outcome and `winner` to the proposer
-- Compute `totalReward = reward + bond`
+- Set \`resolvedOutcome\` to the proposed outcome and \`winner\` to the proposer
+- Compute \`totalReward = reward + bond\`
 - Use safe ETH send with revert on failure
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function claimUndisputedReward(uint256 assertionId) external {
         EventAssertion storage assertion = assertions[assertionId];
 
@@ -1175,44 +1161,44 @@ The proposer can claim the reward only after the deadline, as long as no dispute
 
         emit RewardClaimed(assertionId, assertion.proposer, totalReward);
     }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-2. **Implement `claimDisputedReward(uint256 assertionId)`**
+2. **Implement \`claimDisputedReward(uint256 assertionId)\`**
 
 Very similar to the last function except this one allows the winner of the dispute to claim *only after the Decider has resolved the dispute*.
 
-* 🧩 A proposal must exist (revert with `NotProposedAssertion`)
+* 🧩 A proposal must exist (revert with \`NotProposedAssertion\`)
 
-* ⚖️ A dispute must exist (revert with `NotDisputedAssertion`)
+* ⚖️ A dispute must exist (revert with \`NotDisputedAssertion\`)
 
-* 🧑‍⚖️ The decider must have set a winner (revert with `AwaitingDecider`)
+* 🧑‍⚖️ The decider must have set a winner (revert with \`AwaitingDecider\`)
 
-* 🔒 Not already claimed (revert with `AlreadyClaimed`)
+* 🔒 Not already claimed (revert with \`AlreadyClaimed\`)
 
-* 📝 Set the `claimed` property on the assertion to `true`
+* 📝 Set the \`claimed\` property on the assertion to \`true\`
 
 * 💸 Transfer the loser's bond to the decider, then send the reward and bond refund to the winner
 
-* 📣 Emit `RewardClaimed`
+* 📣 Emit \`RewardClaimed\`
 
 <details markdown="1">
 <summary>💡 Hint: Claiming Disputed Rewards</summary>
 
 - Validate assertion state: proposed, disputed, winner set, not yet claimed
 - Mark as claimed *before* paying to avoid re-entrancy
-- Pay the losers bond to the `decider`
-- Winner receives `(reward + bond)`
-- Use safe ETH sending pattern with revert on failure (`TransferFailed`)
+- Pay the losers bond to the \`decider\`
+- Winner receives \`(reward + bond)\`
+- Use safe ETH sending pattern with revert on failure (\`TransferFailed\`)
 
 <details markdown="1">
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function claimDisputedReward(uint256 assertionId) external {
         EventAssertion storage assertion = assertions[assertionId];
 
@@ -1233,30 +1219,30 @@ Very similar to the last function except this one allows the winner of the dispu
 
         emit RewardClaimed(assertionId, assertion.winner, totalReward);
     }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-3. **Implement `claimRefund(uint256 assertionId)`**
+3. **Implement \`claimRefund(uint256 assertionId)\`**
 
 This function enables the asserter to get a refund of their posted reward when no proposal arrives by the deadline.
 
-* 🚫 No proposer exists (revert with `AssertionProposed`)
+* 🚫 No proposer exists (revert with \`AssertionProposed\`)
 
-* ⏰ After assertion endTime ( revert with `InvalidTime`)
+* ⏰ After assertion endTime ( revert with \`InvalidTime\`)
 
-* 🔒 Not already claimed (revert with `AlreadyClaimed`)
+* 🔒 Not already claimed (revert with \`AlreadyClaimed\`)
 
 * 🛡️ Mark the assertion as claimed to avoid re-entrancy
 
 * 💸 Refund the reward to the asserter
 
-* ✅ Check for successful transfer (revert with `TransferFailed`)
+* ✅ Check for successful transfer (revert with \`TransferFailed\`)
 
-* 📣 Emit `RefundClaimed`
+* 📣 Emit \`RefundClaimed\`
 
 <details markdown="1">
 <summary>💡 Hint: No Proposal Refund</summary>
@@ -1268,7 +1254,7 @@ This function enables the asserter to get a refund of their posted reward when n
 <details markdown="1">
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function claimRefund(uint256 assertionId) external {
         EventAssertion storage assertion = assertions[assertionId];
 
@@ -1282,30 +1268,30 @@ This function enables the asserter to get a refund of their posted reward when n
         if (!refundSuccess) revert TransferFailed();
         emit RefundClaimed(assertionId, assertion.asserter, assertion.reward);
     }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-4. **Implement `settleAssertion(uint256 assertionId, bool resolvedOutcome)`**
+4. **Implement \`settleAssertion(uint256 assertionId, bool resolvedOutcome)\`**
 
 This is the method that the decider will call to settle whether the proposer or disputer are correct.
 
 It should be:
 
-* 🧑‍⚖️ Only callable by the `decider` contract
+* 🧑‍⚖️ Only callable by the \`decider\` contract
 
-* ⚖️ The assertion must be both proposed and disputed (or revert with `NotProposedAssertion` or `NotDisputedAssertion`)
+* ⚖️ The assertion must be both proposed and disputed (or revert with \`NotProposedAssertion\` or \`NotDisputedAssertion\`)
 
-* 🔒 We need to make sure the winner has not already been set (or revert with `AlreadySettled`)
+* 🔒 We need to make sure the winner has not already been set (or revert with \`AlreadySettled\`)
 
 * ✍️ Now we should set the resolvedOutcome property
 
 * 🏁 Winner = proposer if proposedOutcome == resolvedOutcome, else disputer
 
-* 📣 Emit `AssertionSettled`
+* 📣 Emit \`AssertionSettled\`
 
 <details markdown="1">
 <summary>💡 Hint: Decider Sets Winner</summary>
@@ -1319,7 +1305,7 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 <details markdown="1">
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function settleAssertion(uint256 assertionId, bool resolvedOutcome) external onlyDecider {
         EventAssertion storage assertion = assertions[assertionId];
 
@@ -1335,18 +1321,18 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 
         emit AssertionSettled(assertionId, resolvedOutcome, assertion.winner);
     }
-```
+\`\`\`
 
 </details>
 </details>
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
+\`\`\`sh
 
 yarn test --grep "Checkpoint5"
 
-```
+\`\`\`
 
 ### 🥅 Goals:
 
@@ -1366,7 +1352,7 @@ yarn test --grep "Checkpoint5"
 
 ### ✏️ Tasks:
 
-1. **Implement `getState(uint256 assertionId)`**
+1. **Implement \`getState(uint256 assertionId)\`**
 
 This function returns a simple state machine view for UI/testing.
 
@@ -1375,23 +1361,23 @@ The states are defined as follows in an enum at the top of the contract.
 
 Think through how you can check which properties have been set to derive the current state of the assertion.
 
-For instance, if the `asserter` property is empty then you would return an `Invalid` state.
+For instance, if the \`asserter\` property is empty then you would return an \`Invalid\` state.
 
 Try to deduce the rest without any help.
 
 <details markdown="1">
 <summary>💡 Hint: Derive State</summary>
 
-- `Invalid` if no assertion
-- Winner set => `Settled`
-- Disputer set => `Disputed`
-- No proposer: if past endTime => `Expired`, else `Asserted`
-- Proposer present: if past endTime => `Settled`, else `Proposed`
+- \`Invalid\` if no assertion
+- Winner set => \`Settled\`
+- Disputer set => \`Disputed\`
+- No proposer: if past endTime => \`Expired\`, else \`Asserted\`
+- Proposer present: if past endTime => \`Settled\`, else \`Proposed\`
 
 <details markdown="1">
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function getState(uint256 assertionId) external view returns (State) {
         EventAssertion storage a = assertions[assertionId];
 
@@ -1415,22 +1401,22 @@ Try to deduce the rest without any help.
         // Otherwise it's proposed
         return State.Proposed;
     }
-```
+\`\`\`
 
 </details>
 </details>
 
 ---
 
-2. **Implement `getResolution(uint256 assertionId)`**
+2. **Implement \`getResolution(uint256 assertionId)\`**
 
 This function will help everyone know the exact outcome of the assertion.
 
-* 🔎 It should revert with `AssertionNotFound` if it doesn't exist
+* 🔎 It should revert with \`AssertionNotFound\` if it doesn't exist
 
-* ⏳ Then we just need to check if anyone disputed it and that the dispute window is up to know we can rely on the `proposedOutcome` (if the time isn't over then revert with `InvalidTime`)
+* ⏳ Then we just need to check if anyone disputed it and that the dispute window is up to know we can rely on the \`proposedOutcome\` (if the time isn't over then revert with \`InvalidTime\`)
 
-* 🧑‍⚖️ Otherwise, if a disupte has been made, then we just need to make sure the `winner` has been set by the decider (or else revert with `AwaitingDecider`)
+* 🧑‍⚖️ Otherwise, if a disupte has been made, then we just need to make sure the \`winner\` has been set by the decider (or else revert with \`AwaitingDecider\`)
 
 <details markdown="1">
 <summary>💡 Hint: Read Outcome Carefully</summary>
@@ -1443,7 +1429,7 @@ The important thing here is that it reverts if it is not settled and if it has b
 <details markdown="1">
 <summary>🎯 Solution</summary>
 
-```solidity
+\`\`\`solidity
     function getResolution(uint256 assertionId) external view returns (bool) {
         EventAssertion storage a = assertions[assertionId];
         if (a.asserter == address(0)) revert AssertionNotFound();
@@ -1456,7 +1442,7 @@ The important thing here is that it reverts if it is not settled and if it has b
             return a.resolvedOutcome;
         }
     }
-```
+\`\`\`
 
 </details>
 </details>
@@ -1465,23 +1451,23 @@ The important thing here is that it reverts if it is not settled and if it has b
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
+\`\`\`sh
 
 yarn test --grep "Checkpoint6"
 
-```
+\`\`\`
 
-✅ Make sure you have implemented everything correctly by running tests with `yarn test`. You can dig into any errors by viewing the tests at `packages/hardhat/test/OptimisticOracle.ts`.
+✅ Make sure you have implemented everything correctly by running tests with \`yarn test\`. You can dig into any errors by viewing the tests at \`packages/hardhat/test/OptimisticOracle.ts\`.
 
-🔄 Run `yarn deploy --reset` then test the optimistic oracle. Go to the Optimistic page and try creating assertions, proposing outcomes, and disputing them.
+🔄 Run \`yarn deploy --reset\` then test the optimistic oracle. Go to the Optimistic page and try creating assertions, proposing outcomes, and disputing them.
 
-🧪 **Live Simulation**: Run the `yarn simulate:optimistic` command to see the full optimistic oracle lifecycle in action:
+🧪 **Live Simulation**: Run the \`yarn simulate:optimistic\` command to see the full optimistic oracle lifecycle in action:
 
-```sh
+\`\`\`sh
 
 yarn simulate:optimistic
 
-```
+\`\`\`
 
 🤖 This will start automated bots that create assertions, propose outcomes, and dispute proposals, so you can observe rewards, bonds, fees, and timing windows in a realistic flow. It is up to you to settle disputes!
 
@@ -1554,37 +1540,37 @@ Each oracle design solves different problems:
 
 🎉 Well done on building the optimistic oracle system! Now, let's get it on a public testnet.
 
-📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts` (e.g., `sepolia`).
+📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages/hardhat/hardhat.config.ts\` (e.g., \`sepolia\`).
 
-🔐 You will need to generate a **deployer address** using `yarn generate`. This creates a mnemonic and saves it locally.
+🔐 You will need to generate a **deployer address** using \`yarn generate\`. This creates a mnemonic and saves it locally.
 
-👩‍🚀 Use `yarn account` to view your deployer account balances.
+👩‍🚀 Use \`yarn account\` to view your deployer account balances.
 
 ⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
-🚀 Run `yarn deploy` to deploy your optimistic oracle contracts to a public network (selected in `hardhat.config.ts`)
+🚀 Run \`yarn deploy\` to deploy your optimistic oracle contracts to a public network (selected in \`hardhat.config.ts\`)
 
-> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` **OR** you can \`yarn deploy --network sepolia\`.
 
 ---
 
 ## Checkpoint 9: 🚢 Ship your frontend! 🚁
 
-✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or your chosen deployed network).
+✏️ Edit your frontend config in \`packages/nextjs/scaffold.config.ts\` to change the \`targetNetwork\` to \`chains.sepolia\` (or your chosen deployed network).
 
 💻 View your frontend at http://localhost:3000 and verify you see the correct network.
 
 📡 When you are ready to ship the frontend app...
 
-📦 Run `yarn vercel` to package up your frontend and deploy.
+📦 Run \`yarn vercel\` to package up your frontend and deploy.
 
-> You might need to log in to Vercel first by running `yarn vercel:login`. Once you log in (email, GitHub, etc), the default options should work.
+> You might need to log in to Vercel first by running \`yarn vercel:login\`. Once you log in (email, GitHub, etc), the default options should work.
 
-> If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
+> If you want to redeploy to the same production URL you can run \`yarn vercel --prod\`. If you omit the \`--prod\` flag it will deploy it to a preview/test URL.
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`onlyLocalBurnerWallet: false\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -1594,8 +1580,8 @@ This is great to complete your **SpeedRunEthereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
-- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -1603,7 +1589,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ## Checkpoint 10: 📜 Contract Verification
 
-📝 Run the `yarn verify --network your_network` command to verify your optimistic oracle contracts on Etherscan 🛰.
+📝 Run the \`yarn verify --network your_network\` command to verify your optimistic oracle contracts on Etherscan 🛰.
 
 👉 Search your deployed optimistic oracle contract addresses on [Sepolia Etherscan](https://sepolia.etherscan.io/) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
 
@@ -1628,3 +1614,4 @@ Oracles are fundamental infrastructure for the decentralized web. They enable sm
 🚀 As you continue your blockchain development journey, you'll encounter many variations and combinations of these patterns. Understanding the fundamental trade-offs will help you choose the right oracle design for your specific use case.
 
 🧠 Remember: the best oracle is the one that provides the right balance of security, speed, flexibility and cost for your application's needs!
+`;
