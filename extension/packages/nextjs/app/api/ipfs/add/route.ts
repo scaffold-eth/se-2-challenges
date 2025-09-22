@@ -1,6 +1,6 @@
 "use server";
 
-import { ipfsClient } from "~~/utils/simpleNFT/ipfs";
+import { ipfsClient } from "~~/utils/tokenization/ipfs";
 
 export async function POST(request: Request) {
   try {

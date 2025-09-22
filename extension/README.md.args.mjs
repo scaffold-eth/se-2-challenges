@@ -16,18 +16,18 @@ export const extraContents = `# 🚩 Challenge: 🎟 Tokenization
 
 🌟 The final deliverable is an app that lets users mint and transfer NFTs and understand onchain ownership. Deploy your contracts to a testnet, then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
-💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+bstCpWY7yPBhOWUx)!
+💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
 🤖 If you have any questions during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions. Please reach us in Telegram if something feels wrong!
 
 <details markdown='1'><summary>❓ Wondering what "tokenization" means?</summary>
-Tokenization is like giving anything a digital passport you can carry in your wallet. It proves who owns it, lets you hand it off in a click, and lets apps recognize it automatically. In this challenge you’ll mint ERC‑721 tokens (NFTs): each token is one‑of‑one, owned by a single address (what \`ownerOf(tokenId)\` returns). Transfers are atomic, instant, traceable, and run by code.
+Tokenization is like giving anything a digital passport you can carry in your wallet. It proves who owns it, lets you hand it off in a click, and lets apps recognize it automatically. In this challenge you'll mint ERC-721 tokens (NFTs): each token is one-of-one, owned by a single address (what \`ownerOf(tokenId)\` returns). Transfers are atomic, instant, traceable, and run by code.
 
-– **Real‑World Assets (RWAs)**: Think stocks, bonds, gold, and real estate. If these are tokenized, the token acts as a digital claim or registry entry. For real‑world effect, an issuer/custodian or legal framework must link onchain transfers to off‑chain rights; without that bridge, it’s a collectible — not a legal transfer.
+– **Real-World Assets (RWAs)**: Think stocks, bonds, gold, and real estate. If these are tokenized, the token acts as a digital claim or registry entry. For real-world effect, an issuer/custodian or legal framework must link onchain transfers to off-chain rights; without that bridge, it's a collectible — not a legal transfer.
 
-– Who has the right to tokenize?: The legitimate owner or authorized issuer. If you don’t control the thing, your token is unofficial fan art — not enforceable rights.
+– Who has the right to tokenize?: The legitimate owner or authorized issuer. If you don't control the thing, your token is unofficial fan art — not enforceable rights.
 
-– **Blockchain‑native assets**: Some things are born onchain — art, game items, ENS names, fully‑onchain media, and even concert tickets designed for onchain verification. Here, the token is the thing. That makes them globally transferable, permissionless, and composable — plug them into marketplaces, auctions, lending, or games. As the world moves onchain we’ll see more native experiences — like tickets that verify at the door, auto‑split royalties on resales, and unlock perks across apps.
+– **Blockchain-native assets**: Some things are born onchain — art, game items, ENS names, fully-onchain media, and even concert tickets designed for onchain verification. Here, the token is the thing. That makes them globally transferable, permissionless, and composable — plug them into marketplaces, auctions, lending, or games. As the world moves onchain we'll see more native experiences — like tickets that verify at the door, auto-split royalties on resales, and unlock perks across apps.
 </details>
 
 ---
@@ -42,7 +42,7 @@ Tokenization is like giving anything a digital passport you can carry in your wa
 
 🔓 Composability unlocks all of this and so much more!
 
-🚀 Are you ready? You’re about to mint something the entire internet can see, trade, and build on.
+🚀 Are you ready? You're about to mint something the entire internet can see, trade, and build on.
 
 <details><summary>But wait! Wait does "NFT" stand for?</summary>
 NFT stands for Non-Fungible Token. Non-fungible means that each token is unique. Fungible tokens (often represented as ERC-20s) are all the same. Each one looks and acts the same and has the same abilities. With NFTs there is something unique about each token. That is why they do well to express unique names, images (monkey JPEGS), DEX liquidity positions, and maybe some day real estate parcels.
@@ -85,13 +85,13 @@ yarn start
   <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/1bcf9752-e8ae-4db6-a0a6-5dc774abe46c" width="33%" />
 </p>
 
-> 🔥 We’ll use burner wallets on localhost. They’re disposable wallets that auto-sign transactions so you can keep building.
+> 🔥 We'll use burner wallets on localhost. They're disposable wallets that auto-sign transactions so you can keep building.
 
-> 👛 Explore burner wallets in 🏗 Scaffold‑ETH 2: open an incognito window and visit http://localhost:3000. You’ll see a totally new address in the top‑right. Copy it and send test funds from your first window using the **Faucet** button (bottom‑left):
+> 👛 Explore burner wallets in 🏗 Scaffold-ETH 2: open an incognito window and visit http://localhost:3000. You'll see a totally new address in the top-right. Copy it and send test funds from your first window using the **Faucet** button (bottom-left):
 
 ![icognito&webBrowser](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/fd191447-a31f-4c03-a36f-936bfb70c2a1)
 
-> 👨🏻‍🚒 When you close the incognito window, that account is gone forever. Burner wallets are perfect for local dev; you’ll switch to a permanent wallet on public networks.
+> 👨🏻‍🚒 When you close the incognito window, that account is gone forever. Burner wallets are perfect for local dev; you'll switch to a permanent wallet on public networks.
 
 ---
 
@@ -99,7 +99,7 @@ yarn start
 
 🦓 In this challenge we will be minting (or creating) collectible Buffalo, Zebra and Rhino NFTs. Their metadata is stored on [IPFS](https://ipfs.tech/). These won't feign any real value but what price can you put on your own understanding of intricate blockchain ownership designs? Face it, it's **priceless!**
 
-> ✏️ Time to create something new. Click **MINT NFT** in the \`My NFTs\` tab to mint an ERC‑721 token — your unique, onchain collectible.
+> ✏️ Time to create something new. Click **MINT NFT** in the \`My NFTs\` tab to mint an ERC-721 token — your unique, onchain collectible.
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/74cf02f2-4c1b-4278-9841-f19f668e0b1e)
 
@@ -137,7 +137,7 @@ yarn start
 
 ## Checkpoint 3: 💾 Deploy your contract! 🛰
 
-🛰 Ready to go public (on testnet)? Let’s ship it.
+🛰 Ready to go public (on testnet)? Let's ship it.
 
 > Change the defaultNetwork in \`packages/hardhat/hardhat.config.ts\` to \`sepolia\`.
 
@@ -222,7 +222,7 @@ yarn verify --network sepolia
 
 Verifying your contract is important for enabling others to be able to look at your contract and verify that it isn't a scam.
 
-> If it says your contract is already verified, that’s fine. It just means Etherscan recognized the contract bytecode as being the same as one that was already deployed and verified. Copy the address of \`YourCollectible.sol\` and search it on Sepolia Etherscan to grab the URL you’ll submit for this challenge.
+> If it says your contract is already verified, that's fine. It just means Etherscan recognized the contract bytecode as being the same as one that was already deployed and verified. Copy the address of \`YourCollectible.sol\` and search it on Sepolia Etherscan to grab the URL you'll submit for this challenge.
 
 ## Checkpoint 6: 💪 Flex!
 

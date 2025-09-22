@@ -5,8 +5,8 @@ import { NFTCard } from "./NFTCard";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
-import { getMetadataFromIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
-import { NFTMetaData } from "~~/utils/simpleNFT/nftsMetadata";
+import { getMetadataFromIPFS } from "~~/utils/tokenization/ipfs-fetch";
+import { NFTMetaData } from "~~/utils/tokenization/nftsMetadata";
 
 export interface Collectible extends Partial<NFTMetaData> {
   id: number;
