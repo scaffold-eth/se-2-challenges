@@ -4,7 +4,7 @@ export const extraMenuLinksObjects = [
   {
     label: "Voting",
     href: "/voting",
-    icon: <UserGroupIcon className="h-4 w-4" />,
+    icon: '$$<UserGroupIcon className="h-4 w-4" />$$',
   },
 ];
 
