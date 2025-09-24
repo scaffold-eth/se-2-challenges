@@ -68,7 +68,7 @@ Let's jump into the challenge.
 
 > 💬 Meet other builders working on this challenge and get help in the [Prediction Markets Challenge Telegram Group](https://t.me/+NY00cDZ7PdBmNWEy)
 
-## **Checkpoint 0: 📦 Environment 📚**
+## Checkpoint 0: 📦 Environment 📚
 
 Before you begin, you need to install the following tools:
 
@@ -111,7 +111,7 @@ Head to the **`Debug Contracts`** tab and you should find a smart contract named
 
 > 🏎️ 🏁 Since we want to build a prediction market around our car race head to the `User` tab and check it out! (The race is entirely separate and has no impact on the smart contract.)
 
-## **Checkpoint 1: 🔭 Understanding the protocol 📺**
+## Checkpoint 1: 🔭 Understanding the protocol 📺
 
 At its core, our prediction market has three essential parts:
 
@@ -201,7 +201,7 @@ You’ll have full trading functionality from end to end — all powered by your
 
 > 🚨 🚨 🦖 The code blobs within the toggles in the Guiding Questions are some examples of what you can use, but try writing the implementation code for the functions first!
 
-## **Checkpoint 2: 🔭 The Prediction Market Setup 🏠**
+## Checkpoint 2: 🔭 The Prediction Market Setup 🏠
 
 Before we can deploy our prediction market smart contract, we need to set up the constructor and declare some critical variables — this is the foundation the whole market will run on.
 
@@ -337,7 +337,7 @@ yarn test --grep "Checkpoint2"
 
 > 🚨 Before we deploy the contract we need to finish implementing the constructor in the next Checkpoint 3.
 
-## **Checkpoint 3: 🔨🪙 Mint the tokens**
+## Checkpoint 3: 🔨🪙 Mint the tokens
 
 Time to give your prediction market its trading power — by minting the "Yes" and "No" tokens!
 
@@ -542,7 +542,7 @@ The tab **Liquidity Provider** in the front-end should now also display the init
 
 ![ch-6-lp2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/lp2.png)
 
-## **Checkpoint 4: 💦 More Liquidity**
+## Checkpoint 4: 💦 More Liquidity
 
 Now that your market is live, it’s time to give the liquidity provider more control 💪
 
@@ -643,7 +643,7 @@ Run the following command to check if you have implemented the functions correct
 yarn test --grep "Checkpoint4"
 ```
 
-## **Checkpoint 5: 🔮 Let the oracle report**
+## Checkpoint 5: 🔮 Let the oracle report
 
 Ethereum is a closed world — it doesn’t know what’s happening off-chain. That’s by design, to keep data secure and tamper-proof.
 But sometimes, we need to break that boundary.
@@ -786,7 +786,7 @@ Now head over to the oracle tab in the UI and report the outcome (after you watc
 
 ![ch-6-oracle2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/oracle2.png)
 
-## **Checkpoint 6: 📉💧 Resolve market and withdraw liquidity and trading revenue**
+## Checkpoint 6: 📉💧 Resolve market and withdraw liquidity and trading revenue
 
 You’ve wired up the oracle — nice work! 🔌 Now it’s time that the liquidity provider/market owner can **resolve the market** once the outcome has been reported.
 
@@ -907,7 +907,7 @@ Now that the **liquidity provider** and the **oracle** are fully implemented, it
 
 Ready?
 
-## **Checkpoint 7: 📈📉 Implement pricing and probability calculations for token trades**
+## Checkpoint 7: 📈📉 Implement pricing and probability calculations for token trades
 
 You’ve built the core engine — liquidity is flowing, the oracle is reporting, and now it’s time to let users place their bets by buying and selling outcome tokens.
 
@@ -1137,7 +1137,7 @@ Run the following command to check if you have implemented all the functions cor
 yarn test --grep "Checkpoint7"
 ```
 
-## **Checkpoint 8: 🔁💰 Buy and sell "Yes" or "No" Tokens for ETH**
+## Checkpoint 8: 🔁💰 Buy and sell "Yes" or "No" Tokens for ETH
 
 Now that you've built the pricing engine (`getBuyPriceInEth` / `getSellPriceInEth`), it’s time to bring the market to life with real trades! Let’s implement two key functions:
 
@@ -1342,7 +1342,7 @@ And then run `yarn deploy` to test it in the front-end and see how the probabili
 
 ![ch-6-user2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/user2.png)
 
-## **Checkpoint 9: Redeem winning tokens as a user**
+## Checkpoint 9: Redeem winning tokens as a user
 
 You’ve made your bet… the race is over… and you were right. Now it’s time to cash in! 🎉
 The last user-facing function to implement is redeemWinningTokens, which lets users who backed the correct outcome **redeem each winning token for 0.01 ETH**.
@@ -1449,7 +1449,7 @@ You’ve now built the full loop: provide liquidity, trade shares, resolve the m
 
 **🎉🎉🎉 Nice work — you’ve built a prediction market! 🧠💥**
 
-## **Checkpoint 10: 💾 Deploy your contracts! 🛰**
+## Checkpoint 10: 💾 Deploy your contracts! 🛰
 
 📡 Edit the `defaultNetwork` to your choice of **Sepolia or Optimism Sepolia** in `packages/hardhat/hardhat.config.ts`
 
@@ -1488,13 +1488,13 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 > 💬 Hint: It's recommended to store envs for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
-## **Checkpoint 11: 📜 Contract Verification**
+## Checkpoint 11: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com/).
 
-## **Checkpoint 12: 🧠 🍔 Final consideration and food for thought**
+## Checkpoint 12: 🧠 🍔 Final consideration and food for thought
 
 You made it — all the way to the finish line! 🏁💥
 
