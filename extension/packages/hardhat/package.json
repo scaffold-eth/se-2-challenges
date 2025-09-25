@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@zk-kit/lean-imt.sol": "^2.0.1"
+  }
+}
