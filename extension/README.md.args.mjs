@@ -1168,7 +1168,7 @@ and why do you need to cast them to \`BigInt\` before further use?
 <summary>❓ Question 2</summary>
 
 What happens if you swap the input order in Poseidon
-(e.g., `[(secret, nullifier)]` instead of `[(nullifier, secret)]`)?
+(e.g., \`[(secret, nullifier)]\` instead of \`[(nullifier, secret)]\`)?
 
 </details>
 
@@ -1262,12 +1262,12 @@ This step is all about producing a **zero-knowledge proof** that says:
    - Initialize a new tree with Poseidon2 hashing (Hint: \`new LeanIMT\`)
    - Extract values from events → \`_leaves\` is an array of contract events. Each event holds a \`value\` (the on-chain commitment). The \`map\` pulls out just those values into a clean array \`leaves\`.
    - **Reverse the order** → Events are emitted newest-last, but our Merkle tree builds from **oldest-first**. Reversing ensures the tree is reconstructed correctly.
-   - Insert into \`LeanIMT\` to reconstruct the exact tree state (Hint: `.insertMany()`)
+   - Insert into \`LeanIMT\` to reconstruct the exact tree state (Hint: \`.insertMany()\`)
      > 💡 We imported the same \`zk-kit/lean-imt\` library, but this time for **TypeScript**.
 
 5. **Create Merkle tree inclusion proof**
-   - Call `.generateProof(_index)` on the \`calculatedTree\`.
-   - From the result, access `.siblings` and turn it into an array.
+   - Call \`.generateProof(_index)\` on the \`calculatedTree\`.
+   - From the result, access \`.siblings\` and turn it into an array.
    - Add \`"0"\` placeholders so the siblings array always has the fixed length expected by the circuit (16).
 
 6. **Prepare circuit inputs (\`input\`)**
@@ -1631,8 +1631,7 @@ const smartAccountClient = createSmartAccountClient({
 
 1. Before sending the transaction to the bundler, first **build the calldata** using viem’s \`encodeFunctionData\` (with the same args as in the previous checkpoint).
 
-2. Next, use your **smartAccountClient** to send the transaction with `
-  .sendTransaction` and capture the resulting **UserOpHash**.
+2. Next, use your **smartAccountClient** to send the transaction with \`.sendTransaction\` and capture the resulting **UserOpHash**.
 
 3. Finally, return this hash.
 
@@ -1640,17 +1639,17 @@ const smartAccountClient = createSmartAccountClient({
 <summary>🦉 Guiding Questions</summary>
 
 <details>
-<summary>Question 1</summary>
+<summary>❓ Question 1</summary>
 How do you generate a **brand-new private key and wallet** in your setup so it’s never linked to your registration address?
 </details>
 
 <details>
-<summary>Question 2</summary>
+<summary>❓ Question 2</summary>
 What role does the **Safe smart account** (via \`toSafeSmartAccount\`) play compared to a normal EOA?
 </details>
 
 <details>
-<summary>Question 3</summary>
+<summary>❓ Question 3</summary>
 Why do we need a **bundler** and a **paymaster** when sending the transaction on Sepolia, instead of just sending it directly?
 </details>
 
@@ -1667,8 +1666,8 @@ After thinking through the guiding questions, have a look at the solution code!
 \`\`\`ts
 const createSmartAccount = async (): Promise<{
   smartAccountClient: any;
-  smartAccount: \`0x${string}\`;
-  walletOwner: \`0x${string}\`;
+  smartAccount: 0x$\`{string}\`;
+  walletOwner: 0x$\`{string}\`;
 }> => {
   try {
     //// Checkpoint 10 //////
@@ -1696,8 +1695,8 @@ const createSmartAccount = async (): Promise<{
     });
     return {
       smartAccountClient,
-      smartAccount: account.address as \`0x${string}\`,
-      walletOwner: wallet.address as \`0x${string}\`,
+      smartAccount: account.address as 0x$\`{string}\`,
+      walletOwner: wallet.address as 0x$\`{string}\`,
     };
   } catch (error) {
     console.error("Error creating smart account:", error);
@@ -1715,7 +1714,7 @@ const voteOnSepolia = async ({
   contractInfo: any;
   contractAddress: any;
   smartAccountClient: any;
-}): Promise<{ userOpHash: \`0x${string}\` }> => {
+}): Promise<{ userOpHash: 0x$\`{string}\` }> => {
   if (!contractInfo && !contractAddress) throw new Error("Contract not found");
   //// Checkpoint 10 //////
   const callData = encodeFunctionData({
@@ -1731,7 +1730,7 @@ const voteOnSepolia = async ({
   });
 
   const userOpHash = await smartAccountClient.sendTransaction({
-    to: (contractAddress || contractInfo?.address) as \`0x${string}\`,
+    to: (contractAddress || contractInfo?.address) as 0x$\`{string}\`,
     data: callData,
     value: 0n,
   });
@@ -1786,8 +1785,7 @@ For **production-grade apps**, you should generate your own API keys to avoid hi
 - 🔑 **\`NEXT_PUBLIC_PIMLICO_API_KEY\`** in \`packages/nextjs/.env.local\` → [Get key from Pimlico](https://dashboard.pimlico.io/)
 - 📃 **\`ETHERSCAN_API_KEY\`** in \`packages/hardhat/.env\` → [Get key from Etherscan](https://etherscan.io/myapikey)
 
-> 💬 Hint: Store environment variables for **Next.js** in Vercel/system env config for live apps, and use `.env
-  .local` for local testing.
+> 💬 Hint: Store environment variables for **Next.js** in Vercel/system env config for live apps, and use \`.env.local\` for local testing.
 
 ### 🚀 🔥 Challenge Conquered!
 
