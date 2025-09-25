@@ -2,7 +2,7 @@ export const skipQuickStart = true;
 
 export const extraContents = `# 🚩 Challenge: ZK Voting
 
-![readme-zk](./packages/nextjs/public/readme-zk.png)
+![readme-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/readme-zk.png)
 
 Create a private, Sybil-resistant voting system where anyone can prove they’re eligible and vote exactly once **without revealing who they are**. You’ll use **zero-knowledge proofs** to keep votes unlinkable to identities, while keeping results publicly verifiable on-chain.
 
@@ -141,7 +141,7 @@ Our contract will support three main functions:
 
 🖥️ Head over to the **Voting** page and take a look at the frontend you’ll soon bring to life.
 
-![overview-zk](./packages/nextjs/public/overview-zk.png)
+![overview-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/overview-zk.png)
 
 ### 🔍 Inspect the Contract
 
@@ -1214,7 +1214,7 @@ Then go ahead and register.
 
 If everything went smoothly, you should now see:
 
-![registered-zk](./packages/nextjs/public/registered-zk.png)
+![registered-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/registered-zk.png)
 
 > 🎉 Now your secret and nullifier are hidden in the smart contract's Merkle root.
 > Only you know them — or better, your browser does 🙂 (they’re stored in local storage)!
@@ -1225,7 +1225,7 @@ If everything went smoothly, you should now see:
 > 💡 You can inspect the commitment saved in **localStorage**.
 > Just scroll to the bottom of the page and click **Log Local Storage**.
 
-![loglocalstorage-zk](./packages/nextjs/public/loglocalstorage-zk.png)
+![loglocalstorage-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/loglocalstorage-zk.png)
 
 ### **🥅 Goals**
 
@@ -1405,11 +1405,11 @@ const generateProof = async (
 
 Fire up [localhost:3000](http://localhost:3000/), pick your voting option, and hit **Generate Proof**.
 
-![generateproof-zk](./packages/nextjs/public/generateproof-zk.png)
+![generateproof-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/generateproof-zk.png)
 
 Once the proof is created, the button will update to show **Proof already exists**.
 
-![proofgenerated-zk](./packages/nextjs/public/proofgenerated-zk.png)
+![proofgenerated-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/proofgenerated-zk.png)
 
 If you added a console log pattern, check the console to see how a proof looks.
 Otherwise, you can also log your **localStorage** by pressing the **Log Local Storage** button at the bottom of the page — it will also show you how a proof looks.
@@ -1556,11 +1556,11 @@ Your voting decision was already defined when you created the proof — it’s b
 
 Click **Vote** and cast your ballot.
 
-![voted-zk](./packages/nextjs/public/voted-zk.png)
+![voted-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/voted-zk.png)
 
 If everything went well, you should now see your vote counted (in this example: **Yes = 1**).
 
-![votingstats-zk](./packages/nextjs/public/votingstats-zk.png)
+![votingstats-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/votingstats-zk.png)
 
 🎊 Congrats, you’ve just cast a **private vote**!
 
@@ -1793,7 +1793,7 @@ For **production-grade apps**, you should generate your own API keys to avoid hi
 
 Now vote! Register yourself, create the proof, and hit the **Vote** button.
 
-![sepoliavote-zk](./packages/nextjs/public/sepoliavote-zk.png)
+![sepoliavote-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/sepoliavote-zk.png)
 
 **🎉 Congrats!** You’ve just pulled it off — an entire **privacy-preserving voting app** running fully on-chain.
 
