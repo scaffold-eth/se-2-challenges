@@ -154,13 +154,6 @@ export const VoteWithBurnerSepolia = ({ contractAddress }: { contractAddress?: `
         </p>
       </div>
 
-      {smartAccount && (
-        <div className="flex items-center gap-2 justify-center">
-          <span className="text-sm">Smart Account:</span>
-          <Address address={smartAccount} />
-        </div>
-      )}
-
       {hasSuccessfulVote && votedSmartAccount && (
         <div className="flex items-center gap-2 justify-center">
           <span className="text-sm">Voted With Smart Account:</span>

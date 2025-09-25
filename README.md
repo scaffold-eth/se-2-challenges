@@ -295,8 +295,6 @@ _(💡 Try `tree.size()`, but adjust carefully)_
 
 </details>
 
-</details>
-
 After thinking through the guiding questions, have a look at the solution code!
 
 <details>
@@ -333,6 +331,7 @@ emit NewLeaf(s_tree.size - 1, _commitment);
 
 ```
 
+</details>
 </details>
 
 ### 🔧 Before Testing
@@ -579,8 +578,6 @@ At the top of your circuit, **uncomment the import** of `binary_merkle_root`.
 > 👉 This comes from **zk-kit**, the Noir counterpart to the Solidity Merkle library used in your contract.
 > It’s the tool we’ll use to recompute the root inside the circuit.
 
----
-
 ### 🧩 Step 2: Extend the Inputs
 
 We now need more inputs to make Merkle proofs work.
@@ -704,8 +701,6 @@ How will you compare your `computed_root` against the public `root` to finish th
 How do you cast and constrain `vote` so it becomes part of the circuit and avoids the “unused variable” warning?
 
 </details>
-
----
 
 After thinking through the guiding questions, have a look at the solution code!
 
@@ -891,8 +886,6 @@ The vk summarizes your circuit’s constraints (all those `assert`s you added!) 
 
 > ⚠️ Use `--oracle_hash keccak` when creating a verification key so the hashing matches Ethereum’s Keccak standard.
 
----
-
 ### 🔹 Step 3: Generate the Solidity Verifier Contract
 
 Now let’s build the contract itself:
@@ -903,8 +896,6 @@ bb write_solidity_verifier -k ./target/vk -o ./target/Verifier.sol
 
 This creates a **`Verifier.sol`** file in **`packages/circuits/target`**.
 The vk is embedded into this contract, enabling Ethereum to check proofs generated for your circuit.
-
----
 
 🔍 **Inspecting the Contract**
 
@@ -981,7 +972,7 @@ That’s why **nullifiers are the cornerstone** of privacy-preserving voting.
 - Increment `s_yesVotes` or `s_noVotes` accordingly
 - Emit the `VoteCast` event
 
-> ⚠️ Go to packages/hardhat/contracts/mocks and uncomment all the code
+> 🚨⚠️ Go to packages/hardhat/contracts/mocks and uncomment all the code
 
 <details>
 <summary>🦉 Guiding Questions</summary>
@@ -1044,44 +1035,31 @@ constructor(address _owner, address _verifier, string memory _question) Ownable(
 /// Functions ///
 //////////////////
 
-function vote(
-    bytes memory _proof,
-    bytes32 _root,
-    bytes32 _nullifierHash,
-    bytes32 _vote,
-    bytes32 _depth
-) public {
-    /// Checkpoint 6 //////
-    if (s_nullifierHashes[_nullifierHash]) {
-        revert Voting__NullifierHashAlreadyUsed(_nullifierHash);
+function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes32 _vote, bytes32 _depth) public {
+        /// Checkpoint 6 //////
+        if (s_nullifierHashes[_nullifierHash]) {
+            revert Voting__NullifierHashAlreadyUsed(_nullifierHash);
+        }
+        s_nullifierHashes[_nullifierHash] = true;
+
+        bytes32[] memory publicInputs = new bytes32[](4);
+        publicInputs[0] = _nullifierHash;
+        publicInputs[1] = _root;
+        publicInputs[2] = _vote;
+        publicInputs[3] = _depth;
+
+        if (!i_verifier.verify(_proof, publicInputs)) {
+            revert Voting__InvalidProof();
+        }
+
+        if (_vote == bytes32(uint256(1))) {
+            s_yesVotes++;
+        } else {
+            s_noVotes++;
+        }
+
+        emit VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes);
     }
-    s_nullifierHashes[_nullifierHash] = true;
-
-    bytes32 ;
-    publicInputs[0] = _nullifierHash;
-    publicInputs[1] = _root;
-    publicInputs[2] = _vote;
-    publicInputs[3] = _depth;
-
-    if (!i_verifier.verify(_proof, publicInputs)) {
-        revert Voting__InvalidProof();
-    }
-
-    if (_vote == bytes32(uint256(1))) {
-        s_yesVotes++;
-    } else {
-        s_noVotes++;
-    }
-
-    emit VoteCast(
-        _nullifierHash,
-        msg.sender,
-        _vote == bytes32(uint256(1)),
-        block.timestamp,
-        s_yesVotes,
-        s_noVotes
-    );
-}
 ```
 
 </details>
@@ -1186,8 +1164,6 @@ How will you ensure that your `commitment`, `nullifier`, and `secret`
 are all formatted as valid **bytes32 hex strings** that Solidity will accept?
 
 </details>
-
----
 
 After thinking through the guiding questions, have a look at the solution code:
 
@@ -1335,8 +1311,6 @@ In what exact order and types does your circuit declare inputs?
 
 </details>
 
----
-
 After thinking through the guiding questions, have a look at the solution code:
 
 <details>
@@ -1363,20 +1337,50 @@ const generateProof = async (
   //// Checkpoint 8 //////
   const nullifierHash = poseidon1([BigInt(_nullifier)]);
   const calculatedTree = new LeanIMT((a: bigint, b: bigint) => poseidon2([a, b]));
-
   const leaves = _leaves.map(event => {
     return event?.args.value;
   });
-
   const leavesReversed = leaves.reverse();
   calculatedTree.insertMany(leavesReversed as bigint[]);
-
   const calculatedProof = calculatedTree.generateProof(_index);
-  const sibs = calculatedProof.siblings.map(sib => sib.toString());
+  const sibs = calculatedProof.siblings.map(sib => {
+    return sib.toString();
+  });
 
-  // Pad siblings array to match circuit expectation (16 elements)
   const lengthDiff = 16 - sibs.length;
-  for (let i = 0; i
+  for (let i = 0; i < lengthDiff; i++) {
+    sibs.push("0");
+  }
+  const input = {
+    nullifier_hash: nullifierHash.toString(),
+    nullifier: BigInt(_nullifier).toString(),
+    secret: BigInt(_secret).toString(),
+    root: _root.toString(),
+    vote: _vote,
+    depth: _depth.toString(),
+    index: _index.toString(),
+    siblings: sibs,
+  };
+  try {
+    const noir = new Noir(_circuitData);
+    const { witness } = await noir.execute(input);
+    console.log("witness", witness);
+    const honk = new UltraHonkBackend(_circuitData.bytecode, { threads: 1 });
+    const originalLog = console.log;
+    console.log = () => {};
+    const { proof, publicInputs } = await honk.generateProof(witness, {
+      keccak: true,
+    });
+    console.log = originalLog;
+    console.log("proof", proof);
+    const result = ethers.AbiCoder.defaultAbiCoder().encode(["bytes", "bytes32[]"], [proof, publicInputs]);
+    console.log("result", result);
+    return { proof, publicInputs };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 ```
 
 </details>
@@ -1478,8 +1482,6 @@ _(Hint: not much to do 🙂)_
 
 </details>
 
----
-
 After thinking through the guiding questions, have a look at the solution code:
 
 <details>
@@ -1500,7 +1502,6 @@ const sendVoteWithBurner = async ({
   ////// Checkpoint 9 //////
   const needed = parseEther("0.01");
   const bal = await provider.getBalance(walletAddress);
-
   if (bal < needed) {
     const signer = await provider.getSigner();
     await signer.sendTransaction({ to: walletAddress, value: needed - bal });
@@ -1510,7 +1511,24 @@ const sendVoteWithBurner = async ({
     uint8ArrayToHexString(proofData.proof),
     proofData.publicInputs[0],
     proofData.publicInputs[1],
-    proofData.publicInputs[2]
+    proofData.publicInputs[2],
+    proofData.publicInputs[3],
+  );
+  return (await tx.wait())?.hash ?? tx.hash;
+};
+
+const generateBurnerWallet = () => {
+  ////// Checkpoint 9 //////
+  const wallet = Wallet.createRandom();
+  setBurnerWallet(wallet);
+
+  const effectiveContractAddress = contractAddress || contractInfo?.address;
+  if (effectiveContractAddress && userAddress) {
+    saveBurnerWalletToLocalStorage(wallet.privateKey, wallet.address, effectiveContractAddress, userAddress);
+  }
+
+  return wallet;
+};
 ```
 
 </details>
@@ -1530,8 +1548,6 @@ If everything went well, you should now see your vote counted (in this example: 
 ![votingstats-zk](./packages/nextjs/public/votingstats-zk.png)
 
 🎊 Congrats, you’ve just cast a **private vote**!
-
----
 
 ### **🥅 Goals**
 
@@ -1564,11 +1580,11 @@ You’ll be working in two functions:
 
 ### 🛠 Create the Smart Account Wallet
 
-#### 1. Generate a **new private key and wallet** (fresh, never used).
+1. Generate a **new private key and wallet** (fresh, never used).
 
-#### 2. Set up a **public client** connected to Sepolia.
+2. Set up a **public client** connected to Sepolia.
 
-#### 3. Use `toSafeSmartAccount` from the **permissionless** library to create your smart account.
+3. Use `toSafeSmartAccount` from the **permissionless** library to create your smart account.
 
 ```ts
 const account = await toSafeSmartAccount({
@@ -1578,7 +1594,7 @@ const account = await toSafeSmartAccount({
 });
 ```
 
-#### 4. Build a smartAccountClient with createSmartAccountClient, this is what you’ll use later to send your vote.
+4. Build a smartAccountClient with createSmartAccountClient, this is what you’ll use later to send your vote.
 
 ```ts
 const smartAccountClient = createSmartAccountClient({
@@ -1594,15 +1610,15 @@ const smartAccountClient = createSmartAccountClient({
 });
 ```
 
-#### 5. Finally return `smartAccountClient`, `smartAccount`, `walletOwner`
+5. Finally return `smartAccountClient`, `smartAccount`, `walletOwner`
 
 ### 🛠 Cast the Vote
 
-#### 1. Before sending the transaction to the bundler, first **build the calldata** using viem’s `encodeFunctionData` (with the same args as in the previous checkpoint).
+1. Before sending the transaction to the bundler, first **build the calldata** using viem’s `encodeFunctionData` (with the same args as in the previous checkpoint).
 
-#### 2. Next, use your **smartAccountClient** to send the transaction with `.sendTransaction` and capture the resulting **UserOpHash**.
+2. Next, use your **smartAccountClient** to send the transaction with `.sendTransaction` and capture the resulting **UserOpHash**.
 
-#### 3. Finally, return this hash.
+3. Finally, return this hash.
 
 <details>
 <summary>🦉 Guiding Questions</summary>
@@ -1731,7 +1747,7 @@ Great work! Now head to the **next checkpoint** where we’ll deploy everything 
 
 > 🚨 Don’t forget to set the owner address inside the 00_deploy_your_voting_contract.ts .
 
-🚀 Run `yarn deploy --network Sepolia` to deploy your smart contract to Sepolia.
+🚀 Run `yarn deploy --network sepolia` to deploy your smart contract to Sepolia.
 
 > 💬 Hint: You can set the defaultNetwork in hardhat.config.ts to sepolia OR you can yarn deploy --network sepolia.
 
@@ -1772,8 +1788,6 @@ You now have a **working ZK voting dApp,** a big milestone! 🚀
 
 This last checkpoint isn’t about more code, but about **thinking like a builder shipping to production**.
 
----
-
 ### ⚠️ Root history matters
 
 - Using only the **latest root** works for demos, but in production it causes **stale proof failures**:
@@ -1783,8 +1797,6 @@ This last checkpoint isn’t about more code, but about **thinking like a builde
 - **Benefit:** fewer failed txs, smoother UX, resilience against congestion.
 - **Trade-off:** slightly higher storage/gas costs, but worth it for reliability.
 
----
-
 ### 🔐 Privacy depends on people
 
 - In ZK systems, your privacy comes from the **anonymity set** → the group of all participants you could plausibly be.
@@ -1793,16 +1805,12 @@ This last checkpoint isn’t about more code, but about **thinking like a builde
 - Good UX: show **current anonymity set size** (e.g., “12 registered voters”) so participants understand their privacy.
 - Some apps even enforce a **minimum set size** before voting begins.
 
----
-
 ### 🗳 Registration strategy
 
 - In production, define a clear **registration period before voting starts**.
 - If users can register + vote immediately, observers may correlate actions, especially with low participation.
 - A dedicated registration window lets commitments accumulate → stronger anonymity set.
 - Once registration ends, voting opens → privacy improves since votes can’t be tied to registration timing.
-
----
 
 ### 🛠 Indexing is key
 
@@ -1816,8 +1824,6 @@ This last checkpoint isn’t about more code, but about **thinking like a builde
   - Correct data even during reorgs
   - Faster, smoother UX + single trusted source of truth
 
----
-
 ### ⛽️ Gas sponsorship
 
 - In this challenge, **Pimlico** made gasless voting easy.
@@ -1827,8 +1833,6 @@ This last checkpoint isn’t about more code, but about **thinking like a builde
   - Full visibility into costs
 - Result: **customizable, reliable, decentralized gas sponsorship**.
 
----
-
 ### 🌱 Beyond voting
 
 The same **commitment + nullifier** pattern powers other privacy apps:
@@ -1837,8 +1841,6 @@ The same **commitment + nullifier** pattern powers other privacy apps:
 - Shielded ERC-20 transfers
 - Private allowlists & attestations
 - Quadratic or weighted voting
-
----
 
 ### 🚀 Where You Go From Here
 

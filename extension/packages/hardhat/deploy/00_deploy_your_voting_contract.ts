@@ -58,6 +58,7 @@ const deployYourVotingContract: DeployFunction = async function (hre: HardhatRun
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
     libraries: {
+      /// checkpoint 2 //////
       LeanIMT: leanIMTAddress,
     },
   });
