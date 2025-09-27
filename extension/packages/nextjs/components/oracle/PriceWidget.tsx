@@ -51,7 +51,7 @@ export const PriceWidget = ({ contractName }: PriceWidgetProps) => {
         <TooltipInfo
           top={0}
           right={0}
-          infoText="Displays the median price. If no oracle nodes have reported prices in the last 10 seconds, it will display 'No fresh price'. Color highlighting indicates how big of a change there was in the price."
+          infoText="Displays the median price. If no oracle nodes have reported prices in the last 24 seconds, it will display 'No fresh price'. Color highlighting indicates how big of a change there was in the price."
         />
         <div className={`rounded-lg transition-colors duration-1000 ${highlight ? highlightColor : ""}`}>
           <div className="font-bold h-10 text-4xl flex items-center justify-center">

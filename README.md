@@ -30,7 +30,7 @@ Oracles are bridges between blockchains and the external world. They solve a fun
 
 ---
 
-🌟 The final deliverable is a comprehensive understanding of oracle architectures through exploration and hands-on implementation. You'll explore two existing oracle systems (Whitelist and Staking) to understand their mechanics, then implement the Optimistic Oracle from scratch. Deploy your optimistic oracle to a testnet and demonstrate how it handles assertions, proposals, disputes, and settlements.
+🌟 The final deliverable is a comprehensive understanding of oracle architectures through hands-on implementation. You'll explore two existing oracle systems (Whitelist and Staking) to understand their mechanics, then implement the Optimistic Oracle from scratch. Deploy your optimistic oracle to a testnet and demonstrate how it handles assertions, proposals, disputes, and settlements.
 
 🔍 First, let's understand why we need multiple oracle designs. Each approach has different strengths:
 
@@ -204,14 +204,16 @@ function addOracle(address _owner) public onlyOwner {
 
 <details markdown='1'>
 
-<summary>💡 Hint: Safe Array Removal</summary>
+<summary>💡 Hint: Gas Efficient Array Element Removal</summary>
 
-The swap-and-pop pattern:
+Check out this swap-and-pop pattern:
 - Check if index is valid (< oracles.length)
 - Store the oracle address for the event
 - If not the last element, swap with the last element
 - Pop the last element
 - Emit the removal event
+
+This is much more gas efficient than deleting the element and moving all the entries beyond it over one space. O(1) vs O(n).
 
 <details markdown='1'>
 
@@ -741,7 +743,7 @@ function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint2
 
 5. **Implement `getPrice()` and `getPricesFromAddresses()`**
 
-* 📦 These functions work together to aggregates prices from all active nodes using median calculation
+* 📦 These functions work together to aggregate prices from all active nodes using median calculation
 
 * 🧹 It should filter out nodes with stale data using `separateStaleNodes()`
 
@@ -918,7 +920,7 @@ sequenceDiagram
 
 🎯 **Your Mission**: Complete the missing function implementations in the `OptimisticOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you just need to fill in the logic.
 
-🧪 **Testing Strategy**: Each function you implement can be tested individually using the provided test suite. Run `yarn test` after implementing each function to verify your solution works correctly.
+🧪 **Testing Strategy**: Each function you implement can be tested individually using the provided test suite. Run `yarn test` after implementing each function to verify your solution works correctly. To target a specific method just use the `--grep` flag with the `yarn test` command and write out the test name like this: `yarn test --grep "Name of test"`.
 
 🔍 Open the `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol` file to implement the optimistic oracle functionality.
 
@@ -928,7 +930,7 @@ sequenceDiagram
 
 * 📣 This function allows users to assert that an event will have a true/false outcome
 
-* 💸 It should require that the reward (`msg.value`) is greater than 0 . If it is not then revert with `NotEnoughValue`
+* 💸 It should require that the reward (`msg.value`) is greater than 0. If it is not then revert with `NotEnoughValue`
 
 * ⏱️ It should accept 0 for `startTime` and set it to `block.timestamp`
 
@@ -951,7 +953,7 @@ sequenceDiagram
 Here are more granular instructions on setting up the EventAssertion struct:
 - asserter should be `msg.sender`
 - reward should be `msg.value`
-- bond should be the reward x 2 (You will know why as you understand the economics and game theory)
+- bond should be the reward x 2 for economic security (You will know why as you understand the economics and game theory)
 - startTime = `startTime`
 - endTime = `endTime`
 - description = `description`
@@ -1246,7 +1248,7 @@ This function enables the asserter to get a refund of their posted reward when n
 
 * 🚫 No proposer exists (revert with `AssertionProposed`)
 
-* ⏰ After assertion endTime ( revert with `InvalidTime`)
+* ⏰ After assertion endTime (revert with `InvalidTime`)
 
 * 🔒 Not already claimed (revert with `AlreadyClaimed`)
 
@@ -1314,7 +1316,7 @@ We just need the decider to use the remaining unused properties to establish whi
 
 Set resolvedOutcome to true or false based on what is the actual truth regarding an assertion.
 
-Then set the winner to the proposer if the proposer was correct *or* set it to the disputer is the disputer was correct.
+Then set the winner to the proposer if the proposer was correct *or* set it to the disputer if the disputer was correct.
 
 <details markdown="1">
 <summary>🎯 Solution</summary>
@@ -1430,7 +1432,7 @@ This function will help everyone know the exact outcome of the assertion.
 
 * ⏳ Then we just need to check if anyone disputed it and that the dispute window is up to know we can rely on the `proposedOutcome` (if the time isn't over then revert with `InvalidTime`)
 
-* 🧑‍⚖️ Otherwise, if a disupte has been made, then we just need to make sure the `winner` has been set by the decider (or else revert with `AwaitingDecider`)
+* 🧑‍⚖️ Otherwise, if a dispute has been made, then we just need to make sure the `winner` has been set by the decider (or else revert with `AwaitingDecider`)
 
 <details markdown="1">
 <summary>💡 Hint: Read Outcome Carefully</summary>

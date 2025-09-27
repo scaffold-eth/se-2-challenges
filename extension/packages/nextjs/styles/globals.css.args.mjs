@@ -57,4 +57,23 @@ export const postContent = `
 
 @theme inline {
   --font-space-grotesk: var(--font-space-grotesk);
+}
+
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    font-style: italic;
+  }
+}
+
+@layer utilities {
+  /* Override all uses of the utility 'placeholder:text-accent/70' */
+  .placeholder\:text-accent\/70::placeholder {
+    @apply !text-accent/40;
+  }
+
+  /* Also catch responsive/state-prefixed variants like 'sm:placeholder:text-accent/70' */
+  [class*="placeholder:text-accent/70"]::placeholder {
+    @apply !text-accent/40;
+  }
 }`;

@@ -140,7 +140,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
               {/* Description Input */}
               <div>
                 <label className="label">
-                  <span className="label-text font-medium">
+                  <span className="text-accent font-medium">
                     Description <span className="text-red-500">*</span>
                   </span>
                 </label>
@@ -152,7 +152,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
                         value={description}
                         onChange={e => setDescription(e.target.value)}
                         placeholder="Enter assertion description..."
-                        className="input-ghost min-h-[60px] px-4 w-full font-medium placeholder:text-accent/70 text-base-content/70 focus:text-base-content/70 resize-none bg-transparent focus:outline-none focus:border-0"
+                        className="input input-ghost focus-within:border-transparent leading-8 focus:outline-hidden focus:bg-transparent h-auto min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/70 text-base-content/70 focus:text-base-content/70 whitespace-pre-wrap overflow-x-hidden"
                         rows={2}
                       />
                     </div>
@@ -169,7 +169,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
               </div>
               <div>
                 <label className="label">
-                  <span className="label-text font-medium">
+                  <span className="text-accent font-medium">
                     Reward (ETH) <span className="text-red-500">*</span>
                   </span>
                 </label>
@@ -185,7 +185,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">
-                    <span className="label-text font-medium">Start in (minutes)</span>
+                    <span className="text-accent font-medium">Start in (minutes)</span>
                   </label>
                   <IntegerInput
                     name="startTime"
@@ -197,7 +197,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
                 </div>
                 <div>
                   <label className="label">
-                    <span className="label-text font-medium">Duration (minutes)</span>
+                    <span className="text-accent font-medium">Duration (minutes)</span>
                   </label>
                   <IntegerInput
                     name="endTime"

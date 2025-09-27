@@ -81,7 +81,7 @@ export const EditableCell = ({ value, address, highlightColor = "" }: EditableCe
           ) : (
             <div className="flex items-center gap-2 h-full items-stretch">
               {value}
-              <button className="px-2 text-sm bg-primary rounded" onClick={startEditing}>
+              <button className="px-2 text-sm bg-primary rounded cursor-pointer" onClick={startEditing}>
                 <PencilIcon className="w-2.5 h-2.5" />
               </button>
             </div>
@@ -92,10 +92,10 @@ export const EditableCell = ({ value, address, highlightColor = "" }: EditableCe
         <div className="w-[30%] items-stretch justify-start pl-2">
           {isEditing && (
             <div className="flex items-stretch gap-1 w-full h-full">
-              <button onClick={handleSubmit} className="px-2 text-sm bg-primary rounded">
+              <button onClick={handleSubmit} className="px-2 text-sm bg-primary rounded cursor-pointer">
                 ✓
               </button>
-              <button onClick={handleCancel} className="px-2 text-sm bg-secondary rounded">
+              <button onClick={handleCancel} className="px-2 text-sm bg-secondary rounded cursor-pointer">
                 ✕
               </button>
             </div>

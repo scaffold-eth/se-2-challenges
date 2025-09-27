@@ -56,7 +56,7 @@ export const WhitelistTable = () => {
     }))
     ?.filter(item => !oraclesRemoved?.some(removedOracle => removedOracle?.args?.oracleAddress === item.address));
 
-  const tooltipText = `This table displays registered oracle nodes that provide price data to the system. Nodes are considered active if they've reported within the last 10 seconds. You can add a new oracle node by clicking the "Add Oracle Node" button or edit the price of an oracle node.`;
+  const tooltipText = `This table displays registered oracle nodes that provide price data to the system. Nodes are considered active if they've reported within the last 24 seconds. You can add a new oracle node by clicking the "Add Oracle Node" button or edit the price of an oracle node.`;
 
   return (
     <div className="flex flex-col gap-2">

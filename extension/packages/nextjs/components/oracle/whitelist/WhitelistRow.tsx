@@ -53,7 +53,11 @@ export const WhitelistRow = ({ address, isActive }: WhitelistRowProps) => {
         address={address}
         highlightColor={getHighlightColorForPrice(data?.[0], medianPrice)}
       />
-      <HighlightedCell value={isActive ? "active" : "stale"} highlightColor={""}>
+      <HighlightedCell
+        value={isActive ? "active" : "stale"}
+        highlightColor={""}
+        className={isActive ? "text-success" : "text-error"}
+      >
         {isActive ? "Active" : "Stale"}
       </HighlightedCell>
     </tr>

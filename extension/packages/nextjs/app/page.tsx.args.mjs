@@ -22,8 +22,8 @@ export const description = `
             components of a robust oracle system.
           </p>
           <p className="text-center text-lg">
-            🌟 The final deliverable is a comprehensive understanding of oracle architectures through exploration 
-            and hands-on implementation. You&apos;ll explore two existing oracle systems (Whitelist and Staking) to 
+            🌟 The final deliverable is a comprehensive understanding of oracle architectures through hands-on 
+            implementation. You&apos;ll explore two existing oracle systems (Whitelist and Staking) to 
             understand their mechanics, then implement the Optimistic Oracle from scratch. Deploy your optimistic 
             oracle to a testnet and demonstrate how it handles assertions, proposals, disputes, and settlements. 
             Then build and upload your app to a public web server. Submit the url on{" "}
