@@ -100,7 +100,7 @@ yarn start
 
 > 👛 Explore burner wallets in 🏗 Scaffold-ETH 2: open an incognito window and visit http://localhost:3000. You'll see a totally new address in the top-right. Copy it and send test funds from your first window using the **Faucet** button (bottom-left):
 
-![icognito&webBrowser](NEW_IMAGE)
+![icognito&webBrowser](https://github.com/user-attachments/assets/bf1cbb3e-b014-44b1-9b19-83d831abcb19)
 
 > 👨🏻‍🚒 When you close the incognito window, that account is gone forever. Burner wallets are perfect for local dev; you'll switch to a permanent wallet on public networks.
 
