@@ -18,16 +18,14 @@ export const extraContents = `# 🚩 Challenge: 🎟 Tokenization
 
 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
-🤖 If you have any questions during your Challenge, you can try out the [Challenge AI assistant](https://scaffold-eth-assistant.streamlit.app/), and get answers to your Challenge/Scaffold-ETH questions. Please reach us in Telegram if something feels wrong!
-
 <details markdown='1'><summary>❓ Wondering what "tokenization" means?</summary>
 Tokenization is like giving anything a digital passport you can carry in your wallet. It proves who owns it, lets you hand it off in a click, and lets apps recognize it automatically. In this challenge you'll mint ERC-721 tokens (NFTs): each token is one-of-one, owned by a single address (what \`ownerOf(tokenId)\` returns). Transfers are atomic, instant, traceable, and run by code.
 
-– **Real-World Assets (RWAs)**: Think stocks, bonds, gold, and real estate. If these are tokenized, the token acts as a digital claim or registry entry. For real-world effect, an issuer/custodian or legal framework must link onchain transfers to off-chain rights; without that bridge, it's a collectible — not a legal transfer.
+- **Real-World Assets (RWAs)**: Think stocks, bonds, gold, and real estate. If these are tokenized, the token acts as a digital claim or registry entry. For real-world effect, an issuer/custodian or legal framework must link onchain transfers to off-chain rights; without that bridge, it's a collectible, not a legal transfer.
 
-– Who has the right to tokenize?: The legitimate owner or authorized issuer. If you don't control the thing, your token is unofficial fan art — not enforceable rights.
+- Who has the right to tokenize?: The legitimate owner or authorized issuer. If you don't control the thing, your token is unofficial fan art, not enforceable rights.
 
-– **Blockchain-native assets**: Some things are born onchain — art, game items, ENS names, fully-onchain media, and even concert tickets designed for onchain verification. Here, the token is the thing. That makes them globally transferable, permissionless, and composable — plug them into marketplaces, auctions, lending, or games. As the world moves onchain we'll see more native experiences — like tickets that verify at the door, auto-split royalties on resales, and unlock perks across apps.
+- **Blockchain-native assets**: Some things are born onchain; art, game items, ENS names, fully-onchain media, and even concert tickets designed for onchain verification. Here, the token is the thing. That makes them globally transferable, permissionless, and composable. Plug them into marketplaces, auctions, lending, or games. As the world moves onchain we'll see more native experiences like tickets that verify at the door, auto-split royalties on resales, and unlock perks across apps.
 </details>
 
 ---
@@ -74,7 +72,7 @@ yarn start
 
 ## Checkpoint 1: ⛽️ Gas & Wallets 👛
 
-> ⛽️ Gas is the tiny fee that powers your transactions—like postage for the blockchain. Grab test funds from the faucet so you can interact onchain.
+> ⛽️ Gas is the tiny fee that powers your transactions, like postage for the blockchain. Grab test funds from the faucet so you can interact onchain.
 
 ![gas&wallet](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/912d0d4b-db34-49d3-bd7d-7ca0ab18eb66)
 
@@ -99,7 +97,7 @@ yarn start
 
 🦓 In this challenge we will be minting (or creating) collectible Buffalo, Zebra and Rhino NFTs. Their metadata is stored on [IPFS](https://ipfs.tech/). These won't feign any real value but what price can you put on your own understanding of intricate blockchain ownership designs? Face it, it's **priceless!**
 
-> ✏️ Time to create something new. Click **MINT NFT** in the \`My NFTs\` tab to mint an ERC-721 token — your unique, onchain collectible.
+> ✏️ Time to create something new. Click **MINT NFT** in the \`My NFTs\` tab to mint an ERC-721 token; your unique, onchain collectible.
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/74cf02f2-4c1b-4278-9841-f19f668e0b1e)
 
