@@ -194,17 +194,23 @@ yarn verify --network sepolia
 
 ## ⚔️ Side Quests
 
-### 🐟 Open Sea
+### 🦊 MetaMask NFTs
 
-> 🐃 Want to see your new NFTs on Opensea? Head to [Testnets Opensea](https://testnets.opensea.io/)
+> 🎫 Want to see your new NFTs? Check your MetaMask extension! Your minted NFTs should appear in the NFTs section.
 
-> 🎫 Make sure you have minted some NFTs on your Vercel page, then connect to Opensea using that same wallet.
+> 🌐 **Important**: Make sure you switch to the Sepolia testnet in MetaMask before checking for your NFTs, since that's where you deployed your contract.
 
-![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/c752b365-b801-4a02-ba2e-62e0270b3795)
+> 🔍 Make sure you have minted some NFTs on your Vercel page, then open your MetaMask extension and navigate to the "NFTs" tab.
 
-> You can see your collection of shiny new NFTs on a testnet!
+![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-simple-nft-example/extension/packages/nextjs/public/nfts.png)
 
-(It can take a while before they show up, but here is an example:) https://testnets.opensea.io/assets/sepolia/0x17ed03686653917efa2194a5252c5f0a4f3dc49c/2
+> You can see your collection of shiny new NFTs directly in your wallet!
+
+(It can take a while before they show up in MetaMask, but they should appear in the NFTs section once detected.)
+
+> 🔧 **Not seeing your NFTs?** Sometimes MetaMask doesn't automatically detect new NFTs. You can manually add them by clicking "Import NFT" in the NFTs tab and entering network, your contract address and token ID.
+
+![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-simple-nft-example/extension/packages/nextjs/public/import-nft.png)
 
 ---
 
