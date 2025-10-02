@@ -228,6 +228,26 @@ Verifying your contract is important for enabling others to be able to look at y
 
 ![gif](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/547612f6-97b9-4eb3-ab6d-9b6d2c0ac769)
 
+## ⚔️ Side Quests
+
+### 🦊 MetaMask NFTs
+
+> 🎫 Want to see your new NFTs? Check your MetaMask extension! Your minted NFTs should appear in the NFTs section.
+
+> 🌐 **Important**: Make sure you switch to the Sepolia testnet in MetaMask before checking for your NFTs, since that's where you deployed your contract.
+
+> 🔍 Make sure you have minted some NFTs on your Vercel page, then open your MetaMask extension and navigate to the "NFTs" tab.
+
+![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-tokenization/extension/packages/nextjs/public/nfts.png)
+
+> You can see your collection of shiny new NFTs directly in your wallet!
+
+(It can take a while before they show up in MetaMask, but they should appear in the NFTs section once detected.)
+
+> 🔧 **Not seeing your NFTs?** Sometimes MetaMask doesn't automatically detect new NFTs. You can manually add them by clicking "Import NFT" in the NFTs tab and entering network, your contract address and token ID.
+
+![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-tokenization/extension/packages/nextjs/public/import-nft.png)
+
 ---
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com/challenge/decentralized-staking).
