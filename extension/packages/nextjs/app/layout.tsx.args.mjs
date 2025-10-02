@@ -8,7 +8,7 @@ const spaceGrotesk = Space_Grotesk({
 `;
 
 export const metadataOverrides = {
-  title: "Simple NFT Example | SpeedRunEthereum",
+  title: "Tokenization | SpeedRunEthereum",
   description: "Built with 🏗 Scaffold-ETH 2",
 };
 

@@ -3,8 +3,8 @@
 import { lazy, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { notification } from "~~/utils/scaffold-eth";
-import { addToIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
-import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
+import { addToIPFS } from "~~/utils/tokenization/ipfs-fetch";
+import nftsMetadata from "~~/utils/tokenization/nftsMetadata";
 
 const LazyReactJson = lazy(() => import("react-json-view"));
 
