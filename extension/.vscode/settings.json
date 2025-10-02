@@ -1,5 +1,3 @@
 {
-  "github.copilot.enable": {
-    "*": false
-  }
+  "chat.disableAIFeatures": true
 }
