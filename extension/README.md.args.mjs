@@ -25,12 +25,6 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ## Checkpoint 0: 📦 Environment 📚
 
-We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
-
-In case you want to enable AI for some reason, you can do it in the root folder of the project.
-Cursor: remove '*' from .cursorrules file
-VSCode: remove "github.copilot.enable" from .vscode/settings.json file
-
 > Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
@@ -53,7 +47,13 @@ yarn start
 
 > 👩‍💻 Rerun \`yarn deploy --reset\` whenever you want to deploy new contracts to the frontend, update your current contracts with changes, or re-deploy it to get a fresh contract address.
 
-🔏 Now you are ready to edit your smart contract \`{mainContractName.sol}\` in \`packages/hardhat/contracts\`
+---
+
+⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+
+🔧 In case you want to enable AI for some reason, you can do it in the root folder of the project.
+- Cursor: remove \`*\` from \`.cursorignore\` file
+- VSCode: set \`chat.disableAIFeatures\` to \`false\` in \`.vscode/settings.json\` file
 
 ---
 
