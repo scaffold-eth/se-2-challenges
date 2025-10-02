@@ -238,7 +238,7 @@ Verifying your contract is important for enabling others to be able to look at y
 
 > 🔍 Make sure you have minted some NFTs on your Vercel page, then open your MetaMask extension and navigate to the "NFTs" tab.
 
-![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-simple-nft-example/extension/packages/nextjs/public/nfts.png)
+![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-tokenization/extension/packages/nextjs/public/nfts.png)
 
 > You can see your collection of shiny new NFTs directly in your wallet!
 
@@ -246,7 +246,7 @@ Verifying your contract is important for enabling others to be able to look at y
 
 > 🔧 **Not seeing your NFTs?** Sometimes MetaMask doesn't automatically detect new NFTs. You can manually add them by clicking "Import NFT" in the NFTs tab and entering network, your contract address and token ID.
 
-![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-simple-nft-example/extension/packages/nextjs/public/import-nft.png)
+![image](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-tokenization/extension/packages/nextjs/public/import-nft.png)
 
 ---
 
