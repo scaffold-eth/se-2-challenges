@@ -4,11 +4,11 @@
 
 ---
 
-## 🚩 Challenge: 🎟 Simple NFT Example
+## 🚩 Challenge: 🎟 Tokenization
 
-🎫 Create a simple NFT to learn the basics of 🏗 scaffold-eth. You'll use 👷‍♀️ HardHat to compile and deploy smart contracts. Then, you'll use a template React app full of important Ethereum components and hooks. Finally, you'll deploy an NFT to a public network to share with friends! 🚀
+🎫 Create a unique token to learn the basics of 🏗️ Scaffold-ETH 2. You'll use 👷‍♀️ HardHat to compile and deploy smart contracts. Then, you'll use a template React app full of important Ethereum components and hooks. Finally, you'll deploy an NFT to a public network to share with friends! 🚀
 
-[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-simple-nft-example)
+[Challenge Extension](https://github.com/scaffold-eth/se-2-challenges/tree/challenge-tokenization)
 
 ---
 
