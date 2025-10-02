@@ -1,0 +1,93 @@
+name: Revalidate Challenge README
+
+on:
+  push:
+    paths:
+      - "README.md"
+      - "extension/README.md.args.mjs"
+    branches:
+      - "challenge-*"
+  pull_request:
+    paths:
+      - "README.md"
+      - "extension/README.md.args.mjs"
+    branches:
+      - "challenge-*"
+    types: [closed]
+
+jobs:
+  revalidate:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract challenge name from branch
+        id: extract_challenge
+        run: |
+          # Get the branch name
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+
+          echo "Branch name: $BRANCH_NAME"
+
+          # Extract challenge name from branch (e.g., challenge-simple-nft-example -> simple-nft-example)
+          if [[ $BRANCH_NAME =~ ^challenge-(.+)$ ]]; then
+            CHALLENGE_NAME="${BASH_REMATCH[1]}"
+            echo "Extracted challenge name: $CHALLENGE_NAME"
+            echo "challenge_name=$CHALLENGE_NAME" >> $GITHUB_OUTPUT
+          else
+            echo "Branch name does not match challenge pattern: $BRANCH_NAME"
+            exit 1
+          fi
+
+      - name: Revalidate speedrunethereum.com
+        if: steps.extract_challenge.outputs.challenge_name != ''
+        run: |
+          CHALLENGE_NAME="${{ steps.extract_challenge.outputs.challenge_name }}"
+
+          echo "Revalidating challenge: $CHALLENGE_NAME"
+          echo "Revalidation URL: https://speedrunethereum.com/api/revalidate?token=***&path=/challenge/$CHALLENGE_NAME"
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "https://speedrunethereum.com/api/revalidate?token=${{ secrets.REVALIDATION_TOKEN }}&path=/challenge/$CHALLENGE_NAME" \
+            -H "Content-Type: application/json")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          RESPONSE_BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "HTTP Status Code: $HTTP_CODE"
+          echo "Response: $RESPONSE_BODY"
+
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Successfully revalidated challenge $CHALLENGE_NAME"
+          else
+            echo "❌ Failed to revalidate challenge $CHALLENGE_NAME (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: Add summary
+        if: always()
+        run: |
+          if [ "${{ steps.extract_challenge.outputs.challenge_name }}" != "" ]; then
+            echo "## 📄 README Revalidation" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Challenge:** \`${{ steps.extract_challenge.outputs.challenge_name }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "**Revalidation URL:** \`/challenge/${{ steps.extract_challenge.outputs.challenge_name }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ job.status }}" = "success" ]; then
+              echo "✅ **Status:** Successfully revalidated on speedrunethereum.com" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Status:** Failed to revalidate" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "## 📄 README Revalidation" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Status:** Could not extract challenge name from branch" >> $GITHUB_STEP_SUMMARY
+          fi
