@@ -25,6 +25,12 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ## Checkpoint 0: 📦 Environment 📚
 
+We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+
+In case you want to enable AI for some reason, you can do it in the root folder of the project.
+Cursor: remove '*' from .cursorrules file
+VSCode: remove "github.copilot.enable" from .vscode/settings.json file
+
 > Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
@@ -34,14 +40,12 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 \`\`\`sh
-cd <challenge_folder_name>
 yarn deploy
 \`\`\`
 
 > in a third terminal window, start your 📱 frontend:
 
 \`\`\`sh
-cd <challenge_folder_name>
 yarn start
 \`\`\`
 
