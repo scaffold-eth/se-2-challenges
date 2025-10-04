@@ -242,6 +242,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 ```solidity
     function isLiquidatable(address user) public view returns (bool) {
         uint256 positionRatio = _calculatePositionRatio(user); // Calculate user's position ratio
+        if (positionRatio == type(uint256).max) return false;
         return (positionRatio * 100) < COLLATERAL_RATIO * 1e18; // Check if position is unsafe
     }
 ```
