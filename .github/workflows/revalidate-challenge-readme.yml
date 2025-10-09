@@ -4,16 +4,8 @@ on:
   push:
     paths:
       - "README.md"
-      - "extension/README.md.args.mjs"
     branches:
       - "challenge-*"
-  pull_request:
-    paths:
-      - "README.md"
-      - "extension/README.md.args.mjs"
-    branches:
-      - "challenge-*"
-    types: [closed]
 
 jobs:
   revalidate:
