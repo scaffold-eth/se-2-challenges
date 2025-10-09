@@ -18,7 +18,7 @@ The workflow (`revalidate-challenge-readme.yml`) triggers when:
 
 **Supported branches:**
 
-- Any branch matching the pattern `challenge-*` (e.g., `challenge-simple-nft-example`, `challenge-decentralized-staking`)
+- Any branch matching the pattern `challenge-*` (e.g., `challenge-tokenization`, `challenge-decentralized-staking`)
 
 ### Setup Requirements
 
@@ -36,7 +36,7 @@ To use this workflow, you need to configure the following repository secret:
 
 The workflow automatically extracts the challenge name from the branch name:
 
-- `challenge-simple-nft-example` → `simple-nft-example`
+- `challenge-tokenization` → `tokenization`
 - `challenge-decentralized-staking` → `decentralized-staking`
 - `challenge-dex` → `dex`
 
