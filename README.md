@@ -126,7 +126,7 @@ yarn start
 
 👛 Try to mint a token from the incognito window.
 
-> Can you mint a token with no funds in this address? You might need to grab funds from the faucet to pay for the gas.
+> Can you mint a token with no funds in this address? You might need to grab funds from the faucet to pay for the gas!
 
 🕵🏻‍♂️ Inspect the `Debug Contracts` tab to figure out what address is the owner of a specific token (`ownerOf(tokenId)`) in `YourCollectible`.
 
