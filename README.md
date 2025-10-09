@@ -59,7 +59,7 @@ yarn start
 
 ## Checkpoint 1: 🏵Your Token 💵
 
-> 👩‍💻 Edit `YourToken.sol` to inherit the **ERC20** token standard from OpenZeppelin.
+> 👩‍💻 Edit `YourToken.sol` to inherit the **ERC20** token standard from OpenZeppelin
 
 > Mint **1000** (\* 10 \*\* 18) to your frontend address using the `constructor()`.
 
