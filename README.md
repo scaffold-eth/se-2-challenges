@@ -124,7 +124,7 @@ yarn start
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/3b92fb50-d43f-48a8-838c-c45c443b0b71)
 
-👛 Try to mint a token from the incognito window.
+👛 Try to mint a token from the incognito window
 
 > Can you mint a token with no funds in this address? You might need to grab funds from the faucet to pay for the gas
 
