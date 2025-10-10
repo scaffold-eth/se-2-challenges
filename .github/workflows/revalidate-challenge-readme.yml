@@ -13,6 +13,9 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Extract challenge name from branch
         id: extract_challenge
         run: |
