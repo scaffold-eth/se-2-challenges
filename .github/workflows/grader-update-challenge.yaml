@@ -6,12 +6,6 @@ on:
       - "extension/packages/hardhat/test/**"
     branches:
       - "challenge-*"
-  pull_request:
-    paths:
-      - "extension/packages/hardhat/test/**"
-    branches:
-      - "challenge-*"
-    types: [closed]
 
 jobs:
   notify-autograder:
@@ -19,9 +13,6 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Extract challenge ID from branch
         id: extract_challenge
         run: |
