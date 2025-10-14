@@ -14,7 +14,7 @@ describe("🚩 Challenge: 🎟 Tokenization 🤓", function () {
 
     let contractArtifact: string;
     if (contractAddress) {
-      // For the autograder.
+      // For the autograder
       contractArtifact = `contracts/download-${contractAddress}.sol:YourCollectible`;
     } else {
       contractArtifact = "contracts/YourCollectible.sol:YourCollectible";
