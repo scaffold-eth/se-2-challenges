@@ -111,6 +111,14 @@ When deployed to any other chain, it will automatically use our deployed backend
 
 ---
 
+⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+
+🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
+- Cursor: remove \`*\` from \`.cursorignore\` file
+- VSCode: set \`chat.disableAIFeatures\` to \`false\` in \`.vscode/settings.json\` file
+
+---
+
 ## Checkpoint 1: 📝 Configure Owners 🖋
 
 🔏 The first step for this multisig wallet is to configure the owners, who will be able to propose, sign and execute transactions.
