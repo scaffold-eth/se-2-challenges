@@ -163,6 +163,8 @@ Our contract will support three main functions:
 🔍 Open it up and check out the placeholder functions. Each of them represents a key piece of the voting logic.
 If you can already explain what they’re supposed to do, you’re ahead of the game! 😎
 
+💡 The \`Verifier.sol\` contract is currently just a placeholder and will be replaced with the actual implementation later.
+
 But this time you won’t just be working on the smart contract **🙂**
 
 ### **🥅 Goals**
@@ -948,7 +950,7 @@ You’ve built the circuit, created the verifier contract — now it’s time to
 
 ### 🔹 Step 1: Bring in the Verifier Contract
 
-1. Copy your verifier contract into **\`packages/hardhat/contracts\`**.
+1. Replace the placeholder verifier contract **\`Verifier.sol\`** in **\`packages/hardhat/contracts\`** with the newly generated contract located in **\`packages/circuits/target\`**.
 2. Open **\`00_deploy_your_voting_contract.ts\`** and:
    - Uncomment the verifier deployment
    - Comment out the \`verifierAddress\`
@@ -986,8 +988,6 @@ That’s why **nullifiers are the cornerstone** of privacy-preserving voting.
 
 - Increment \`s_yesVotes\` or \`s_noVotes\` accordingly
 - Emit the \`VoteCast\` event
-
-> 🚨⚠️ Go to packages/hardhat/contracts/mocks and uncomment all the code. This enables the mock contracts needed for local testing and verification.
 
 <details>
 <summary>🦉 Guiding Questions</summary>
@@ -1074,16 +1074,6 @@ function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes3
     }
 
     emit VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes);
-}
-
-emit VoteCast(
-    _nullifierHash,
-    msg.sender,
-    _vote == bytes32(uint256(1)),
-    block.timestamp,
-    s_yesVotes,
-    s_noVotes
-);
 }
 \`\`\`
 
@@ -1729,8 +1719,8 @@ const voteOnSepolia = async ({
     functionName: "vote",
     args: [
       toHex(proofData.proof),
-      proofData.publicInputs[0], // _root
-      proofData.publicInputs[1], // _nullifierHash
+      proofData.publicInputs[0], //  _nullifierHash
+      proofData.publicInputs[1], // _root
       proofData.publicInputs[2], // _vote
       proofData.publicInputs[3], // _depth
     ],
