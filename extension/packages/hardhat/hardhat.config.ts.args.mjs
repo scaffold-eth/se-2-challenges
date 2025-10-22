@@ -13,4 +13,9 @@ export const configOverrides = {
       },
     ],
   },
+  networks: {
+    hardhat: {
+      allowUnlimitedContractSize: true,
+    },
+  },
 };
