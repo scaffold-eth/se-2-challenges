@@ -437,7 +437,7 @@ yarn test --grep "Checkpoint1"
 
 🔄 Run \`yarn deploy --reset\` then test the whitelist oracle. Try adding and removing oracles, and observing how the aggregated price changes.
 
-![WhiteListOracle](SCREENSHOT)
+![WhiteListOracle]("https://github.com/user-attachments/assets/1fabc2d8-a1a4-4b0e-b00c-49f3fefec7fc")
 
 👊 Notice how the onlyOwner modifiers are commented out to allow you to have full control. Try manually changing the price of individual SimpleOracle contracts and adding new oracle nodes to see how the aggregated price changes:
 
@@ -1173,13 +1173,13 @@ yarn test --grep "Checkpoint2"
 
 🚰 Make sure you get a couple ETH from the faucet and then press the "Register Node" button.
 
-![Staking Buttons Panel](SCREENSHOT)
+![Staking Buttons Panel]("https://github.com/user-attachments/assets/c32b9bdc-eb1e-4630-ae9f-e57a34deac45")
 
 > 🗺️ You can navigate to past buckets using the arrows. 
 
 ✏️ Now you can press the pencil icon to report a new price. Enter your price and press the checkmark button to confirm. If you want to report the same price in the next block then just press the refresh icon next to the pencil.
 
-![SelfNodeRow](SCREENSHOT)
+![SelfNodeRow]("https://github.com/user-attachments/assets/32952de3-bd72-4cc6-98ba-a6b374539533")
 
 > ‼️ "Insufficient Stake" errors? Look at your staked balance 👀. It has fallen below the minimum amount of stake because you let some blocks pass without reporting. Just press the + button next to your stake to add an extra ETH (get it from the faucet if you have less than 1 in your wallet).
 
@@ -1864,7 +1864,7 @@ yarn test --grep "Checkpoint6"
 
 🖥️ Go to the Optimistic page to interact with your new protocol
 
-![OptimisticOracle](SCREENSHOT)
+![OptimisticOracle]("https://github.com/user-attachments/assets/9ed4f066-152b-43a9-a5d4-933221137905")
 
 1. **Submit a New Assertion**:  
    Go to the "Optimistic" page and fill in the required fields to create a new assertion.  
