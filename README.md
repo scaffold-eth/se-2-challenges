@@ -72,6 +72,8 @@ yarn deploy
 
 ```
 
+> 🚨 This will likely fail when you run it since the contracts aren't ready to be deployed yet
+
 > 📱 In a third terminal window, start your frontend:
 
 ```sh
