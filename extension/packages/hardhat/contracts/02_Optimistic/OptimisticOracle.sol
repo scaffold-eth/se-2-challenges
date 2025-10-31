@@ -21,7 +21,7 @@ contract OptimisticOracle {
 
     error AssertionNotFound();
     error AssertionProposed();
-    error NotEnoughValue();
+    error InvalidValue();
     error InvalidTime();
     error ProposalDisputed();
     error NotProposedAssertion();
@@ -53,7 +53,7 @@ contract OptimisticOracle {
     }
 
     uint256 public constant MINIMUM_ASSERTION_WINDOW = 3 minutes;
-    uint256 public constant MINIMUM_DISPUTE_WINDOW = 3 minutes;
+    uint256 public constant DISPUTE_WINDOW = 3 minutes;
     address public decider;
     address public owner;
     uint256 public nextAssertionId = 1;

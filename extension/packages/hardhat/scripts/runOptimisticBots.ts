@@ -1,7 +1,7 @@
 import { deployments, ethers } from "hardhat";
 import hre from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { cleanup, getRandomQuestion, sleep } from "./utils";
+import { getRandomQuestion, sleep } from "./utils";
 import { WalletClient } from "@nomicfoundation/hardhat-viem/types";
 import { Deployment } from "hardhat-deploy/types";
 import { zeroAddress } from "viem";
@@ -177,8 +177,6 @@ const runCycle = async (
     const optimisticOracle = await ethers.getContractAt("OptimisticOracle", optimisticDeployment.address);
     const publicClient = await hre.viem.getPublicClient();
 
-    await publicClient.transport.request({ method: "evm_setAutomine", params: [false] });
-
     // get current timestamp
     const latestBlock = await publicClient.getBlock();
     const currentTimestamp = latestBlock.timestamp;
@@ -211,8 +209,6 @@ const runCycle = async (
       );
     }
     currentAction = (currentAction + 1) % 3;
-    await publicClient.transport.request({ method: "evm_mine" });
-    await publicClient.transport.request({ method: "evm_setAutomine", params: [true] });
   } catch (error) {
     console.error("Error in oracle cycle:", error);
     throw error;
@@ -241,26 +237,22 @@ run().catch(error => {
 // Handle process termination signals
 process.on("SIGINT", async () => {
   console.log("\nReceived SIGINT (Ctrl+C). Cleaning up...");
-  await cleanup();
   process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
   console.log("\nReceived SIGTERM. Cleaning up...");
-  await cleanup();
   process.exit(0);
 });
 
 // Handle uncaught exceptions
 process.on("uncaughtException", async error => {
   console.error("Uncaught Exception:", error);
-  await cleanup();
   process.exit(1);
 });
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", async (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  await cleanup();
   process.exit(1);
 });

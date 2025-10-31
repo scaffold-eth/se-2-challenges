@@ -4,6 +4,11 @@ import { OptimisticOracle, Decider } from "../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
 describe("OptimisticOracle", function () {
+  before(async () => {
+    await ethers.provider.send("evm_setAutomine", [true]);
+    await ethers.provider.send("evm_setIntervalMining", [0]);
+  });
+
   let optimisticOracle: OptimisticOracle;
   let deciderContract: Decider;
   let owner: HardhatEthersSigner;
@@ -11,6 +16,16 @@ describe("OptimisticOracle", function () {
   let proposer: HardhatEthersSigner;
   let disputer: HardhatEthersSigner;
   let otherUser: HardhatEthersSigner;
+
+  const contractAddress = process.env.CONTRACT_ADDRESS;
+
+  let contractArtifact: string;
+  if (contractAddress) {
+    // For the autograder
+    contractArtifact = `contracts/download-${contractAddress}.sol:OptimisticOracle`;
+  } else {
+    contractArtifact = "contracts/02_Optimistic/OptimisticOracle.sol:OptimisticOracle";
+  }
 
   // Enum for state
   const State = {
@@ -26,8 +41,8 @@ describe("OptimisticOracle", function () {
     [owner, asserter, proposer, disputer, otherUser] = await ethers.getSigners();
 
     // Deploy OptimisticOracle with temporary decider (owner)
-    const OptimisticOracleFactory = await ethers.getContractFactory("OptimisticOracle");
-    optimisticOracle = await OptimisticOracleFactory.deploy(owner.address);
+    const OptimisticOracleFactory = await ethers.getContractFactory(contractArtifact);
+    optimisticOracle = (await OptimisticOracleFactory.deploy(owner.address)) as OptimisticOracle;
 
     // Deploy Decider
     const DeciderFactory = await ethers.getContractFactory("Decider");
@@ -50,10 +65,10 @@ describe("OptimisticOracle", function () {
 
       it("Should have correct constants", async function () {
         const minimumAssertionWindow = await optimisticOracle.MINIMUM_ASSERTION_WINDOW();
-        const minimumDisputeWindow = await optimisticOracle.MINIMUM_DISPUTE_WINDOW();
+        const disputeWindow = await optimisticOracle.DISPUTE_WINDOW();
 
         expect(minimumAssertionWindow).to.equal(180n); // 3 minutes
-        expect(minimumDisputeWindow).to.equal(180n); // 3 minutes
+        expect(disputeWindow).to.equal(180n); // 3 minutes
       });
 
       it("Should start with nextAssertionId at 1", async function () {
@@ -104,7 +119,7 @@ describe("OptimisticOracle", function () {
 
         await expect(
           optimisticOracle.connect(asserter).assertEvent(description, 0, 0, { value: insufficientReward }),
-        ).to.be.revertedWithCustomError(optimisticOracle, "NotEnoughValue");
+        ).to.be.revertedWithCustomError(optimisticOracle, "InvalidValue");
       });
     });
 
@@ -141,7 +156,7 @@ describe("OptimisticOracle", function () {
 
         await expect(
           optimisticOracle.connect(proposer).proposeOutcome(assertionId, outcome, { value: wrongBond }),
-        ).to.be.revertedWithCustomError(optimisticOracle, "NotEnoughValue");
+        ).to.be.revertedWithCustomError(optimisticOracle, "InvalidValue");
       });
 
       it("Should reject duplicate proposals", async function () {
@@ -189,7 +204,7 @@ describe("OptimisticOracle", function () {
 
         await expect(
           optimisticOracle.connect(disputer).disputeOutcome(assertionId, { value: wrongBond }),
-        ).to.be.revertedWithCustomError(optimisticOracle, "NotEnoughValue");
+        ).to.be.revertedWithCustomError(optimisticOracle, "InvalidValue");
       });
 
       it("Should reject disputes after deadline", async function () {
@@ -238,7 +253,7 @@ describe("OptimisticOracle", function () {
         const reward = ethers.parseEther("1");
         const now = (await ethers.provider.getBlock("latest"))!.timestamp;
         const start = now + 1; // Start time must be in the future
-        const end = now + 200; // 200 seconds, which is more than MINIMUM_DISPUTE_WINDOW (180 seconds)
+        const end = now + 200; // 200 seconds, which is more than DISPUTE_WINDOW (180 seconds)
         const tx = await optimisticOracle.connect(asserter).assertEvent("short event", start, end, { value: reward });
         const receipt = await tx.wait();
         const event = receipt!.logs.find(

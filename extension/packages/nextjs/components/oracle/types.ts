@@ -1,7 +1,9 @@
 export interface NodeRowProps {
   address: string;
-  index: number;
+  index?: number;
   isStale?: boolean;
+  // When provided, the row should render data for this bucket. If omitted, shows current/latest.
+  bucketNumber?: bigint | null;
 }
 
 export interface WhitelistRowProps extends NodeRowProps {

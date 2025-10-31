@@ -1,7 +1,6 @@
 import { Config } from "./oracle-bot/types";
 import fs from "fs";
 import path from "path";
-import hre from "hardhat";
 
 const getConfigPath = (): string => {
   return path.join(__dirname, "oracle-bot", "config.json");
@@ -31,17 +30,6 @@ export const updatePriceCache = (price: number, timestamp: number): void => {
 };
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Cleanup function to ensure automining is turned back on
-export async function cleanup() {
-  try {
-    const publicClient = await hre.viem.getPublicClient();
-    await publicClient.transport.request({ method: "evm_setAutomine", params: [true] });
-    console.log("\nCleaning up: turning automining back on...");
-  } catch (error) {
-    console.error("Error cleaning up:", error);
-  }
-}
 
 export const QUESTIONS_FOR_OO: string[] = [
   "Did ETH/USD exceed $3,000 at 00:00 UTC on {MONTH} {DAY}, {YEAR}?",

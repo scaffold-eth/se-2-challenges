@@ -35,24 +35,29 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
     const deployerAccount = accounts.find(a => a.account.address.toLowerCase() === deployer.toLowerCase());
     if (!deployerAccount) throw new Error("Deployer account not found in wallet clients");
 
-    // Create SimpleOracle instances through WhitelistOracle.addOracle()
+    // Create SimpleOracle instances through WhitelistOracle.addOracle() concurrently
     // This creates new SimpleOracle contracts owned by the specified addresses
-    const createdOracleAddresses: string[] = [];
-
-    for (let i = 0; i < nodeAccounts.length; i++) {
-      const ownerAddress = nodeAccounts[i].account.address;
+    const nonce = await publicClient.getTransactionCount({ address: deployerAccount.account.address });
+    const addOracleTxPromises = nodeAccounts.map((nodeAccount, i) => {
+      const ownerAddress = nodeAccount.account.address;
       console.log(`Creating SimpleOracle ${i + 1}/10 with owner: ${ownerAddress}`);
-
-      // Call addOracle which creates a new SimpleOracle instance
-      const txHash = await deployerAccount.writeContract({
+      return deployerAccount.writeContract({
         address: whitelistOracleAddress,
         abi: whitelistOracleAbi,
         functionName: "addOracle",
         args: [ownerAddress],
+        nonce: nonce + i,
       });
+    });
 
-      // Wait for transaction and get the created oracle address from event
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+    const addOracleTxHashes = await Promise.all(addOracleTxPromises);
+    const addOracleReceipts = await Promise.all(
+      addOracleTxHashes.map(hash => publicClient.waitForTransactionReceipt({ hash })),
+    );
+
+    // Map owner => created oracle address from events
+    const ownerToOracleAddress = new Map<string, string>();
+    for (const receipt of addOracleReceipts) {
       const oracleAddedEvent = receipt.logs.find(log => {
         try {
           const decoded = decodeEventLog({
@@ -65,42 +70,41 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
           return false;
         }
       });
-
-      if (oracleAddedEvent) {
-        const decoded = decodeEventLog({
-          abi: whitelistOracleAbi,
-          data: oracleAddedEvent.data,
-          topics: oracleAddedEvent.topics,
-        }) as { eventName: string; args: { oracleAddress: string; oracleOwner: string } };
-        const oracleAddress = decoded.args.oracleAddress;
-        createdOracleAddresses.push(oracleAddress);
-        console.log(`✅ Created SimpleOracle at: ${oracleAddress}`);
-      }
+      if (!oracleAddedEvent) continue;
+      const decoded = decodeEventLog({
+        abi: whitelistOracleAbi,
+        data: oracleAddedEvent.data,
+        topics: oracleAddedEvent.topics,
+      }) as { eventName: string; args: { oracleAddress: string; oracleOwner: string } };
+      ownerToOracleAddress.set(decoded.args.oracleOwner.toLowerCase(), decoded.args.oracleAddress);
+      console.log(`✅ Created SimpleOracle at: ${decoded.args.oracleAddress}`);
     }
+
+    const createdOracleAddresses: string[] = nodeAccounts.map(acc => {
+      const addr = ownerToOracleAddress.get(acc.account.address.toLowerCase());
+      if (!addr) throw new Error(`Missing oracle address for owner ${acc.account.address}`);
+      return addr;
+    });
 
     // Set initial prices for each created SimpleOracle
     console.log("Setting initial prices for each SimpleOracle...");
     const initialPrice = await fetchPriceFromUniswap();
-
-    for (let i = 0; i < createdOracleAddresses.length; i++) {
-      const account = nodeAccounts[i];
-      const oracleAddress = createdOracleAddresses[i] as `0x${string}`;
-
-      // Get SimpleOracle ABI from deployments
-      const simpleOracleDeployment = await hre.deployments.getArtifact("SimpleOracle");
-      const simpleOracleAbi = simpleOracleDeployment.abi;
-
-      await account.writeContract({
-        address: oracleAddress,
+    // Get SimpleOracle ABI from deployments
+    const simpleOracleDeployment = await hre.deployments.getArtifact("SimpleOracle");
+    const simpleOracleAbi = simpleOracleDeployment.abi;
+    // Fire all setPrice transactions concurrently from each node owner
+    const setPriceTxPromises = nodeAccounts.map((account, i) => {
+      const oracleAddress = createdOracleAddresses[i];
+      return account.writeContract({
+        address: oracleAddress as `0x${string}`,
         abi: simpleOracleAbi,
         functionName: "setPrice",
         args: [initialPrice],
       });
-
-      await publicClient.transport.request({
-        method: "evm_mine",
-      });
-
+    });
+    const setPriceTxHashes = await Promise.all(setPriceTxPromises);
+    await Promise.all(setPriceTxHashes.map(hash => publicClient.waitForTransactionReceipt({ hash })));
+    for (let i = 0; i < createdOracleAddresses.length; i++) {
       console.log(`Set price for SimpleOracle ${i + 1} to: ${initialPrice}`);
     }
 

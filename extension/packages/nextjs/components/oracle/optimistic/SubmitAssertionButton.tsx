@@ -175,7 +175,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
                 </label>
                 <IntegerInput
                   name="reward"
-                  placeholder={`0.01 ETH`}
+                  placeholder={`0.01`}
                   value={reward}
                   onChange={newValue => setReward(newValue)}
                   disableMultiplyBy1e18

@@ -57,31 +57,6 @@ const deployStakingOracle: DeployFunction = async function (hre: HardhatRuntimeE
         throw error;
       }
     }
-
-    const nodeAddresses = await publicClient.readContract({
-      address: stakingOracleAddress,
-      abi: deployment.abi,
-      functionName: "getNodeAddresses",
-      args: [],
-    });
-
-    // Map node addresses to their corresponding wallet clients
-    const nodeWalletClients = nodeAddresses
-      .map(nodeAddress => {
-        return nodeAccounts.find(client => client.account.address === nodeAddress);
-      })
-      .filter(client => client !== undefined);
-
-    await Promise.all(
-      nodeWalletClients.map(walletClient => {
-        return walletClient.writeContract({
-          address: stakingOracleAddress,
-          abi: deployment.abi,
-          functionName: "reportPrice",
-          args: [initialPrice],
-        });
-      }),
-    );
   }
 };
 

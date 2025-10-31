@@ -30,7 +30,7 @@ Oracles are bridges between blockchains and the external world. They solve a fun
 
 ---
 
-🌟 The final deliverable is a comprehensive understanding of oracle architectures through hands-on implementation. You'll explore two existing oracle systems (Whitelist and Staking) to understand their mechanics, then implement the Optimistic Oracle from scratch. Deploy your optimistic oracle to a testnet and demonstrate how it handles assertions, proposals, disputes, and settlements.
+🌟 The final deliverable is a comprehensive understanding of oracle architectures through hands-on implementation. You'll explore three oracle systems, a Whitelist oracle, Staking-based oracle and an Optimistic oracle, implementing each one. In the end you will deploy your optimistic oracle to a testnet and demonstrate how it handles assertions, proposals, disputes, and settlements.
 
 🔍 First, let's understand why we need multiple oracle designs. Each approach has different strengths:
 
@@ -46,13 +46,7 @@ Oracles are bridges between blockchains and the external world. They solve a fun
 
 ## Checkpoint 0: 📦 Environment 📚
 
-🛠️ Before you begin, make sure you have the following tools installed:
-
-- [Node (>=20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-📥 Then download the challenge to your computer and install dependencies by running:
+> 💻 Start your local network (a blockchain emulator in your computer):
 
 ```sh
 
@@ -204,9 +198,9 @@ function addOracle(address _owner) public onlyOwner {
 
 <details markdown='1'>
 
-<summary>💡 Hint: Gas Efficient Array Element Removal</summary>
+<summary>💡 Hint: Safe Array Removal</summary>
 
-Check out this swap-and-pop pattern:
+The swap-and-pop pattern:
 - Check if index is valid (< oracles.length)
 - Store the oracle address for the event
 - If not the last element, swap with the last element
@@ -425,6 +419,10 @@ WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] �
 
 </details>
 
+---
+
+### Testing your progress
+
 🔍 Run the following command to check if you implemented the functions correctly.
 
 ```sh
@@ -433,15 +431,21 @@ yarn test --grep "Checkpoint1"
 
 ```
 
-🔄 If it passes all the tests then run `yarn deploy --reset` to deploy your contract to your local chain.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/WhitelistOracle.ts`.
 
-👊 **Manual Testing**: Notice how the onlyOwner modifiers are commented out to allow you to have full control. Go to your browser and switch to the **Whitelist** page. Make sure you connect with the built-in burner wallet so that you can trigger transactions seamlessly. Now try manually changing the price of individual SimpleOracle contracts and adding new oracle nodes to see how the aggregated price changes:
+### Try it out!
+
+🔄 Run `yarn deploy --reset` then test the whitelist oracle. Try adding and removing oracles, and observing how the aggregated price changes.
+
+![WhiteListOracle](SCREENSHOT)
+
+👊 Notice how the onlyOwner modifiers are commented out to allow you to have full control. Try manually changing the price of individual SimpleOracle contracts and adding new oracle nodes to see how the aggregated price changes:
 
 1. **Change Prices**: Use the frontend to modify individual oracle prices
 
 2. **Add New Nodes**: Create new SimpleOracle contracts through the whitelist oracle
 
-3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles and report different prices
+3. **Observe Aggregation**: Watch how the median price changes as you add/remove oracles
 
 🧪 **Live Simulation**: Run the `yarn simulate:whitelist` command to see what a live version of this protocol might look like in action:
 
@@ -456,7 +460,6 @@ yarn simulate:whitelist
 ### 🥅 Goals:
 
 - You can add new SimpleOracle instances to the whitelist
-- You can remove oracles
 - System aggregates prices from active oracles using median calculation
 - Stale data is automatically filtered out based on timestamps
 - You can query which oracle nodes are currently active
@@ -464,21 +467,100 @@ yarn simulate:whitelist
 - Understand the benefits of aggregating multiple data sources
 - Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), 
 [Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
+
 ---
 
 ## Checkpoint 2: 💰 Staking Oracle - Economic Incentives
 
-🧭 Now let's explore a decentralized oracle that uses economic incentives to ensure honest behavior. Nodes stake ETH to participate and can be slashed for bad behavior. We will also issue rewards in the form of an ERC20 token called ORA to incentivise participation in the system.
+🧭 Now let's explore a decentralized oracle that uses economic incentives to ensure honest behavior. Nodes stake ETH to participate and can be slashed for reporting prices that deviate too far from the average. The system uses a bucket-based approach where prices are organized into discrete time windows (24 blocks per bucket), and nodes must report once per bucket or else there will be a small inactivity leak in their stake. We will also issue rewards in the form of an ERC20 token called ORA (1 ORA per report) to incentivise participation in the system.
 
-👩‍💻 This section challenges you to implement the staking oracle system from scratch. You'll write the core functions that handle node registration, price reporting, reward distribution, and slashing mechanisms.
+👩‍💻 This section challenges you to implement the staking oracle system from scratch. You'll write the core functions that handle node registration, bucket-based price reporting, reward distribution based on report count, and slashing mechanisms for price deviations.
 
-🎯 **Your Mission**: Complete the missing function implementations in the `StakingOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you need to fill in the logic.
+🎯 **Your Mission**: Complete the missing function implementations in the `StakingOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers but you need to fill in the logic.
 
 🔍 Open the `packages/hardhat/contracts/01_Staking/StakingOracle.sol` file to implement the staking oracle functionality.
 
 ### ✏️ Tasks:
 
-1. **Implement `registerNode(uint256 initialPrice)`**
+1. **Implement `getCurrentBucketNumber()`**
+
+* 🕒 This view function maps the current `block.number` into a bucket index (24-block window)
+
+* 🧮 It should divide the block number by `BUCKET_WINDOW` and add 1 (buckets are indexed starting from 1, not 0)
+
+<details markdown='1'>
+
+<summary>💡 Hint: Bucket Number</summary>
+
+- Buckets advance every `BUCKET_WINDOW` blocks
+- Integer division will floor the result automatically
+- Remember to add 1 so the very first bucket starts at index 1
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getCurrentBucketNumber() public view returns (uint256) {
+    return (block.number / BUCKET_WINDOW) + 1;
+}
+```
+
+</details>
+</details>
+
+---
+
+2. **Implement `getEffectiveStake(address nodeAddress)`**
+
+* 📉 This view function returns a node's stake after inactivity penalties
+
+* 🔍 It should return `0` for inactive nodes
+
+* 🧮 It should compute expected reports based on completed buckets since registration
+
+* ✂️ For each missed report, subtract `INACTIVITY_PENALTY`, floored at zero
+
+<details markdown='1'>
+
+<summary>💡 Hint: Effective Stake</summary>
+
+- Load the node into memory for cheaper reads
+- If the node is inactive, return `0`
+- Determine `currentBucket` using `getCurrentBucketNumber()`
+- Expected reports = `currentBucket - n.firstBucket`
+- Use `n.reportCount` as completed reports but subtract one if the last report happened in the current bucket (it isn't completed yet)
+- Penalty = `missed * INACTIVITY_PENALTY`; cap at the staked amount
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getEffectiveStake(address nodeAddress) public view returns (uint256) {
+    OracleNode memory n = nodes[nodeAddress];
+    if (!n.active) return 0;
+    uint256 currentBucket = getCurrentBucketNumber();
+    if (currentBucket == n.firstBucket) return n.stakedAmount;
+    uint256 expectedReports = currentBucket - n.firstBucket;
+    uint256 actualReportsCompleted = n.reportCount;
+    if (n.lastReportedBucket == currentBucket && actualReportsCompleted > 0) {
+        actualReportsCompleted -= 1;
+    }
+    if (actualReportsCompleted >= expectedReports) return n.stakedAmount;
+    uint256 missed = expectedReports - actualReportsCompleted;
+    uint256 penalty = missed * INACTIVITY_PENALTY;
+    if (penalty > n.stakedAmount) return 0;
+    return n.stakedAmount - penalty;
+}
+```
+
+</details>
+</details>
+
+---
+
+3. **Implement `registerNode(uint256 price)`**
 
 * 🏗️ This function allows users to register as oracle nodes by staking ETH
 
@@ -486,46 +568,47 @@ yarn simulate:whitelist
 
 * 🧪 It should check that the node is not already registered, otherwise revert with `NodeAlreadyRegistered`
 
-* 🏗️ It should create a new `OracleNode` struct with the provided data
+* 🏗️ It should create a new `OracleNode` struct with the correct data
 
 * ➕ It should add the node address to the `nodeAddresses` array
 
-* 📣 It should emit both `NodeRegistered` and `PriceReported` events
+* 💲 It should call `reportPrice(price)` (you'll implement this later) to record the first report in the current bucket
+
+* 📣 It should emit the `NodeRegistered` event
 
 <details markdown='1'>
 
 <summary>💡 Hint: Node Registration</summary>
 
-Here's what you need to set in the OracleNode struct:
-- nodeAddress should be `msg.sender`
-- stakedAmount should be `msg.value`
-- lastReportedPrice should be `initialPrice`
-- lastReportedTimestamp should be `block.timestamp`
-- lastClaimedTimestamp should be `block.timestamp`
-- lastSlashedTimestamp should be `0`
+Here's what you need to set in the `OracleNode` struct:
+- `stakedAmount` should be `msg.value`
+- `lastReportedBucket` should be `0` (will be updated in `reportPrice`)
+- `reportCount` should be `0`
+- `claimedReportCount` should be `0`
+- `firstBucket` should be `getCurrentBucketNumber()` (the bucket when the node registered)
+- `active` should be `true`
+
+After creating the struct, push the node into `nodeAddresses`, call `reportPrice(price)`, and emit the event.
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
 ```solidity
-function registerNode(uint256 initialPrice) public payable {
+function registerNode(uint256 price) public payable {
     if (msg.value < MINIMUM_STAKE) revert InsufficientStake();
-    if (nodes[msg.sender].nodeAddress != address(0)) revert NodeAlreadyRegistered();
-
+    if (nodes[msg.sender].active) revert NodeAlreadyRegistered();
     nodes[msg.sender] = OracleNode({
-        nodeAddress: msg.sender,
         stakedAmount: msg.value,
-        lastReportedPrice: initialPrice,
-        lastReportedTimestamp: block.timestamp,
-        lastClaimedTimestamp: block.timestamp,
-        lastSlashedTimestamp: 0
+        lastReportedBucket: 0,
+        reportCount: 0,
+        claimedReportCount: 0,
+        firstBucket: getCurrentBucketNumber(),
+        active: true
     });
-
     nodeAddresses.push(msg.sender);
-
+    reportPrice(price);
     emit NodeRegistered(msg.sender, msg.value);
-    emit PriceReported(msg.sender, initialPrice);
 }
 ```
 
@@ -534,24 +617,69 @@ function registerNode(uint256 initialPrice) public payable {
 
 ---
 
-2. **Implement `reportPrice(uint256 price)`**
+4. **Implement `addStake()`**
+
+* 💸 This payable function lets an active node increase its stake
+
+* ⚠️ It should revert with `InsufficientStake` if `msg.value == 0`
+
+* ➕ It should add the sent value to the node's `stakedAmount`
+
+* 📣 It should emit the `StakeAdded` event
+
+<details markdown='1'>
+
+<summary>💡 Hint: Adding Stake</summary>
+
+- Use the `onlyNode` modifier to ensure sender is active
+- Update `nodes[msg.sender].stakedAmount`
+- Emit `StakeAdded`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function addStake() public payable onlyNode {
+    if (msg.value == 0) revert InsufficientStake();
+    nodes[msg.sender].stakedAmount += msg.value;
+    emit StakeAdded(msg.sender, msg.value);
+}
+```
+
+</details>
+</details>
+
+---
+
+5. **Implement `reportPrice(uint256 price)`**
 
 * 🧪 This function allows registered nodes to report new prices (uses `onlyNode` modifier)
 
-* 🔍 It should verify the node has sufficient stake, otherwise revert with `NotEnoughStake`
+* 🔍 It should verify the given price is not zero, otherwise revert with `InvalidPrice`
 
-* 🔄 It should update the node's last reported price and timestamp
+* 🔍 It should verify the node has sufficient stake (using `getEffectiveStake`), otherwise revert with `InsufficientStake`
 
-* 📣 It should emit the `PriceReported` event
+* 🚫 It should prevent reporting twice in the same bucket, otherwise revert with `AlreadyReportedInCurrentBucket`
+
+* 📊 It should store the node's price in the current bucket's `TimeBucket` mapping
+
+* 📈 It should increment the bucket's `countReports` and add the price to `sumPrices`. This will be useful for deriving the average later
+
+* 🔄 It should update the node's `lastReportedBucket` and `reportCount`
+
+* 📣 It should emit the `PriceReported` event with the sender, price, and bucket number
 
 <details markdown='1'>
 
 <summary>💡 Hint: Price Reporting</summary>
 
-- Get a storage reference to the node using `nodes[msg.sender]`
-- Check if `stakedAmount` is at least `MINIMUM_STAKE`
-- Update `lastReportedPrice` and `lastReportedTimestamp`
-- Emit event with sender and new price
+- Pull `OracleNode storage node = nodes[msg.sender]`
+- Validate price and stake before touching bucket state
+- Use `timeBuckets[getCurrentBucketNumber()]`
+- Update bucket mappings and aggregates
+- Update the node's `lastReportedBucket` to `getCurrentBucketNumber()`
+- Increment the node's `reportCount`
 
 <details markdown='1'>
 
@@ -559,12 +687,18 @@ function registerNode(uint256 initialPrice) public payable {
 
 ```solidity
 function reportPrice(uint256 price) public onlyNode {
+    if (price == 0) revert InvalidPrice();
     OracleNode storage node = nodes[msg.sender];
-    if (node.stakedAmount < MINIMUM_STAKE) revert NotEnoughStake();
-    node.lastReportedPrice = price;
-    node.lastReportedTimestamp = block.timestamp;
+    if (getEffectiveStake(msg.sender) < MINIMUM_STAKE) revert InsufficientStake();
+    if (node.lastReportedBucket == getCurrentBucketNumber()) revert AlreadyReportedInCurrentBucket();
+    TimeBucket storage bucket = timeBuckets[getCurrentBucketNumber()];
+    bucket.prices[msg.sender] = price;
+    bucket.countReports++;
+    bucket.sumPrices += price;
 
-    emit PriceReported(msg.sender, price);
+    node.lastReportedBucket = getCurrentBucketNumber();
+    node.reportCount++;
+    emit PriceReported(msg.sender, price, getCurrentBucketNumber());
 }
 ```
 
@@ -573,64 +707,44 @@ function reportPrice(uint256 price) public onlyNode {
 
 ---
 
-3. **Implement `claimReward()` and `rewardNode()`**
+6. **Implement `claimReward()`**
 
-* 🧪 These functions allow registered nodes to claim their ORA token rewards (uses `onlyNode` modifier)
+* 🧪 This function allows past and present nodes to claim their ORA token rewards
 
-* 🔍 It should calculate reward amount based on time elapsed since last claim
+* 🔍 It should calculate reward amount based on the difference between `reportCount` and `claimedReportCount`. We will call this number the `delta`
 
-* 💰 For active nodes (sufficient stake): rewards based on time since last claim
+* 🔒 It should revert with `NoRewardsAvailable` if `delta == 0`
 
-* ⚠️ For slashed nodes (insufficient stake): limited rewards only up to when they were slashed
+* 🔢 It should update `claimedReportCount` to `reportCount` *before* minting the tokens (reentrancy safe)
 
-* 🎁 It should mint ORA tokens as rewards (time-based, scaled by 10^18) using the internal `rewardNode()` helper
+* 💰 It should mint `delta * REWARD_PER_REPORT` ORA tokens
 
-* 🔒 It should revert with `NoRewardsAvailable` if no rewards are available
-
-* 📣 It should update `lastClaimedTimestamp` and emit `NodeRewarded` event
+* 📣 It should emit the `NodeRewarded` event
 
 <details markdown='1'>
 
 <summary>💡 Hint: Reward Implementation</summary>
 
-You need to implement both functions:
-
-**claimReward()** logic:
-- If node has insufficient stake AND was previously slashed: reward = time between lastClaimedTimestamp and lastSlashedTimestamp
-- If node has sufficient stake: reward = time between lastClaimedTimestamp and now
-- Scale reward by 10^18 for token decimals
-- Update lastClaimedTimestamp to current time
-- Call rewardNode() to mint tokens
-
-**rewardNode()** logic:
-- Simple internal function that mints ORA tokens and emits event
+- Load the node in storage
+- Compute `delta`
+- Revert if `delta == 0`
+- Update `claimedReportCount`
+- Mint the reward and emit the event
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
 ```solidity
-function claimReward() public onlyNode {
-    OracleNode memory node = nodes[msg.sender];
-    uint256 rewardAmount = 0;
+function claimReward() public {
+    OracleNode storage node = nodes[msg.sender];
 
-    if (node.stakedAmount < MINIMUM_STAKE) {
-        if (node.lastClaimedTimestamp < node.lastSlashedTimestamp) {
-            rewardAmount = node.lastSlashedTimestamp - node.lastClaimedTimestamp;
-        }
-    } else {
-        rewardAmount = block.timestamp - node.lastClaimedTimestamp;
-    }
+    uint256 delta = node.reportCount - node.claimedReportCount;
+    if (delta == 0) revert NoRewardsAvailable();
 
-    if (rewardAmount == 0) revert NoRewardsAvailable();
-
-    nodes[msg.sender].lastClaimedTimestamp = block.timestamp;
-    rewardNode(msg.sender, rewardAmount * 10 ** 18);
-}
-
-function rewardNode(address nodeAddress, uint256 reward) internal {
-    oracleToken.mint(nodeAddress, reward);
-    emit NodeRewarded(nodeAddress, reward);
+    node.claimedReportCount = node.reportCount;
+    oracleToken.mint(msg.sender, delta * REWARD_PER_REPORT);
+    emit NodeRewarded(msg.sender, delta * REWARD_PER_REPORT);
 }
 ```
 
@@ -639,100 +753,159 @@ function rewardNode(address nodeAddress, uint256 reward) internal {
 
 ---
 
-4. **Implement `slashNodes()`, `separateStaleNodes()`, and `slashNode()`**
+7. **Implement `_removeNode(address nodeAddress, uint256 index)`**
 
-* 🔎 These functions work together to allow anyone to slash nodes with stale data and get rewarded
+* 🗂️ This internal function removes a node from the `nodeAddresses` array while keeping the array packed. By forcing the caller to provide the index and simply verifying it is at that position we are removing the need to iterate over a potentially large array
 
-* 📊 It should identify stale nodes by categorizing them into fresh and stale based on data recency
+* 🔍 It should ensure the provided `index` is within bounds, otherwise revert with `IndexOutOfBounds`
 
-* ✂️ It should slash each stale node by 1 ETH and calculate slasher rewards
+* ✅ It should ensure the address at the given index matches `nodeAddress`, otherwise revert with `NodeNotAtGivenIndex`
 
-* 🏅 It should accumulate slasher rewards and send them to the caller
+* 🔁 It should use the pop-and-swap pattern to remove the entry efficiently
 
-* ⚠️ It should revert with `FailedToSendReward` if the transfer fails
+* 🚫 It should mark the node as inactive without deleting the entire struct (other functions may rely on historical data)
+
+<details markdown='1'>
+
+<summary>💡 Hint: Removing Nodes</summary>
+
+- Check `index < nodeAddresses.length`
+- Check `nodeAddresses[index] == nodeAddress`
+- Assign the last address into the `index` slot, then pop
+- Set `nodes[nodeAddress].active = false`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function _removeNode(address nodeAddress, uint256 index) internal {
+    if (nodeAddresses.length <= index) revert IndexOutOfBounds();
+    if (nodeAddresses[index] != nodeAddress) revert NodeNotAtGivenIndex();
+    nodeAddresses[index] = nodeAddresses[nodeAddresses.length - 1];
+    nodeAddresses.pop();
+    nodes[nodeAddress].active = false;
+}
+```
+
+</details>
+</details>
+
+---
+
+8. **Implement `_checkPriceDeviated(uint256 reportedPrice, uint256 averagePrice)`**
+
+* 🧮 This internal pure function determines whether a reported price deviates beyond the allowed threshold
+
+* 🔢 It should compute the absolute difference between the reported price and the average
+
+* 📐 It should convert the deviation to basis points and compare it against `MAX_DEVIATION_BPS`
+
+* 🔁 It should return `true` when the deviation is greater than the threshold, otherwise `false`
+
+<details markdown='1'>
+
+<summary>💡 Hint: Deviation Check</summary>
+
+- Use a simple conditional to compute the absolute deviation
+- Multiply the deviation by 10,000 (basis points) before dividing by `averagePrice`. This will allow for greater precision
+- Compare the result against `MAX_DEVIATION_BPS`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function _checkPriceDeviated(uint256 reportedPrice, uint256 averagePrice) internal pure returns (bool) {
+    uint256 deviation = reportedPrice > averagePrice ? reportedPrice - averagePrice : averagePrice - reportedPrice;
+    uint256 deviationBps = (deviation * 10_000) / averagePrice;
+    if (deviationBps > MAX_DEVIATION_BPS) {
+        return true;
+    }
+    return false;
+}
+```
+
+</details>
+</details>
+
+---
+
+9. **Implement `slashNode(address nodeToSlash, uint256 bucketNumber, uint256 index)`**
+
+* 🔎 This function allows anyone to slash nodes that reported prices deviating too far from the average
+
+* 🧪 It should verify the node is active, otherwise revert with `NodeNotRegistered`
+
+* ⏰ It should verify the bucket is in the past (not current), otherwise revert with `OnlyPastBucketsAllowed`
+
+* 🚫 It should verify the node hasn't already been slashed in this bucket, otherwise revert with `NodeAlreadySlashed`
+
+* 📊 It should verify the node reported a price in this bucket, otherwise revert with `NodeDidNotReport`
+
+* ✂️ It should mark the node as slashed and remove their price from the bucket's sum and count
+
+* 🧮 It should recalculate the average price after removing the node's price
+
+* 🔍 It should verify the node's price deviates beyond the threshold using `_checkPriceDeviated`, otherwise revert with `NotDeviated`
+
+* 💰 It should slash the node by `MISREPORT_PENALTY` (or their full stake if less)
+
+* 🏅 It should send 10% of the penalty to the slasher (`msg.sender`)
+
+* 🗑️ It should remove the node if their stake reaches zero after slashing using `_removeNode`
+
+* ⚠️ It should revert with `FailedToSend` if the reward transfer fails
+
+* 📣 It should emit `NodeSlashed` and `NodeExited` (if the node is removed)
 
 <details markdown='1'>
 
 <summary>💡 Hint: Complete Slashing Implementation</summary>
 
-You need to implement all three functions:
-
-**slashNodes()** - public entry point:
-- Use separateStaleNodes to get stale addresses
-- Loop through and slash each one
-- Send accumulated rewards to caller
-
-**separateStaleNodes()** - categorization logic:
-- Check timestamps against STALE_DATA_WINDOW
-- Return fresh and stale address arrays
-
-**slashNode()** - internal slashing logic:
-- Reduce stake, update timestamp, calculate reward
-- Return slasher reward (10% of penalty)
+Follow these steps:
+- Validate node state and bucket recency
+- Ensure the node actually reported in that bucket and hasn't been slashed yet
+- Remove their contribution from `sumPrices`/`countReports`
+- Recompute the average (excluding the offender) and check deviation with `_checkPriceDeviated`
+- Apply the penalty by reducing the node's `stakedAmount`
+- If the node is fully slashed (`stakedAmount` == 0), remove them with `_removeNode`
+- Calculate the reward, and transfer it
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
 ```solidity
-function slashNodes() public {
-    (, address[] memory addressesToSlash) = separateStaleNodes(nodeAddresses);
-    uint256 slasherReward;
-    for (uint i = 0; i < addressesToSlash.length; i++) {
-        slasherReward += slashNode(addressesToSlash[i], 1 ether);
+function slashNode(address nodeToSlash, uint256 bucketNumber, uint256 index) public {
+    if (!nodes[nodeToSlash].active) revert NodeNotRegistered();
+    if (getCurrentBucketNumber() == bucketNumber) revert OnlyPastBucketsAllowed();
+    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    if (bucket.slashedOffenses[nodeToSlash]) revert NodeAlreadySlashed();
+    uint256 reportedPrice = bucket.prices[nodeToSlash];
+    if (reportedPrice == 0) revert NodeDidNotReport();
+    bucket.slashedOffenses[nodeToSlash] = true;
+    bucket.sumPrices -= reportedPrice;
+    bucket.countReports--;
+    uint256 averagePrice = bucket.sumPrices / bucket.countReports;
+    if (!_checkPriceDeviated(reportedPrice, averagePrice)) {
+        revert NotDeviated();
     }
-
-    (bool sent, ) = msg.sender.call{ value: slasherReward }("");
-    if (!sent) revert FailedToSendReward();
-}
-
-function separateStaleNodes(
-    address[] memory nodesToSeparate
-) public view returns (address[] memory fresh, address[] memory stale) {
-    address[] memory freshNodeAddresses = new address[](nodesToSeparate.length);
-    address[] memory staleNodeAddresses = new address[](nodesToSeparate.length);
-    uint256 freshCount = 0;
-    uint256 staleCount = 0;
-
-    for (uint i = 0; i < nodesToSeparate.length; i++) {
-        address nodeAddress = nodesToSeparate[i];
-        OracleNode memory node = nodes[nodeAddress];
-        uint256 timeElapsed = block.timestamp - node.lastReportedTimestamp;
-        bool dataIsStale = timeElapsed > STALE_DATA_WINDOW;
-
-        if (dataIsStale) {
-            staleNodeAddresses[staleCount] = nodeAddress;
-            staleCount++;
-        } else {
-            freshNodeAddresses[freshCount] = nodeAddress;
-            freshCount++;
-        }
-    }
-
-    address[] memory trimmedFreshNodes = new address[](freshCount);
-    address[] memory trimmedStaleNodes = new address[](staleCount);
-
-    for (uint i = 0; i < freshCount; i++) {
-        trimmedFreshNodes[i] = freshNodeAddresses[i];
-    }
-    for (uint i = 0; i < staleCount; i++) {
-        trimmedStaleNodes[i] = staleNodeAddresses[i];
-    }
-
-    return (trimmedFreshNodes, trimmedStaleNodes);
-}
-
-function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint256) {
     OracleNode storage node = nodes[nodeToSlash];
-    uint256 actualPenalty = penalty > node.stakedAmount ? node.stakedAmount : penalty;
+    uint256 actualPenalty = MISREPORT_PENALTY > node.stakedAmount ? node.stakedAmount : MISREPORT_PENALTY;
     node.stakedAmount -= actualPenalty;
-    node.lastSlashedTimestamp = block.timestamp;
 
     uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
 
-    emit NodeSlashed(nodeToSlash, actualPenalty);
+    (bool sent, ) = msg.sender.call{ value: reward }("");
+    if (!sent) revert FailedToSend();
 
-    return reward;
+    if (node.stakedAmount == 0) {
+        _removeNode(nodeToSlash, index);
+        emit NodeExited(nodeToSlash, 0);
+    }
+
+    emit NodeSlashed(nodeToSlash, actualPenalty);
 }
 ```
 
@@ -741,60 +914,224 @@ function slashNode(address nodeToSlash, uint256 penalty) internal returns (uint2
 
 ---
 
-5. **Implement `getPrice()` and `getPricesFromAddresses()`**
+10. **Implement `exitNode(uint256 index)`**
 
-* 📦 These functions work together to aggregate prices from all active nodes using median calculation
+* 🚪 This function allows a node to exit and withdraw its stake after a waiting period
 
-* 🧹 It should filter out nodes with stale data using `separateStaleNodes()`
+* ⏳ It should ensure the node waited at least `WAITING_PERIOD` buckets since their last report, otherwise revert with `WaitingPeriodNotOver`. This way there is ample time to slash them before they exit
 
-* 🔍 It should extract prices reported by the nodes at valid addresses using the internal `getPricesFromAddresses()` helper
+* 💰 It should compute the withdrawable stake using `getEffectiveStake` before removing the node
 
-* ⛔️ It should revert with `NoValidPricesAvailable` if no valid prices exist
+* 🗑️ It should call `_removeNode(msg.sender, index)` to mark the node inactive and keep the node array tidy
 
-* 🧮 It should sort and calculate the median using StatisticsUtils
+* 🧹 It should send the stake back to the sender
+
+* ⚠️ It should revert with `FailedToSend` if the withdrawal transfer fails
+
+* 📣 It should emit the `NodeExited` event with the withdrawn amount
 
 <details markdown='1'>
 
-<summary>💡 Hint: Price Aggregation Implementation</summary>
+<summary>💡 Hint: Exit Logic</summary>
 
-You need to implement both functions:
-
-**getPrice()** logic:
-- Get valid (fresh) addresses from separateStaleNodes
-- Get prices from those addresses using getPricesFromAddresses
-- Check if any valid prices exist
-- Sort prices and return median
-
-**getPricesFromAddresses()** logic:
-- Create an array the same size as the input addresses
-- Loop through addresses and get each node's lastReportedPrice
-- Return the prices array
+- Fetch the node in storage
+- Require `node.lastReportedBucket + WAITING_PERIOD <= getCurrentBucketNumber()`
+- Compute `stake = getEffectiveStake(msg.sender)` **before** removing
+- Call `_removeNode`
+- Transfer the stake using `call`
+- Emit the event
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
 ```solidity
-function getPrice() public view returns (uint256) {
-    (address[] memory validAddresses, ) = separateStaleNodes(nodeAddresses);
-    uint256[] memory validPrices = getPricesFromAddresses(validAddresses);
-    if (validPrices.length == 0) revert NoValidPricesAvailable();
+function exitNode(uint256 index) public onlyNode {
+    OracleNode storage node = nodes[msg.sender];
+    if (node.lastReportedBucket + WAITING_PERIOD > getCurrentBucketNumber()) revert WaitingPeriodNotOver();
+    uint256 stake = getEffectiveStake(msg.sender);
+    _removeNode(msg.sender, index);
+    (bool sent, ) = msg.sender.call{ value: stake }("");
+    if (!sent) revert FailedToSend();
 
-    validPrices.sort();
-    return validPrices.getMedian();
-}
-
-function getPricesFromAddresses(address[] memory addresses) internal view returns (uint256[] memory) {
-    uint256[] memory prices = new uint256[](addresses.length);
-
-    for (uint256 i = 0; i < addresses.length; i++) {
-        OracleNode memory node = nodes[addresses[i]];
-        prices[i] = node.lastReportedPrice;
-    }
-
-    return prices;
+    emit NodeExited(msg.sender, stake);
 }
 ```
+
+</details>
+</details>
+
+---
+
+11. **Implement `getNodeAddresses()`**
+
+* 📚 This view function should return every registered node address in order. This is convenient for the front-end 
+
+<details markdown='1'>
+
+<summary>💡 Hint: Node List</summary>
+
+- The array `nodeAddresses` tracks the registration order
+- Just return the array
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getNodeAddresses() public view returns (address[] memory) {
+    return nodeAddresses;
+}
+```
+
+</details>
+</details>
+
+---
+
+12. **Implement `getLatestPrice()`**
+
+* 📦 This function returns the aggregated price from the most recent completed bucket
+
+* 🔍 It should get the previous bucket (current bucket - 1) since the current bucket is still being filled
+
+* 📊 It should retrieve the `TimeBucket` for that bucket
+
+* ⛔️ It should revert with `NoValidPricesAvailable` if `bucket.countReports == 0`
+
+* 🧮 It should return the average price: `bucket.sumPrices / bucket.countReports`
+
+<details markdown='1'>
+
+<summary>💡 Hint: Latest Price</summary>
+
+- Use `getCurrentBucketNumber() - 1`
+- Access the bucket mapping
+- Guard against empty buckets
+- Return the average
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getLatestPrice() public view returns (uint256) {
+    TimeBucket storage bucket = timeBuckets[getCurrentBucketNumber() - 1];
+    if (bucket.countReports == 0) revert NoValidPricesAvailable();
+    return bucket.sumPrices / bucket.countReports;
+}
+```
+
+</details>
+</details>
+
+---
+
+13. **Implement `getPastPrice(uint256 bucketNumber)`**
+
+* 🕰️ Because we are storing pricing in time-segmented buckets we can enable retrieving a price from any one of these buckets. This view function returns the average price for any historical bucket
+
+* ⛔️ It should revert with `NoValidPricesAvailable` if that bucket has no reports
+
+<details markdown='1'>
+
+<summary>💡 Hint: Past Price</summary>
+
+- Grab `TimeBucket storage bucket = timeBuckets[bucketNumber]`
+- Check `bucket.countReports`
+- Return `bucket.sumPrices / bucket.countReports`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
+    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    if (bucket.countReports == 0) revert NoValidPricesAvailable();
+    return bucket.sumPrices / bucket.countReports;
+}
+```
+
+</details>
+</details>
+
+---
+
+14. **Implement `getAddressDataAtBucket(address nodeAddress, uint256 bucketNumber)`**
+
+* 🔎 This view function returns the price a node reported in a bucket and whether they were slashed there
+
+<details markdown='1'>
+
+<summary>💡 Hint: Bucket Data</summary>
+
+- Access the bucket mapping and return both `prices[nodeAddress]` and `slashedOffenses[nodeAddress]`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getAddressDataAtBucket(address nodeAddress, uint256 bucketNumber) public view returns (uint256, bool) {
+    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    return (bucket.prices[nodeAddress], bucket.slashedOffenses[nodeAddress]);
+}
+```
+
+</details>
+</details>
+
+---
+
+15. **Implement `getOutlierNodes(uint256 bucketNumber)`**
+
+* 📊 This view function identifies nodes whose price deviates beyond the maximum deviation in a given bucket
+
+* 🗃️ It should iterate over all `nodeAddresses` (this is fine since it is a view method)
+
+* 🧮 For each reported price, calculate the average of the remaining reports and test deviation with `_checkPriceDeviated`
+
+* 🧹 Collect only the outliers and trim the array before returning
+
+<details markdown='1'>
+
+<summary>💡 Hint: Outlier Detection</summary>
+
+- Allocate a temporary array of size `bucket.countReports`
+- Loop through `nodeAddresses`
+- Skip addresses that did not report (`reportedPrice == 0`)
+- Compute `averagePrice = (bucket.sumPrices - reportedPrice) / (bucket.countReports - 1)`
+- If `_checkPriceDeviated(...)` returns true, store the address in the temp array and increment a counter
+- Allocate a trimmed array of length `outlierCount` and copy the collected addresses
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getOutlierNodes(uint256 bucketNumber) public view returns (address[] memory) {
+    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    address[] memory outliers = new address[](bucket.countReports);
+    uint256 outlierCount = 0;
+    for (uint256 i = 0; i < nodeAddresses.length; i++) {
+        address nodeAddress = nodeAddresses[i];
+        uint256 reportedPrice = bucket.prices[nodeAddress];
+        if (reportedPrice == 0) continue;
+        uint256 averagePrice = (bucket.sumPrices - reportedPrice) / (bucket.countReports - 1);
+        if (_checkPriceDeviated(reportedPrice, averagePrice)) {
+            outliers[outlierCount] = nodeAddress;
+            outlierCount++;
+        }
+    }
+    address[] memory trimmed = new address[](outlierCount);
+    for (uint256 i = 0; i < outlierCount; i++) {
+        trimmed[i] = outliers[i];
+    }
+    return trimmed;
+}
+```
+
 </details>
 </details>
 
@@ -802,12 +1139,21 @@ function getPricesFromAddresses(address[] memory addresses) internal view return
 
 ### 🤔 Key Insights:
 
-- **Economic Incentives**: Nodes stake ETH and can be slashed for bad behavior, while good behavior rewards nodes with ORA tokens
+- **Bucket-Based System**: Prices are organized into time buckets (24 blocks each), allowing for discrete time windows and preventing double-reporting within the same bucket
+- **Economic Incentives**: Nodes stake ETH and can be slashed for reporting prices that deviate too far from the average, while good behavior rewards nodes with ORA tokens (1 ORA per report)
+- **Effective Stake**: Nodes face inactivity penalties for missed buckets, reducing their effective stake over time if they fail to report regularly
 - **Decentralized**: Anyone can participate by staking, no central authority needed
-- **Self-Correcting**: Slashing mechanism punishes inactive nodes
-- **Freshness Enforcement**: Stale data is automatically filtered out
-- **Use Cases**: Excellent for DeFi applications where economic alignment is crucial
-- **Improvements**: This could be enhanced by adding slashing for outlier prices that indicate manipulation
+- **Self-Correcting**: Slashing mechanism punishes nodes that report prices deviating beyond the threshold (10% by default)
+- **Average Aggregation**: Prices are aggregated using a simple average from all reports in a completed bucket, providing a fair representation of the collective price
+- **Use Cases**: Excellent for DeFi applications where economic alignment is crucial and price updates occur at regular intervals
+
+### 🤔 Critical Thinking: Security Vulnerabilities
+
+- **Robustness vs. Whitelist Oracle**: Unlike the whitelist oracle which relies on a single trusted authority, the staking oracle's design distributes trust among all staking nodes. Manipulating the output requires a majority of nodes to collude, which is economically disincentivized due to the risk of slashing. As a result, unless an attacker controls a majority of the total effective stake, they cannot egregiously manipulate the reported price—making the system considerably more robust than one with simple whitelist control.
+
+---
+
+### Testing your progress
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
@@ -817,7 +1163,27 @@ yarn test --grep "Checkpoint2"
 
 ```
 
-🔄 Run `yarn deploy --reset` then test the staking oracle. Go to the Staking page in your browser and try registering nodes, reporting prices, and slashing inactive nodes.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/StakingOracle.ts`.
+
+### Try it out!
+
+🌎 In the real world this oracle would have too much latency to be very useful due to the need for 24 block windows. However, this was done to make it possible for you to see how the oracle operates in real time without everything happening too fast to comprehend. There is no reason why this couldn't work with single block windows although in decentralized systems you must always consider that the lower the latency requirements, the fewer nodes can participate
+
+🔄 Run `yarn deploy --reset` then test the staking oracle. Go to the `Staking` page and try registering your own node and reporting prices.
+
+🚰 Make sure you get a couple ETH from the faucet and then press the "Register Node" button.
+
+![Staking Buttons Panel](SCREENSHOT)
+
+> 🗺️ You can navigate to past buckets using the arrows. 
+
+✏️ Now you can press the pencil icon to report a new price. Enter your price and press the checkmark button to confirm. If you want to report the same price in the next block then just press the refresh icon next to the pencil.
+
+![SelfNodeRow](SCREENSHOT)
+
+> ‼️ "Insufficient Stake" errors? Look at your staked balance 👀. It has fallen below the minimum amount of stake because you let some blocks pass without reporting. Just press the + button next to your stake to add an extra ETH (get it from the faucet if you have less than 1 in your wallet).
+
+😮‍💨 *Whew!* That was a lot of work pressing all those buttons to keep from getting the inactive penalty! Much easier when bots are doing all the work and you can just watch. Exit your node (if it stresses you) and lets have some fun.
 
 🧪 **Live Simulation**: Run the `yarn simulate:staking` command to watch a live simulation of staking oracle behavior with multiple nodes:
 
@@ -827,16 +1193,25 @@ yarn simulate:staking
 
 ```
 
-🤖 This will start automated bots that simulate honest and malicious node behavior, frequent and stale reports, and demonstrate how slashing and median aggregation impact the reported price. You can update the price variance and skip probability from the front-end as well.
+🤖 This will start automated bots and demonstrate how slashing and average aggregation impact the reported price. Right now they are all on default settings so the price won't deviate, but...
+
+⚙️ You can update the price deviation and skip probability by pressing the gear icon. Go ahead and make some bots start to produce wild deviations then view the past buckets (by using the arrows) to see the "slash" button activated. Press it to slash any deviated nodes.
+
+🥱 If you get tired of slashing deviated nodes but still want to see them get slashed you can re-run the command with this environment variable:
+
+```sh
+AUTO_SLASH=true yarn simulate:staking
+```
 
 ### 🥅 Goals:
 
-- You can register as oracle nodes by staking ETH
-- Registered nodes can report prices and claim ORA token rewards
-- Anyone can slash nodes with stale data and earn rewards
-- System aggregates prices from active nodes using median calculation
-- Economic incentives drive honest behavior and data freshness
-- Understand the trade-offs between decentralization and complexity
+- You can register as an oracle node by staking ETH
+- Registered nodes can report prices once per bucket and claim ORA token rewards based on report count
+- Anyone can slash nodes that report prices deviating too far from the average and earn rewards
+- System aggregates prices from completed buckets using average calculation
+- Inactivity penalties reduce effective stake for nodes that miss reporting in buckets
+- Economic incentives drive honest behavior and regular participation
+- Understand the trade-offs between decentralization and latency
 - See examples in the wild: [Chainlink](https://chain.link) and [PYTH](https://www.pyth.network/)
 
 ---
@@ -920,7 +1295,7 @@ sequenceDiagram
 
 🎯 **Your Mission**: Complete the missing function implementations in the `OptimisticOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers - you just need to fill in the logic.
 
-🧪 **Testing Strategy**: Each function you implement can be tested individually using the provided test suite. Run `yarn test` after implementing each function to verify your solution works correctly. To target a specific method just use the `--grep` flag with the `yarn test` command and write out the test name like this: `yarn test --grep "Name of test"`.
+🧪 **Testing Strategy**: Each function you implement can be tested individually using the provided test suite. Run `yarn test` after implementing each function to verify your solution works correctly.
 
 🔍 Open the `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol` file to implement the optimistic oracle functionality.
 
@@ -930,7 +1305,7 @@ sequenceDiagram
 
 * 📣 This function allows users to assert that an event will have a true/false outcome
 
-* 💸 It should require that the reward (`msg.value`) is greater than 0. If it is not then revert with `NotEnoughValue`
+* 💸 It should require that the reward (`msg.value`) is greater than 0 . If it is not then revert with `InvalidValue`
 
 * ⏱️ It should accept 0 for `startTime` and set it to `block.timestamp`
 
@@ -953,7 +1328,7 @@ sequenceDiagram
 Here are more granular instructions on setting up the EventAssertion struct:
 - asserter should be `msg.sender`
 - reward should be `msg.value`
-- bond should be the reward x 2 for economic security (You will know why as you understand the economics and game theory)
+- bond should be the reward x 2 (You will know why as you understand the economics and game theory)
 - startTime = `startTime`
 - endTime = `endTime`
 - description = `description`
@@ -967,7 +1342,7 @@ Here are more granular instructions on setting up the EventAssertion struct:
     function assertEvent(string memory description, uint256 startTime, uint256 endTime) external payable returns (uint256) {
         uint256 assertionId = nextAssertionId;
         nextAssertionId++;
-        if (msg.value == 0) revert NotEnoughValue();
+        if (msg.value == 0) revert InvalidValue();
 
         // Set default times if not provided
         if (startTime == 0) {
@@ -1013,7 +1388,7 @@ Here are more granular instructions on setting up the EventAssertion struct:
 
 * ⏱️ It should validate the timing constraints - it has to be after `startTime` but before the `endTime` or else revert with `InvalidTime`
 
-* 💸 It should enforce the correct bond amount is provided or revert with `NotEnoughValue`
+* 💸 It should enforce the correct bond amount is provided or revert with `InvalidValue`
 
 * ✍️ It should update the assertion with the proposal
 
@@ -1042,7 +1417,7 @@ You want to set these properties on the assertion:
         if (assertion.proposer != address(0)) revert AssertionProposed();
         if (block.timestamp < assertion.startTime) revert InvalidTime();
         if (block.timestamp > assertion.endTime) revert InvalidTime();
-        if (msg.value != assertion.bond) revert NotEnoughValue();
+        if (msg.value != assertion.bond) revert InvalidValue();
 
         assertion.proposer = msg.sender;
         assertion.proposedOutcome = outcome;
@@ -1086,7 +1461,7 @@ The bond amount should be the bond set on the assertion. The same amount that th
         if (assertion.proposer == address(0)) revert NotProposedAssertion();
         if (assertion.disputer != address(0)) revert ProposalDisputed();
         if (block.timestamp > assertion.endTime) revert InvalidTime();
-        if (msg.value != assertion.bond) revert NotEnoughValue();
+        if (msg.value != assertion.bond) revert InvalidValue();
 
         assertion.disputer = msg.sender;
 
@@ -1098,6 +1473,8 @@ The bond amount should be the bond set on the assertion. The same amount that th
 </details>
 
 ---
+
+### Testing your progress
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
@@ -1248,7 +1625,7 @@ This function enables the asserter to get a refund of their posted reward when n
 
 * 🚫 No proposer exists (revert with `AssertionProposed`)
 
-* ⏰ After assertion endTime (revert with `InvalidTime`)
+* ⏰ After assertion endTime ( revert with `InvalidTime`)
 
 * 🔒 Not already claimed (revert with `AlreadyClaimed`)
 
@@ -1316,7 +1693,7 @@ We just need the decider to use the remaining unused properties to establish whi
 
 Set resolvedOutcome to true or false based on what is the actual truth regarding an assertion.
 
-Then set the winner to the proposer if the proposer was correct *or* set it to the disputer if the disputer was correct.
+Then set the winner to the proposer if the proposer was correct *or* set it to the disputer is the disputer was correct.
 
 <details markdown="1">
 <summary>🎯 Solution</summary>
@@ -1341,6 +1718,10 @@ Then set the winner to the proposer if the proposer was correct *or* set it to t
 
 </details>
 </details>
+
+---
+
+### Testing your progress
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
@@ -1432,7 +1813,7 @@ This function will help everyone know the exact outcome of the assertion.
 
 * ⏳ Then we just need to check if anyone disputed it and that the dispute window is up to know we can rely on the `proposedOutcome` (if the time isn't over then revert with `InvalidTime`)
 
-* 🧑‍⚖️ Otherwise, if a dispute has been made, then we just need to make sure the `winner` has been set by the decider (or else revert with `AwaitingDecider`)
+* 🧑‍⚖️ Otherwise, if a disupte has been made, then we just need to make sure the `winner` has been set by the decider (or else revert with `AwaitingDecider`)
 
 <details markdown="1">
 <summary>💡 Hint: Read Outcome Carefully</summary>
@@ -1465,6 +1846,8 @@ The important thing here is that it reverts if it is not settled and if it has b
 
 ---
 
+### Testing your progress
+
 🔍 Run the following command to check if you implemented the functions correctly.
 
 ```sh
@@ -1473,9 +1856,35 @@ yarn test --grep "Checkpoint6"
 
 ```
 
-✅ Make sure you have implemented everything correctly by running tests with `yarn test`. You can dig into any errors by viewing the tests at `packages/hardhat/test/OptimisticOracle.ts`.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/OptimisticOracle.ts`.
 
-🔄 Run `yarn deploy --reset` then test the optimistic oracle. Go to the Optimistic page and try creating assertions, proposing outcomes, and disputing them.
+### Try it out!
+
+🔄 Run `yarn deploy --reset` then test the optimistic oracle. Try creating assertions, proposing outcomes, and disputing them.
+
+🖥️ Go to the Optimistic page to interact with your new protocol
+
+![OptimisticOracle](SCREENSHOT)
+
+1. **Submit a New Assertion**:  
+   Go to the "Optimistic" page and fill in the required fields to create a new assertion.  
+   - Enter the assertion details and submit.
+
+2. **Propose an Outcome**:  
+   Once an assertion is created, use the UI to propose an outcome for your assertion.  
+
+3. **Dispute an Outcome**:  
+   If someone disagrees with the proposed outcome, they can dispute it using the dispute button shown in the table for pending assertions.
+
+4. **Wait for Dispute Window & Settlement**:  
+   - Wait for the dispute window (the protocol’s timer) to expire.  
+   - If no dispute is made, the assertion settles automatically.
+   - If disputed, the decider must choose the winner; monitor status updates in the table.
+
+5. **Check Outcomes**:  
+   View the resolution and settlement status for each assertion directly in the UI.  
+
+🧑‍💻 Experiment by creating, proposing, and disputing assertions to observe the full optimistic oracle workflow in the frontend.
 
 🧪 **Live Simulation**: Run the `yarn simulate:optimistic` command to see the full optimistic oracle lifecycle in action:
 
@@ -1490,7 +1899,7 @@ yarn simulate:optimistic
 ### 🥅 Goals:
 
 - The system provides clear state information for all assertions
-- You can query resolved outcomes for both disputed and undisputed assertions
+- Users can query resolved outcomes for both disputed and undisputed assertions
 - All functions handle edge cases and invalid states appropriately
 - The complete optimistic oracle system works end-to-end
 ---
@@ -1502,10 +1911,10 @@ yarn simulate:optimistic
 ### 📊 Comparison Table:
 | Aspect | Whitelist Oracle | Staking Oracle | Optimistic Oracle |
 |--------|------------------|----------------|-------------------|
-| **Speed** | Fast | Fast | Slower |
+| **Speed** | Fast | Medium | Slow |
 | **Security** | Low (trusted authority) | High (economic incentives) | High (dispute resolution) |
 | **Decentralization** | Low | High | Depends on Decider Implementation |
-| **Cost** | Low | High (stake) | High (rewards and bonds) |
+| **Cost** | Low | Medium (stake) | High (rewards and bonds) |
 | **Complexity** | Simple | Medium | Complex |
 
 ### 🤔 Key Trade-offs:
@@ -1547,12 +1956,12 @@ yarn simulate:optimistic
 Each oracle design solves different problems:
 
 - **Whitelist Oracle**: Best for setups with trusted intermediaries already in the loop such as RWAs where speed and accuracy are more important than decentralization.
-- **Staking Oracle**: Best for low-latency, high-value DeFi applications where decentralization and security are crucial.
-- **Optimistic Oracle**: Best for complex, high-stakes applications where absolute truth is paramount and higher latency is not a huge downside. Flexible enough to resolve open-ended questions that don’t have a strict binary format (e.g., “Which team won the match?”).
+- **Staking Oracle**: Best for high-value DeFi applications where decentralization and security are crucial. Decentralization and latency rise and fall together.
+- **Optimistic Oracle**: Best for answering complex questions and where more latency is not a huge problem. Flexible enough to resolve open-ended questions that don't have a strict binary format (e.g., "Which team won the match?").
 
 ---
 
-## Checkpoint 8: 💾 Deploy your contracts! 🛰
+## Checkpoint 8: 💾 Deploy your contract! 🛰
 
 🎉 Well done on building the optimistic oracle system! Now, let's get it on a public testnet.
 

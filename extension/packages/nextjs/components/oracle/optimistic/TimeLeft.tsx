@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useChallengeState } from "~~/services/store/challengeStore";
 
@@ -10,27 +12,27 @@ function formatDuration(seconds: number, isPending: boolean) {
 
 export const TimeLeft = ({ startTime, endTime }: { startTime: bigint; endTime: bigint }) => {
   const { timestamp, refetchAssertionStates } = useChallengeState();
-  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<number>(() =>
+    timestamp ? Number(timestamp) : Math.floor(Date.now() / 1000),
+  );
 
-  // Update current time every second
   useEffect(() => {
-    // Initialize with timestamp from global state or current time
-    const initialTime = timestamp ? Number(timestamp) : Math.floor(Date.now() / 1000);
-    setCurrentTime(initialTime);
-
     const interval = setInterval(() => {
       setCurrentTime(prev => prev + 1);
     }, 1000);
-
     return () => clearInterval(interval);
-  }, [timestamp]);
+  }, []);
 
   const start = Number(startTime);
   const end = Number(endTime);
   const now = currentTime;
   const duration = end - now;
   const ended = duration <= 0;
-  const progressPercent = Math.min(((now - start) / (end - start)) * 100, 100);
+
+  // Guard against division by zero and clamp to [0, 100]
+  const totalWindow = Math.max(end - start, 1);
+  const rawPercent = ((now - start) / totalWindow) * 100;
+  const progressPercent = Math.max(0, Math.min(100, rawPercent));
 
   useEffect(() => {
     if (ended && timestamp) {
@@ -38,13 +40,18 @@ export const TimeLeft = ({ startTime, endTime }: { startTime: bigint; endTime: b
     }
   }, [ended, refetchAssertionStates, timestamp]);
 
-  if (!timestamp) return "Calculating...";
+  let displayText: string;
+  if (ended) {
+    displayText = "Ended";
+  } else if (now < start) {
+    displayText = formatDuration(start - now, true);
+  } else {
+    displayText = formatDuration(Math.max(duration, 0), false);
+  }
 
   return (
     <div className="w-full space-y-1">
-      <div className={ended || duration < 60 ? "text-error" : ""}>
-        {ended ? "Ended" : now < start ? formatDuration(start - now, true) : formatDuration(duration, false)}
-      </div>
+      <div className={ended || duration < 60 ? "text-error" : ""}>{displayText}</div>
       <div
         className={`w-full h-1 bg-base-300 rounded-full overflow-hidden transition-opacity ${now > start ? "opacity-100" : "opacity-0"}`}
       >

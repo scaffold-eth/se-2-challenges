@@ -28,13 +28,12 @@ export const useChallengeState = create<ChallengeState>(set => ({
   timestamp: null,
   setTimestamp: (timestamp: bigint | null): void => set(() => ({ timestamp })),
   // Optimistic Oracle
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   refetchAssertionStates: () => {},
   setRefetchAssertionStates: (refetchFn: () => void) => set(() => ({ refetchAssertionStates: refetchFn })),
   // Assertion Modal
   openAssertion: null,
   openAssertionModal: (assertion: AssertionWithIdAndState) =>
-    set(state => ({
+    set(() => ({
       openAssertion: assertion,
     })),
   closeAssertionModal: () => set(() => ({ openAssertion: null })),

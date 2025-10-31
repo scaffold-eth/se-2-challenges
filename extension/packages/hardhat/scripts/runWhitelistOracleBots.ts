@@ -3,7 +3,7 @@ import { WhitelistOracle } from "../typechain-types";
 import hre from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap";
-import { cleanup, sleep } from "./utils";
+import { sleep } from "./utils";
 
 async function getAllOracles() {
   const [deployer] = await ethers.getSigners();
@@ -43,7 +43,6 @@ const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
     const simpleOracleFactory = await ethers.getContractFactory("SimpleOracle");
     const publicClient = await hre.viem.getPublicClient();
 
-    await publicClient.transport.request({ method: "evm_setAutomine", params: [false] });
     const blockNumber = await publicClient.getBlockNumber();
     console.log(`\n[Block ${blockNumber}] Starting new whitelist oracle cycle...`);
     const oracleAddresses = await getAllOracles();
@@ -68,9 +67,6 @@ const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
         args: [randomPrice],
       });
     }
-
-    await publicClient.transport.request({ method: "evm_mine" });
-    await publicClient.transport.request({ method: "evm_setAutomine", params: [true] });
   } catch (error) {
     console.error("Error in oracle cycle:", error);
     throw error;
@@ -95,26 +91,22 @@ run().catch(error => {
 // Handle process termination signals
 process.on("SIGINT", async () => {
   console.log("\nReceived SIGINT (Ctrl+C). Cleaning up...");
-  await cleanup();
   process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
   console.log("\nReceived SIGTERM. Cleaning up...");
-  await cleanup();
   process.exit(0);
 });
 
 // Handle uncaught exceptions
 process.on("uncaughtException", async error => {
   console.error("Uncaught Exception:", error);
-  await cleanup();
   process.exit(1);
 });
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", async (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  await cleanup();
   process.exit(1);
 });
