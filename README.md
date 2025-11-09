@@ -169,7 +169,7 @@ But this time you won’t just be working on the smart contract **🙂**
 
 - [ ] 📝 Review **`Voting.sol`** functions for an overall understanding
 
-## **Checkpoint 2: 📋🌲 Register with a Smart Contract Merkle Tree**
+## Checkpoint 2: 📋🌲 Register with a Smart Contract Merkle Tree
 
 Time to let users actually register!
 
