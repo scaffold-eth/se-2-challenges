@@ -962,22 +962,39 @@ Inside the `vote` function, voters will send their:
 - **proof** → the cryptographic proof (later built in the frontend)
 - **public inputs** → `nullifierHash`, `root`, `vote`, and `tree depth`
 
-Before counting votes, we enforce some **rules**:
+Before counting votes, we enforce some **rules** in the following order:
 
-#### 1. Prevent Double-Voting 🛑
+#### 1. Validate the Root 🔐
 
-- Check if the `_nullifierHash` has already been used.
-- If yes → revert the transaction.
-- Track used nullifiers with a mapping: `s_nullifierHashes`.
+- **Check for empty tree root**: this prevents voting when no one has registered yet.
+- **Validate root matches current root state** (`s_tree.root()`): This ensures the proof was generated against the **actual on-chain Merkle tree**, not some arbitrary tree.
 
-👉 Without this safeguard, anyone could replay the same proof/inputs over and over to vote multiple times.
-That’s why **nullifiers are the cornerstone** of privacy-preserving voting.
+**Why this matters:** Without root validation, an attacker could:
+
+- **Create their own fake Merkle tree** with commitments they control
+- Generate a mathematically valid ZK proof against that fake tree
+- Submit the proof with their fake root to the contract
+- The verifier would accept it (the proof is valid for that root!)
+- **Result**: They vote without ever registering on-chain, completely bypassing the allowlist system
+
+> 👉 The root check is what **binds the proof to the actual on-chain registration tree**. Without it, anyone could vote by creating fake trees. This is your **first line of defense**!
 
 #### 2. Verify the Proof 🔒
 
 - Call the `verify()` function on `i_verifier` and pass in the proof + public inputs.
 - The verifier expects **public inputs as a `bytes32[]` array**, in **exactly the same order** as in your circuit file.
 - If verification fails → revert the transaction.
+
+#### 3. Prevent Double-Voting 🛑
+
+- Check if the `_nullifierHash` has already been used.
+- If yes → revert the transaction.
+- Track used nullifiers with a mapping: `s_nullifierHashes`.
+
+👉 Without this safeguard, anyone could replay the same proof/inputs over and over to vote multiple times.
+That's why **nullifiers are the cornerstone** of privacy-preserving voting.
+
+👉 **Important**: This check happens **after** proof verification. If the proof is invalid, we want to fail fast without wasting gas on state changes.
 
 ✅ Once both checks pass:
 
@@ -990,27 +1007,34 @@ That’s why **nullifiers are the cornerstone** of privacy-preserving voting.
 <details>
 <summary>❓ Question 1</summary>
 
-Before writing the voting logic, how can you stop a `_nullifierHash` from being reused so no one can vote twice?
-Make sure to revert with the correct error.
+What two root validation checks must you perform **before** any other logic, and why are they essential for security?
 
 </details>
 
 <details>
 <summary>❓ Question 2</summary>
 
-When passing inputs to the verifier, how do you build the `bytes32[]` array and in what order should you place `_nullifierHash`, `_root`, `_vote`, and `_depth`?
+Before writing the voting logic, how can you stop a `_nullifierHash` from being reused so no one can vote twice?
+Make sure to revert with the correct error.
 
 </details>
 
 <details>
 <summary>❓ Question 3</summary>
 
-After calling `i_verifier.verify(_proof, publicInputs)`, what condition should you check, and what should happen if it fails?
+When passing inputs to the verifier, how do you build the `bytes32[]` array and in what order should you place `_nullifierHash`, `_root`, `_vote`, and `_depth`?
 
 </details>
 
 <details>
 <summary>❓ Question 4</summary>
+
+After calling `i_verifier.verify(_proof, publicInputs)`, what condition should you check, and what should happen if it fails?
+
+</details>
+
+<details>
+<summary>❓ Question 5</summary>
 
 Once the proof is verified, how do you decide whether to increment `s_yesVotes` or `s_noVotes` and then emit the `VoteCast` event?
 _(Hint: `_vote` comes as 0 or 1)_
@@ -1047,10 +1071,13 @@ constructor(address _owner, address _verifier, string memory _question) Ownable(
 
 function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes32 _vote, bytes32 _depth) public {
         /// Checkpoint 6 //////
-        if (s_nullifierHashes[_nullifierHash]) {
-            revert Voting__NullifierHashAlreadyUsed(_nullifierHash);
+        if (_root == bytes32(0)) {
+        revert Voting__EmptyTree();
         }
-        s_nullifierHashes[_nullifierHash] = true;
+
+        if (_root != bytes32(s_tree.root())) {
+            revert Voting__InvalidRoot();
+        }
 
         bytes32[] memory publicInputs = new bytes32[](4);
         publicInputs[0] = _nullifierHash;
@@ -1061,6 +1088,11 @@ function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes3
         if (!i_verifier.verify(_proof, publicInputs)) {
             revert Voting__InvalidProof();
         }
+
+        if (s_nullifierHashes[_nullifierHash]) {
+            revert Voting__NullifierHashAlreadyUsed(_nullifierHash);
+        }
+        s_nullifierHashes[_nullifierHash] = true;
 
         if (_vote == bytes32(uint256(1))) {
             s_yesVotes++;

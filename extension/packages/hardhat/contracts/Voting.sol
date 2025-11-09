@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import { LeanIMT, LeanIMTData } from "@zk-kit/lean-imt.sol/LeanIMT.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {LeanIMT, LeanIMTData} from "@zk-kit/lean-imt.sol/LeanIMT.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 /// Checkpoint 6 //////
 // import {IVerifier} from "./Verifier.sol";
 
@@ -17,6 +17,8 @@ contract Voting is Ownable {
     error Voting__NullifierHashAlreadyUsed(bytes32 nullifierHash);
     error Voting__InvalidProof();
     error Voting__NotAllowedToVote();
+    error Voting__EmptyTree();
+    error Voting__InvalidRoot();
 
     ///////////////////////
     /// State Variables ///
