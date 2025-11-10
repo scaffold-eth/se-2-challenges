@@ -166,10 +166,11 @@ describe("🗳️ ZK Voting Challenge", function () {
     });
 
     it("increments yes/no vote counts correctly", async function () {
-      const { voting, verifier, owner, alice, bob, rootAfter, depthAfter } = await deployAll();
+      const { voting, verifier, owner, alice, bob } = await deployAll();
 
       await voting.connect(owner).addVoters([bob.address], [true]);
       await (voting as any).connect(bob).register(456n);
+      // After both alice and bob have registered, get the current root
       const [, , , , , depthNum2, rootNum2] = await (voting as any).getVotingData();
       const root2 = ethers.zeroPadValue(ethers.toBeHex(rootNum2), 32) as `0x${string}`;
       const depth2 = ethers.zeroPadValue(ethers.toBeHex(depthNum2), 32) as `0x${string}`;
@@ -178,13 +179,13 @@ describe("🗳️ ZK Voting Challenge", function () {
       const yes = ethers.toBeHex(1, 32) as `0x${string}`;
       const no = ethers.toBeHex(0, 32) as `0x${string}`;
 
-      // First voter (alice) votes yes
+      // First voter (alice) votes yes using the current root (after both registered)
       const n1 = ethers.hexlify(ethers.randomBytes(32)) as `0x${string}`;
-      await (verifier as any).setExpectedInputs(n1, rootAfter, yes, depthAfter);
+      await (verifier as any).setExpectedInputs(n1, root2, yes, depth2);
       await (verifier as any).setShouldVerify(true);
-      await (voting as any).connect(alice).vote(proof, n1, rootAfter, yes, depthAfter);
+      await (voting as any).connect(alice).vote(proof, n1, root2, yes, depth2);
 
-      // Second voter (bob) votes no against updated root
+      // Second voter (bob) votes no using the same root
       const n2 = ethers.hexlify(ethers.randomBytes(32)) as `0x${string}`;
       await (verifier as any).setExpectedInputs(n2, root2, no, depth2);
       await (voting as any).connect(bob).vote(proof, n2, root2, no, depth2);
@@ -204,6 +205,41 @@ describe("🗳️ ZK Voting Challenge", function () {
       await expect((voting as any).connect(alice).vote(proof, nullifier, rootAfter, yes, depthAfter))
         .to.emit(voting, "VoteCast")
         .withArgs(nullifier, alice.address, true, anyValue, 1n, 0n);
+    });
+
+    it("reverts when root is empty (bytes32(0))", async function () {
+      const { voting, verifier, alice, depthAfter } = await deployAll();
+      const proof = ethers.randomBytes(32 * 440);
+      const yes = ethers.toBeHex(1, 32) as `0x${string}`;
+      const nullifier = ethers.hexlify(ethers.randomBytes(32)) as `0x${string}`;
+      const emptyRoot = ethers.ZeroHash as `0x${string}`; // bytes32(0)
+
+      // Set up verifier to accept the proof
+      await (verifier as any).setExpectedInputs(nullifier, emptyRoot, yes, depthAfter);
+      await (verifier as any).setShouldVerify(true);
+
+      // Should revert with Voting__EmptyTree when root is bytes32(0)
+      await expect(
+        (voting as any).connect(alice).vote(proof, nullifier, emptyRoot, yes, depthAfter),
+      ).to.be.revertedWithCustomError(voting, "Voting__EmptyTree");
+    });
+
+    it("reverts when root doesn't match the tree root", async function () {
+      const { voting, verifier, alice, depthAfter } = await deployAll();
+      const proof = ethers.randomBytes(32 * 440);
+      const yes = ethers.toBeHex(1, 32) as `0x${string}`;
+      const nullifier = ethers.hexlify(ethers.randomBytes(32)) as `0x${string}`;
+      // Use a random invalid root (not bytes32(0), but also not the actual tree root)
+      const invalidRoot = ethers.hexlify(ethers.randomBytes(32)) as `0x${string}`;
+
+      // Set up verifier to accept the proof
+      await (verifier as any).setExpectedInputs(nullifier, invalidRoot, yes, depthAfter);
+      await (verifier as any).setShouldVerify(true);
+
+      // Should revert with Voting__InvalidRoot when root doesn't match s_tree.root()
+      await expect(
+        (voting as any).connect(alice).vote(proof, nullifier, invalidRoot, yes, depthAfter),
+      ).to.be.revertedWithCustomError(voting, "Voting__InvalidRoot");
     });
   });
 });
