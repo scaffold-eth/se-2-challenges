@@ -1072,7 +1072,7 @@ constructor(address _owner, address _verifier, string memory _question) Ownable(
 function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes32 _vote, bytes32 _depth) public {
         /// Checkpoint 6 //////
         if (_root == bytes32(0)) {
-        revert Voting__EmptyTree();
+            revert Voting__EmptyTree();
         }
 
         if (_root != bytes32(s_tree.root())) {
