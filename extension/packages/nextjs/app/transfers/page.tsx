@@ -1,14 +1,17 @@
 "use client";
 
+import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
-import { Address } from "~~/components/scaffold-eth";
+import { hardhat } from "viem/chains";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const Transfers: NextPage = () => {
   const { data: transferEvents, isLoading } = useScaffoldEventHistory({
     contractName: "YourCollectible",
     eventName: "Transfer",
   });
+  const { targetNetwork } = useTargetNetwork();
 
   if (isLoading)
     return (
@@ -22,9 +25,7 @@ const Transfers: NextPage = () => {
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center mb-8">
-            <span className="block text-4xl font-bold">
-              All Transfers Events
-            </span>
+            <span className="block text-4xl font-bold">All Transfers Events</span>
           </h1>
         </div>
         <div className="overflow-x-auto shadow-lg">
@@ -47,14 +48,24 @@ const Transfers: NextPage = () => {
                 transferEvents?.map((event, index) => {
                   return (
                     <tr key={index}>
-                      <th className="text-center">
-                        {event.args.tokenId?.toString()}
-                      </th>
+                      <th className="text-center">{event.args.tokenId?.toString()}</th>
                       <td>
-                        <Address address={event.args.from} />
+                        <Address
+                          address={event.args.from}
+                          chain={targetNetwork}
+                          blockExplorerAddressLink={
+                            targetNetwork.id === hardhat.id ? `/blockexplorer/address/${event.args.from}` : undefined
+                          }
+                        />
                       </td>
                       <td>
-                        <Address address={event.args.to} />
+                        <Address
+                          address={event.args.to}
+                          chain={targetNetwork}
+                          blockExplorerAddressLink={
+                            targetNetwork.id === hardhat.id ? `/blockexplorer/address/${event.args.to}` : undefined
+                          }
+                        />
                       </td>
                     </tr>
                   );
