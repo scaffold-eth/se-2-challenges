@@ -474,9 +474,12 @@ yarn simulate:whitelist
 
 ## Checkpoint 2: 💰 Staking Oracle - Economic Incentives
 
-🧭 Now let's explore a decentralized oracle that uses economic incentives to ensure honest behavior. Nodes stake ETH to participate and can be slashed for reporting prices that deviate too far from the average. The system uses a bucket-based approach where prices are organized into discrete time windows (24 blocks per bucket), and nodes must report once per bucket or else there will be a small inactivity leak in their stake. We will also issue rewards in the form of an ERC20 token called ORA (1 ORA per report) to incentivise participation in the system.
+🧭 Now let's explore a decentralized oracle that uses **economic incentives** to encourage honest reporting. In this design:
 
-👩‍💻 This section challenges you to implement the staking oracle system from scratch. You'll write the core functions that handle node registration, bucket-based price reporting, reward distribution based on report count, and slashing mechanisms for price deviations.
+- Nodes stake **ORA**, an ERC20 token, to participate.
+- Nodes report a price **once per "bucket"** (by default a bucket is 24 one second blocks).
+- A bucket is only considered “finalized” after someone calls **`recordBucketMedian(bucket)`**, which stores the **median** for that bucket (requires ≥ 2/3 of registered nodes to have reported).
+- Slashing decisions compare a node's report against the **recorded median**.
 
 🎯 **Your Mission**: Complete the missing function implementations in the `StakingOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers but you need to fill in the logic.
 
@@ -513,468 +516,16 @@ function getCurrentBucketNumber() public view returns (uint256) {
 
 ---
 
-2. **Implement `getEffectiveStake(address nodeAddress)`**
+2. **Implement `getNodeAddresses()`**
 
-* 📉 This view function returns a node's stake after inactivity penalties
-
-* 🔍 It should return `0` for inactive nodes
-
-* 🧮 It should compute expected reports based on completed buckets since registration
-
-* ✂️ For each missed report, subtract `INACTIVITY_PENALTY`, floored at zero
+* 📚 This view function returns every registered node address in order (useful for the frontend and for index-based actions)
 
 <details markdown='1'>
 
-<summary>💡 Hint: Effective Stake</summary>
+<summary>💡 Hint: Just return the array</summary>
 
-- Load the node into memory for cheaper reads
-- If the node is inactive, return `0`
-- Determine `currentBucket` using `getCurrentBucketNumber()`
-- Expected reports = `currentBucket - n.firstBucket`
-- Use `n.reportCount` as completed reports but subtract one if the last report happened in the current bucket (it isn't completed yet)
-- Penalty = `missed * INACTIVITY_PENALTY`; cap at the staked amount
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function getEffectiveStake(address nodeAddress) public view returns (uint256) {
-    OracleNode memory n = nodes[nodeAddress];
-    if (!n.active) return 0;
-    uint256 currentBucket = getCurrentBucketNumber();
-    if (currentBucket == n.firstBucket) return n.stakedAmount;
-    uint256 expectedReports = currentBucket - n.firstBucket;
-    uint256 actualReportsCompleted = n.reportCount;
-    if (n.lastReportedBucket == currentBucket && actualReportsCompleted > 0) {
-        actualReportsCompleted -= 1;
-    }
-    if (actualReportsCompleted >= expectedReports) return n.stakedAmount;
-    uint256 missed = expectedReports - actualReportsCompleted;
-    uint256 penalty = missed * INACTIVITY_PENALTY;
-    if (penalty > n.stakedAmount) return 0;
-    return n.stakedAmount - penalty;
-}
-```
-
-</details>
-</details>
-
----
-
-3. **Implement `registerNode(uint256 price)`**
-
-* 🏗️ This function allows users to register as oracle nodes by staking ETH
-
-* ⚠️ It should require a minimum stake of 1 ETH, otherwise revert with `InsufficientStake`
-
-* 🧪 It should check that the node is not already registered, otherwise revert with `NodeAlreadyRegistered`
-
-* 🏗️ It should create a new `OracleNode` struct with the correct data
-
-* ➕ It should add the node address to the `nodeAddresses` array
-
-* 💲 It should call `reportPrice(price)` (you'll implement this later) to record the first report in the current bucket
-
-* 📣 It should emit the `NodeRegistered` event
-
-<details markdown='1'>
-
-<summary>💡 Hint: Node Registration</summary>
-
-Here's what you need to set in the `OracleNode` struct:
-- `stakedAmount` should be `msg.value`
-- `lastReportedBucket` should be `0` (will be updated in `reportPrice`)
-- `reportCount` should be `0`
-- `claimedReportCount` should be `0`
-- `firstBucket` should be `getCurrentBucketNumber()` (the bucket when the node registered)
-- `active` should be `true`
-
-After creating the struct, push the node into `nodeAddresses`, call `reportPrice(price)`, and emit the event.
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function registerNode(uint256 price) public payable {
-    if (msg.value < MINIMUM_STAKE) revert InsufficientStake();
-    if (nodes[msg.sender].active) revert NodeAlreadyRegistered();
-    nodes[msg.sender] = OracleNode({
-        stakedAmount: msg.value,
-        lastReportedBucket: 0,
-        reportCount: 0,
-        claimedReportCount: 0,
-        firstBucket: getCurrentBucketNumber(),
-        active: true
-    });
-    nodeAddresses.push(msg.sender);
-    reportPrice(price);
-    emit NodeRegistered(msg.sender, msg.value);
-}
-```
-
-</details>
-</details>
-
----
-
-4. **Implement `addStake()`**
-
-* 💸 This payable function lets an active node increase its stake
-
-* ⚠️ It should revert with `InsufficientStake` if `msg.value == 0`
-
-* ➕ It should add the sent value to the node's `stakedAmount`
-
-* 📣 It should emit the `StakeAdded` event
-
-<details markdown='1'>
-
-<summary>💡 Hint: Adding Stake</summary>
-
-- Use the `onlyNode` modifier to ensure sender is active
-- Update `nodes[msg.sender].stakedAmount`
-- Emit `StakeAdded`
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function addStake() public payable onlyNode {
-    if (msg.value == 0) revert InsufficientStake();
-    nodes[msg.sender].stakedAmount += msg.value;
-    emit StakeAdded(msg.sender, msg.value);
-}
-```
-
-</details>
-</details>
-
----
-
-5. **Implement `reportPrice(uint256 price)`**
-
-* 🧪 This function allows registered nodes to report new prices (uses `onlyNode` modifier)
-
-* 🔍 It should verify the given price is not zero, otherwise revert with `InvalidPrice`
-
-* 🔍 It should verify the node has sufficient stake (using `getEffectiveStake`), otherwise revert with `InsufficientStake`
-
-* 🚫 It should prevent reporting twice in the same bucket, otherwise revert with `AlreadyReportedInCurrentBucket`
-
-* 📊 It should store the node's price in the current bucket's `TimeBucket` mapping
-
-* 📈 It should increment the bucket's `countReports` and add the price to `sumPrices`. This will be useful for deriving the average later
-
-* 🔄 It should update the node's `lastReportedBucket` and `reportCount`
-
-* 📣 It should emit the `PriceReported` event with the sender, price, and bucket number
-
-<details markdown='1'>
-
-<summary>💡 Hint: Price Reporting</summary>
-
-- Pull `OracleNode storage node = nodes[msg.sender]`
-- Validate price and stake before touching bucket state
-- Use `timeBuckets[getCurrentBucketNumber()]`
-- Update bucket mappings and aggregates
-- Update the node's `lastReportedBucket` to `getCurrentBucketNumber()`
-- Increment the node's `reportCount`
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function reportPrice(uint256 price) public onlyNode {
-    if (price == 0) revert InvalidPrice();
-    OracleNode storage node = nodes[msg.sender];
-    if (getEffectiveStake(msg.sender) < MINIMUM_STAKE) revert InsufficientStake();
-    if (node.lastReportedBucket == getCurrentBucketNumber()) revert AlreadyReportedInCurrentBucket();
-    TimeBucket storage bucket = timeBuckets[getCurrentBucketNumber()];
-    bucket.prices[msg.sender] = price;
-    bucket.countReports++;
-    bucket.sumPrices += price;
-
-    node.lastReportedBucket = getCurrentBucketNumber();
-    node.reportCount++;
-    emit PriceReported(msg.sender, price, getCurrentBucketNumber());
-}
-```
-
-</details>
-</details>
-
----
-
-6. **Implement `claimReward()`**
-
-* 🧪 This function allows past and present nodes to claim their ORA token rewards
-
-* 🔍 It should calculate reward amount based on the difference between `reportCount` and `claimedReportCount`. We will call this number the `delta`
-
-* 🔒 It should revert with `NoRewardsAvailable` if `delta == 0`
-
-* 🔢 It should update `claimedReportCount` to `reportCount` *before* minting the tokens (reentrancy safe)
-
-* 💰 It should mint `delta * REWARD_PER_REPORT` ORA tokens
-
-* 📣 It should emit the `NodeRewarded` event
-
-<details markdown='1'>
-
-<summary>💡 Hint: Reward Implementation</summary>
-
-- Load the node in storage
-- Compute `delta`
-- Revert if `delta == 0`
-- Update `claimedReportCount`
-- Mint the reward and emit the event
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function claimReward() public {
-    OracleNode storage node = nodes[msg.sender];
-
-    uint256 delta = node.reportCount - node.claimedReportCount;
-    if (delta == 0) revert NoRewardsAvailable();
-
-    node.claimedReportCount = node.reportCount;
-    oracleToken.mint(msg.sender, delta * REWARD_PER_REPORT);
-    emit NodeRewarded(msg.sender, delta * REWARD_PER_REPORT);
-}
-```
-
-</details>
-</details>
-
----
-
-7. **Implement `_removeNode(address nodeAddress, uint256 index)`**
-
-* 🗂️ This internal function removes a node from the `nodeAddresses` array while keeping the array packed. By forcing the caller to provide the index and simply verifying it is at that position we are removing the need to iterate over a potentially large array
-
-* 🔍 It should ensure the provided `index` is within bounds, otherwise revert with `IndexOutOfBounds`
-
-* ✅ It should ensure the address at the given index matches `nodeAddress`, otherwise revert with `NodeNotAtGivenIndex`
-
-* 🔁 It should use the pop-and-swap pattern to remove the entry efficiently
-
-* 🚫 It should mark the node as inactive without deleting the entire struct (other functions may rely on historical data)
-
-<details markdown='1'>
-
-<summary>💡 Hint: Removing Nodes</summary>
-
-- Check `index < nodeAddresses.length`
-- Check `nodeAddresses[index] == nodeAddress`
-- Assign the last address into the `index` slot, then pop
-- Set `nodes[nodeAddress].active = false`
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function _removeNode(address nodeAddress, uint256 index) internal {
-    if (nodeAddresses.length <= index) revert IndexOutOfBounds();
-    if (nodeAddresses[index] != nodeAddress) revert NodeNotAtGivenIndex();
-    nodeAddresses[index] = nodeAddresses[nodeAddresses.length - 1];
-    nodeAddresses.pop();
-    nodes[nodeAddress].active = false;
-}
-```
-
-</details>
-</details>
-
----
-
-8. **Implement `_checkPriceDeviated(uint256 reportedPrice, uint256 averagePrice)`**
-
-* 🧮 This internal pure function determines whether a reported price deviates beyond the allowed threshold
-
-* 🔢 It should compute the absolute difference between the reported price and the average
-
-* 📐 It should convert the deviation to basis points and compare it against `MAX_DEVIATION_BPS`
-
-* 🔁 It should return `true` when the deviation is greater than the threshold, otherwise `false`
-
-<details markdown='1'>
-
-<summary>💡 Hint: Deviation Check</summary>
-
-- Use a simple conditional to compute the absolute deviation
-- Multiply the deviation by 10,000 (basis points) before dividing by `averagePrice`. This will allow for greater precision
-- Compare the result against `MAX_DEVIATION_BPS`
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function _checkPriceDeviated(uint256 reportedPrice, uint256 averagePrice) internal pure returns (bool) {
-    uint256 deviation = reportedPrice > averagePrice ? reportedPrice - averagePrice : averagePrice - reportedPrice;
-    uint256 deviationBps = (deviation * 10_000) / averagePrice;
-    if (deviationBps > MAX_DEVIATION_BPS) {
-        return true;
-    }
-    return false;
-}
-```
-
-</details>
-</details>
-
----
-
-9. **Implement `slashNode(address nodeToSlash, uint256 bucketNumber, uint256 index)`**
-
-* 🔎 This function allows anyone to slash nodes that reported prices deviating too far from the average
-
-* 🧪 It should verify the node is active, otherwise revert with `NodeNotRegistered`
-
-* ⏰ It should verify the bucket is in the past (not current), otherwise revert with `OnlyPastBucketsAllowed`
-
-* 🚫 It should verify the node hasn't already been slashed in this bucket, otherwise revert with `NodeAlreadySlashed`
-
-* 📊 It should verify the node reported a price in this bucket, otherwise revert with `NodeDidNotReport`
-
-* ✂️ It should mark the node as slashed and remove their price from the bucket's sum and count
-
-* 🧮 It should recalculate the average price after removing the node's price
-
-* 🔍 It should verify the node's price deviates beyond the threshold using `_checkPriceDeviated`, otherwise revert with `NotDeviated`
-
-* 💰 It should slash the node by `MISREPORT_PENALTY` (or their full stake if less)
-
-* 🏅 It should send 10% of the penalty to the slasher (`msg.sender`)
-
-* 🗑️ It should remove the node if their stake reaches zero after slashing using `_removeNode`
-
-* ⚠️ It should revert with `FailedToSend` if the reward transfer fails
-
-* 📣 It should emit `NodeSlashed` and `NodeExited` (if the node is removed)
-
-<details markdown='1'>
-
-<summary>💡 Hint: Complete Slashing Implementation</summary>
-
-Follow these steps:
-- Validate node state and bucket recency
-- Ensure the node actually reported in that bucket and hasn't been slashed yet
-- Remove their contribution from `sumPrices`/`countReports`
-- Recompute the average (excluding the offender) and check deviation with `_checkPriceDeviated`
-- Apply the penalty by reducing the node's `stakedAmount`
-- If the node is fully slashed (`stakedAmount` == 0), remove them with `_removeNode`
-- Calculate the reward, and transfer it
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function slashNode(address nodeToSlash, uint256 bucketNumber, uint256 index) public {
-    if (!nodes[nodeToSlash].active) revert NodeNotRegistered();
-    if (getCurrentBucketNumber() == bucketNumber) revert OnlyPastBucketsAllowed();
-    TimeBucket storage bucket = timeBuckets[bucketNumber];
-    if (bucket.slashedOffenses[nodeToSlash]) revert NodeAlreadySlashed();
-    uint256 reportedPrice = bucket.prices[nodeToSlash];
-    if (reportedPrice == 0) revert NodeDidNotReport();
-    bucket.slashedOffenses[nodeToSlash] = true;
-    bucket.sumPrices -= reportedPrice;
-    bucket.countReports--;
-    uint256 averagePrice = bucket.sumPrices / bucket.countReports;
-    if (!_checkPriceDeviated(reportedPrice, averagePrice)) {
-        revert NotDeviated();
-    }
-    OracleNode storage node = nodes[nodeToSlash];
-    uint256 actualPenalty = MISREPORT_PENALTY > node.stakedAmount ? node.stakedAmount : MISREPORT_PENALTY;
-    node.stakedAmount -= actualPenalty;
-
-    uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
-
-    (bool sent, ) = msg.sender.call{ value: reward }("");
-    if (!sent) revert FailedToSend();
-
-    if (node.stakedAmount == 0) {
-        _removeNode(nodeToSlash, index);
-        emit NodeExited(nodeToSlash, 0);
-    }
-
-    emit NodeSlashed(nodeToSlash, actualPenalty);
-}
-```
-
-</details>
-</details>
-
----
-
-10. **Implement `exitNode(uint256 index)`**
-
-* 🚪 This function allows a node to exit and withdraw its stake after a waiting period
-
-* ⏳ It should ensure the node waited at least `WAITING_PERIOD` buckets since their last report, otherwise revert with `WaitingPeriodNotOver`. This way there is ample time to slash them before they exit
-
-* 💰 It should compute the withdrawable stake using `getEffectiveStake` before removing the node
-
-* 🗑️ It should call `_removeNode(msg.sender, index)` to mark the node inactive and keep the node array tidy
-
-* 🧹 It should send the stake back to the sender
-
-* ⚠️ It should revert with `FailedToSend` if the withdrawal transfer fails
-
-* 📣 It should emit the `NodeExited` event with the withdrawn amount
-
-<details markdown='1'>
-
-<summary>💡 Hint: Exit Logic</summary>
-
-- Fetch the node in storage
-- Require `node.lastReportedBucket + WAITING_PERIOD <= getCurrentBucketNumber()`
-- Compute `stake = getEffectiveStake(msg.sender)` **before** removing
-- Call `_removeNode`
-- Transfer the stake using `call`
-- Emit the event
-
-<details markdown='1'>
-
-<summary>🎯 Solution</summary>
-
-```solidity
-function exitNode(uint256 index) public onlyNode {
-    OracleNode storage node = nodes[msg.sender];
-    if (node.lastReportedBucket + WAITING_PERIOD > getCurrentBucketNumber()) revert WaitingPeriodNotOver();
-    uint256 stake = getEffectiveStake(msg.sender);
-    _removeNode(msg.sender, index);
-    (bool sent, ) = msg.sender.call{ value: stake }("");
-    if (!sent) revert FailedToSend();
-
-    emit NodeExited(msg.sender, stake);
-}
-```
-
-</details>
-</details>
-
----
-
-11. **Implement `getNodeAddresses()`**
-
-* 📚 This view function should return every registered node address in order. This is convenient for the front-end 
-
-<details markdown='1'>
-
-<summary>💡 Hint: Node List</summary>
-
-- The array `nodeAddresses` tracks the registration order
-- Just return the array
+- The array `nodeAddresses` is maintained by `registerNode` and `_removeNode` which we will implement later
+- Just return `nodeAddresses`
 
 <details markdown='1'>
 
@@ -991,26 +542,310 @@ function getNodeAddresses() public view returns (address[] memory) {
 
 ---
 
-12. **Implement `getLatestPrice()`**
+3. **Implement `registerNode(uint256 amount)`**
 
-* 📦 This function returns the aggregated price from the most recent completed bucket
+* 🏗️ This function allows anyone to register as an oracle node by staking **ORA tokens** (ERC20)
 
-* 🔍 It should get the previous bucket (current bucket - 1) since the current bucket is still being filled
+* ⚠️ It should require a minimum stake of `MINIMUM_STAKE`, otherwise revert with `InsufficientStake`
 
-* 📊 It should retrieve the `TimeBucket` for that bucket
+* 🧪 It should check that the node is not already registered, otherwise revert with `NodeAlreadyRegistered`
 
-* ⛔️ It should revert with `NoValidPricesAvailable` if `bucket.countReports == 0`
+* 💸 It should pull ORA from the user using `transferFrom` (so the user must `approve` first)
 
-* 🧮 It should return the average price: `bucket.sumPrices / bucket.countReports`
+* ⚙️ It should add the new `OracleNode` to the `nodes` mapping with the correct values
+
+* ➕ It should add the node address to the `nodeAddresses` array
+
+* 📣 It should emit the `NodeRegistered` event
 
 <details markdown='1'>
 
-<summary>💡 Hint: Latest Price</summary>
+<summary>💡 Hint: ERC20 staking</summary>
 
-- Use `getCurrentBucketNumber() - 1`
-- Access the bucket mapping
-- Guard against empty buckets
-- Return the average
+- Use `oracleToken.transferFrom(msg.sender, address(this), amount)`
+- If the transfer fails, revert with `TransferFailed`
+- For the `OracleNode` struct you should fill it as follows:
+    - `stakedAmount` should be how many tokens they are using to register
+    - `lastReportedBucket` should default to 0 since they haven't reported yet
+    - `reportCount` and `claimedReportCount` should also start as 0
+    - `firstBucket` should be the current bucket... Didn't we make a method for getting that earlier? 🤔
+    - `active` should be `true` since the node is now registering
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function registerNode(uint256 amount) public {
+    if (amount < MINIMUM_STAKE) revert InsufficientStake();
+    if (nodes[msg.sender].active) revert NodeAlreadyRegistered();
+
+    bool success = oracleToken.transferFrom(msg.sender, address(this), amount);
+    if (!success) revert TransferFailed();
+
+    nodes[msg.sender] = OracleNode({
+        stakedAmount: amount,
+        lastReportedBucket: 0,
+        reportCount: 0,
+        claimedReportCount: 0,
+        firstBucket: getCurrentBucketNumber(),
+        active: true
+    });
+
+    nodeAddresses.push(msg.sender);
+    emit NodeRegistered(msg.sender, amount);
+}
+```
+
+</details>
+</details>
+
+---
+
+4. **Implement `addStake(uint256 amount)`**
+
+* 💸 This function lets an active node increase its stake by depositing more ORA
+
+* ⚠️ It should revert with `InsufficientStake` if `amount == 0`
+
+* 💰 It should pull ORA using `transferFrom` (so the user must `approve` before calling)
+
+* 📣 It should emit the `StakeAdded` event
+
+<details markdown='1'>
+
+<summary>💡 Hint: Similar pattern as `registerNode`</summary>
+
+- Validate `amount > 0`
+- `transferFrom` into the oracle
+- Increment `nodes[msg.sender].stakedAmount`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function addStake(uint256 amount) public onlyNode {
+    if (amount == 0) revert InsufficientStake();
+
+    bool success = oracleToken.transferFrom(msg.sender, address(this), amount);
+    if (!success) revert TransferFailed();
+
+    nodes[msg.sender].stakedAmount += amount;
+    emit StakeAdded(msg.sender, amount);
+}
+```
+
+</details>
+</details>
+
+---
+
+5. **Implement `getEffectiveStake(address nodeAddress)`**
+
+* 📉 This view function returns a node's stake after inactivity penalties
+
+* 🔍 It should return `0` for inactive nodes
+
+* 🧮 It should compute expected reports based on completed buckets since registration
+
+* ✂️ For each missed report, subtract `INACTIVITY_PENALTY`, floored at zero
+
+<details markdown='1'>
+
+<summary>💡 Hint: Effective stake</summary>
+
+- Expected reports should count **fully completed** buckets since registration (exclude the current bucket)
+- Don't count a report in the current bucket as a “completed” report (it's still in-flight)
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function getEffectiveStake(address nodeAddress) public view returns (uint256) {
+    OracleNode memory n = nodes[nodeAddress];
+    if (!n.active) return 0;
+    uint256 currentBucket = getCurrentBucketNumber();
+    if (currentBucket == n.firstBucket) return n.stakedAmount;
+    // Expected reports are only for fully completed buckets since registration (exclude current bucket)
+    uint256 expectedReports = currentBucket - n.firstBucket;
+    // Do not assume future reports; penalize only after a bucket has passed
+    uint256 actualReportsCompleted = n.reportCount;
+    // Exclude a report made in the current bucket from completed reports to avoid reducing past penalties
+    if (n.lastReportedBucket == currentBucket && actualReportsCompleted > 0) {
+        actualReportsCompleted -= 1;
+    }
+    if (actualReportsCompleted >= expectedReports) return n.stakedAmount; // no penalty if on target
+    uint256 missed = expectedReports - actualReportsCompleted;
+    uint256 penalty = missed * INACTIVITY_PENALTY;
+    if (penalty > n.stakedAmount) return 0;
+    return n.stakedAmount - penalty;
+}
+```
+
+</details>
+</details>
+
+---
+
+6. **Implement `reportPrice(uint256 price)`**
+
+* 🧪 This function allows registered nodes to report new prices (uses `onlyNode` modifier)
+
+* 🔍 It should verify the given price is not zero, otherwise revert with `InvalidPrice`
+
+* 🔍 It should verify the node has sufficient effective stake (using `getEffectiveStake`), otherwise revert with `InsufficientStake`
+
+* 🚫 It should prevent reporting twice in the same bucket, otherwise revert with `AlreadyReportedInCurrentBucket`
+
+* 📊 It should store the node's report by appending to `reporters[]` and `prices[]` for the current bucket
+
+* 🔄 It should update the node's `lastReportedBucket` and increment `reportCount`
+
+* 📣 It should emit the `PriceReported` event with the sender, price, and bucket number
+
+<details markdown='1'>
+
+<summary>💡 Hint: Keep report indices stable</summary>
+
+- You must push `msg.sender` into `bucket.reporters` and `price` into `bucket.prices` at the **same index**
+- Later, slashing relies on that `reportIndex`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function reportPrice(uint256 price) public onlyNode {
+    if (price == 0) revert InvalidPrice();
+    if (getEffectiveStake(msg.sender) < MINIMUM_STAKE) revert InsufficientStake();
+
+    OracleNode storage node = nodes[msg.sender];
+    uint256 currentBucket = getCurrentBucketNumber();
+    if (node.lastReportedBucket == currentBucket) revert AlreadyReportedInCurrentBucket();
+
+    TimeBucket storage bucket = timeBuckets[currentBucket];
+    bucket.reporters.push(msg.sender);
+    bucket.prices.push(price);
+
+    node.lastReportedBucket = currentBucket;
+    node.reportCount++;
+
+    emit PriceReported(msg.sender, price, currentBucket);
+}
+```
+
+</details>
+</details>
+
+---
+
+7. **Implement `claimReward()`**
+
+* 🪙 This function allows nodes (active or inactive) to claim accumulated ORA rewards for reports
+
+* 🔍 It should compute `delta = reportCount - claimedReportCount`
+
+* 🔒 It should revert with `NoRewardsAvailable` if `delta == 0`
+
+* ✅ It should update `claimedReportCount` *before* minting (reentrancy-safe ordering)
+
+* 💰 It should mint `delta * REWARD_PER_REPORT` ORA tokens
+
+* 📣 It should emit `NodeRewarded(node, amount)`
+
+<details markdown='1'>
+
+<summary>💡 Hint: Claim only the difference</summary>
+
+- Use `claimedReportCount` to avoid double-claiming
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function claimReward() public {
+    OracleNode storage node = nodes[msg.sender];
+    uint256 delta = node.reportCount - node.claimedReportCount;
+    if (delta == 0) revert NoRewardsAvailable();
+
+    node.claimedReportCount = node.reportCount;
+    oracleToken.mint(msg.sender, delta * REWARD_PER_REPORT);
+    emit NodeRewarded(msg.sender, delta * REWARD_PER_REPORT);
+}
+```
+
+</details>
+</details>
+
+---
+
+8. **Implement `recordBucketMedian(uint256 bucketNumber)`**
+
+* 📌 This function finalizes a bucket by recording the **median** price once enough reports exist
+
+* 🚫 It should revert with `BucketMedianAlreadyRecorded` if `medianPrice` is already set
+
+* 👥 It should require there is at least 1 registered node, otherwise revert with `NoActiveNodes`
+
+* 🧮 It should require at least **2/3 (rounded up)** of registered nodes to have reported, otherwise revert with `InsufficientReports`
+
+* 🧠 It should compute the median using StatisticsUtils on a **memory copy** of `prices[]` (don't reorder the arrays in storage as the slashing relies on the ordering!)
+
+* 🪙 We need to provide a small incentive (1 ORA) so that *someone* will call this method 
+
+* 📣 It should emit `BucketMedianRecorded(bucketNumber, medianPrice)`
+
+<details markdown='1'>
+
+<summary>💡 Hint: Required reports + median</summary>
+
+- Required reports: `(2 * totalRegistered + 2) / 3`
+- Median: `sort` a **memory copy** of `bucket.prices` then use the `getMedian` method on that sorted array
+- StatisticsUtils have already been imported and applied to uint256 arrays so you can access those methods from the array (`arr.sort()`, `arr.getMedian()`)
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function recordBucketMedian(uint256 bucketNumber) public {
+    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    if (bucket.medianPrice != 0) revert BucketMedianAlreadyRecorded();
+
+    uint256 totalRegistered = nodeAddresses.length;
+    if (totalRegistered == 0) revert NoActiveNodes();
+
+    uint256 requiredReports = (2 * totalRegistered + 2) / 3;
+    if (bucket.reporters.length < requiredReports) revert InsufficientReports();
+
+    uint256[] memory prices = bucket.prices;
+    prices.sort();
+    bucket.medianPrice = prices.getMedian();
+
+    oracleToken.mint(msg.sender, 1);
+    emit BucketMedianRecorded(bucketNumber, bucket.medianPrice);
+}
+```
+
+</details>
+</details>
+
+---
+
+9. **Implement `getLatestPrice()`**
+
+* 📦 This view function returns the finalized price (recorded median) for the **most recent completed bucket**
+
+* ⛔️ It should revert with `MedianNotRecorded` if the bucket has not been finalized
+
+<details markdown='1'>
+
+<summary>💡 Hint: Which bucket is “latest”</summary>
+
+- Latest price should read from `getCurrentBucketNumber() - 1`
 
 <details markdown='1'>
 
@@ -1019,8 +854,8 @@ function getNodeAddresses() public view returns (address[] memory) {
 ```solidity
 function getLatestPrice() public view returns (uint256) {
     TimeBucket storage bucket = timeBuckets[getCurrentBucketNumber() - 1];
-    if (bucket.countReports == 0) revert NoValidPricesAvailable();
-    return bucket.sumPrices / bucket.countReports;
+    if (bucket.medianPrice == 0) revert MedianNotRecorded();
+    return bucket.medianPrice;
 }
 ```
 
@@ -1029,19 +864,17 @@ function getLatestPrice() public view returns (uint256) {
 
 ---
 
-13. **Implement `getPastPrice(uint256 bucketNumber)`**
+10. **Implement `getPastPrice(uint256 bucketNumber)`**
 
-* 🕰️ Because we are storing pricing in time-segmented buckets we can enable retrieving a price from any one of these buckets. This view function returns the average price for any historical bucket
+* 🕰️ This view function returns the finalized price (recorded median) for **any historical bucket**
 
-* ⛔️ It should revert with `NoValidPricesAvailable` if that bucket has no reports
+* ⛔️ It should revert with `MedianNotRecorded` if that bucket has not been finalized
 
 <details markdown='1'>
 
-<summary>💡 Hint: Past Price</summary>
+<summary>💡 Hint: This is very similar to `getLatestPrice()`</summary>
 
-- Grab `TimeBucket storage bucket = timeBuckets[bucketNumber]`
-- Check `bucket.countReports`
-- Return `bucket.sumPrices / bucket.countReports`
+- Instead of `getCurrentBucketNumber() - 1`, use the provided `bucketNumber`
 
 <details markdown='1'>
 
@@ -1050,8 +883,8 @@ function getLatestPrice() public view returns (uint256) {
 ```solidity
 function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
     TimeBucket storage bucket = timeBuckets[bucketNumber];
-    if (bucket.countReports == 0) revert NoValidPricesAvailable();
-    return bucket.sumPrices / bucket.countReports;
+    if (bucket.medianPrice == 0) revert MedianNotRecorded();
+    return bucket.medianPrice;
 }
 ```
 
@@ -1060,24 +893,32 @@ function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
 
 ---
 
-14. **Implement `getAddressDataAtBucket(address nodeAddress, uint256 bucketNumber)`**
+11. **Implement `getSlashedStatus(address nodeAddress, uint256 bucketNumber)`**
 
 * 🔎 This view function returns the price a node reported in a bucket and whether they were slashed there
 
+* 🗡️ This is just a convenience method to help onlookers check for slashable nodes
+
 <details markdown='1'>
 
-<summary>💡 Hint: Bucket Data</summary>
+<summary>💡 Hint: Find the node in `bucket.reporters[]`</summary>
 
-- Access the bucket mapping and return both `prices[nodeAddress]` and `slashedOffenses[nodeAddress]`
+- Loop through `timeBuckets[bucketNumber].reporters`
+- When you find `nodeAddress`, return the matching `prices[i]` and `slashedOffenses[nodeAddress]`
 
 <details markdown='1'>
 
 <summary>🎯 Solution</summary>
 
 ```solidity
-function getAddressDataAtBucket(address nodeAddress, uint256 bucketNumber) public view returns (uint256, bool) {
+function getSlashedStatus(address nodeAddress, uint256 bucketNumber) public view returns (uint256 price, bool slashed) {
     TimeBucket storage bucket = timeBuckets[bucketNumber];
-    return (bucket.prices[nodeAddress], bucket.slashedOffenses[nodeAddress]);
+    for (uint256 i = 0; i < bucket.reporters.length; i++) {
+        if (bucket.reporters[i] == nodeAddress) {
+            price = bucket.prices[i];
+            slashed = bucket.slashedOffenses[nodeAddress];
+        }
+    }
 }
 ```
 
@@ -1086,26 +927,54 @@ function getAddressDataAtBucket(address nodeAddress, uint256 bucketNumber) publi
 
 ---
 
-15. **Implement `getOutlierNodes(uint256 bucketNumber)`**
+12. **Implement `_checkPriceDeviated(uint256 reportedPrice, uint256 medianPrice)`**
 
-* 📊 This view function identifies nodes whose price deviates beyond the maximum deviation in a given bucket
+* 🧮 This internal pure function determines whether a reported price deviates beyond the allowed threshold
 
-* 🗃️ It should iterate over all `nodeAddresses` (this is fine since it is a view method)
-
-* 🧮 For each reported price, calculate the average of the remaining reports and test deviation with `_checkPriceDeviated`
-
-* 🧹 Collect only the outliers and trim the array before returning
+* 📐 It should return `true` only when deviation is **strictly greater** than `MAX_DEVIATION_BPS`
 
 <details markdown='1'>
 
-<summary>💡 Hint: Outlier Detection</summary>
+<summary>💡 Hint: Convert to basis points</summary>
 
-- Allocate a temporary array of size `bucket.countReports`
-- Loop through `nodeAddresses`
-- Skip addresses that did not report (`reportedPrice == 0`)
-- Compute `averagePrice = (bucket.sumPrices - reportedPrice) / (bucket.countReports - 1)`
-- If `_checkPriceDeviated(...)` returns true, store the address in the temp array and increment a counter
-- Allocate a trimmed array of length `outlierCount` and copy the collected addresses
+- Compute absolute difference: `abs(reportedPrice - medianPrice)`
+- `deviationBps = (deviation * 10_000) / medianPrice`
+- Compare to `MAX_DEVIATION_BPS`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function _checkPriceDeviated(uint256 reportedPrice, uint256 medianPrice) internal pure returns (bool) {
+    uint256 deviation = reportedPrice > medianPrice ? reportedPrice - medianPrice : medianPrice - reportedPrice;
+    uint256 deviationBps = (deviation * 10_000) / medianPrice;
+    return deviationBps > MAX_DEVIATION_BPS;
+}
+```
+
+</details>
+</details>
+
+---
+
+13. **Implement `getOutlierNodes(uint256 bucketNumber)`**
+
+* 📊 This view function identifies nodes whose report deviates beyond the maximum deviation for a given bucket
+
+* 🔁 Loops are fine since this is just a view method that will be called from outside the chain
+
+* ⛔️ It should revert with `MedianNotRecorded` if the bucket hasn't been finalized
+
+* 🚫 It should ignore nodes that are already marked slashed in that bucket
+
+<details markdown='1'>
+
+<summary>💡 Hint: Outliers are “deviated from median”</summary>
+
+- Use the stored `medianPrice` for that bucket
+- Loop `bucket.reporters` and check `_checkPriceDeviated(bucket.prices[i], bucket.medianPrice)`
+- Build a temp array at the maximum size, then trim to the actual size so you don't return empty array slots
 
 <details markdown='1'>
 
@@ -1114,21 +983,26 @@ function getAddressDataAtBucket(address nodeAddress, uint256 bucketNumber) publi
 ```solidity
 function getOutlierNodes(uint256 bucketNumber) public view returns (address[] memory) {
     TimeBucket storage bucket = timeBuckets[bucketNumber];
-    address[] memory outliers = new address[](bucket.countReports);
+    if (bucket.medianPrice == 0) revert MedianNotRecorded();
+
+    address[] memory outliers = new address[](bucket.reporters.length);
     uint256 outlierCount = 0;
-    for (uint256 i = 0; i < nodeAddresses.length; i++) {
-        address nodeAddress = nodeAddresses[i];
-        uint256 reportedPrice = bucket.prices[nodeAddress];
+
+    for (uint256 i = 0; i < bucket.reporters.length; i++) {
+        address reporter = bucket.reporters[i];
+        if (bucket.slashedOffenses[reporter]) continue;
+        uint256 reportedPrice = bucket.prices[i];
         if (reportedPrice == 0) continue;
-        uint256 averagePrice = (bucket.sumPrices - reportedPrice) / (bucket.countReports - 1);
-        if (_checkPriceDeviated(reportedPrice, averagePrice)) {
-            outliers[outlierCount] = nodeAddress;
+
+        if (_checkPriceDeviated(reportedPrice, bucket.medianPrice)) {
+            outliers[outlierCount] = reporter;
             outlierCount++;
         }
     }
+
     address[] memory trimmed = new address[](outlierCount);
-    for (uint256 i = 0; i < outlierCount; i++) {
-        trimmed[i] = outliers[i];
+    for (uint256 j = 0; j < outlierCount; j++) {
+        trimmed[j] = outliers[j];
     }
     return trimmed;
 }
@@ -1139,14 +1013,160 @@ function getOutlierNodes(uint256 bucketNumber) public view returns (address[] me
 
 ---
 
+14. **Implement `_removeNode(address nodeAddress, uint256 index)`**
+
+* 🗂️ This internal function removes a node from the `nodeAddresses` array while keeping the array packed
+
+* 🔍 It should revert with `IndexOutOfBounds` if `index` is invalid
+
+* ✅ It should revert with `NodeNotAtGivenIndex` if the address at the index does not match `nodeAddress`
+
+* 🔁 It should use swap-and-pop, then mark `nodes[nodeAddress].active = false`
+
+<details markdown='1'>
+
+<summary>💡 Hint: Swap-and-pop</summary>
+
+- Replace `nodeAddresses[index]` with `nodeAddresses[last]`, then `pop()`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function _removeNode(address nodeAddress, uint256 index) internal {
+    if (nodeAddresses.length <= index) revert IndexOutOfBounds();
+    if (nodeAddresses[index] != nodeAddress) revert NodeNotAtGivenIndex();
+
+    nodeAddresses[index] = nodeAddresses[nodeAddresses.length - 1];
+    nodeAddresses.pop();
+
+    nodes[nodeAddress].active = false;
+}
+```
+
+</details>
+</details>
+
+---
+
+15. **Implement `slashNode(address nodeToSlash, uint256 bucketNumber, uint256 reportIndex, uint256 nodeAddressesIndex)`**
+
+* 🔎 This function allows anyone to slash a node that deviated too far from the bucket's recorded median
+
+* ⏰ It should only allow past buckets (not the current bucket), otherwise revert with `OnlyPastBucketsAllowed`
+
+* 🧠 It should require the bucket median is recorded, otherwise revert with `MedianNotRecorded`
+
+* 🧷 It should verify the provided indices (report index + node index), otherwise revert with `NodeNotAtGivenIndex` / `IndexOutOfBounds`
+
+* 🚫 It should revert with `NotDeviated` if deviation is ≤ `MAX_DEVIATION_BPS` (strict `>`)
+
+* 💰 It should slash up to `MISREPORT_PENALTY` and reward the slasher in ORA based on the `SLASHER_REWARD_PERCENTAGE`
+
+<details markdown='1'>
+
+<summary>💡 Hint: Why indices matter</summary>
+
+- `reportIndex` must match `timeBuckets[bucket].reporters[reportIndex] == nodeToSlash`
+- `nodeAddressesIndex` must match `nodeAddresses[nodeAddressesIndex] == nodeToSlash`
+- This avoids needing to loop onchain (we do the lookup off chain)
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function slashNode(address nodeToSlash, uint256 bucketNumber, uint256 reportIndex, uint256 nodeAddressesIndex) public {
+    if (!nodes[nodeToSlash].active) revert NodeNotRegistered();
+    if (getCurrentBucketNumber() == bucketNumber) revert OnlyPastBucketsAllowed();
+    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    if (bucket.medianPrice == 0) revert MedianNotRecorded();
+    if (bucket.slashedOffenses[nodeToSlash]) revert NodeAlreadySlashed();
+    if (nodeToSlash != bucket.reporters[reportIndex]) revert NodeNotAtGivenIndex();
+    uint256 reportedPrice = bucket.prices[reportIndex];
+    if (reportedPrice == 0) revert NodeDidNotReport();
+    if (!_checkPriceDeviated(reportedPrice, bucket.medianPrice)) revert NotDeviated();
+    bucket.slashedOffenses[nodeToSlash] = true;
+    OracleNode storage node = nodes[nodeToSlash];
+    // Slash the node
+    uint256 actualPenalty = MISREPORT_PENALTY > node.stakedAmount ? node.stakedAmount : MISREPORT_PENALTY;
+    node.stakedAmount -= actualPenalty;
+
+    if (node.stakedAmount == 0) {
+        _removeNode(nodeToSlash, nodeAddressesIndex);
+        emit NodeExited(nodeToSlash, 0);
+    }
+
+    uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
+
+    bool rewardSent = oracleToken.transfer(msg.sender, reward);
+    if (!rewardSent) revert TransferFailed();
+
+    emit NodeSlashed(nodeToSlash, actualPenalty);
+}
+```
+
+</details>
+</details>
+
+---
+
+16. **Implement `exitNode(uint256 index)`**
+
+* 🚪 This function allows a node to exit and withdraw its stake after a waiting period
+
+* 🤔 By forcing a waiting period we make sure a node can't report a bad price and then exit without being slashed
+
+* ⏳ It should revert with `WaitingPeriodNotOver` if `lastReportedBucket + WAITING_PERIOD > getCurrentBucketNumber()`
+
+* 💰 It should compute the withdrawable stake using `getEffectiveStake` **before** removing the node
+
+* 🗑️ It should remove the node using the index-verified swap-and-pop pattern, and mark inactive (you can use the `_removeNode` method for this)
+
+* 🥩 Set the nodes stakedAmount to 0
+
+* 🪙 Send the node its stake and revert if the `TransferFailed`
+
+* 📣 It should emit `NodeExited(node, amount)`
+
+<details markdown='1'>
+
+<summary>💡 Hint: Compute stake before removal</summary>
+
+- `getEffectiveStake` returns `0` for inactive nodes, so compute it before setting `active = false`
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function exitNode(uint256 index) public onlyNode {
+    OracleNode storage node = nodes[msg.sender];
+    if (node.lastReportedBucket + WAITING_PERIOD > getCurrentBucketNumber()) revert WaitingPeriodNotOver();
+    // Get effective stake before removing node (since getEffectiveStake returns 0 for inactive nodes)
+    uint256 stake = getEffectiveStake(msg.sender);
+    _removeNode(msg.sender, index);
+    // Withdraw the stake
+    nodes[msg.sender].stakedAmount = 0;
+    bool success = oracleToken.transfer(msg.sender, stake);
+    if (!success) revert TransferFailed();
+
+    emit NodeExited(msg.sender, stake);
+}
+```
+
+</details>
+</details>
+
 ### 🤔 Key Insights:
 
-- **Bucket-Based System**: Prices are organized into time buckets (24 blocks each), allowing for discrete time windows and preventing double-reporting within the same bucket
-- **Economic Incentives**: Nodes stake ETH and can be slashed for reporting prices that deviate too far from the average, while good behavior rewards nodes with ORA tokens (1 ORA per report)
+- **Bucket-Based System**: Prices are organized into discrete buckets, preventing double-reporting within the same bucket.
+- **Token staking**: Participation is gated by **ORA staking** via `approve` + `transferFrom`.
+- **Median finalization**: Buckets are finalized by recording a **median**, which is also what slashing compares against.
 - **Effective Stake**: Nodes face inactivity penalties for missed buckets, reducing their effective stake over time if they fail to report regularly
 - **Decentralized**: Anyone can participate by staking, no central authority needed
 - **Self-Correcting**: Slashing mechanism punishes nodes that report prices deviating beyond the threshold (10% by default)
-- **Average Aggregation**: Prices are aggregated using a simple average from all reports in a completed bucket, providing a fair representation of the collective price
 - **Use Cases**: Excellent for DeFi applications where economic alignment is crucial and price updates occur at regular intervals
 
 ### 🤔 Critical Thinking: Security Vulnerabilities
@@ -1169,11 +1189,11 @@ yarn test --grep "Checkpoint2"
 
 ### Try it out!
 
-🌎 In the real world this oracle would have too much latency to be very useful due to the need for 24 block windows. However, this was done to make it possible for you to see how the oracle operates in real time without everything happening too fast to comprehend. There is no reason why this couldn't work with single block windows although in decentralized systems you must always consider that the lower the latency requirements, the fewer nodes can participate
+🌎 In the real world this oracle might have too much latency to be very useful due to the need for 24 block windows. However, this was done to make it possible for you to see how the oracle operates in real time without everything happening too fast to comprehend. There is no reason why this couldn't work with single block windows.
 
 🔄 Run `yarn deploy --reset` then test the staking oracle. Go to the `Staking` page and try registering your own node and reporting prices.
 
-🚰 Make sure you get a couple ETH from the faucet and then press the "Register Node" button.
+🚰 The faucet should automatically give you **ORA** when you press the "Register Node" button (the UI will handle `approve` as well).
 
 ![Staking Buttons Panel](https://github.com/user-attachments/assets/c32b9bdc-eb1e-4630-ae9f-e57a34deac45)
 
@@ -1183,9 +1203,9 @@ yarn test --grep "Checkpoint2"
 
 ![SelfNodeRow](https://github.com/user-attachments/assets/32952de3-bd72-4cc6-98ba-a6b374539533)
 
-> ‼️ "Insufficient Stake" errors? Look at your staked balance 👀. It has fallen below the minimum amount of stake because you let some blocks pass without reporting. Just press the + button next to your stake to add an extra ETH (get it from the faucet if you have less than 1 in your wallet).
+> ‼️ "Insufficient Stake" errors? Look at your staked balance 👀. It has fallen below the minimum amount of stake because you let some blocks pass without reporting. Just press the + button next to your stake to add more ORA (It will give you some from the faucet).
 
-😮‍💨 *Whew!* That was a lot of work pressing all those buttons to keep from getting the inactive penalty! Much easier when bots are doing all the work and you can just watch. Exit your node (if it stresses you) and lets have some fun.
+> 🧠 Before you can read a finalized price for a bucket or slash an outlier, someone must call **Record Bucket Median** for that bucket. Feel free to navigate backwards and trigger the median function by pressing the button on past buckets (you get a small ORA reward for doing so).
 
 🧪 **Live Simulation**: Run the `yarn simulate:staking` command to watch a live simulation of staking oracle behavior with multiple nodes:
 
@@ -1207,10 +1227,10 @@ AUTO_SLASH=true yarn simulate:staking
 
 ### 🥅 Goals:
 
-- You can register as an oracle node by staking ETH
+- You can register as an oracle node by staking ORA (ERC20)
 - Registered nodes can report prices once per bucket and claim ORA token rewards based on report count
 - Anyone can slash nodes that report prices deviating too far from the average and earn rewards
-- System aggregates prices from completed buckets using average calculation
+- System finalizes buckets by recording a median, and reads come from recorded medians
 - Inactivity penalties reduce effective stake for nodes that miss reporting in buckets
 - Economic incentives drive honest behavior and regular participation
 - Understand the trade-offs between decentralization and latency
@@ -1879,7 +1899,7 @@ yarn test --grep "Checkpoint6"
    If someone disagrees with the proposed outcome, they can dispute it using the dispute button shown in the table for pending assertions.
 
 4. **Wait for Dispute Window & Settlement**:  
-   - Wait for the dispute window (the protocol’s timer) to expire.  
+   - Wait for the dispute window (the protocol's timer) to expire.  
    - If no dispute is made, the assertion settles automatically.
    - If disputed, the decider must choose the winner; monitor status updates in the table.
 

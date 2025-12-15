@@ -7,7 +7,6 @@ const deployOptimisticOracle: DeployFunction = async function (hre: HardhatRunti
   const { deployer } = await getNamedAccounts();
 
   console.log("Deploying OptimisticOracle...");
-  console.log("Deployer:", deployer);
   // Get the deployer's current nonce
   const deployerNonce = await hre.ethers.provider.getTransactionCount(deployer);
 

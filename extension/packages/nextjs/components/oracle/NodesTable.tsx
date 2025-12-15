@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TooltipInfo from "../TooltipInfo";
 import { ConfigSlider } from "./ConfigSlider";
 import { NodeRow, NodeRowEditRequest } from "./NodeRow";
 import { SelfNodeRow } from "./SelfNodeRow";
-import { parseEther } from "viem";
-import { useAccount, usePublicClient } from "wagmi";
+import { erc20Abi, formatEther, parseEther } from "viem";
+import { useAccount, usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import {
   useDeployedContractInfo,
@@ -12,7 +12,7 @@ import {
   useScaffoldReadContract,
   useScaffoldWriteContract,
 } from "~~/hooks/scaffold-eth";
-import { useGlobalState } from "~~/services/store/store";
+import { notification } from "~~/utils/scaffold-eth";
 
 const LoadingRow = ({ colCount = 5 }: { colCount?: number }) => (
   <tr>
@@ -47,6 +47,31 @@ const SlashAllButton = ({ selectedBucket }: { selectedBucket: bigint }) => {
 
   const [unslashed, setUnslashed] = React.useState<string[]>([]);
 
+  const { data: priceEvents } = useScaffoldEventHistory({
+    contractName: "StakingOracle",
+    eventName: "PriceReported",
+    watch: true,
+  });
+
+  const bucketReports = React.useMemo(() => {
+    if (!priceEvents) return [];
+    const filtered = priceEvents.filter(ev => {
+      const bucket = ev?.args?.bucketNumber as bigint | undefined;
+      return bucket !== undefined && bucket === selectedBucket;
+    });
+    // IMPORTANT: `slashNode` expects `reportIndex` to match the on-chain `timeBuckets[bucket].reporters[]` index,
+    // which follows the order reports were submitted (tx order). Event history may be returned newest-first,
+    // so we sort by (blockNumber, logIndex) ascending to match insertion order.
+    return [...filtered].sort((a: any, b: any) => {
+      const aBlock = BigInt(a?.blockNumber ?? 0);
+      const bBlock = BigInt(b?.blockNumber ?? 0);
+      if (aBlock !== bBlock) return aBlock < bBlock ? -1 : 1;
+      const aLog = Number(a?.logIndex ?? 0);
+      const bLog = Number(b?.logIndex ?? 0);
+      return aLog - bLog;
+    });
+  }, [priceEvents, selectedBucket]);
+
   React.useEffect(() => {
     const check = async () => {
       if (!outliers || !publicClient || !stakingDeployment) {
@@ -59,7 +84,7 @@ const SlashAllButton = ({ selectedBucket }: { selectedBucket: bigint }) => {
           const [, isSlashed] = (await publicClient.readContract({
             address: stakingDeployment.address as `0x${string}`,
             abi: stakingDeployment.abi as any,
-            functionName: "getAddressDataAtBucket",
+            functionName: "getSlashedStatus",
             args: [addr, selectedBucket],
           })) as [bigint, boolean];
           if (!isSlashed) list.push(addr);
@@ -81,10 +106,18 @@ const SlashAllButton = ({ selectedBucket }: { selectedBucket: bigint }) => {
       for (const addr of unslashed) {
         const idx = nodeAddresses.findIndex(a => a?.toLowerCase() === addr.toLowerCase());
         if (idx === -1) continue;
+        const reportIndex = bucketReports.findIndex(ev => {
+          const reporter = (ev?.args?.node as string | undefined) || "";
+          return reporter.toLowerCase() === addr.toLowerCase();
+        });
+        if (reportIndex === -1) {
+          console.warn(`Report index not found for node ${addr}, skipping slashing.`);
+          continue;
+        }
         try {
           await writeStakingOracle({
             functionName: "slashNode",
-            args: [addr as `0x${string}`, selectedBucket, BigInt(idx)],
+            args: [addr as `0x${string}`, selectedBucket, BigInt(reportIndex), BigInt(idx)],
           });
         } catch {
           // continue slashing the rest
@@ -121,13 +154,22 @@ export const NodesTable = ({
   };
   const handleCloseEditor = () => setEditingNode(null);
   const { address: connectedAddress } = useAccount();
+  const publicClient = usePublicClient();
   const { data: currentBucketData } = useScaffoldReadContract({
     contractName: "StakingOracle",
     functionName: "getCurrentBucketNumber",
   }) as { data: bigint | undefined };
   const currentBucket = currentBucketData ?? undefined;
+  const [isRecordingMedian, setIsRecordingMedian] = useState(false);
+  const [isMedianRecorded, setIsMedianRecorded] = useState<boolean | null>(null);
   const [internalSelectedBucket, setInternalSelectedBucket] = useState<bigint | "current">("current");
   const selectedBucket = externalSelectedBucket ?? internalSelectedBucket;
+  const targetBucket = useMemo<bigint | null>(() => {
+    if (selectedBucket === "current") {
+      return currentBucket ?? null;
+    }
+    return selectedBucket ?? null;
+  }, [selectedBucket, currentBucket]);
   const setSelectedBucket = (bucket: bigint | "current") => {
     setInternalSelectedBucket(bucket);
     onBucketChange?.(bucket);
@@ -198,14 +240,94 @@ export const NodesTable = ({
     setTimeout(() => setEntering(true), 20);
   };
   const tooltipText =
-    "This table displays registered oracle nodes that provide price data to the system. Nodes are displayed as inactive if they don't have enough ETH staked. You can edit the skip probability and price variance of an oracle node with the slider.";
+    "This table displays registered oracle nodes that provide price data to the system. Rows are dimmed when the node's effective ORA stake falls below the minimum. You can edit the skip probability and price variance of an oracle node with the slider.";
   const { writeContractAsync: writeStakingOracle } = useScaffoldWriteContract({ contractName: "StakingOracle" });
-  const nativeCurrencyPrice = useGlobalState(state => state.nativeCurrency.price);
   const { data: nodeAddresses } = useScaffoldReadContract({
     contractName: "StakingOracle",
     functionName: "getNodeAddresses",
     watch: true,
   });
+  const { data: stakingDeployment } = useDeployedContractInfo({ contractName: "StakingOracle" });
+  const { writeContractAsync: writeErc20 } = useWriteContract();
+  const { data: oracleTokenAddress } = useScaffoldReadContract({
+    contractName: "StakingOracle",
+    functionName: "oracleToken",
+  });
+  const { data: oraBalance } = useReadContract({
+    address: oracleTokenAddress as `0x${string}` | undefined,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: connectedAddress ? [connectedAddress] : undefined,
+    query: { enabled: !!oracleTokenAddress && !!connectedAddress, refetchInterval: 5000 },
+  });
+  const { data: minimumStake } = useScaffoldReadContract({
+    contractName: "StakingOracle",
+    functionName: "MINIMUM_STAKE",
+  }) as { data: bigint | undefined };
+
+  const registerButtonLabel = "Register Node";
+  const readMedianValue = useCallback(async (): Promise<boolean | null> => {
+    if (!targetBucket) {
+      return null;
+    }
+    if (targetBucket <= 0n) {
+      return false;
+    }
+    if (!publicClient || !stakingDeployment?.address) {
+      return null;
+    }
+    try {
+      const median = await publicClient.readContract({
+        address: stakingDeployment.address as `0x${string}`,
+        abi: stakingDeployment.abi as any,
+        functionName: "getPastPrice",
+        args: [targetBucket],
+      });
+      return BigInt(String(median)) > 0n;
+    } catch {
+      return false;
+    }
+  }, [publicClient, stakingDeployment, targetBucket]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      const result = await readMedianValue();
+      if (!cancelled) {
+        setIsMedianRecorded(result);
+      }
+    };
+    void run();
+    const interval = setInterval(() => {
+      void run();
+    }, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [readMedianValue]);
+
+  const canRecordMedian = Boolean(
+    targetBucket && targetBucket > 0n && isMedianRecorded === false && !isRecordingMedian,
+  );
+  const recordMedianButtonLabel =
+    isMedianRecorded === true ? "Median Recorded" : isRecordingMedian ? "Recording..." : "Record Median";
+
+  const handleRecordMedian = async () => {
+    if (!stakingDeployment?.address || !targetBucket || targetBucket <= 0n) {
+      return;
+    }
+    setIsRecordingMedian(true);
+    try {
+      await writeStakingOracle({ functionName: "recordBucketMedian", args: [targetBucket] });
+      const refreshed = await readMedianValue();
+      setIsMedianRecorded(refreshed);
+    } catch (e: any) {
+      console.error(e);
+    } finally {
+      setIsRecordingMedian(false);
+    }
+  };
   const isSelfRegistered = Boolean(
     (nodeAddresses as string[] | undefined)?.some(
       addr => addr?.toLowerCase() === (connectedAddress || "").toLowerCase(),
@@ -213,9 +335,46 @@ export const NodesTable = ({
   );
   const handleRegisterSelf = async () => {
     if (!connectedAddress) return;
+    if (!stakingDeployment?.address || !oracleTokenAddress) return;
+    if (!publicClient) return;
+    const stakeAmount = minimumStake ?? parseEther("2000");
     try {
-      const initialPrice = nativeCurrencyPrice > 0 ? parseEther(nativeCurrencyPrice.toString()) : 0n;
-      await writeStakingOracle({ functionName: "registerNode", args: [initialPrice], value: parseEther("1") });
+      const minOraBalance = parseEther("1000");
+      const currentBalance = (oraBalance as bigint | undefined) ?? 0n;
+      if (currentBalance < minOraBalance) {
+        const loadingId = notification.loading("Funding wallet with 1000 ORA...");
+        const topUpWei = minOraBalance - currentBalance;
+        const faucetRes = await fetch("/api/ora-faucet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ to: connectedAddress, amount: formatEther(topUpWei) }),
+        });
+        if (!faucetRes.ok) {
+          const err = await faucetRes.json().catch(() => ({}));
+          console.error("ORA faucet failed:", err);
+          return;
+        }
+        const faucetJson = (await faucetRes.json()) as { hash?: `0x${string}` };
+        if (faucetJson.hash) {
+          await publicClient.waitForTransactionReceipt({ hash: faucetJson.hash });
+        }
+        notification.remove(loadingId);
+      }
+
+      // Wait for approval to be mined before registering.
+      // (writeContractAsync returns the tx hash)
+      const approveHash = await writeErc20({
+        address: oracleTokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [stakingDeployment.address as `0x${string}`, stakeAmount],
+      });
+      await publicClient.waitForTransactionReceipt({ hash: approveHash });
+
+      const registerHash = await writeStakingOracle({ functionName: "registerNode", args: [stakeAmount] });
+      if (registerHash) {
+        await publicClient.waitForTransactionReceipt({ hash: registerHash as `0x${string}` });
+      }
     } catch (e: any) {
       console.error(e);
     }
@@ -256,6 +415,20 @@ export const NodesTable = ({
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={handleRecordMedian}
+                disabled={!canRecordMedian}
+                title={
+                  targetBucket && targetBucket > 0n
+                    ? isMedianRecorded === true
+                      ? "Median already recorded for this bucket"
+                      : "Record the median for the selected bucket"
+                    : "Median can only be recorded for completed buckets"
+                }
+              >
+                {recordMedianButtonLabel}
+              </button>
               {/* Slash button near navigation (left of left arrow) */}
               {selectedBucket !== "current" && <SlashAllButton selectedBucket={selectedBucket as bigint} />}
               {/* Previous (<) */}
@@ -341,8 +514,12 @@ export const NodesTable = ({
               </button>
             </div>
             {connectedAddress && !isSelfRegistered ? (
-              <button className="btn btn-primary btn-sm font-normal" onClick={handleRegisterSelf}>
-                Register Node (1 ETH)
+              <button
+                className="btn btn-primary btn-sm font-normal"
+                onClick={handleRegisterSelf}
+                disabled={!oracleTokenAddress || !stakingDeployment?.address}
+              >
+                {registerButtonLabel}
               </button>
             ) : (
               <>
@@ -384,14 +561,14 @@ export const NodesTable = ({
                       <>
                         <th>Node Address</th>
                         <th>Stake</th>
-                        <th>ORA</th>
+                        <th>Rewards</th>
                         <th>Reported Price</th>
                         <th>
                           <div className="flex items-center gap-1">
                             Deviation
                             <TooltipInfo
                               className="tooltip-left"
-                              infoText="Percentage difference from the average of all other reported prices"
+                              infoText="Percentage difference versus the previous bucket median"
                             />
                           </div>
                         </th>
@@ -405,7 +582,7 @@ export const NodesTable = ({
                             Deviation
                             <TooltipInfo
                               className="tooltip-left"
-                              infoText="Percentage difference from the average of all other reported prices"
+                              infoText="Percentage difference from the recorded bucket median"
                             />
                           </div>
                         </th>

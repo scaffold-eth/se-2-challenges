@@ -1,8 +1,48 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import hre from "hardhat";
 import { sleep, getConfig } from "./utils";
-import { parseEther } from "viem";
 import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap";
+import { parseEther } from "viem";
+
+const oraTokenAbi = [
+  {
+    type: "function",
+    name: "approve",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "balanceOf",
+    stateMutability: "view",
+    inputs: [{ name: "owner", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "allowance",
+    stateMutability: "view",
+    inputs: [
+      { name: "owner", type: "address" },
+      { name: "spender", type: "address" },
+    ],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "transfer",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+  },
+] as const;
 
 type WalletClient = Awaited<ReturnType<typeof hre.viem.getWalletClients>>[number];
 
@@ -35,6 +75,12 @@ const normalizeNodeInfo = (raw: any) => {
     reportCount: get(2, "reportCount"),
     claimedReportCount: get(3, "claimedReportCount"),
     firstBucket: get(4, "firstBucket"),
+    active:
+      typeof raw?.active === "boolean"
+        ? (raw.active as boolean)
+        : Array.isArray(raw) && typeof raw[5] === "boolean"
+          ? (raw[5] as boolean)
+          : false,
   };
 };
 
@@ -56,6 +102,7 @@ const getStakingOracleDeployment = async (runtime: HardhatRuntimeEnvironment) =>
   return {
     address: deployment.address as `0x${string}`,
     abi: deployment.abi,
+    deployedBlock: deployment.receipt?.blockNumber ? BigInt(deployment.receipt.blockNumber) : 0n,
   } as const;
 };
 
@@ -77,7 +124,7 @@ const getActiveNodeWalletClients = async (
         args: [client.account.address],
       });
       const node = normalizeNodeInfo(rawNodeInfo);
-      if (node.firstBucket !== 0n) {
+      if (node.firstBucket !== 0n && node.active) {
         nodeClients.push(client);
       }
     } catch {
@@ -107,9 +154,40 @@ const findNodeIndex = async (
   return null;
 };
 
+const getReportIndexForNode = async (
+  publicClient: Awaited<ReturnType<typeof hre.viem.getPublicClient>>,
+  stakingAddress: `0x${string}`,
+  stakingAbi: any,
+  bucketNumber: bigint,
+  nodeAddress: `0x${string}`,
+  fromBlock: bigint,
+): Promise<number | null> => {
+  try {
+    const events = (await publicClient.getContractEvents({
+      address: stakingAddress,
+      abi: stakingAbi,
+      eventName: "PriceReported",
+      fromBlock,
+      toBlock: "latest",
+    })) as any[];
+    const bucketEvents = events.filter((ev: any) => {
+      const bucket = ev.args?.bucketNumber as bigint | undefined;
+      return bucket !== undefined && bucket === bucketNumber;
+    });
+    const idx = bucketEvents.findIndex((ev: any) => {
+      const reporter = (ev.args?.node as string | undefined) ?? "";
+      return reporter.toLowerCase() === nodeAddress.toLowerCase();
+    });
+    return idx === -1 ? null : idx;
+  } catch (error) {
+    console.warn("Failed to compute report index:", (error as Error).message);
+  }
+  return null;
+};
+
 const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
   try {
-    const { address, abi } = await getStakingOracleDeployment(runtime);
+    const { address, abi, deployedBlock } = await getStakingOracleDeployment(runtime);
     const publicClient = await runtime.viem.getPublicClient();
     const allWalletClients = await runtime.viem.getWalletClients();
     const blockNumber = await publicClient.getBlockNumber();
@@ -127,57 +205,28 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
     const previousBucket = currentBucket > 0n ? currentBucket - 1n : 0n;
     console.log(`BUCKET_WINDOW=${bucketWindow} | currentBucket=${currentBucket}`);
 
-    // Update base price from previous bucket, excluding slashable and already-slashed reports.
+    // Update base price from previous bucket using the RECORDED MEDIAN (not an average of reports).
     // Fallback to contract's latest price, then to previous cached value.
     try {
-      // Determine adjusted average from the previous bucket excluding outliers and slashed reports
       const previous = previousBucket;
       if (previous > 0n) {
-        let adjustedAvg: bigint | null = null;
         try {
-          const [outliers, nodeAddresses] = await Promise.all([
-            publicClient.readContract({ address, abi, functionName: "getOutlierNodes", args: [previous] }) as Promise<
-              `0x${string}`[]
-            >,
-            publicClient.readContract({ address, abi, functionName: "getNodeAddresses", args: [] }) as Promise<
-              `0x${string}`[]
-            >,
-          ]);
-          const outlierSet = new Set(outliers.map(a => a.toLowerCase()));
-          const dataForNodes = await Promise.all(
-            nodeAddresses.map(async nodeAddr => {
-              try {
-                const result: any = await publicClient.readContract({
-                  address,
-                  abi,
-                  functionName: "getAddressDataAtBucket",
-                  args: [nodeAddr, previous],
-                });
-                // result could be array-like [price, slashed] or object with named props
-                const priceVal = Array.isArray(result) ? result[0] : (result?.[0] ?? result?.price);
-                const slashedVal = Array.isArray(result) ? result[1] : (result?.[1] ?? result?.slashed);
-                const price = BigInt(String(priceVal ?? 0));
-                const slashed = Boolean(slashedVal);
-                return { nodeAddr, price, slashed } as const;
-              } catch {
-                return { nodeAddr, price: 0n, slashed: false } as const;
-              }
-            }),
-          );
-          const valid = dataForNodes.filter(
-            d => d.price > 0n && !d.slashed && !outlierSet.has(d.nodeAddr.toLowerCase()),
-          );
-          if (valid.length > 0) {
-            const sum = valid.reduce((acc, d) => acc + d.price, 0n);
-            adjustedAvg = sum / BigInt(valid.length);
+          // `getPastPrice(bucket)` returns the recorded median for that bucket (0 if not recorded yet).
+          const pastMedian = await publicClient.readContract({
+            address,
+            abi,
+            functionName: "getPastPrice",
+            args: [previous],
+          });
+          const median = BigInt(String(pastMedian));
+          if (median > 0n) {
+            currentPrice = median;
           }
         } catch {
           // ignore and fall back
         }
 
-        if (adjustedAvg !== null) {
-          currentPrice = adjustedAvg;
-        } else {
+        if (currentPrice === null) {
           // Fallback to on-chain latest average (previous bucket average)
           try {
             const onchain = await publicClient.readContract({ address, abi, functionName: "getLatestPrice", args: [] });
@@ -251,7 +300,77 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
       }
     }
 
-    // 2) Slashing: if previous bucket had outliers
+    // 2) Finalize median automatically when quorum is reached
+    if (currentBucket > 0n) {
+      let medianAlreadyRecorded = false;
+      try {
+        const median = await publicClient.readContract({
+          address,
+          abi,
+          functionName: "getPastPrice",
+          args: [currentBucket],
+        });
+        medianAlreadyRecorded = BigInt(String(median)) > 0n;
+      } catch {
+        medianAlreadyRecorded = false;
+      }
+
+      if (!medianAlreadyRecorded) {
+        try {
+          const activeNodeAddresses = (await publicClient.readContract({
+            address,
+            abi,
+            functionName: "getNodeAddresses",
+            args: [],
+          })) as `0x${string}`[];
+
+          const reportStatuses = await Promise.all(
+            activeNodeAddresses.map(async nodeAddr => {
+              try {
+                const [price] = (await publicClient.readContract({
+                  address,
+                  abi,
+                  functionName: "getSlashedStatus",
+                  args: [nodeAddr, currentBucket],
+                })) as [bigint, boolean];
+                return price;
+              } catch {
+                return 0n;
+              }
+            }),
+          );
+
+          const reportedCount = reportStatuses.reduce((acc, price) => acc + (price > 0n ? 1n : 0n), 0n);
+          const requiredReports =
+            activeNodeAddresses.length === 0 ? 0n : (2n * BigInt(activeNodeAddresses.length) + 2n) / 3n;
+
+          if (activeNodeAddresses.length === 0) {
+            console.log("No active nodes; skipping recordBucketMedian evaluation.");
+          } else if (reportedCount >= requiredReports) {
+            const finalizer = allWalletClients[0];
+            try {
+              await finalizer.writeContract({
+                address,
+                abi,
+                functionName: "recordBucketMedian",
+                args: [currentBucket],
+              });
+              console.log(`Recorded median for bucket ${currentBucket} (reports ${reportedCount}/${requiredReports}).`);
+            } catch (err) {
+              console.warn(`Failed to record median for bucket ${currentBucket}:`, (err as Error).message);
+            }
+          } else {
+            console.log(
+              `Skipping median recording for bucket ${currentBucket}; only ${reportedCount}/${requiredReports} reports.`,
+            );
+          }
+        } catch (err) {
+          console.warn("Unable to evaluate automatic recordBucketMedian:", (err as Error).message);
+        }
+      }
+    }
+
+    // 3) Slashing: if previous bucket had outliers
     if (AUTO_SLASH) {
       try {
         const outliers = (await publicClient.readContract({
@@ -271,14 +390,28 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
               console.warn(`Index not found for node ${nodeAddr}, skipping slashing.`);
               continue;
             }
+            const reportIndex = await getReportIndexForNode(
+              publicClient,
+              address,
+              abi,
+              previousBucket,
+              nodeAddr,
+              deployedBlock,
+            );
+            if (reportIndex === null) {
+              console.warn(`Report index not found for node ${nodeAddr}, skipping slashing.`);
+              continue;
+            }
             try {
               await slasher.writeContract({
                 address,
                 abi,
                 functionName: "slashNode",
-                args: [nodeAddr, previousBucket, index],
+                args: [nodeAddr, previousBucket, BigInt(reportIndex), BigInt(index)],
               });
-              console.log(`Slashed node ${nodeAddr} for bucket ${previousBucket} at index ${index}`);
+              console.log(
+                `Slashed node ${nodeAddr} for bucket ${previousBucket} at indices report=${reportIndex}, node=${index}`,
+              );
             } catch (err) {
               console.warn(`Failed to slash ${nodeAddr}:`, (err as Error).message);
             }
@@ -293,7 +426,7 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
       console.log(`Auto-slash disabled; skipping slashing for bucket ${previousBucket}`);
     }
 
-    // 3) Rewards: claim when there are unclaimed reports
+    // 4) Rewards: claim when there are unclaimed reports
     // Wait a couple seconds after reports have been mined before claiming
     console.log("Waiting 2s before claiming rewards...");
     await sleep(2000);
@@ -325,58 +458,193 @@ const run = async () => {
   currentPrice = await fetchPriceFromUniswap();
   console.log(`Initial base price from Uniswap: ${currentPrice}`);
 
-  // Spin up nodes (register) for local testing if they aren't registered yet.
+  // Spin up nodes (fund + approve + register) for local testing if they aren't registered yet.
   try {
     const { address, abi } = await getStakingOracleDeployment(hre);
     const publicClient = await hre.viem.getPublicClient();
     const accounts = await hre.viem.getWalletClients();
     // Mirror deploy script: use accounts[1..10] as oracle nodes
     const nodeAccounts = accounts.slice(1, 11);
-    const registerTxHashes: `0x${string}`[] = [];
+    const deployerClient = accounts[0];
 
-    for (const account of nodeAccounts) {
-      try {
-        const rawNodeInfo = await publicClient.readContract({
+    const [minimumStake, oraTokenAddress] = await Promise.all([
+      publicClient.readContract({ address, abi, functionName: "MINIMUM_STAKE", args: [] }).then(v => BigInt(String(v))),
+      publicClient
+        .readContract({
           address,
           abi,
-          functionName: "nodes",
-          args: [account.account.address],
-        });
+          functionName: "oracleToken",
+          args: [],
+        })
+        .then(v => v as unknown as `0x${string}`),
+    ]);
+
+    const defaultStake = parseEther("15000");
+    const stakeAmount = minimumStake > defaultStake ? minimumStake : defaultStake;
+
+    // Build an idempotent setup plan based on current on-chain state (so restarts resume cleanly).
+    const snapshots = await Promise.all(
+      nodeAccounts.map(async nodeClient => {
+        const nodeAddress = nodeClient.account.address;
+        const [rawNodeInfo, balance, allowance] = await Promise.all([
+          publicClient
+            .readContract({ address, abi, functionName: "nodes", args: [nodeAddress] })
+            .catch(() => null as any),
+          publicClient.readContract({
+            address: oraTokenAddress,
+            abi: oraTokenAbi,
+            functionName: "balanceOf",
+            args: [nodeAddress],
+          }) as Promise<bigint>,
+          publicClient.readContract({
+            address: oraTokenAddress,
+            abi: oraTokenAbi,
+            functionName: "allowance",
+            args: [nodeAddress, address],
+          }) as Promise<bigint>,
+        ]);
+
         const node = normalizeNodeInfo(rawNodeInfo);
-        if (node.firstBucket !== 0n) {
-          console.log(`Node already registered: ${account.account.address}`);
-          continue;
+        const effectiveStake = node.active
+          ? await publicClient
+              .readContract({ address, abi, functionName: "getEffectiveStake", args: [nodeAddress] })
+              .then(v => BigInt(String(v)))
+              .catch(() => 0n)
+          : 0n;
+
+        return { nodeClient, nodeAddress, node, effectiveStake, balance, allowance };
+      }),
+    );
+
+    const transfers: { to: `0x${string}`; amount: bigint }[] = [];
+    const perNodeActions: {
+      nodeClient: WalletClient;
+      nodeAddress: `0x${string}`;
+      approveAmount: bigint;
+      kind: "register" | "addStake" | "none";
+      amount: bigint;
+      note: string;
+    }[] = [];
+
+    for (const snap of snapshots) {
+      const { nodeClient, nodeAddress, node, effectiveStake, balance, allowance } = snap;
+
+      if (node.active) {
+        if (effectiveStake < minimumStake) {
+          const needed = minimumStake - effectiveStake;
+          const transferAmount = balance < needed ? needed - balance : 0n;
+          if (transferAmount > 0n) transfers.push({ to: nodeAddress, amount: transferAmount });
+
+          const approveAmount = allowance < needed ? needed : 0n;
+          perNodeActions.push({
+            nodeClient,
+            nodeAddress,
+            approveAmount,
+            kind: "addStake",
+            amount: needed,
+            note: `top up effectiveStake=${effectiveStake} by ${needed}`,
+          });
+        } else {
+          perNodeActions.push({
+            nodeClient,
+            nodeAddress,
+            approveAmount: 0n,
+            kind: "none",
+            amount: 0n,
+            note: "already active (no action)",
+          });
         }
-      } catch {
-        // If read fails, proceed to attempt registration
+        continue;
       }
 
-      try {
-        console.log(`Registering node ${account.account.address} with initial price ${currentPrice} and stake 15 ETH`);
-        const txHash = await account.writeContract({
+      // Inactive -> fund/approve/register. On restart, we only do the missing pieces.
+      const transferAmount = balance < stakeAmount ? stakeAmount - balance : 0n;
+      if (transferAmount > 0n) transfers.push({ to: nodeAddress, amount: transferAmount });
+
+      const approveAmount = allowance < stakeAmount ? stakeAmount : 0n;
+      perNodeActions.push({
+        nodeClient,
+        nodeAddress,
+        approveAmount,
+        kind: "register",
+        amount: stakeAmount,
+        note: `register with stake=${stakeAmount}`,
+      });
+    }
+
+    // 1) Fund nodes in one burst from deployer using nonce chaining.
+    if (transfers.length > 0) {
+      const deployerNonce = await publicClient.getTransactionCount({ address: deployerClient.account.address });
+      const transferTxs: `0x${string}`[] = [];
+      console.log(`Funding ${transfers.length} node(s) from deployer (burst)...`);
+      for (const [i, t] of transfers.entries()) {
+        const tx = await deployerClient.writeContract({
+          address: oraTokenAddress,
+          abi: oraTokenAbi,
+          functionName: "transfer",
+          nonce: deployerNonce + i,
+          args: [t.to, t.amount],
+        });
+        transferTxs.push(tx as `0x${string}`);
+      }
+      await Promise.all(transferTxs.map(hash => publicClient.waitForTransactionReceipt({ hash })));
+      console.log("Funding burst mined.");
+    }
+
+    // 2) For each node, chain approve -> (register|addStake) with explicit nonces, then wait for all receipts once.
+    const nodeNonces = await Promise.all(
+      perNodeActions.map(a => publicClient.getTransactionCount({ address: a.nodeAddress })),
+    );
+    const nodeTxs: `0x${string}`[] = [];
+
+    for (const [idx, action] of perNodeActions.entries()) {
+      const { nodeClient, nodeAddress, approveAmount, kind, amount, note } = action;
+      let nonce = nodeNonces[idx];
+
+      if (kind === "none") {
+        console.log(`Node ${nodeAddress}: ${note}`);
+        continue;
+      }
+
+      console.log(`Node ${nodeAddress}: ${note}`);
+
+      if (approveAmount > 0n) {
+        const tx = await nodeClient.writeContract({
+          address: oraTokenAddress,
+          abi: oraTokenAbi,
+          functionName: "approve",
+          nonce,
+          args: [address, approveAmount],
+        });
+        nodeTxs.push(tx as `0x${string}`);
+        nonce += 1;
+      }
+
+      if (kind === "register") {
+        const tx = await nodeClient.writeContract({
           address,
           abi,
           functionName: "registerNode",
-          args: [currentPrice],
-          value: parseEther("15"),
+          nonce,
+          args: [amount],
         });
-        registerTxHashes.push(txHash as `0x${string}`);
-      } catch (err: any) {
-        if (err?.message?.includes("NodeAlreadyRegistered")) {
-          console.log(`Node already registered during attempt: ${account.account.address}`);
-        } else {
-          console.warn(`Failed to register node ${account.account.address}:`, err?.message ?? err);
-        }
+        nodeTxs.push(tx as `0x${string}`);
+      } else if (kind === "addStake") {
+        const tx = await nodeClient.writeContract({
+          address,
+          abi,
+          functionName: "addStake",
+          nonce,
+          args: [amount],
+        });
+        nodeTxs.push(tx as `0x${string}`);
       }
     }
 
-    if (registerTxHashes.length > 0) {
-      try {
-        await Promise.all(registerTxHashes.map(h => publicClient.waitForTransactionReceipt({ hash: h } as any)));
-        console.log("All node registration txs mined");
-      } catch (err) {
-        console.warn("Error waiting for registration receipts:", (err as Error).message);
-      }
+    if (nodeTxs.length > 0) {
+      console.log(`Waiting for ${nodeTxs.length} node tx(s) to be mined...`);
+      await Promise.all(nodeTxs.map(hash => publicClient.waitForTransactionReceipt({ hash })));
+      console.log("Node setup txs mined.");
     }
   } catch (err) {
     console.warn("Node registration step failed:", (err as Error).message);

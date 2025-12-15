@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { erc20Abi, formatEther, parseEther } from "viem";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { HighlightedCell } from "~~/components/oracle/HighlightedCell";
 import { StakingEditableCell } from "~~/components/oracle/StakingEditableCell";
@@ -24,6 +24,7 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   });
   // OracleNode struct layout: [0]=stakedAmount, [1]=lastReportedBucket, [2]=reportCount, [3]=claimedReportCount, [4]=firstBucket
   const stakedAmount = nodeData?.[0] as bigint | undefined;
+  const claimedReportCount = nodeData?.[3] as bigint | undefined;
 
   const { data: currentBucket } = useScaffoldReadContract({
     contractName: "StakingOracle",
@@ -31,11 +32,13 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   }) as { data: bigint | undefined };
 
   const previousBucket = currentBucket && currentBucket > 0n ? currentBucket - 1n : 0n;
+  const shouldFetchPreviousMedian = currentBucket !== undefined && previousBucket > 0n;
 
-  const { data: medianPrice } = useScaffoldReadContract({
+  const { data: previousMedian } = useScaffoldReadContract({
     contractName: "StakingOracle",
     functionName: "getPastPrice",
     args: [previousBucket] as any,
+    query: { enabled: shouldFetchPreviousMedian },
   }) as { data: bigint | undefined };
 
   const { data: oracleTokenAddress } = useScaffoldReadContract({
@@ -50,16 +53,15 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
     watch: true,
   }) as { data: string[] | undefined };
 
-  const { data: oraBalance } = useReadContract({
-    address: oracleTokenAddress as `0x${string}`,
-    abi: erc20Abi,
-    functionName: "balanceOf",
-    args: connectedAddress ? [connectedAddress] : undefined,
-    query: { enabled: !!oracleTokenAddress && !!connectedAddress, refetchInterval: 5000 },
-  });
+  const { data: rewardPerReport } = useScaffoldReadContract({
+    contractName: "StakingOracle",
+    functionName: "REWARD_PER_REPORT",
+  }) as { data: bigint | undefined };
 
   const { writeContractAsync: writeStaking } = useScaffoldWriteContract({ contractName: "StakingOracle" });
   const { data: stakingDeployment } = useDeployedContractInfo({ contractName: "StakingOracle" });
+  const { writeContractAsync: writeErc20 } = useWriteContract();
+  const stakingAddress = stakingDeployment?.address as `0x${string}` | undefined;
 
   const isRegistered = useMemo(() => {
     if (!connectedAddress) return false;
@@ -76,11 +78,14 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
     query: { enabled: !!stakingDeployment?.address && !!connectedAddress && isRegistered, refetchInterval: 5000 },
   }) as { data: bigint | undefined };
 
-  const stakedAmountFormatted = effectiveStake !== undefined ? Number(formatEther(effectiveStake)) : "Loading...";
+  const stakedAmountFormatted =
+    effectiveStake !== undefined
+      ? Number(formatEther(effectiveStake)).toLocaleString(undefined, { maximumFractionDigits: 2 })
+      : "Loading...";
   // Current bucket reported price from contract (align with NodeRow)
   const { data: currentBucketPrice } = useScaffoldReadContract({
     contractName: "StakingOracle",
-    functionName: "getAddressDataAtBucket",
+    functionName: "getSlashedStatus",
     args: [connectedAddress || "0x0000000000000000000000000000000000000000", currentBucket ?? 0n] as const,
     watch: true,
   }) as { data?: [bigint, boolean] };
@@ -90,7 +95,13 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
     reportedPriceInCurrentBucket !== undefined && reportedPriceInCurrentBucket !== 0n
       ? `$${Number(parseFloat(formatEther(reportedPriceInCurrentBucket)).toFixed(2))}`
       : "Not reported";
-  const oraBalanceFormatted = oraBalance !== undefined ? Number(formatEther(oraBalance as bigint)) : "Loading...";
+
+  const claimedRewardsFormatted = useMemo(() => {
+    const rpr = rewardPerReport ?? parseEther("1");
+    const claimed = (claimedReportCount ?? 0n) * rpr;
+    const wholeOra = claimed / 10n ** 18n;
+    return new Intl.NumberFormat("en-US").format(wholeOra);
+  }, [claimedReportCount, rewardPerReport]);
 
   // Track previous staked amount to determine up/down changes for highlight
   const prevStakedAmountRef = useRef<bigint | undefined>(undefined);
@@ -106,21 +117,30 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   // Deviation for current bucket vs previous bucket average
   const currentDeviationText = useMemo(() => {
     if (!reportedPriceInCurrentBucket || reportedPriceInCurrentBucket === 0n) return "—";
-    if (!medianPrice || medianPrice === 0n) return "—";
-    const avg = Number(medianPrice);
-    const price = Number(reportedPriceInCurrentBucket);
-    if (avg === 0) return "—";
+    if (!previousMedian || previousMedian === 0n) return "—";
+    const avg = Number(formatEther(previousMedian));
+    const price = Number(formatEther(reportedPriceInCurrentBucket));
+    if (!Number.isFinite(avg) || avg === 0) return "—";
     const pct = ((price - avg) / avg) * 100;
     const sign = pct > 0 ? "+" : "";
     return `${sign}${pct.toFixed(2)}%`;
-  }, [reportedPriceInCurrentBucket, medianPrice]);
+  }, [reportedPriceInCurrentBucket, previousMedian]);
 
   const isCurrentView = bucketNumber === null || bucketNumber === undefined;
 
   // For past buckets, fetch the reported price at that bucket
+  const { data: selectedBucketMedian } = useScaffoldReadContract({
+    contractName: "StakingOracle",
+    functionName: "getPastPrice",
+    args: [bucketNumber ?? 0n] as any,
+    query: {
+      enabled: !isCurrentView && bucketNumber !== null && bucketNumber !== undefined && (bucketNumber as bigint) > 0n,
+    },
+  }) as { data: bigint | undefined };
+
   const { data: pastBucketPrice } = useScaffoldReadContract({
     contractName: "StakingOracle",
-    functionName: "getAddressDataAtBucket",
+    functionName: "getSlashedStatus",
     args: [
       connectedAddress || "0x0000000000000000000000000000000000000000",
       !isCurrentView && bucketNumber ? bucketNumber : 0n,
@@ -135,19 +155,26 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   const pastDeviationText = useMemo(() => {
     if (isCurrentView) return "—";
     if (!pastReportedPrice || pastReportedPrice === 0n || !bucketNumber) return "—";
-    if (!medianPrice || medianPrice === 0n) return "—";
-    const avg = Number(medianPrice);
-    const price = Number(pastReportedPrice);
-    if (avg === 0) return "—";
+    if (!selectedBucketMedian || selectedBucketMedian === 0n) return "—";
+    const avg = Number(formatEther(selectedBucketMedian));
+    const price = Number(formatEther(pastReportedPrice));
+    if (!Number.isFinite(avg) || avg === 0) return "—";
     const pct = ((price - avg) / avg) * 100;
     const sign = pct > 0 ? "+" : "";
     return `${sign}${pct.toFixed(2)}%`;
-  }, [isCurrentView, pastReportedPrice, medianPrice, bucketNumber]);
+  }, [isCurrentView, pastReportedPrice, selectedBucketMedian, bucketNumber]);
 
   const handleAddStake = async () => {
-    if (!connectedAddress) return;
+    if (!connectedAddress || !oracleTokenAddress || !stakingAddress) return;
+    const additionalStake = parseEther("1000");
     try {
-      await writeStaking({ functionName: "addStake", value: parseEther("1") });
+      await writeErc20({
+        address: oracleTokenAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [stakingAddress, additionalStake],
+      });
+      await writeStaking({ functionName: "addStake", args: [additionalStake] });
     } catch (e: any) {
       console.error(e);
     }
@@ -163,23 +190,23 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
           <>
             <HighlightedCell value={stakedAmountFormatted} highlightColor={stakeHighlightColor}>
               <div className="flex items-center gap-2 h-full items-stretch">
-                <span>Ξ {stakedAmountFormatted}</span>
+                <span>{stakedAmountFormatted}</span>
                 <button
                   className="px-2 text-sm bg-primary rounded cursor-pointer"
                   onClick={handleAddStake}
-                  title="Add 1 ETH"
+                  title="Add 1000 ORA"
                 >
                   <PlusIcon className="w-2.5 h-2.5" />
                 </button>
               </div>
             </HighlightedCell>
-            <HighlightedCell value={oraBalanceFormatted} highlightColor="bg-success">
-              {oraBalanceFormatted}
+            <HighlightedCell value={claimedRewardsFormatted} highlightColor="bg-success">
+              {claimedRewardsFormatted}
             </HighlightedCell>
             <StakingEditableCell
               value={lastReportedPriceFormatted}
               nodeAddress={connectedAddress || "0x0000000000000000000000000000000000000000"}
-              highlightColor={getHighlightColorForPrice(reportedPriceInCurrentBucket, medianPrice)}
+              highlightColor={getHighlightColorForPrice(reportedPriceInCurrentBucket, previousMedian)}
               className={""}
               canEdit={isRegistered}
               disabled={hasReportedThisBucket}
@@ -189,10 +216,10 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
         ) : (
           <>
             <HighlightedCell value={"—"} highlightColor="">
-              Ξ —
+              —
             </HighlightedCell>
-            <HighlightedCell value={oraBalanceFormatted} highlightColor="bg-success">
-              {oraBalanceFormatted}
+            <HighlightedCell value={claimedRewardsFormatted} highlightColor="bg-success">
+              {claimedRewardsFormatted}
             </HighlightedCell>
             <StakingEditableCell
               value={"Must re-register"}
@@ -212,7 +239,9 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
                 ? `$${Number(parseFloat(formatEther(pastReportedPrice)).toFixed(2))}`
                 : "Not reported"
             }
-            highlightColor={pastSlashed ? "bg-error" : getHighlightColorForPrice(pastReportedPrice, medianPrice)}
+            highlightColor={
+              pastSlashed ? "bg-error" : getHighlightColorForPrice(pastReportedPrice, selectedBucketMedian)
+            }
             className={pastSlashed ? "border-2 border-error" : ""}
           >
             {pastReportedPrice !== undefined && pastReportedPrice !== 0n

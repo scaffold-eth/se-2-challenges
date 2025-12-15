@@ -49,7 +49,7 @@ export const BucketCountdown = () => {
         const blocksRemaining = nextBucketBlock - blockNum;
 
         // Add 3 second offset since node is ahead of system time
-        const estimatedSecondsRemaining = Math.max(0, blocksRemaining + 3);
+        const estimatedSecondsRemaining = Math.max(0, blocksRemaining + 2);
 
         if (mounted) setRemainingSec(estimatedSecondsRemaining);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

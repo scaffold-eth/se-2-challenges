@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import TooltipInfo from "~~/components/TooltipInfo";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
-import { formatEther } from "viem";
 
 export const TotalSlashedWidget = () => {
   const { data: slashedEvents, isLoading } = useScaffoldEventHistory({
@@ -18,7 +17,13 @@ export const TotalSlashedWidget = () => {
     }, 0n);
   }, [slashedEvents]);
 
-  const tooltipText = "Aggregated ETH slashed across all nodes. Sums the amount from every NodeSlashed event.";
+  const totalSlashedOraFormatted = useMemo(() => {
+    // ORA uses 18 decimals (same as ETH), but we intentionally display whole tokens only.
+    const wholeOra = totalSlashedWei / 10n ** 18n;
+    return new Intl.NumberFormat("en-US").format(wholeOra);
+  }, [totalSlashedWei]);
+
+  const tooltipText = "Aggregated ORA slashed across all nodes. Sums the amount from every NodeSlashed event.";
 
   return (
     <div className="flex flex-col gap-2 h-full">
@@ -29,12 +34,12 @@ export const TotalSlashedWidget = () => {
           {isLoading ? (
             <div className="animate-pulse h-10 bg-secondary rounded-md w-32" />
           ) : (
-            <div className="font-bold text-4xl">Ξ {Number(formatEther(totalSlashedWei)).toFixed(4)}</div>
+            <div className="font-bold text-4xl">
+              {totalSlashedOraFormatted} ORA
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 };
-
-

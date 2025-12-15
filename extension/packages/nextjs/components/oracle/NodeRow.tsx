@@ -21,12 +21,6 @@ interface NodeRowWithEditProps extends NodeRowProps {
 
 export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWithEditProps) => {
   // Hooks and contract reads
-  const { data = [] } = useScaffoldReadContract({
-    contractName: "StakingOracle",
-    functionName: "nodes",
-    args: [address],
-    watch: true,
-  });
   const { data: oracleTokenAddress } = useScaffoldReadContract({
     contractName: "StakingOracle",
     functionName: "oracleToken",
@@ -53,19 +47,14 @@ export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWi
     [currentBucket],
   );
 
-  const { data: prevBucketAverage } = useScaffoldReadContract({
+  const shouldFetchPrevMedian = currentBucket !== undefined && previousBucket > 0n;
+
+  const { data: prevBucketMedian } = useScaffoldReadContract({
     contractName: "StakingOracle",
     functionName: "getPastPrice",
     args: [previousBucket] as any,
+    query: { enabled: shouldFetchPrevMedian },
   }) as { data: bigint | undefined };
-
-  // Get bucket stats for the selected past bucket (for deviation calculation)
-  // Temporarily using any to bypass TypeScript until contract is redeployed
-  const { data: selectedBucketStats } = useScaffoldReadContract({
-    contractName: "StakingOracle",
-    functionName: "timeBuckets",
-    args: (bucketNumber !== null && bucketNumber !== undefined ? [bucketNumber] : [0n]) as any,
-  }) as { data?: [bigint, bigint] };
 
   const { data: effectiveStake } = useScaffoldReadContract({
     contractName: "StakingOracle",
@@ -76,7 +65,7 @@ export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWi
   // Get current bucket price
   const { data: currentBucketPrice } = useScaffoldReadContract({
     contractName: "StakingOracle",
-    functionName: "getAddressDataAtBucket",
+    functionName: "getSlashedStatus",
     args: [address, currentBucket ?? 0n] as const,
     watch: true,
   }) as { data?: [bigint, boolean] };
@@ -88,7 +77,7 @@ export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWi
 
   const { data: addressDataAtBucket } = useScaffoldReadContract({
     contractName: "StakingOracle",
-    functionName: "getAddressDataAtBucket",
+    functionName: "getSlashedStatus",
     args: [address, (bucketNumber ?? 0n) as any],
     query: { enabled: !isCurrentView },
   }) as { data?: [bigint, boolean] };
@@ -96,51 +85,56 @@ export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWi
   const pastReportedPrice = !isCurrentView && addressDataAtBucket ? addressDataAtBucket[0] : undefined;
   const pastSlashed = !isCurrentView && addressDataAtBucket ? addressDataAtBucket[1] : undefined;
 
+  const { data: selectedBucketMedian } = useScaffoldReadContract({
+    contractName: "StakingOracle",
+    functionName: "getPastPrice",
+    args: [bucketNumber ?? 0n] as any,
+    query: {
+      enabled: !isCurrentView && bucketNumber !== null && bucketNumber !== undefined && (bucketNumber as bigint) > 0n,
+    },
+  }) as { data: bigint | undefined };
+
   // Formatting
-  const stakedAmountFormatted = effectiveStake !== undefined ? Number(formatEther(effectiveStake)) : "Loading...";
+  const stakedAmountFormatted =
+    effectiveStake !== undefined
+      ? Number(formatEther(effectiveStake)).toLocaleString(undefined, { maximumFractionDigits: 2 })
+      : "Loading...";
   const lastReportedPriceFormatted =
     reportedPriceInCurrentBucket !== undefined && reportedPriceInCurrentBucket !== 0n
       ? `$${Number(parseFloat(formatEther(reportedPriceInCurrentBucket)).toFixed(2))}`
       : "Not reported";
-  const oraBalanceFormatted = oraBalance !== undefined ? Number(formatEther(oraBalance)) : "Loading...";
+  const oraBalanceFormatted =
+    oraBalance !== undefined
+      ? Number(formatEther(oraBalance as bigint)).toLocaleString(undefined, { maximumFractionDigits: 2 })
+      : "Loading...";
   const isInsufficientStake =
     effectiveStake !== undefined && minimumStake !== undefined && effectiveStake < (minimumStake as bigint);
 
   // Calculate deviation for past buckets
   const deviationText = useMemo(() => {
     if (isCurrentView) return "—";
-    if (!pastReportedPrice || pastReportedPrice === 0n || !bucketNumber) return "—";
-    if (!selectedBucketStats || !selectedBucketStats[0] || !selectedBucketStats[1]) return "—";
-
-    const [countReports, sumPrices] = selectedBucketStats;
-
-    // Exclude this node's price from the average calculation
-    const adjustedCount = countReports - 1n;
-    const adjustedSum = sumPrices - pastReportedPrice;
-
-    if (adjustedCount === 0n || adjustedSum === 0n) return "—";
-
-    const averageWithoutNode = Number(adjustedSum) / Number(adjustedCount);
-    const price = Number(pastReportedPrice);
-
-    if (averageWithoutNode === 0) return "—";
-    const pct = ((price - averageWithoutNode) / averageWithoutNode) * 100;
+    if (!pastReportedPrice || pastReportedPrice === 0n) return "—";
+    if (!selectedBucketMedian || selectedBucketMedian === 0n) return "—";
+    const median = Number(formatEther(selectedBucketMedian));
+    const price = Number(formatEther(pastReportedPrice));
+    if (!Number.isFinite(median) || median === 0) return "—";
+    const pct = ((price - median) / median) * 100;
     const sign = pct > 0 ? "+" : "";
     return `${sign}${pct.toFixed(2)}%`;
-  }, [selectedBucketStats, pastReportedPrice, bucketNumber, isCurrentView]);
+  }, [isCurrentView, pastReportedPrice, selectedBucketMedian]);
 
   // Deviation for current bucket vs previous bucket average
   const currentDeviationText = useMemo(() => {
     if (!isCurrentView) return "—";
     if (!reportedPriceInCurrentBucket || reportedPriceInCurrentBucket === 0n) return "—";
-    if (!prevBucketAverage || prevBucketAverage === 0n) return "—";
-    const avg = Number(prevBucketAverage);
-    const price = Number(reportedPriceInCurrentBucket);
-    if (avg === 0) return "—";
+    if (!prevBucketMedian || prevBucketMedian === 0n) return "—";
+    const avg = Number(formatEther(prevBucketMedian));
+    const price = Number(formatEther(reportedPriceInCurrentBucket));
+    if (!Number.isFinite(avg) || avg === 0) return "—";
     const pct = ((price - avg) / avg) * 100;
     const sign = pct > 0 ? "+" : "";
     return `${sign}${pct.toFixed(2)}%`;
-  }, [isCurrentView, reportedPriceInCurrentBucket, prevBucketAverage]);
+  }, [isCurrentView, reportedPriceInCurrentBucket, prevBucketMedian]);
 
   return (
     <>
@@ -161,17 +155,14 @@ export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWi
         ) : isCurrentView ? (
           <>
             <HighlightedCell value={stakedAmountFormatted} highlightColor="bg-error">
-              Ξ {stakedAmountFormatted}
+              {stakedAmountFormatted}
             </HighlightedCell>
             <HighlightedCell value={oraBalanceFormatted} highlightColor="bg-success">
               {oraBalanceFormatted}
             </HighlightedCell>
             <HighlightedCell
               value={lastReportedPriceFormatted}
-              highlightColor={getHighlightColorForPrice(
-                data && data.length > 0 && typeof data[1] === "bigint" ? data[1] : 0n,
-                prevBucketAverage,
-              )}
+              highlightColor={getHighlightColorForPrice(reportedPriceInCurrentBucket, prevBucketMedian)}
               className={""}
             >
               {lastReportedPriceFormatted}
@@ -187,7 +178,7 @@ export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWi
                   : "Not reported"
               }
               highlightColor={
-                pastSlashed ? "bg-error" : getHighlightColorForPrice(pastReportedPrice, prevBucketAverage)
+                pastSlashed ? "bg-error" : getHighlightColorForPrice(pastReportedPrice, selectedBucketMedian)
               }
               className={pastSlashed ? "border-2 border-error" : ""}
             >
