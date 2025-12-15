@@ -1201,7 +1201,7 @@ yarn test --grep "Checkpoint2"
 
 ✏️ Now you can press the pencil icon to report a new price. Enter your price and press the checkmark button to confirm. If you want to report the same price in the next block then just press the refresh icon next to the pencil.
 
-![SelfNodeRow](https://github.com/user-attachments/assets/32952de3-bd72-4cc6-98ba-a6b374539533)
+![SelfNodeRow](https://github.com/user-attachments/assets/51f5e8a6-da2e-4bc3-a280-68609fea0789)
 
 > ‼️ "Insufficient Stake" errors? Look at your staked balance 👀. It has fallen below the minimum amount of stake because you let some blocks pass without reporting. Just press the + button next to your stake to add more ORA (It will give you some from the faucet).
 
