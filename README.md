@@ -1,16 +1,16 @@
-# 🚩 Challenge: 🔏 Decentralized Staking App
+# 🚩 Challenge: 📣 Crowdfunding App
 
-![readme-1](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-decentralized-staking/extension/packages/nextjs/public/hero.png)
+![readme-1](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-crowdfunding/extension/packages/nextjs/public/hero.png)
 
-🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code.
+🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code, not each other.
 
-🏦 Build a `Staker.sol` contract that collects **ETH** from numerous addresses using a payable `stake()` function and keeps track of `balances`. After some `deadline` if it has at least some `threshold` of ETH, it sends it to an `ExampleExternalContract` and triggers the `complete()` action sending the full balance. If not enough **ETH** is collected, allow users to `withdraw()`.
+🏦 Build a `CrowdFund.sol` contract that collects **ETH** from numerous addresses using a payable `contribute()` function and keeps track of `balances`. After some `deadline` if it has at least some `threshold` of ETH, it sends it to a `FundingRecipient` contract (This is a stand-in for any potential use case a group of people would want to fund together). It then triggers the `complete()` action, sending the full balance. If not enough **ETH** is collected, allow users to `withdraw()`.
 
-🎛 Building the frontend to display the information and UI is just as important as writing the contract. The goal is to deploy the contract and the app to allow anyone to stake using your app. Use a `Stake(address, uint256)` event to list all stakes.
+🎛 Building the frontend to display the information and UI is just as important as writing the contract. The goal is to deploy the contract and the app to allow anyone to contribute using your app. Use a `Contribution(address, uint256)` event to list all contributions.
 
-> 📝 Note: If you use named arguments in your event (e.g. `event Stake(address indexed staker, uint256 amount)`), you'll need to update `/packages/nextjs/app/stakings/page.tsx` to reference event parameters by their names instead of numeric indices.
+> 📝 Note: If you use named arguments in your event (e.g. `event Contribution(address indexed contributor, uint256 amount)`), you'll need to update `/packages/nextjs/app/contributions/page.tsx` to reference event parameters by their names instead of numeric indices.
 
-🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and stake if the conditions are met, then `yarn vercel` your app to a public webserver. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
+🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and then fund the cause if the conditions are met, then `yarn vercel` your app to a public webserver. Submit the url on [SpeedrunEthereum.com](https://speedrunethereum.com)!
 
 > 💬 Meet other builders working on this challenge and get help in the [challenge Telegram](https://t.me/joinchat/E6r91UFt4oMJlt01)!
 
@@ -27,8 +27,8 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.2 -e challenge-decentralized-staking challenge-decentralized-staking
-cd challenge-decentralized-staking
+npx create-eth@1.0.2 -e challenge-crowdfunding challenge-crowdfunding
+cd challenge-crowdfunding
 ```
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
@@ -40,14 +40,14 @@ yarn chain
 > in a second terminal window, 🛰 deploy your contract (locally):
 
 ```sh
-cd challenge-decentralized-staking
+cd challenge-crowdfunding
 yarn deploy
 ```
 
 > in a third terminal window, start your 📱 frontend:
 
 ```sh
-cd challenge-decentralized-staking
+cd challenge-crowdfunding
 yarn start
 ```
 
@@ -55,11 +55,11 @@ yarn start
 
 > 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
 
-🔏 Now you are ready to edit your smart contract `Staker.sol` in `packages/hardhat/contracts`
+🔏 Now you are ready to edit your smart contract `CrowdFund.sol` in `packages/hardhat/contracts`
 
 ---
 
-⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
+⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
 
 ---
 
@@ -72,7 +72,7 @@ yarn start
 
 ---
 
-## Checkpoint 1: 🔏 Staking 💵
+## Checkpoint 1: 🤝 Contributing 💵
 
 You'll need to track individual `balances` using a mapping:
 
@@ -86,7 +86,7 @@ And also track a constant `threshold` at `1 ether`
 uint256 public constant threshold = 1 ether;
 ```
 
-> 👩‍💻 Write your `stake()` function and test it with the `Debug Contracts` tab in the frontend.
+> 👩‍💻 Write your `contribute()` function and test it with the `Debug Contracts` tab in the frontend.
 
 ![debugContracts](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1a888e31-a79b-49ef-9848-357c5cee445a)
 
@@ -98,11 +98,11 @@ uint256 public constant threshold = 1 ether;
 
 ### 🥅 Goals
 
-- [ ] Do you see the balance of the `Staker` contract go up when you `stake()`?
+- [ ] Do you see the balance of the `CrowdFund` contract go up when you `contribute()`?
 - [ ] Is your `balance` correctly tracked?
-- [ ] Do you see the events in the `Stake Events` tab?
+- [ ] Do you see the events in the `Contributions` tab?
 
-  ![allStakings](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/80bcc843-034c-4547-8535-129ed494a204)
+  ![allContributions](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/80bcc843-034c-4547-8535-129ed494a204) TODO: UPDATE IMAGE
 
 ---
 
@@ -110,7 +110,7 @@ uint256 public constant threshold = 1 ether;
 
 ### State Machine
 
-> ⚙️ Think of your smart contract like a _state machine_. First, there is a **stake** period. Then, if you have gathered the `threshold` worth of ETH, there is a **success** state. Or, we go into a **withdraw** state to let users withdraw their funds.
+> ⚙️ Think of your smart contract like a _state machine_. First, there is a **contribute** period. Then, if you have gathered the `threshold` worth of ETH, there is a **success** state. Or, we go into a **withdraw** state to let users withdraw their funds.
 
 Set a `deadline` of `block.timestamp + 30 seconds`
 
@@ -122,9 +122,9 @@ uint256 public deadline = block.timestamp + 30 seconds;
 
 > 👩‍💻 Write your `execute()` function and test it with the `Debug Contracts` tab
 
-> Check the `ExampleExternalContract.sol` for the bool you can use to test if it has been completed or not. But do not edit the `ExampleExternalContract.sol` as it can slow the auto grading.
+> Check the `FundingRecipient.sol` for the bool you can use to test if it has been completed or not. But do not edit the `FundingRecipient.sol` as it can slow the auto grading.
 
-If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `exampleExternalContract.complete{value: address(this).balance}()`
+If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `fundingRecipient.complete{value: address(this).balance}()`
 
 If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
 
@@ -143,23 +143,23 @@ You'll have 30 seconds after deploying until the deadline is reached, you can ad
 > 👩‍💻 You can call `yarn deploy --reset` any time you want a fresh contract, it will get re-deployed even if there are no changes on it.
 > You may need it when you want to reload the _"Time Left"_ of your tests.
 
-Your `Staker UI` tab should be almost done and working at this point.
+Your `Crowdfund` tab should be almost done and working at this point.
 
 ---
 
 ### 🥅 Goals
 
-- [ ] Can you see `timeLeft` counting down in the `Staker UI` tab when you trigger a transaction with the faucet button?
-- [ ] If enough ETH is staked by the deadline, does your `execute()` function correctly call `complete()` and stake the ETH?
+- [ ] Can you see `timeLeft` counting down in the `Crowdfund` tab when you trigger a transaction with the faucet button?
+- [ ] If enough ETH is contributed by the deadline, does your `execute()` function correctly call `complete()` and contribute the ETH?
 - [ ] If the threshold isn't met by the deadline, are you able to `withdraw()` your funds?
 
 ---
 
 ## Checkpoint 3: 💵 Receive Function / UX 🙎
 
-🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `stake()`. You will use what is called the `receive()` function.
+🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `contribute()`. You will use what is called the `receive()` function.
 
-> Use the [receive()](https://docs.soliditylang.org/en/v0.8.9/contracts.html?highlight=receive#receive-ether-function) function in solidity to "catch" ETH sent to the contract and call `stake()` to update `balances`.
+> Use the [receive()](https://docs.soliditylang.org/en/v0.8.9/contracts.html?highlight=receive#receive-ether-function) function in solidity to "catch" ETH sent to the contract *without a specific method indicated* and call `contribute()` to update `balances`.
 
 ---
 
@@ -172,7 +172,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 ### ⚔️ Side Quests
 
 - [ ] Can `execute()` get called more than once, and is that okay?
-- [ ] Can you stake and withdraw freely after the `deadline`, and is that okay?
+- [ ] Can you contribute and withdraw freely after the `deadline`, and is that okay?
 - [ ] What are other implications of _anyone_ being able to withdraw for someone?
 
 ---
@@ -180,7 +180,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 ### 🐸 It's a trap!
 
 - [ ] Make sure funds can't get trapped in the contract! **Try sending funds after you have executed! What happens?**
-- [ ] Try to create a [modifier](https://solidity-by-example.org/function-modifier/) called `notCompleted`. It will check that `ExampleExternalContract` is not completed yet. Use it to protect your `execute` and `withdraw` functions.
+- [ ] Try to create a [modifier](https://solidity-by-example.org/function-modifier/) called `notCompleted`. It will check that `FundingRecipient` is not completed yet. Use it to protect your `execute` and `withdraw` functions.
 
 ### ⚠️ Test it!
 
@@ -204,7 +204,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
 
-![allStakings-blockFrom](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/04725dc8-4a8d-4089-ba82-90f9b94bfbda)
+![allContributions-blockFrom](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/04725dc8-4a8d-4089-ba82-90f9b94bfbda) TODO: UPDATE IMAGE
 
 ---
 
@@ -212,7 +212,7 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia)
 
-💻 View your frontend at http://localhost:3000/staker-ui and verify you see the correct network.
+💻 View your frontend at http://localhost:3000/crowdfund and verify you see the correct network.
 
 📡 When you are ready to ship the frontend app...
 
@@ -224,18 +224,18 @@ Your `Staker UI` tab should be almost done and working at this point.
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat`. You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`).
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
-This is great to complete your **SpeedRunEthereum**.
+This is great for going through **SpeedrunEthereum** but...
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- `ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -245,7 +245,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
-👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
+👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to [SpeedrunEthereum.com](https://speedrunethereum.com).
 
 ---
 
@@ -253,4 +253,4 @@ Run the `yarn verify --network your_network` command to verify your contracts on
 
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
 
-Note: The staking page is in `/packages/nextjs/stakings/page.tsx.tsx`
+Note: The contributions page is in `/packages/nextjs/app/contributions/page.tsx`
