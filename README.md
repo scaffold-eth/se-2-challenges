@@ -181,8 +181,10 @@ error NotOpenToWithdraw();
 error WithdrawTransferFailed(address to, uint256 amount);
 ```
 
-> ❓Did you know that custom errors are more gas efficient than using revert string errors? 
+> ❓Did you know that custom errors are more gas efficient than using revert string errors?  
+>
 > ❌ `require(condition, "Condition Not Met")`
+>
 > ✔️ `if (!condition) { revert ConditionNotMet(); }`
 
 ### Implementing the `withdraw()` function
@@ -285,7 +287,7 @@ error TooEarly(uint256 deadline, uint256 currentTimestamp);
 
 If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `fundingRecipient.complete{value: address(this).balance}()`
 
-If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
+If the balance is less than the `threshold`, you want to set the `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
 
 <details markdown='1'>
 
@@ -305,6 +307,7 @@ function execute() public {
 
 </details>
 </details>
+
 ### Timing
 
 🏃You'll have 30 seconds after deploying until the deadline is reached, you can adjust this in the contract to make it longer if that helps you test.
