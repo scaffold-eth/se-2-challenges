@@ -134,7 +134,7 @@ function contribute() public payable {
 
 👩‍💻 Now redeploy (`yarn deploy`) and go test your function using the `Debug Contracts` tab in the front end.
 
-![debugContracts](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1a888e31-a79b-49ef-9848-357c5cee445a)
+![debugContracts](https://github.com/user-attachments/assets/7d50245b-72f5-433e-b327-0c7e70e83e51)
 
 > 💸 Need more funds from the faucet? Click on _"Grab funds from faucet"_, or use the Faucet feature at the bottom left of the page to get as much as you need!
 
@@ -150,7 +150,8 @@ function contribute() public payable {
 - [ ] Is your `balance` correctly tracked?
 - [ ] Do you see the events in the `Contributions` tab?
 
-![allContributions](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/80bcc843-034c-4547-8535-129ed494a204) TODO: UPDATE IMAGE
+![allContributions](https://github.com/user-attachments/assets/b50a8687-e2ba-4ba5-aa9d-fd0f100345fc)
+
 ### Testing your progress
 
 🔍 Run the following command to check if you implemented the function correctly.
@@ -337,7 +338,7 @@ function timeLeft() public view returns (uint256) {
 
 💪 Your `Crowdfund` tab should be almost done and working at this point. Test out all the functionality to see if the `Execute!` button works as expected for each case.
 
-![stakerUI](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7d85badb-3ea3-4f3c-b5f8-43d5b64f6714) TODO: UPDATE IMAGE
+![Crowdfund](https://github.com/user-attachments/assets/1ad2365f-1e1a-4688-9f81-4bbef2a989d2)
 
 ---
 
@@ -424,7 +425,7 @@ receive() external payable {
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
 
-![allContributions-blockFrom](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/04725dc8-4a8d-4089-ba82-90f9b94bfbda) TODO: UPDATE IMAGE
+![allContributions-blockFrom](https://github.com/user-attachments/assets/e544a9b4-1bb9-4b0a-8729-d57d0b9869cf)
 
 ---
 
