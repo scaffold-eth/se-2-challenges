@@ -5,22 +5,65 @@ import "hardhat/console.sol";
 import "./FundingRecipient.sol";
 
 contract CrowdFund {
+    /////////////////
+    /// Errors //////
+    /////////////////
+
+    // Errors go here...
+
+    //////////////////////
+    /// State Variables //
+    //////////////////////
+
     FundingRecipient public fundingRecipient;
+
+    ////////////////
+    /// Events /////
+    ////////////////
+
+    // Events go here...
+
+    ///////////////////
+    /// Modifiers /////
+    ///////////////////
+
+    modifier notCompleted() {
+        _;
+    }
+
+    ///////////////////
+    /// Constructor ///
+    ///////////////////
 
     constructor(address fundingRecipientAddress) {
         fundingRecipient = FundingRecipient(fundingRecipientAddress);
     }
 
-    // Collect funds in a payable `contribute()` function and track individual `balances` with a mapping:
-    // (Make sure to add a `Contribution(address,uint256)` event and emit it for the frontend Contributions tab to display)
+    ///////////////////
+    /// Functions /////
+    ///////////////////
 
-    // After some `deadline` allow anyone to call an `execute()` function
-    // If the deadline has passed and the threshold is met, it should call:
-    // fundingRecipient.complete{value: address(this).balance}()
+    function contribute() public payable {
+        
+    }
 
-    // If the `threshold` was not met, allow everyone to call a `withdraw()` function to withdraw their balance
+    function withdraw() public notCompleted {
+        
+    }
 
-    // Add a `timeLeft()` view function that returns the time left before the deadline for the frontend
+    function execute() public notCompleted {
+        
+    }
 
-    // Add the `receive()` special function that receives ETH and calls contribute()
+    receive() external payable {
+        
+    }
+
+    ////////////////////////
+    /// View Functions /////
+    ////////////////////////
+
+    function timeLeft() public view returns (uint256) {
+        return 0;
+    }
 }

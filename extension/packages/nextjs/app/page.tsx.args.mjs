@@ -21,10 +21,10 @@ export const description = `
               adversarial group of players can use to work together. In this challenge, you create a decentralized
               application where users can coordinate a group funding effort. If the users cooperate, the money is
               collected in a second smart contract. If they defect, the worst that can happen is everyone gets their
-              money back. The users only have to trust the code.
+              money back. The users only have to trust the code, not each other.
             </p>
             <p className="text-center text-lg">
-              🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and contribute if the
+              🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and then fund the cause if the
               conditions are met, then deploy your app to a public webserver. Submit the url on{" "}
               <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
                 SpeedrunEthereum.com

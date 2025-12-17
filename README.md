@@ -4,12 +4,6 @@
 
 🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code, not each other.
 
-🏦 Build a `CrowdFund.sol` contract that collects **ETH** from numerous addresses using a payable `contribute()` function and keeps track of `balances`. After some `deadline` if it has at least some `threshold` of ETH, it sends it to a `FundingRecipient` contract (This is a stand-in for any potential use case a group of people would want to fund together). It then triggers the `complete()` action, sending the full balance. If not enough **ETH** is collected, allow users to `withdraw()`.
-
-🎛 Building the frontend to display the information and UI is just as important as writing the contract. The goal is to deploy the contract and the app to allow anyone to contribute using your app. Use a `Contribution(address, uint256)` event to list all contributions.
-
-> 📝 Note: If you use named arguments in your event (e.g. `event Contribution(address indexed contributor, uint256 amount)`), you'll need to update `/packages/nextjs/app/contributions/page.tsx` to reference event parameters by their names instead of numeric indices.
-
 🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and then fund the cause if the conditions are met, then `yarn vercel` your app to a public webserver. Submit the url on [SpeedrunEthereum.com](https://speedrunethereum.com)!
 
 > 💬 Meet other builders working on this challenge and get help in the [challenge Telegram](https://t.me/joinchat/E6r91UFt4oMJlt01)!
@@ -59,9 +53,11 @@ yarn start
 
 ---
 
+
 ⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
 
 ---
+
 
 ⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
 
@@ -72,21 +68,71 @@ yarn start
 
 ---
 
+## 🧑‍🚀 Your Mission
+
+🏦 Build a `CrowdFund.sol` contract that collects **ETH** from numerous addresses using a payable `contribute()` function and keeps track of `balances`. After some `deadline` if it has at least some `threshold` of ETH, it sends it to a `FundingRecipient` contract (This is a stand-in for any potential use case a group of people would want to fund together). It then triggers the `complete()` action, sending the full balance. If not enough **ETH** is collected, allow users to `withdraw()`.
+
+🔢 Each step is laid out in the following checkpoints. Try to complete them without hints but if you are struggling then you can get clearer context by pressing the  "🔎 Hint" in each checkpoint.
+
+👀 Also, you should try to keep your contract organized by the standard you will see in the contract. Keeping errors, events, functions, etc. sorted under their own sections helps to maintain contract readability .
 ## Checkpoint 1: 🤝 Contributing 💵
 
-You'll need to track individual `balances` using a mapping:
+>Let's start by implementing a state variable that we will need in the function logic.
+
+⚖️ You'll need to track individual `balances` using a mapping. This way we will know who gave what in the event that the funding effort fails to raise enough and everyone needs to be refunded. Add it under the existing fundingRecipient variable.
 
 ```solidity
-mapping ( address => uint256 ) public balances;
+mapping(address => uint256) public balances;
 ```
 
-And also track a constant `threshold` at `1 ether`
+> Next let's add an event. Events are useful for outside services that are watching the chain  for certain things to occur. In our case, the front end is going to use this event to know when a contribution takes place.
+
+📣 Add an event to the contract called `Contribution` that receives the address of the contributor and the amount they contributed.
 
 ```solidity
-uint256 public constant threshold = 1 ether;
+event Contribution(address, uint256);
 ```
 
-> 👩‍💻 Write your `contribute()` function and test it with the `Debug Contracts` tab in the frontend.
+ >📝 Note: If you use named arguments in your event (e.g. `event Contribution(address indexed contributor, uint256 amount)`), you'll need to update `/packages/nextjs/app/contributions/page.tsx` to reference event parameters by their names instead of numeric indices.
+
+### Implementing the `contribute()` function
+
+> 👩‍💻 Now focus on writing your `contribute()` function. The payable method already exists but is empty. Go fill it with logic!
+
+The goal of this function is to allow anyone to contribute to the pool of funds. To do this effectively it will need to do the following:
+- Update the `balances` mapping
+- Emit the `Contribute` event 
+
+<details markdown='1'>
+<summary>🔎 Hint</summary>
+
+You can set mappings like you would access a Javascript array.
+For a mapping like this `mapping(address => uint256) public dir` you would access is like this:
+```solidity
+address addr = 0x1234...5678;
+dir[addr] += 1;
+```
+You need to use the address for the sender of the transaction and you will need to know how much value was sent. Is there an easy way to access these details about the transaction `msg`? 🤔 
+
+Go check https://solidity-by-example.org/ if you need help on the syntax.
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function contribute() public payable {
+	balances[msg.sender] += msg.value;
+	emit Contribution(msg.sender, msg.value);
+}
+```
+
+</details>
+</details>
+
+### Try it out
+
+👩‍💻 Now redeploy (`yarn deploy`) and go test your function using the `Debug Contracts` tab in the front end.
 
 ![debugContracts](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/1a888e31-a79b-49ef-9848-357c5cee445a)
 
@@ -94,7 +140,9 @@ uint256 public constant threshold = 1 ether;
 
 ![Faucet](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e82e3100-20fb-4886-a6bf-4113c3729f53)
 
-> ✏ Need to troubleshoot your code? If you import `hardhat/console.sol` to your contract, you can call `console.log()` right in your Solidity code. The output will appear in your `yarn chain` terminal.
+> ✏ Need to troubleshoot your code? `hardhat/console.sol` is already imported in your contract so you can call `console.log()` right in your Solidity code. The output will appear in your `yarn chain` terminal.
+
+---
 
 ### 🥅 Goals
 
@@ -102,64 +150,237 @@ uint256 public constant threshold = 1 ether;
 - [ ] Is your `balance` correctly tracked?
 - [ ] Do you see the events in the `Contributions` tab?
 
-  ![allContributions](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/80bcc843-034c-4547-8535-129ed494a204) TODO: UPDATE IMAGE
+![allContributions](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/80bcc843-034c-4547-8535-129ed494a204) TODO: UPDATE IMAGE
+### Testing your progress
+
+🔍 Run the following command to check if you implemented the function correctly.
+
+```shell
+yarn test --grep "Checkpoint1"
+```
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
 
 ---
 
-## Checkpoint 2: 🔬 State Machine / Timing ⏱
+## Checkpoint 2: 📤 Withdrawing Funds
 
-### State Machine
+> Let's implement the `withdraw` function. First lets set up an important state variable and some errors we may need.
 
-> ⚙️ Think of your smart contract like a _state machine_. First, there is a **contribute** period. Then, if you have gathered the `threshold` worth of ETH, there is a **success** state. Or, we go into a **withdraw** state to let users withdraw their funds.
-
-Set a `deadline` of `block.timestamp + 30 seconds`
+ 🔘 / ⚪ Create a bool to track whether the contract is `openToWithdraw` in the case that the funding fails to fill enough before the deadline and everyone needs to be refunded.
 
 ```solidity
-uint256 public deadline = block.timestamp + 30 seconds;
+bool public openToWithdraw; // Solidity variables default to an empty/false state
 ```
 
-👨‍🏫 Smart contracts can't execute automatically, you always need to have a transaction execute to change state. Because of this, you will need to have an `execute()` function that _anyone_ can call, just once, after the `deadline` has expired.
+🚫 Next let's add the following custom errors to the `/// Errors` section of the contract.
 
-> 👩‍💻 Write your `execute()` function and test it with the `Debug Contracts` tab
+```solidity
+error NotOpenToWithdraw();
+error WithdrawTransferFailed(address to, uint256 amount);
+```
 
-> Check the `FundingRecipient.sol` for the bool you can use to test if it has been completed or not. But do not edit the `FundingRecipient.sol` as it can slow the auto grading.
+> ❓Did you know that custom errors are more gas efficient than using revert string errors? 
+> ❌ `require(condition, "Condition Not Met")`
+> ✔️ `if (!condition) { revert ConditionNotMet(); }`
 
-If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `fundingRecipient.complete{value: address(this).balance}()`
+### Implementing the `withdraw()` function
 
-If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
+> 🛠️ Now you can implement the logic inside the  `withdraw` function.
 
-### Timing
+This function will need to do the following:
+- Check that `openToWithdraw` is true. Throw `NotOpenToWithdraw` if not.
+- Send the correct amount to the user who is withdrawing. Throw `WithdrawTransferFailed` if it does not succeed.
 
-You'll have 30 seconds after deploying until the deadline is reached, you can adjust this in the contract.
+<details markdown='1'>
+<summary>🔎 Hint</summary>
 
-> 👩‍💻 Create a `timeLeft()` function including `public view returns (uint256)` that returns how much time is left.
+You need to send the user's balance (`balances[msg.sender]`) back to their address.
+The important thing is that you only send the correct amount to the user AND they can only do it when `openToWithdraw` is true.
 
-⚠️ Be careful! If `block.timestamp >= deadline` you want to `return 0;`
+<details markdown='1'>
 
-⏳ _"Time Left"_ will only update if a transaction occurs. You can see the time update by getting funds from the faucet button in navbar just to trigger a new block.
+<summary>🎯 Solution</summary>
 
-![stakerUI](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7d85badb-3ea3-4f3c-b5f8-43d5b64f6714)
+```solidity
+function withdraw() public {
+	if (!openToWithdraw) revert NotOpenToWithdraw();
+	
+	uint256 balance = balances[msg.sender];
+	balances[msg.sender] = 0;
+	
+	(bool success,) = msg.sender.call{value: balance}("");
+	if (!success) revert WithdrawTransferFailed(msg.sender, balance);
+}
+```
 
-> 👩‍💻 You can call `yarn deploy --reset` any time you want a fresh contract, it will get re-deployed even if there are no changes on it.
-> You may need it when you want to reload the _"Time Left"_ of your tests.
+</details>
+</details>
 
-Your `Crowdfund` tab should be almost done and working at this point.
+### Try it out
+
+⚙️ Go switch `openToWithdraw` to be true by default so we can test the function through the front end: `bool public openToWithdraw = true;`
+
+👩‍💻 Now redeploy (`yarn deploy`) and go test your function using the `Crowdfund` or `Debug Contracts` tabs in the front end. You should be able to contribute and then withdraw the ether. 
+
+>‼️ Once you are content that it works as expected make sure you switch `openToWithdraw` back to false.
 
 ---
 
 ### 🥅 Goals
 
-- [ ] Can you see `timeLeft` counting down in the `Crowdfund` tab when you trigger a transaction with the faucet button?
-- [ ] If enough ETH is contributed by the deadline, does your `execute()` function correctly call `complete()` and contribute the ETH?
-- [ ] If the threshold isn't met by the deadline, are you able to `withdraw()` your funds?
+- [ ] Can you withdraw your ether after contributing?
+- [ ] What happens if you try to withdraw again after you have already withdrawn? Does this always fail?
+- [ ] What about with multiple users? 
+### Testing your progress
+
+🔍 Run the following command to check if you implemented the function correctly.
+
+```shell
+yarn test --grep "Checkpoint2"
+```
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
 
 ---
 
-## Checkpoint 3: 💵 Receive Function / UX 🙎
+## Checkpoint 3: 🔬 State Machine / Timing ⏱
 
-🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `contribute()`. You will use what is called the `receive()` function.
+### State Machine
+
+> ⚙️ Think of your smart contract like a _state machine_. First, there is a **contribute** period. Then, if you have gathered a certain `threshold` worth of ETH, there is a **success** state. Or, we go into a **withdraw** state to let users withdraw their funds.
+
+⌛ Let's go ahead and add a `deadline` variable and set it to the current `block.timestamp` plus 30 seconds. We will need this to know if time is up.
+
+```solidity
+uint256 public deadline = block.timestamp + 30 seconds;
+```
+
+📏 Also track a constant called `threshold` set to `1 ether`. This will be the threshold at which we will consider the cause to be funded. Below this threshold it will be the failure scenario where people withdraw their funds.
+
+```solidity
+uint256 public constant threshold = 1 ether;
+```
+
+🚫 Let's add another custom error that we can throw if this function gets called too early.
+
+```solidity
+error TooEarly(uint256 deadline, uint256 currentTimestamp);
+```
+
+### Implementing the `execute()` function
+
+>🧠 Smart contracts can't execute automatically, you always need to have a transaction execute to change state. Because of this, you will need to have an `execute()` function that _anyone_ can call, just once, after the `deadline` has expired.
+
+👩‍💻 Write your `execute()` function. It will need to do the following:
+- Make sure it can only be executed when the deadline has passed. If not then throw `TooEarly`
+- If the threshold is met then trigger the `fundingRecipient.complete` method while sending the locked funds
+- Otherwise set `openToWithdraw` to true so that people can get their funds back
+
+> ‼️ Check the `FundingRecipient.sol` to see what function you will call but DO NOT edit the `FundingRecipient.sol` as it can slow the auto grading.
+
+<details markdown='1'>
+<summary>🔎 Hint</summary>
+
+If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `fundingRecipient.complete{value: address(this).balance}()`
+
+If the balance is less than the `threshold`, you want to set a `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function execute() public {
+	if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);
+	
+	if (address(this).balance >= threshold) {
+		fundingRecipient.complete{value: address(this).balance}();
+	} else {
+		openToWithdraw = true;
+	}
+}
+```
+
+</details>
+</details>
+### Timing
+
+🏃You'll have 30 seconds after deploying until the deadline is reached, you can adjust this in the contract to make it longer if that helps you test.
+
+> 👩‍💻 Go update the `timeLeft()` view function so that it returns how much time is left.
+
+⚠️ Be careful! If `block.timestamp >= deadline` you want to `return 0;`
+
+<details markdown='1'>
+<summary>🔎 Hint</summary>
+
+If the `deadline` is greater than `block.timestamp` then return the difference between the two. Otherwise return 0.
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+function timeLeft() public view returns (uint256) {
+	return deadline > block.timestamp ? deadline - block.timestamp : 0;
+}
+```
+
+</details>
+</details>
+
+> 👩‍💻 You can call `yarn deploy --reset` any time you want a fresh contract, it will get redeployed even if there are no changes on it.
+> You may need it when you want to reload the _"Time Left"_ of your tests.
+
+### Try it out
+
+💪 Your `Crowdfund` tab should be almost done and working at this point. Test out all the functionality to see if the `Execute!` button works as expected for each case.
+
+![stakerUI](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/7d85badb-3ea3-4f3c-b5f8-43d5b64f6714) TODO: UPDATE IMAGE
+
+---
+
+### 🥅 Goals
+
+- [ ] Can you see `timeLeft` counting down in the `Crowdfund` tab?
+- [ ] If enough ETH is contributed by the deadline, does your `execute()` function correctly call `complete()` and contribute the ETH?
+- [ ] If the threshold isn't met by the deadline, are you able to `withdraw()` your funds?
+### Testing your progress
+
+🔍 Run the following command to check if you implemented the functions correctly.
+
+```shell
+yarn test --grep "Checkpoint3"
+```
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+
+---
+
+## Checkpoint 4: 💵 Receive Function / UX 🙎
+
+🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `contribute()`. You will use a special `receive()` function that is called by default when people send funds to a contract.
 
 > Use the [receive()](https://docs.soliditylang.org/en/v0.8.9/contracts.html?highlight=receive#receive-ether-function) function in solidity to "catch" ETH sent to the contract *without a specific method indicated* and call `contribute()` to update `balances`.
+
+<details markdown='1'>
+<summary>🔎 Hint</summary>
+
+Don't overthink it. This `receive` method will be called anytime somebody sends funds directly to your contract without any particular method specified. Just make sure the `contribute()` method is called when this happens so that their balance is updated.
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+```solidity
+receive() external payable {
+	contribute();
+}
+```
+
+</details>
+</details>
 
 ---
 
@@ -169,26 +390,25 @@ Your `Crowdfund` tab should be almost done and working at this point.
 
 ---
 
-### ⚔️ Side Quests
+## ⚔️ Side Quests
 
 - [ ] Can `execute()` get called more than once, and is that okay?
 - [ ] Can you contribute and withdraw freely after the `deadline`, and is that okay?
-- [ ] What are other implications of _anyone_ being able to withdraw for someone?
 
 ---
 
 ### 🐸 It's a trap!
 
 - [ ] Make sure funds can't get trapped in the contract! **Try sending funds after you have executed! What happens?**
-- [ ] Try to create a [modifier](https://solidity-by-example.org/function-modifier/) called `notCompleted`. It will check that `FundingRecipient` is not completed yet. Use it to protect your `execute` and `withdraw` functions.
+- [ ] Update the [modifier](https://solidity-by-example.org/function-modifier/) called `notCompleted`. It should check that `FundingRecipient` is not completed yet. Use it to protect your `execute`, `contribute` and `withdraw` functions by throwing a new custom error if it has already been completed.
 
 ### ⚠️ Test it!
 
-- Now is a good time to run `yarn test` to run the automated testing function. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
+- Now is a good time to run `yarn test` to run the automated testing for everything you have done. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
 
 ---
 
-## Checkpoint 4: 💾 Deploy your contract! 🛰
+## Checkpoint 5: 💾 Deploy your contract! 🛰
 
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
 
@@ -198,7 +418,7 @@ Your `Crowdfund` tab should be almost done and working at this point.
 
 ⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
 
-> 📝 If you plan on submitting this challenge, be sure to set your `deadline` to at least `block.timestamp + 72 hours`
+> 📝 If you plan on testing your challenge on the live network don't forget to set your `deadline` to a nice amount of time such as `block.timestamp + 2 hours`
 
 🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
 
@@ -208,7 +428,7 @@ Your `Crowdfund` tab should be almost done and working at this point.
 
 ---
 
-## Checkpoint 5: 🚢 Ship your frontend! 🚁
+## Checkpoint 6: 🚢 Ship your frontend! 🚁
 
 ✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia)
 
@@ -229,6 +449,7 @@ Your `Crowdfund` tab should be almost done and working at this point.
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
+
 This is great for going through **SpeedrunEthereum** but...
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
@@ -241,7 +462,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ---
 
-## Checkpoint 6: 📜 Contract Verification
+## Checkpoint 7: 📜 Contract Verification
 
 Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
@@ -249,8 +470,7 @@ Run the `yarn verify --network your_network` command to verify your contracts on
 
 ---
 
+
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
-
-Note: The contributions page is in `/packages/nextjs/app/contributions/page.tsx`
