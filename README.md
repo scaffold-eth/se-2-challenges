@@ -454,7 +454,7 @@ receive() external payable {
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
 
-This is great for going through **SpeedrunEthereum** but...
+This is great for going through **Speedrun Ethereum** but...
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
