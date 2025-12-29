@@ -122,26 +122,73 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
 
       const setOpenToWithdrawTrue = async () => {
         // Checkpoint 2 doesn't include a setter for `openToWithdraw`, so we toggle it directly in storage.
-        // This helper is resilient to minor variable ordering differences by probing a few likely slots.
+        //
+        // Don't worry if you don't understand the wizardry that happens here.
+        //
+        // Important: `openToWithdraw` might be:
+        // - in its own storage slot (bool uses the least-significant byte of the slot), OR
+        // - packed into an existing slot (e.g. declared right after an `address`, so it shares slot 0),
+        //   in which case flipping `0x...01` for the whole slot DOES NOT necessarily flip the bool.
+        //
+        // So we probe (slot, byteOffset) by mutating ONE byte at a time and checking which mutation makes
+        // `openToWithdraw()` return true. This effectively answers: "which storage location impacts this variable?"
         const target = await crowdFundContract.getAddress();
-        const valueTrue = ethers.zeroPadValue("0x01", 32);
 
-        // We avoid slot 0 (fundingRecipient address) and slot 1 (balances mapping slot) on purpose.
-        for (const slot of [2n, 3n, 4n, 5n]) {
+        // If it's already open, nothing to do.
+        if (await crowdFundContract.openToWithdraw()) return;
+
+        const writeStorageAt = async (slot: bigint, value: string) => {
           const slotHex = ethers.zeroPadValue(ethers.toBeHex(slot), 32);
-          const original = await ethers.provider.getStorage(target, slot);
-          await network.provider.send("hardhat_setStorageAt", [target, slotHex, valueTrue]);
+          await network.provider.send("hardhat_setStorageAt", [target, slotHex, value]);
+        };
+
+        const hexToBytes32 = (hex: string) => {
+          // Expect 0x-prefixed 32-byte hex from `getStorage`.
+          const normalized = hex.startsWith("0x") ? hex.slice(2) : hex;
+          const padded = normalized.padStart(64, "0");
+          const out: number[] = [];
+          for (let i = 0; i < 64; i += 2) out.push(parseInt(padded.slice(i, i + 2), 16));
+          if (out.length !== 32) throw new Error("Expected 32 bytes");
+          return out;
+        };
+
+        const bytes32ToHex = (bytes: number[]) => {
+          if (bytes.length !== 32) throw new Error("Expected 32 bytes");
+          const hex = bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+          return "0x" + hex;
+        };
+
+        // Probe a reasonable number of slots so re-ordering / adding variables doesn't break tests.
+        // (Mapping `balances` lives at a slot too, but since we always revert unsuccessful writes,
+        //  it's safe to probe it.)
+        for (let s = 0n; s <= 20n; s++) {
+          const original = await ethers.provider.getStorage(target, s);
+          const originalBytes = hexToBytes32(original);
 
           try {
-            // If this flips the bool, we found the correct slot and can stop.
-            const isOpen = await (crowdFundContract as any).openToWithdraw();
-            if (isOpen === true) return;
+            // Try flipping each byte to 0x01 (leaving all other bytes unchanged).
+            // Storage words are represented big-endian in hex, but since we probe ALL 32 bytes,
+            // we don't need to reason about endianness/packing direction here.
+            for (let byteIdx = 0; byteIdx < 32; byteIdx++) {
+              const mutated = [...originalBytes];
+              mutated[byteIdx] = 0x01;
+              await writeStorageAt(s, bytes32ToHex(mutated));
+
+              const isOpen = await crowdFundContract.openToWithdraw();
+              if (isOpen === true) {
+                // Found the (slot, byteIdx) that impacts `openToWithdraw`.
+                // We intentionally keep this storage mutation for the test.
+                return;
+              }
+
+              // Not the right byte → restore original before continuing.
+              await writeStorageAt(s, original);
+            }
           } catch {
             // If the function doesn't exist yet, nothing to do here.
           }
-
-          // Not the right slot → revert our write and continue probing.
-          await network.provider.send("hardhat_setStorageAt", [target, slotHex, original]);
+          // Ensure we leave storage exactly as we found it before moving to the next slot.
+          await writeStorageAt(s, original);
         }
 
         throw new Error("Could not locate `openToWithdraw` storage slot to toggle it for tests.");
@@ -161,6 +208,7 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
         await (await crowdFundContract.connect(contributor).contribute({ value: amount })).wait();
         expect(await crowdFundContract.balances(contributor.address)).to.equal(amount);
 
+        // We modify storage directly to set openToWithdraw to true since we have not implemented the setter yet.
         await setOpenToWithdrawTrue();
 
         const startingBalance = await ethers.provider.getBalance(contributor.address);
@@ -183,6 +231,8 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
 
         const amount = ethers.parseEther("0.001");
         await (await crowdFundContract.connect(contributor).contribute({ value: amount })).wait();
+
+        // We modify storage directly to set openToWithdraw to true since we have not implemented the setter yet.
         await setOpenToWithdrawTrue();
 
         await (await crowdFundContract.connect(contributor).withdraw()).wait();

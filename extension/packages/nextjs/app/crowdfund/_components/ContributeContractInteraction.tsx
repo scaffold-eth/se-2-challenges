@@ -1,13 +1,13 @@
 "use client";
 
 import { ETHToPrice } from "./EthToPrice";
+import { Address } from "@scaffold-ui/components";
+import { useWatchBalance } from "@scaffold-ui/hooks";
 import humanizeDuration from "humanize-duration";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { Address } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
 export const ContributeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
@@ -53,7 +53,10 @@ export const ContributeContractInteraction = ({ address }: { address?: string })
         <div className="flex flex-col items-center gap-2 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-12 w-full max-w-lg">
           <p className="block m-0 font-semibold">🎉 Crowdfunding contract triggered FundingRecipient 🎉</p>
           <div className="flex items-center">
-            <ETHToPrice value={fundingRecipientBalance ? formatEther(fundingRecipientBalance.value) : undefined} className="text-[1rem]" />
+            <ETHToPrice
+              value={fundingRecipientBalance ? formatEther(fundingRecipientBalance.value) : undefined}
+              className="text-[1rem]"
+            />
             <p className="block m-0 text-lg -ml-1">received</p>
           </div>
         </div>

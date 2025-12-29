@@ -61,7 +61,7 @@ yarn start
 
 🔢 Each step is laid out in the following checkpoints. Try to complete them without hints but if you are struggling then you can get clearer context by pressing the  "🔎 Hint" in each checkpoint.
 
-👀 Also, you should try to keep your contract organized by the standard you will see in the contract. Keeping errors, events, functions, etc. sorted under their own sections helps to maintain contract readability .
+👀 Also, you should try to keep your contract organized by the standard you will see in the contract. Keeping errors, events, functions, etc. sorted under their own sections helps to maintain contract readability.
 ## Checkpoint 1: 🤝 Contributing 💵
 
 >Let's start by implementing a state variable that we will need in the function logic.
@@ -94,11 +94,8 @@ The goal of this function is to allow anyone to contribute to the pool of funds.
 <summary>🔎 Hint</summary>
 
 You can set mappings like you would access a Javascript array.
-For a mapping like this \`mapping(address => uint256) public dir\` you would access is like this:
-\`\`\`solidity
-address addr = 0x1234...5678;
-dir[addr] += 1;
-\`\`\`
+For a mapping like this \`mapping(address => uint256) public map\` and \`address addr = 0x1234...5678\` you would access is like this: \`map[addr]\`.
+
 You need to use the address for the sender of the transaction and you will need to know how much value was sent. Is there an easy way to access these details about the transaction \`msg\`? 🤔 
 
 Go check https://solidity-by-example.org/ if you need help on the syntax.
@@ -393,6 +390,43 @@ receive() external payable {
 - [ ] Make sure funds can't get trapped in the contract! **Try sending funds after you have executed! What happens?**
 - [ ] Update the [modifier](https://solidity-by-example.org/function-modifier/) called \`notCompleted\`. It should check that \`FundingRecipient\` is not completed yet. Use it to protect your \`execute\`, \`contribute\` and \`withdraw\` functions by throwing a new custom error if it has already been completed.
 
+<details markdown='1'>
+<summary>🔎 Hint</summary>
+
+You can access the funding recipient contract with the \`fundingRecipient\` variable. Then you just need to make sure that \`.completed()\` does not return \`true\`. If it does then you need to revert with an error; Your choice for what the error will be called. \`AlreadyCompleted\`? \`RecipientAlreadyFunded\`? Or your own idea for a good error name. You choose!
+
+<details markdown='1'>
+
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+// Errors
+// ...Existing errors
+error AlreadyCompleted(); // Or whatever name you want
+
+// Modifiers
+modifier notCompleted() {
+	if (fundingRecipient.completed()) revert AlreadyCompleted(); 
+	_;
+}
+
+// Functions
+function contribute() public payable notCompleted {
+	// ...Existing code
+}
+
+function withdraw() public notCompleted {
+	// ...Existing code
+}
+
+function execute() public notCompleted {
+	// ...Existing code
+}
+\`\`\`
+
+</details>
+</details>
+
 ### ⚠️ Test it!
 
 - Now is a good time to run \`yarn test\` to run the automated testing for everything you have done. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
@@ -401,19 +435,19 @@ receive() external payable {
 
 ## Checkpoint 5: 💾 Deploy your contract! 🛰
 
-📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages/hardhat/hardhat.config.ts\`
+📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to one of these [supported testnet networks](https://github.com/austintgriffith/speedrun-grader/blob/main/utils/supported-chains.js) in \`packages/hardhat/hardhat.config.ts\`.
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
 👩‍🚀 Use \`yarn account\` to view your deployer account balances.
 
-⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
+⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network. You can also request ETH by sending a message with your new deployer address and preferred network in the [challenge Telegram](https://t.me/joinchat/E6r91UFt4oMJlt01). People are usually more than willing to share.
 
 > 📝 If you plan on testing your challenge on the live network don't forget to set your \`deadline\` to a nice amount of time such as \`block.timestamp + 2 hours\`
 
 🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in \`hardhat.config.ts\`)
 
-> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.
+> 💬 Hint: Instead of editing \`hardhat.config.ts\` you can just add a network flag to the deploy command like this: \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`
 
 ![allContributions-blockFrom](https://github.com/user-attachments/assets/e544a9b4-1bb9-4b0a-8729-d57d0b9869cf)
 

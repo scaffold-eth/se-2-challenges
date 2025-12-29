@@ -47,11 +47,11 @@ contract CrowdFund {
         
     }
 
-    function withdraw() public notCompleted {
+    function withdraw() public {
         
     }
 
-    function execute() public notCompleted {
+    function execute() public {
         
     }
 
