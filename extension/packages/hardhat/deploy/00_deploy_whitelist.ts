@@ -35,25 +35,21 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
     const deployerAccount = accounts.find(a => a.account.address.toLowerCase() === deployer.toLowerCase());
     if (!deployerAccount) throw new Error("Deployer account not found in wallet clients");
 
-    // Create SimpleOracle instances through WhitelistOracle.addOracle() concurrently
-    // This creates new SimpleOracle contracts owned by the specified addresses
-    const nonce = await publicClient.getTransactionCount({ address: deployerAccount.account.address });
-    const addOracleTxPromises = nodeAccounts.map((nodeAccount, i) => {
-      const ownerAddress = nodeAccount.account.address;
+    // Create SimpleOracle instances through WhitelistOracle.addOracle() sequentially
+    // (parallel nonce assignment doesn't work reliably with automining)
+    const addOracleReceipts = [];
+    for (let i = 0; i < nodeAccounts.length; i++) {
+      const ownerAddress = nodeAccounts[i].account.address;
       console.log(`Creating SimpleOracle ${i + 1}/10 with owner: ${ownerAddress}`);
-      return deployerAccount.writeContract({
+      const txHash = await deployerAccount.writeContract({
         address: whitelistOracleAddress,
         abi: whitelistOracleAbi,
         functionName: "addOracle",
         args: [ownerAddress],
-        nonce: nonce + i,
       });
-    });
-
-    const addOracleTxHashes = await Promise.all(addOracleTxPromises);
-    const addOracleReceipts = await Promise.all(
-      addOracleTxHashes.map(hash => publicClient.waitForTransactionReceipt({ hash })),
-    );
+      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+      addOracleReceipts.push(receipt);
+    }
 
     // Map owner => created oracle address from events
     const ownerToOracleAddress = new Map<string, string>();

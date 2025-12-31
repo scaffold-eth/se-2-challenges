@@ -78,7 +78,7 @@ export const BucketCountdown = () => {
         <div className="flex flex-col items-center gap-2">
           <div className="text-sm text-gray-500">Bucket #{currentBucketNum?.toString() ?? "..."}</div>
           <div className="font-bold text-3xl">{remainingSec !== null ? `${remainingSec}s` : "..."}</div>
-          <div className="text-xs text-gray-400">until next bucket</div>
+          <div className="text-xs text-gray-500">until next bucket</div>
         </div>
       </div>
     </div>

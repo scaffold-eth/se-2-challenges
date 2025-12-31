@@ -478,7 +478,8 @@ yarn simulate:whitelist
 
 - Nodes stake **ORA**, an ERC20 token, to participate.
 - Nodes report a price **once per "bucket"** (by default a bucket is 24 one second blocks).
-- A bucket is only considered “finalized” after someone calls **`recordBucketMedian(bucket)`**, which stores the **median** for that bucket (requires ≥ 2/3 of registered nodes to have reported).
+- A bucket is only considered “finalized” after someone calls **`recordBucketMedian(bucket)`**, which stores the **median** for that bucket (**past buckets only**).
+- Because the oracle data is useful, anyone who wants to digest the data will be incentivized to run the `recordBucketMedian` function.
 - Slashing decisions compare a node's report against the **recorded median**.
 
 🎯 **Your Mission**: Complete the missing function implementations in the `StakingOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers but you need to fill in the logic.
@@ -656,7 +657,7 @@ function addStake(uint256 amount) public onlyNode {
 <summary>💡 Hint: Effective stake</summary>
 
 - Expected reports should count **fully completed** buckets since registration (exclude the current bucket)
-- Don't count a report in the current bucket as a “completed” report (it's still in-flight)
+- Don’t count a report in the current bucket as a “completed” report (it’s still in-flight)
 
 <details markdown='1'>
 
@@ -725,7 +726,7 @@ function reportPrice(uint256 price) public onlyNode {
     uint256 currentBucket = getCurrentBucketNumber();
     if (node.lastReportedBucket == currentBucket) revert AlreadyReportedInCurrentBucket();
 
-    TimeBucket storage bucket = timeBuckets[currentBucket];
+    BlockBucket storage bucket = blockBuckets[currentBucket];
     bucket.reporters.push(msg.sender);
     bucket.prices.push(price);
 
@@ -784,25 +785,20 @@ function claimReward() public {
 
 8. **Implement `recordBucketMedian(uint256 bucketNumber)`**
 
-* 📌 This function finalizes a bucket by recording the **median** price once enough reports exist
+* 📌 This function finalizes a bucket by recording the **median** price for that bucket
 
 * 🚫 It should revert with `BucketMedianAlreadyRecorded` if `medianPrice` is already set
 
-* 👥 It should require there is at least 1 registered node, otherwise revert with `NoActiveNodes`
+* ⏰ It should only allow this function to be called with **past buckets**, otherwise revert with `OnlyPastBucketsAllowed`
 
-* 🧮 It should require at least **2/3 (rounded up)** of registered nodes to have reported, otherwise revert with `InsufficientReports`
-
-* 🧠 It should compute the median using StatisticsUtils on a **memory copy** of `prices[]` (don't reorder the arrays in storage as the slashing relies on the ordering!)
-
-* 🪙 We need to provide a small incentive (1 ORA) so that *someone* will call this method 
+* 🧠 It should compute the median using StatisticsUtils on a **memory copy** of `prices[]` (don’t reorder the arrays in storage as the slashing relies on the ordering!)
 
 * 📣 It should emit `BucketMedianRecorded(bucketNumber, medianPrice)`
 
 <details markdown='1'>
 
-<summary>💡 Hint: Required reports + median</summary>
+<summary>💡 Hint: Median finalization</summary>
 
-- Required reports: `(2 * totalRegistered + 2) / 3`
 - Median: `sort` a **memory copy** of `bucket.prices` then use the `getMedian` method on that sorted array
 - StatisticsUtils have already been imported and applied to uint256 arrays so you can access those methods from the array (`arr.sort()`, `arr.getMedian()`)
 
@@ -812,20 +808,14 @@ function claimReward() public {
 
 ```solidity
 function recordBucketMedian(uint256 bucketNumber) public {
-    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    BlockBucket storage bucket = blockBuckets[bucketNumber];
     if (bucket.medianPrice != 0) revert BucketMedianAlreadyRecorded();
-
-    uint256 totalRegistered = nodeAddresses.length;
-    if (totalRegistered == 0) revert NoActiveNodes();
-
-    uint256 requiredReports = (2 * totalRegistered + 2) / 3;
-    if (bucket.reporters.length < requiredReports) revert InsufficientReports();
+    if (bucketNumber >= getCurrentBucketNumber()) revert OnlyPastBucketsAllowed();
 
     uint256[] memory prices = bucket.prices;
     prices.sort();
     bucket.medianPrice = prices.getMedian();
 
-    oracleToken.mint(msg.sender, 1);
     emit BucketMedianRecorded(bucketNumber, bucket.medianPrice);
 }
 ```
@@ -853,7 +843,7 @@ function recordBucketMedian(uint256 bucketNumber) public {
 
 ```solidity
 function getLatestPrice() public view returns (uint256) {
-    TimeBucket storage bucket = timeBuckets[getCurrentBucketNumber() - 1];
+    BlockBucket storage bucket = blockBuckets[getCurrentBucketNumber() - 1];
     if (bucket.medianPrice == 0) revert MedianNotRecorded();
     return bucket.medianPrice;
 }
@@ -882,7 +872,7 @@ function getLatestPrice() public view returns (uint256) {
 
 ```solidity
 function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
-    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    BlockBucket storage bucket = blockBuckets[bucketNumber];
     if (bucket.medianPrice == 0) revert MedianNotRecorded();
     return bucket.medianPrice;
 }
@@ -903,7 +893,7 @@ function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
 
 <summary>💡 Hint: Find the node in `bucket.reporters[]`</summary>
 
-- Loop through `timeBuckets[bucketNumber].reporters`
+- Loop through `blockBuckets[bucketNumber].reporters`
 - When you find `nodeAddress`, return the matching `prices[i]` and `slashedOffenses[nodeAddress]`
 
 <details markdown='1'>
@@ -912,7 +902,7 @@ function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
 
 ```solidity
 function getSlashedStatus(address nodeAddress, uint256 bucketNumber) public view returns (uint256 price, bool slashed) {
-    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    BlockBucket storage bucket = blockBuckets[bucketNumber];
     for (uint256 i = 0; i < bucket.reporters.length; i++) {
         if (bucket.reporters[i] == nodeAddress) {
             price = bucket.prices[i];
@@ -964,7 +954,7 @@ function _checkPriceDeviated(uint256 reportedPrice, uint256 medianPrice) interna
 
 * 🔁 Loops are fine since this is just a view method that will be called from outside the chain
 
-* ⛔️ It should revert with `MedianNotRecorded` if the bucket hasn't been finalized
+* ⛔️ It should revert with `MedianNotRecorded` if the bucket hasn’t been finalized
 
 * 🚫 It should ignore nodes that are already marked slashed in that bucket
 
@@ -982,7 +972,7 @@ function _checkPriceDeviated(uint256 reportedPrice, uint256 medianPrice) interna
 
 ```solidity
 function getOutlierNodes(uint256 bucketNumber) public view returns (address[] memory) {
-    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    BlockBucket storage bucket = blockBuckets[bucketNumber];
     if (bucket.medianPrice == 0) revert MedianNotRecorded();
 
     address[] memory outliers = new address[](bucket.reporters.length);
@@ -1052,7 +1042,7 @@ function _removeNode(address nodeAddress, uint256 index) internal {
 
 15. **Implement `slashNode(address nodeToSlash, uint256 bucketNumber, uint256 reportIndex, uint256 nodeAddressesIndex)`**
 
-* 🔎 This function allows anyone to slash a node that deviated too far from the bucket's recorded median
+* 🔎 This function allows anyone to slash a node that deviated too far from the bucket’s recorded median
 
 * ⏰ It should only allow past buckets (not the current bucket), otherwise revert with `OnlyPastBucketsAllowed`
 
@@ -1068,7 +1058,7 @@ function _removeNode(address nodeAddress, uint256 index) internal {
 
 <summary>💡 Hint: Why indices matter</summary>
 
-- `reportIndex` must match `timeBuckets[bucket].reporters[reportIndex] == nodeToSlash`
+- `reportIndex` must match `blockBuckets[bucket].reporters[reportIndex] == nodeToSlash`
 - `nodeAddressesIndex` must match `nodeAddresses[nodeAddressesIndex] == nodeToSlash`
 - This avoids needing to loop onchain (we do the lookup off chain)
 
@@ -1080,9 +1070,10 @@ function _removeNode(address nodeAddress, uint256 index) internal {
 function slashNode(address nodeToSlash, uint256 bucketNumber, uint256 reportIndex, uint256 nodeAddressesIndex) public {
     if (!nodes[nodeToSlash].active) revert NodeNotRegistered();
     if (getCurrentBucketNumber() == bucketNumber) revert OnlyPastBucketsAllowed();
-    TimeBucket storage bucket = timeBuckets[bucketNumber];
+    BlockBucket storage bucket = blockBuckets[bucketNumber];
     if (bucket.medianPrice == 0) revert MedianNotRecorded();
     if (bucket.slashedOffenses[nodeToSlash]) revert NodeAlreadySlashed();
+    if (reportIndex >= bucket.reporters.length) revert IndexOutOfBounds();
     if (nodeToSlash != bucket.reporters[reportIndex]) revert NodeNotAtGivenIndex();
     uint256 reportedPrice = bucket.prices[reportIndex];
     if (reportedPrice == 0) revert NodeDidNotReport();
@@ -1173,6 +1164,13 @@ function exitNode(uint256 index) public onlyNode {
 
 - **Robustness vs. Whitelist Oracle**: Unlike the whitelist oracle which relies on a single trusted authority, the staking oracle's design distributes trust among all staking nodes. Manipulating the output requires a majority of nodes to collude, which is economically disincentivized due to the risk of slashing. As a result, unless an attacker controls a majority of the total effective stake, they cannot egregiously manipulate the reported price—making the system considerably more robust than one with simple whitelist control.
 
+### 🤔 Real World Considerations
+
+- **Singular Nodes**: We built this where it is totally fine to just have one node mostly so that it is easy to test out but a better mechanism would heavily encourage multiple since one node doesn't have any accountability.
+- **Schelling Point**: You could do this by always allocating a certain amount of tokens to all reporting nodes (e.g. 100 tokens split between however many nodes reported) and this would encourage a large amount of participants (depending on the value of the token) and discourage too many participants which would make the `recordBucketMedian` function too expensive.
+- **Tokenomics**: Just note this; The ORA tokens are practically worthless in this system. The only demand source is people who want to run an oracle node through staking some of the token but we are constantly inflating the supply through rewards and we didn't design any other source of demand for the token. Ideally the consumer of the price would be used to create demand for the token and this would find some equilibrium but we did not design the system this way.
+- **Locked Tokens**: In this design, when a node is slashed, the portion that is not given as a reward simply stays locked in the contract. Also the ORA token contract accepts ETH for ORA but there is no way to withdraw it. Just use your imagination to fill in the gaps of our tokenomics issues. Perhaps the remains tokens could be burned and the locked ETH could be swapped for it's value in ORA tokens. This a good start but the token still needs demand to be a long term viable system.
+
 ---
 
 ### Testing your progress
@@ -1189,11 +1187,9 @@ yarn test --grep "Checkpoint2"
 
 ### Try it out!
 
-🌎 In the real world this oracle might have too much latency to be very useful due to the need for 24 block windows. However, this was done to make it possible for you to see how the oracle operates in real time without everything happening too fast to comprehend. There is no reason why this couldn't work with single block windows.
-
 🔄 Run `yarn deploy --reset` then test the staking oracle. Go to the `Staking` page and try registering your own node and reporting prices.
 
-🚰 The faucet should automatically give you **ORA** when you press the "Register Node" button (the UI will handle `approve` as well).
+💸 To register a node you need **ORA** to stake. Use the **Buy ORA** widget on the Staking page to swap **0.5 ETH → 100 ORA** (the ORA token has a special buy function so it mints directly when you buy).
 
 ![Staking Buttons Panel](https://github.com/user-attachments/assets/c32b9bdc-eb1e-4630-ae9f-e57a34deac45)
 
@@ -1203,9 +1199,11 @@ yarn test --grep "Checkpoint2"
 
 ![SelfNodeRow](https://github.com/user-attachments/assets/51f5e8a6-da2e-4bc3-a280-68609fea0789)
 
-> ‼️ "Insufficient Stake" errors? Look at your staked balance 👀. It has fallen below the minimum amount of stake because you let some blocks pass without reporting. Just press the + button next to your stake to add more ORA (It will give you some from the faucet).
+> ‼️ "Insufficient Stake" errors? Look at your staked balance 👀. It has fallen below the minimum amount of stake because you let some blocks pass without reporting. Buy more ORA (via the Buy ORA widget) and then add stake.
 
-> 🧠 Before you can read a finalized price for a bucket or slash an outlier, someone must call **Record Bucket Median** for that bucket. Feel free to navigate backwards and trigger the median function by pressing the button on past buckets (you get a small ORA reward for doing so).
+> 🧠 Before you can read a finalized price for a bucket or slash an outlier, someone must call **Record Bucket Median** for that bucket. By default there is a button that enables you to run the function for the last bucket but feel free to navigate backwards and trigger the median function by pressing the button on past buckets.
+
+😮‍💨 *Whew!* That was a lot of work pressing all those buttons to keep from getting the inactive penalty! Much easier when bots are doing all the work and you can just watch. Exit your node (if it stresses you) and lets have some fun.
 
 🧪 **Live Simulation**: Run the `yarn simulate:staking` command to watch a live simulation of staking oracle behavior with multiple nodes:
 

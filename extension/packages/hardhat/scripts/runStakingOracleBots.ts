@@ -301,14 +301,15 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
     }
 
     // 2) Finalize median automatically when quorum is reached
-    if (currentBucket > 0n) {
+    // You can only finalize buckets strictly in the past, so we finalize the *previous* bucket (current - 1).
+    if (previousBucket > 0n) {
       let medianAlreadyRecorded = false;
       try {
         const median = await publicClient.readContract({
           address,
           abi,
           functionName: "getPastPrice",
-          args: [currentBucket],
+          args: [previousBucket],
         });
         medianAlreadyRecorded = BigInt(String(median)) > 0n;
       } catch {
@@ -331,7 +332,7 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
                   address,
                   abi,
                   functionName: "getSlashedStatus",
-                  args: [nodeAddr, currentBucket],
+                  args: [nodeAddr, previousBucket],
                 })) as [bigint, boolean];
                 return price;
               } catch {
@@ -353,15 +354,17 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
                 address,
                 abi,
                 functionName: "recordBucketMedian",
-                args: [currentBucket],
+                args: [previousBucket],
               });
-              console.log(`Recorded median for bucket ${currentBucket} (reports ${reportedCount}/${requiredReports}).`);
+              console.log(
+                `Recorded median for bucket ${previousBucket} (reports ${reportedCount}/${requiredReports}).`,
+              );
             } catch (err) {
-              console.warn(`Failed to record median for bucket ${currentBucket}:`, (err as Error).message);
+              console.warn(`Failed to record median for bucket ${previousBucket}:`, (err as Error).message);
             }
           } else {
             console.log(
-              `Skipping median recording for bucket ${currentBucket}; only ${reportedCount}/${requiredReports} reports.`,
+              `Skipping median recording for bucket ${previousBucket}; only ${reportedCount}/${requiredReports} reports.`,
             );
           }
         } catch (err) {
@@ -479,7 +482,8 @@ const run = async () => {
         .then(v => v as unknown as `0x${string}`),
     ]);
 
-    const defaultStake = parseEther("15000");
+    // Default bot stake for local simulations (keep it small so it matches the new UX expectations)
+    const defaultStake = parseEther("500");
     const stakeAmount = minimumStake > defaultStake ? minimumStake : defaultStake;
 
     // Build an idempotent setup plan based on current on-chain state (so restarts resume cleanly).

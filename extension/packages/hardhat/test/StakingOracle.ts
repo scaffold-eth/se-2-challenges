@@ -48,7 +48,7 @@ describe("Checkpoint2 - StakingOracle", function () {
   }
 
   async function fundApproveAndRegister(node: HardhatEthersSigner, amount: bigint) {
-    // node1 is the deployer and is minted a huge ORA balance in the oracle constructor.
+    // node1 is the ORA deployer and is minted a huge ORA balance in the ORA constructor.
     if (node.address.toLowerCase() !== node1.address.toLowerCase()) {
       await (await oraToken.connect(node1).transfer(node.address, amount)).wait();
     }
@@ -63,21 +63,25 @@ describe("Checkpoint2 - StakingOracle", function () {
 
   beforeEach(async function () {
     [node1, node2, node3, node4, node5, node6, slasher] = await ethers.getSigners();
-    const StakingOracleFactory = await ethers.getContractFactory("StakingOracle");
-    oracle = (await StakingOracleFactory.deploy()) as StakingOracle;
-    await oracle.waitForDeployment();
-    const oraTokenAddress = await oracle.oracleToken();
     const ORAFactory = await ethers.getContractFactory("ORA");
-    oraToken = ORAFactory.attach(oraTokenAddress) as ORA;
+    oraToken = (await ORAFactory.deploy()) as ORA;
+    await oraToken.waitForDeployment();
+
+    const StakingOracleFactory = await ethers.getContractFactory("StakingOracle");
+    // TypeChain types update on compile; keep test TS-safe even before regeneration.
+    oracle = (await (StakingOracleFactory as any).deploy(await oraToken.getAddress())) as StakingOracle;
+    await oracle.waitForDeployment();
+
+    // StakingOracle must own the ORA token to mint rewards
+    await (await oraToken.transferOwnership(await oracle.getAddress())).wait();
   });
   describe("constructor", function () {
-    it("deploys ORA token", async function () {
+    it("wires the provided ORA token", async function () {
       const tokenAddress = await oracle.oracleToken();
-      const code = await ethers.provider.getCode(tokenAddress);
-      expect(code).to.not.equal("0x");
+      expect(tokenAddress).to.equal(await oraToken.getAddress());
     });
 
-    it("mints ORA to deployer via oracle constructor", async function () {
+    it("mints ORA to deployer via token constructor", async function () {
       const bal = await oraToken.balanceOf(node1.address);
       expect(bal).to.be.gt(0n);
     });
@@ -276,6 +280,10 @@ describe("Checkpoint2 - StakingOracle", function () {
   });
   describe("Slashing - deviation in past bucket", function () {
     beforeEach(async function () {
+      // Ensure we have plenty of blocks left in the current bucket so setup txs + the first report
+      // don't accidentally cross a bucket boundary and trigger an immediate inactivity penalty.
+      await moveToFreshBucket();
+
       const MINIMUM_STAKE = await oracle.MINIMUM_STAKE();
       const stake = await stakeForDelayedFirstReport();
       await fundApproveAndRegister(node1, stake);
@@ -449,7 +457,8 @@ describe("Checkpoint2 - StakingOracle", function () {
       // Ensure lastReportedBucket is set so the waiting period is measured from the last report.
       await (await oracle.connect(node1).reportPrice(1500)).wait();
       await expect(oracle.connect(node1).exitNode(idx)).to.be.revertedWithCustomError(oracle, "WaitingPeriodNotOver");
-      await mineBuckets(2);
+      const WAITING_PERIOD = Number(await oracle.WAITING_PERIOD());
+      await mineBuckets(WAITING_PERIOD);
       const effectiveStake = await oracle.getEffectiveStake(node1.address);
       const balBefore = await oraToken.balanceOf(node1.address);
       const tx = await oracle.connect(node1).exitNode(idx);

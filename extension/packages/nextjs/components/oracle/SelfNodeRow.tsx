@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
-import { erc20Abi, formatEther, parseEther } from "viem";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { erc20Abi, formatEther, maxUint256, parseEther } from "viem";
+import { useAccount, usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { HighlightedCell } from "~~/components/oracle/HighlightedCell";
 import { StakingEditableCell } from "~~/components/oracle/StakingEditableCell";
@@ -15,6 +15,7 @@ type SelfNodeRowProps = {
 
 export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   const { address: connectedAddress } = useAccount();
+  const publicClient = usePublicClient();
 
   const { data: nodeData } = useScaffoldReadContract({
     contractName: "StakingOracle",
@@ -57,6 +58,19 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
     contractName: "StakingOracle",
     functionName: "REWARD_PER_REPORT",
   }) as { data: bigint | undefined };
+
+  const { data: oraBalance } = useReadContract({
+    address: oracleTokenAddress as `0x${string}` | undefined,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: connectedAddress ? [connectedAddress] : undefined,
+    query: { enabled: !!oracleTokenAddress && !!connectedAddress, refetchInterval: 5000 },
+  }) as { data: bigint | undefined };
+
+  const oraBalanceFormatted = useMemo(() => {
+    if (oraBalance === undefined) return "—";
+    return Number(formatEther(oraBalance)).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }, [oraBalance]);
 
   const { writeContractAsync: writeStaking } = useScaffoldWriteContract({ contractName: "StakingOracle" });
   const { data: stakingDeployment } = useDeployedContractInfo({ contractName: "StakingOracle" });
@@ -165,15 +179,18 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   }, [isCurrentView, pastReportedPrice, selectedBucketMedian, bucketNumber]);
 
   const handleAddStake = async () => {
-    if (!connectedAddress || !oracleTokenAddress || !stakingAddress) return;
-    const additionalStake = parseEther("1000");
+    if (!connectedAddress || !oracleTokenAddress || !stakingAddress || !publicClient) return;
+    const additionalStake = parseEther("100");
     try {
-      await writeErc20({
+      // Approve max so user doesn't need to re-approve each time
+      const approveHash = await writeErc20({
         address: oracleTokenAddress as `0x${string}`,
         abi: erc20Abi,
         functionName: "approve",
-        args: [stakingAddress, additionalStake],
+        args: [stakingAddress, maxUint256],
       });
+      // Wait for approval to be mined before calling addStake
+      await publicClient.waitForTransactionReceipt({ hash: approveHash });
       await writeStaking({ functionName: "addStake", args: [additionalStake] });
     } catch (e: any) {
       console.error(e);
@@ -183,7 +200,12 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   return (
     <tr className={isStale ? "opacity-40" : ""}>
       <td>
-        {connectedAddress ? <Address address={connectedAddress} size="sm" format="short" onlyEnsOrAddress /> : "—"}
+        <div className="flex flex-col gap-0.5">
+          {connectedAddress ? <Address address={connectedAddress} size="sm" format="short" onlyEnsOrAddress /> : "—"}
+          <span className="text-xs opacity-70" title="Your ORA wallet balance">
+            {oraBalanceFormatted} ORA
+          </span>
+        </div>
       </td>
       {isCurrentView ? (
         isRegistered ? (

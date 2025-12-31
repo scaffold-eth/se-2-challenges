@@ -1,19 +1,25 @@
 "use client";
 
-import type { NextPage } from "next";
 import { useState } from "react";
+import type { NextPage } from "next";
+import { BuyOraWidget } from "~~/components/oracle/BuyOraWidget";
 import { BucketCountdown } from "~~/components/oracle/BucketCountdown";
 import { NodesTable } from "~~/components/oracle/NodesTable";
 import { PriceWidget } from "~~/components/oracle/PriceWidget";
 import { TotalSlashedWidget } from "~~/components/oracle/TotalSlashedWidget";
- 
 
 const Home: NextPage = () => {
   const [selectedBucket, setSelectedBucket] = useState<bigint | "current">("current");
 
   return (
     <>
-      <div className="flex items-center flex-col flex-grow pt-10">
+      <div className="flex items-center flex-col flex-grow pt-2">
+        <div className="w-full px-0 sm:px-2">
+          <div className="flex justify-end mr-4 pt-2">
+            <BuyOraWidget />
+          </div>
+        </div>
+
         <div className="px-5 w-full max-w-5xl mx-auto">
           <div className="flex flex-col gap-8">
             <div className="w-full">

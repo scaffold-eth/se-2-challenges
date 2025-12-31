@@ -164,9 +164,14 @@ export const NodesTable = ({
   const [isMedianRecorded, setIsMedianRecorded] = useState<boolean | null>(null);
   const [internalSelectedBucket, setInternalSelectedBucket] = useState<bigint | "current">("current");
   const selectedBucket = externalSelectedBucket ?? internalSelectedBucket;
+  const isViewingCurrentBucket = selectedBucket === "current";
   const targetBucket = useMemo<bigint | null>(() => {
+    // When viewing "current", we actually want to record the *last completed* bucket (current - 1),
+    // since the current bucket is still in progress and cannot be finalized.
     if (selectedBucket === "current") {
-      return currentBucket ?? null;
+      if (currentBucket === undefined) return null;
+      if (currentBucket <= 1n) return null;
+      return currentBucket - 1n;
     }
     return selectedBucket ?? null;
   }, [selectedBucket, currentBucket]);
@@ -258,7 +263,7 @@ export const NodesTable = ({
     abi: erc20Abi,
     functionName: "balanceOf",
     args: connectedAddress ? [connectedAddress] : undefined,
-    query: { enabled: !!oracleTokenAddress && !!connectedAddress, refetchInterval: 5000 },
+    query: { enabled: !!oracleTokenAddress && !!connectedAddress },
   });
   const { data: minimumStake } = useScaffoldReadContract({
     contractName: "StakingOracle",
@@ -310,8 +315,11 @@ export const NodesTable = ({
   const canRecordMedian = Boolean(
     targetBucket && targetBucket > 0n && isMedianRecorded === false && !isRecordingMedian,
   );
-  const recordMedianButtonLabel =
-    isMedianRecorded === true ? "Median Recorded" : isRecordingMedian ? "Recording..." : "Record Median";
+  const recordMedianButtonLabel = isRecordingMedian
+    ? "Recording..."
+    : isViewingCurrentBucket
+      ? "Record last Bucket Median"
+      : "Record Median";
 
   const handleRecordMedian = async () => {
     if (!stakingDeployment?.address || !targetBucket || targetBucket <= 0n) {
@@ -337,28 +345,16 @@ export const NodesTable = ({
     if (!connectedAddress) return;
     if (!stakingDeployment?.address || !oracleTokenAddress) return;
     if (!publicClient) return;
-    const stakeAmount = minimumStake ?? parseEther("2000");
+    const stakeAmount = minimumStake ?? parseEther("100");
     try {
-      const minOraBalance = parseEther("1000");
       const currentBalance = (oraBalance as bigint | undefined) ?? 0n;
-      if (currentBalance < minOraBalance) {
-        const loadingId = notification.loading("Funding wallet with 1000 ORA...");
-        const topUpWei = minOraBalance - currentBalance;
-        const faucetRes = await fetch("/api/ora-faucet", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ to: connectedAddress, amount: formatEther(topUpWei) }),
-        });
-        if (!faucetRes.ok) {
-          const err = await faucetRes.json().catch(() => ({}));
-          console.error("ORA faucet failed:", err);
-          return;
-        }
-        const faucetJson = (await faucetRes.json()) as { hash?: `0x${string}` };
-        if (faucetJson.hash) {
-          await publicClient.waitForTransactionReceipt({ hash: faucetJson.hash });
-        }
-        notification.remove(loadingId);
+      if (currentBalance < stakeAmount) {
+        notification.error(
+          `Insufficient ORA to register. Need ${formatEther(stakeAmount)} ORA to stake (you have ${formatEther(
+            currentBalance,
+          )}). Use “Buy ORA” first.`,
+        );
+        return;
       }
 
       // Wait for approval to be mined before registering.
@@ -422,9 +418,15 @@ export const NodesTable = ({
                 title={
                   targetBucket && targetBucket > 0n
                     ? isMedianRecorded === true
-                      ? "Median already recorded for this bucket"
-                      : "Record the median for the selected bucket"
-                    : "Median can only be recorded for completed buckets"
+                      ? isViewingCurrentBucket
+                        ? "Last bucket median already recorded"
+                        : "Median already recorded for this bucket"
+                      : isViewingCurrentBucket
+                        ? "Record the median for the last completed bucket"
+                        : "Record the median for the selected bucket"
+                    : isViewingCurrentBucket
+                      ? "No completed bucket available yet"
+                      : "Median can only be recorded for completed buckets"
                 }
               >
                 {recordMedianButtonLabel}
