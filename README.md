@@ -396,7 +396,7 @@ function sellTokens(uint256 amount) external {
 
 🔨 Use the `Debug Contracts` tab to call the approve and sellTokens() at first but then...
 
-🔍 Look in the `packages/nextjs/app/token-vendor/page.tsx` for the extra approve/sell UI to uncomment!
+🔍 Look in the `packages/nextjs/app/token-vendor/page.tsx` for the extra approve/sell UI to uncomment and then go to `packages/nextjs/app/events/page.tsx` and uncomment the `SellTokens Events` section to update the `Events` tab on the frontend.
 
 ![VendorBuyBack](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/99063aaa-368d-4156-997d-08dff99af11b)
 
@@ -404,14 +404,14 @@ function sellTokens(uint256 amount) external {
 
 - [ ] Can you sell tokens back to the vendor?
 - [ ] Do you receive the right amount of ETH for the tokens?
+- [ ] Do you see `SellTokens` events in the `Events` tab now?
+
+![Events](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/662c96b5-d53f-4efa-af4a-d3106bfd47f0)
 
 ### ⚔️ Side Quests
 
 - [ ] Should we disable the `owner` withdraw to keep liquidity in the `Vendor`?
-- [ ] It would be a good idea to display Sell Token Events. Create an **event** `SellTokens(address seller, uint256  amountOfTokens, uint256 amountOfETH)` and `emit` it in your `Vendor.sol` and uncomment `SellTokens Events` section in your `packages/nextjs/app/events/page.tsx` to update your frontend.
-
-  ![Events](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/662c96b5-d53f-4efa-af4a-d3106bfd47f0)
-
+- [ ] Would people be more interested in your token if they knew there wasn't a way to drain the ETH backing?
 
 ### Testing your progress
 
@@ -460,7 +460,7 @@ yarn test --grep "Checkpoint4"
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
-This is great to complete your **SpeedrunEthereum**.
+This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
