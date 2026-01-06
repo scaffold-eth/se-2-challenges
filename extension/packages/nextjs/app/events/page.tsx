@@ -2,7 +2,7 @@
 
 import type { NextPage } from "next";
 import { formatEther } from "viem";
-import { Address } from "~~/components/scaffold-eth";
+import { Address } from "@scaffold-ui/components";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Events: NextPage = () => {
