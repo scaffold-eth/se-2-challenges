@@ -435,7 +435,7 @@ function execute() public notCompleted {
 
 ## Checkpoint 5: 💾 Deploy your contract! 🛰
 
-📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to one of these [supported testnet networks](https://github.com/austintgriffith/speedrun-grader/blob/main/utils/supported-chains.js) in \`packages/hardhat/hardhat.config.ts\`.
+📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\`
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
