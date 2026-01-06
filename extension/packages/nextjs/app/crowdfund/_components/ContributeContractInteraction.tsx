@@ -1,98 +1,100 @@
 "use client";
 
 import { ETHToPrice } from "./EthToPrice";
+import { Address } from "@scaffold-ui/components";
+import { useWatchBalance } from "@scaffold-ui/hooks";
 import humanizeDuration from "humanize-duration";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { Address } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
-export const StakeContractInteraction = ({ address }: { address?: string }) => {
+export const ContributeContractInteraction = ({ address }: { address?: string }) => {
   const { address: connectedAddress } = useAccount();
-  const { data: StakerContract } = useDeployedContractInfo({ contractName: "Staker" });
-  const { data: ExampleExternalContact } = useDeployedContractInfo({ contractName: "ExampleExternalContract" });
-  const { data: stakerContractBalance } = useWatchBalance({
-    address: StakerContract?.address,
-  });
-  const { data: exampleExternalContractBalance } = useWatchBalance({
-    address: ExampleExternalContact?.address,
-  });
+
+  const { data: crowdFundContract } = useDeployedContractInfo({ contractName: "CrowdFund" });
+  const { data: fundingRecipientContract } = useDeployedContractInfo({ contractName: "FundingRecipient" });
+
+  const { data: crowdFundContractBalance } = useWatchBalance({ address: crowdFundContract?.address });
+  const { data: fundingRecipientBalance } = useWatchBalance({ address: fundingRecipientContract?.address });
 
   const { targetNetwork } = useTargetNetwork();
 
-  // Contract Read Actions
   const { data: threshold } = useScaffoldReadContract({
-    contractName: "Staker",
+    contractName: "CrowdFund",
     functionName: "threshold",
     watch: true,
   });
+
   const { data: timeLeft } = useScaffoldReadContract({
-    contractName: "Staker",
+    contractName: "CrowdFund",
     functionName: "timeLeft",
     watch: true,
   });
-  const { data: myStake } = useScaffoldReadContract({
-    contractName: "Staker",
+
+  const { data: myContribution } = useScaffoldReadContract({
+    contractName: "CrowdFund",
     functionName: "balances",
     args: [connectedAddress],
     watch: true,
   });
-  const { data: isStakingCompleted } = useScaffoldReadContract({
-    contractName: "ExampleExternalContract",
+
+  const { data: isFundingCompleted } = useScaffoldReadContract({
+    contractName: "FundingRecipient",
     functionName: "completed",
     watch: true,
   });
 
-  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "Staker" });
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "CrowdFund" });
 
   return (
     <div className="flex items-center flex-col flex-grow w-full px-4 gap-12">
-      {isStakingCompleted && (
+      {isFundingCompleted && (
         <div className="flex flex-col items-center gap-2 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-12 w-full max-w-lg">
-          <p className="block m-0 font-semibold">
-            {" "}
-            🎉 &nbsp; Staking App triggered `ExampleExternalContract` &nbsp; 🎉{" "}
-          </p>
+          <p className="block m-0 font-semibold">🎉 Crowdfunding contract triggered FundingRecipient 🎉</p>
           <div className="flex items-center">
             <ETHToPrice
-              value={exampleExternalContractBalance ? formatEther(exampleExternalContractBalance.value) : undefined}
+              value={fundingRecipientBalance ? formatEther(fundingRecipientBalance.value) : undefined}
               className="text-[1rem]"
             />
-            <p className="block m-0 text-lg -ml-1">staked !!</p>
+            <p className="block m-0 text-lg -ml-1">received</p>
           </div>
         </div>
       )}
+
       <div
         className={`flex flex-col items-center space-y-8 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 w-full max-w-lg ${
-          !isStakingCompleted ? "mt-24" : ""
+          !isFundingCompleted ? "mt-24" : ""
         }`}
       >
         <div className="flex flex-col w-full items-center">
-          <p className="block text-2xl mt-0 mb-2 font-semibold">Staker Contract</p>
+          <p className="block text-2xl mt-0 mb-2 font-semibold">CrowdFund Contract</p>
           <Address address={address} size="xl" />
         </div>
+
         <div className="flex items-start justify-around w-full">
           <div className="flex flex-col items-center justify-center w-1/2">
             <p className="block text-xl mt-0 mb-1 font-semibold">Time Left</p>
-            <p className="m-0 p-0">{timeLeft ? `${humanizeDuration(Number(timeLeft) * 1000)}` : 0}</p>
+            <p className="m-0 p-0">{timeLeft ? `${humanizeDuration(Number(timeLeft) * 1000)}` : "DONE"}</p>
           </div>
+
           <div className="flex flex-col items-center w-1/2">
-            <p className="block text-xl mt-0 mb-1 font-semibold">You Staked</p>
+            <p className="block text-xl mt-0 mb-1 font-semibold">You Contributed</p>
             <span>
-              {myStake ? formatEther(myStake) : 0} {targetNetwork.nativeCurrency.symbol}
+              {myContribution ? formatEther(myContribution) : 0} {targetNetwork.nativeCurrency.symbol}
             </span>
           </div>
         </div>
+
         <div className="flex flex-col items-center shrink-0 w-full">
-          <p className="block text-xl mt-0 mb-1 font-semibold">Total Staked</p>
+          <p className="block text-xl mt-0 mb-1 font-semibold">Total Contributed</p>
           <div className="flex space-x-2">
-            {<ETHToPrice value={stakerContractBalance ? formatEther(stakerContractBalance.value) : undefined} />}
+            <ETHToPrice value={crowdFundContractBalance ? formatEther(crowdFundContractBalance.value) : undefined} />
             <span>/</span>
-            {<ETHToPrice value={threshold ? formatEther(threshold) : undefined} />}
+            <ETHToPrice value={threshold ? formatEther(threshold) : undefined} />
           </div>
         </div>
+
         <div className="flex flex-col space-y-5">
           <div className="flex space-x-7">
             <button
@@ -105,8 +107,9 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
                 }
               }}
             >
-              Execute!
+              Execute
             </button>
+
             <button
               className="btn btn-primary uppercase"
               onClick={async () => {
@@ -120,17 +123,18 @@ export const StakeContractInteraction = ({ address }: { address?: string }) => {
               Withdraw
             </button>
           </div>
+
           <button
             className="btn btn-primary uppercase"
             onClick={async () => {
               try {
-                await writeContractAsync({ functionName: "stake", value: parseEther("0.5") });
+                await writeContractAsync({ functionName: "contribute", value: parseEther("0.5") });
               } catch (err) {
-                console.error("Error calling stake function", err);
+                console.error("Error calling contribute function", err);
               }
             }}
           >
-            🔏 Stake 0.5 ether!
+            🤝 Contribute 0.5 ether!
           </button>
         </div>
       </div>

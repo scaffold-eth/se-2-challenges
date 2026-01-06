@@ -4,8 +4,8 @@ export const description = `
   <div className="flex items-center flex-col flex-grow pt-10">
       <div className="px-5">
         <h1 className="text-center mb-6">
-          <span className="block text-2xl mb-2">SpeedRunEthereum</span>
-          <span className="block text-4xl font-bold">Challenge: 🔏 Decentralized Staking App</span>
+          <span className="block text-2xl mb-2">Speedrun Ethereum</span>
+          <span className="block text-4xl font-bold">Challenge: 📣 Crowdfunding App</span>
         </h1>
         <div className="flex flex-col items-center justify-center">
           <Image
@@ -21,13 +21,13 @@ export const description = `
               adversarial group of players can use to work together. In this challenge, you create a decentralized
               application where users can coordinate a group funding effort. If the users cooperate, the money is
               collected in a second smart contract. If they defect, the worst that can happen is everyone gets their
-              money back. The users only have to trust the code.
+              money back. The users only have to trust the code, not each other.
             </p>
             <p className="text-center text-lg">
-              🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and stake if the
+              🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and then fund the cause if the
               conditions are met, then deploy your app to a public webserver. Submit the url on{" "}
               <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-                SpeedRunEthereum.com
+                SpeedrunEthereum.com
               </a>{" "}
               !
             </p>
@@ -37,5 +37,4 @@ export const description = `
     </div>
 `;
 
-export const externalExtensionName =
-  "SpeedRunEthereum Challenge: Decentralized Staking App";
+export const externalExtensionName = "SpeedrunEthereum Challenge: Crowdfunding App";
