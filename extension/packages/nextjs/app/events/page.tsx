@@ -51,7 +51,7 @@ const Events: NextPage = () => {
                     return (
                       <tr key={index}>
                         <td className="text-center">
-                          <Address address={event.args.buyer} />
+                          <Address address={event.args?.buyer} />
                         </td>
                         <td>{formatEther(event.args?.amountOfTokens || 0n)}</td>
                         <td>{formatEther(event.args?.amountOfETH || 0n)}</td>
