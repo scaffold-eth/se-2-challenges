@@ -4,7 +4,7 @@ export const description = `
   <div className="flex items-center flex-col flex-grow pt-10">
       <div className="px-5">
         <h1 className="text-center mb-6">
-          <span className="block text-2xl mb-2">SpeedRunEthereum</span>
+          <span className="block text-2xl mb-2">Speedrun Ethereum</span>
           <span className="block text-4xl font-bold">Challenge: 🎲 Dice Game</span>
         </h1>
         <div className="flex flex-col items-center justify-center">
@@ -40,7 +40,7 @@ export const description = `
             </p>
             <p className="text-center text-lg">
               <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-                SpeedRunEthereum.com
+                SpeedrunEthereum.com
               </a>
               !
             </p>
@@ -50,4 +50,4 @@ export const description = `
     </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Challenge: Dice game";
+export const externalExtensionName = "Speedrun Ethereum Challenge: Dice game";

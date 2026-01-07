@@ -1,17 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Address } from "@scaffold-ui/components";
+import { useWatchBalance } from "@scaffold-ui/hooks";
 import type { NextPage } from "next";
 import { Address as AddressType, formatEther, parseEther } from "viem";
 import { Amount, Roll, RollEvents, Winner, WinnerEvents } from "~~/app/dice/_components";
-import { Address } from "~~/components/scaffold-eth";
 import {
   useScaffoldContract,
   useScaffoldEventHistory,
   useScaffoldReadContract,
   useScaffoldWriteContract,
 } from "~~/hooks/scaffold-eth";
-import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
 const ROLL_ETH_VALUE = "0.002";
 const MAX_TABLE_ROWS = 10;
