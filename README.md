@@ -149,13 +149,13 @@ SimpleOracle[] public oracles;  // Array of SimpleOracle contract instances
 
 1. **Implement `addOracle(address _owner)`**
 
-* 🏭 This function allows the contract owner to add a new oracle to the whitelist by deploying a SimpleOracle contract
+- 🏭 This function allows the contract owner to add a new oracle to the whitelist by deploying a SimpleOracle contract
 
-* 🧩 It should create a new `SimpleOracle` instance with the specified `_owner`
+- 🧩 It should create a new `SimpleOracle` instance with the specified `_owner`
 
-* ➕ It should add the newly created SimpleOracle to the `oracles` array
+- ➕ It should add the newly created SimpleOracle to the `oracles` array
 
-* 📣 It should emit the `OracleAdded` event with both the oracle address and its owner
+- 📣 It should emit the `OracleAdded` event with both the oracle address and its owner
 
 <details markdown='1'>
 
@@ -188,21 +188,22 @@ function addOracle(address _owner) public onlyOwner {
 
 2. **Implement `removeOracle(uint256 index)`**
 
-* ✔️ This function allows the contract owner to remove an oracle from the whitelist by its array index
+- ✔️ This function allows the contract owner to remove an oracle from the whitelist by its array index
 
-* 🔍 It should validate that the provided index is within bounds, otherwise revert with `IndexOutOfBounds`
+- 🔍 It should validate that the provided index is within bounds, otherwise revert with `IndexOutOfBounds`
 
-* 📝 It should record the oracle address before removal for the event
+- 📝 It should record the oracle address before removal for the event
 
-* ➖ It should efficiently remove the oracle using swap-and-pop pattern (swap with last element, then pop)
+- ➖ It should efficiently remove the oracle using swap-and-pop pattern (swap with last element, then pop)
 
-* 📣 It should emit the `OracleRemoved` event with the oracle address
+- 📣 It should emit the `OracleRemoved` event with the oracle address
 
 <details markdown='1'>
 
 <summary>💡 Hint: Safe Array Removal</summary>
 
 The swap-and-pop pattern:
+
 - Check if index is valid (< oracles.length)
 - Store the oracle address for the event
 - If not the last element, swap with the last element
@@ -238,23 +239,24 @@ function removeOracle(uint256 index) public onlyOwner {
 
 3. **Implement `getPrice()`**
 
-* 📊 This function aggregates prices from all active oracles using median calculation
+- 📊 This function aggregates prices from all active oracles using median calculation
 
-* ⛔️ It should revert with `NoOraclesAvailable` if no oracles exist in the whitelist
+- ⛔️ It should revert with `NoOraclesAvailable` if no oracles exist in the whitelist
 
-* 🔁 It should loop through each oracle and call `getPrice()` to get `(price, timestamp)`
+- 🔁 It should loop through each oracle and call `getPrice()` to get `(price, timestamp)`
 
-* 🧹 It should filter out stale prices (older than `STALE_DATA_WINDOW = 24 seconds`)
+- 🧹 It should filter out stale prices (older than `STALE_DATA_WINDOW = 24 seconds`)
 
-* 📦 It should collect only fresh prices into a properly sized array
+- 📦 It should collect only fresh prices into a properly sized array
 
-* 🧮 It should use StatisticsUtils library to sort prices and calculate the median
+- 🧮 It should use StatisticsUtils library to sort prices and calculate the median
 
 <details markdown='1'>
 
 <summary>💡 Hint: Price Aggregation with Freshness Check</summary>
 
 Here's the process:
+
 - Check if any oracles exist
 - Create a temporary array to collect fresh prices
 - Loop through all oracles, get their (price, timestamp)
@@ -302,19 +304,20 @@ function getPrice() public view returns (uint256) {
 
 4. **Implement `getActiveOracleNodes()`**
 
-* 📊 This function returns the addresses of all oracles that have updated their price within the last `STALE_DATA_WINDOW`
+- 📊 This function returns the addresses of all oracles that have updated their price within the last `STALE_DATA_WINDOW`
 
-* 🔍 It should iterate through all oracles and filter those with recent timestamps
+- 🔍 It should iterate through all oracles and filter those with recent timestamps
 
-* 📦 It should use a temporary array to collect active nodes, then create a right-sized return array for gas optimization
+- 📦 It should use a temporary array to collect active nodes, then create a right-sized return array for gas optimization
 
-* 🎯 It should return an array of addresses representing the currently active oracle contracts
+- 🎯 It should return an array of addresses representing the currently active oracle contracts
 
 <details markdown='1'>
 
 <summary>💡 Hint: Active Node Filtering</summary>
 
 Similar to getPrice(), but instead of collecting prices, collect oracle addresses:
+
 - Create temporary array to store addresses
 - Loop through oracles, check timestamp freshness
 - Count and collect active oracle addresses
@@ -417,7 +420,7 @@ WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] �
 
    - Sell their influence to manipulators
 
-💡 *Real-World Impact*: These vulnerabilities explain why protocols like [MakerDAO/Sky](https://github.com/sky-ecosystem/medianizer) eventually moved to more decentralized oracle systems as the stakes grew higher!
+💡 _Real-World Impact_: These vulnerabilities explain why protocols like [MakerDAO/Sky](https://github.com/sky-ecosystem/medianizer) eventually moved to more decentralized oracle systems as the stakes grew higher!
 
 </details>
 
@@ -467,8 +470,7 @@ yarn simulate:whitelist
 - You can query which oracle nodes are currently active
 - The system correctly handles edge cases and invalid states
 - Understand the benefits of aggregating multiple data sources
-- Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), 
-[Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
+- Look at these examples "in the wild" from early DeFi: [Simple Oracle](https://github.com/dapphub/ds-value), [Whitelist Oracle](https://github.com/sky-ecosystem/medianizer)
 
 ---
 
@@ -477,7 +479,7 @@ yarn simulate:whitelist
 🧭 Now let's explore a decentralized oracle that uses **economic incentives** to encourage honest reporting. In this design:
 
 - Nodes stake **ORA**, an ERC20 token, to participate.
-- Nodes report a price **once per "bucket"** (by default a bucket is 24 one second blocks).
+- Nodes report a price **once per "bucket"** (by default a bucket spans 24 blocks).
 - A bucket is only considered “finalized” after someone calls **`recordBucketMedian(bucket)`**, which stores the **median** for that bucket (**past buckets only**).
 - Because the oracle data is useful, anyone who wants to digest the data will be incentivized to run the `recordBucketMedian` function.
 - Slashing decisions compare a node's report against the **recorded median**.
@@ -490,9 +492,9 @@ yarn simulate:whitelist
 
 1. **Implement `getCurrentBucketNumber()`**
 
-* 🕒 This view function maps the current `block.number` into a bucket index (24-block window)
+- 🕒 This view function maps the current `block.number` into a bucket index (24-block window)
 
-* 🧮 It should divide the block number by `BUCKET_WINDOW` and add 1 (buckets are indexed starting from 1, not 0)
+- 🧮 It should divide the block number by `BUCKET_WINDOW` and add 1 (buckets are indexed starting from 1, not 0)
 
 <details markdown='1'>
 
@@ -519,7 +521,7 @@ function getCurrentBucketNumber() public view returns (uint256) {
 
 2. **Implement `getNodeAddresses()`**
 
-* 📚 This view function returns every registered node address in order (useful for the frontend and for index-based actions)
+- 📚 This view function returns every registered node address in order (useful for the frontend and for index-based actions)
 
 <details markdown='1'>
 
@@ -545,19 +547,19 @@ function getNodeAddresses() public view returns (address[] memory) {
 
 3. **Implement `registerNode(uint256 amount)`**
 
-* 🏗️ This function allows anyone to register as an oracle node by staking **ORA tokens** (ERC20)
+- 🏗️ This function allows anyone to register as an oracle node by staking **ORA tokens** (ERC20)
 
-* ⚠️ It should require a minimum stake of `MINIMUM_STAKE`, otherwise revert with `InsufficientStake`
+- ⚠️ It should require a minimum stake of `MINIMUM_STAKE`, otherwise revert with `InsufficientStake`
 
-* 🧪 It should check that the node is not already registered, otherwise revert with `NodeAlreadyRegistered`
+- 🧪 It should check that the node is not already registered, otherwise revert with `NodeAlreadyRegistered`
 
-* 💸 It should pull ORA from the user using `transferFrom` (so the user must `approve` first)
+- 💸 It should pull ORA from the user using `transferFrom` (so the user must `approve` first)
 
-* ⚙️ It should add the new `OracleNode` to the `nodes` mapping with the correct values
+- ⚙️ It should add the new `OracleNode` to the `nodes` mapping with the correct values
 
-* ➕ It should add the node address to the `nodeAddresses` array
+- ➕ It should add the node address to the `nodeAddresses` array
 
-* 📣 It should emit the `NodeRegistered` event
+- 📣 It should emit the `NodeRegistered` event
 
 <details markdown='1'>
 
@@ -566,11 +568,11 @@ function getNodeAddresses() public view returns (address[] memory) {
 - Use `oracleToken.transferFrom(msg.sender, address(this), amount)`
 - If the transfer fails, revert with `TransferFailed`
 - For the `OracleNode` struct you should fill it as follows:
-    - `stakedAmount` should be how many tokens they are using to register
-    - `lastReportedBucket` should default to 0 since they haven't reported yet
-    - `reportCount` and `claimedReportCount` should also start as 0
-    - `firstBucket` should be the current bucket... Didn't we make a method for getting that earlier? 🤔
-    - `active` should be `true` since the node is now registering
+  - `stakedAmount` should be how many tokens they are using to register
+  - `lastReportedBucket` should default to 0 since they haven't reported yet
+  - `reportCount` and `claimedReportCount` should also start as 0
+  - `firstBucket` should be the current bucket... Didn't we make a method for getting that earlier? 🤔
+  - `active` should be `true` since the node is now registering
 
 <details markdown='1'>
 
@@ -605,13 +607,13 @@ function registerNode(uint256 amount) public {
 
 4. **Implement `addStake(uint256 amount)`**
 
-* 💸 This function lets an active node increase its stake by depositing more ORA
+- 💸 This function lets an active node increase its stake by depositing more ORA
 
-* ⚠️ It should revert with `InsufficientStake` if `amount == 0`
+- ⚠️ It should revert with `InsufficientStake` if `amount == 0`
 
-* 💰 It should pull ORA using `transferFrom` (so the user must `approve` before calling)
+- 💰 It should pull ORA using `transferFrom` (so the user must `approve` before calling)
 
-* 📣 It should emit the `StakeAdded` event
+- 📣 It should emit the `StakeAdded` event
 
 <details markdown='1'>
 
@@ -644,13 +646,13 @@ function addStake(uint256 amount) public onlyNode {
 
 5. **Implement `getEffectiveStake(address nodeAddress)`**
 
-* 📉 This view function returns a node's stake after inactivity penalties
+- 📉 This view function returns a node's stake after inactivity penalties
 
-* 🔍 It should return `0` for inactive nodes
+- 🔍 It should return `0` for inactive nodes
 
-* 🧮 It should compute expected reports based on completed buckets since registration
+- 🧮 It should compute expected reports based on completed buckets since registration
 
-* ✂️ For each missed report, subtract `INACTIVITY_PENALTY`, floored at zero
+- ✂️ For each missed report, subtract `INACTIVITY_PENALTY`, floored at zero
 
 <details markdown='1'>
 
@@ -692,19 +694,19 @@ function getEffectiveStake(address nodeAddress) public view returns (uint256) {
 
 6. **Implement `reportPrice(uint256 price)`**
 
-* 🧪 This function allows registered nodes to report new prices (uses `onlyNode` modifier)
+- 🧪 This function allows registered nodes to report new prices (uses `onlyNode` modifier)
 
-* 🔍 It should verify the given price is not zero, otherwise revert with `InvalidPrice`
+- 🔍 It should verify the given price is not zero, otherwise revert with `InvalidPrice`
 
-* 🔍 It should verify the node has sufficient effective stake (using `getEffectiveStake`), otherwise revert with `InsufficientStake`
+- 🔍 It should verify the node has sufficient effective stake (using `getEffectiveStake`), otherwise revert with `InsufficientStake`
 
-* 🚫 It should prevent reporting twice in the same bucket, otherwise revert with `AlreadyReportedInCurrentBucket`
+- 🚫 It should prevent reporting twice in the same bucket, otherwise revert with `AlreadyReportedInCurrentBucket`
 
-* 📊 It should store the node's report by appending to `reporters[]` and `prices[]` for the current bucket
+- 📊 It should store the node's report by appending to `reporters[]` and `prices[]` for the current bucket
 
-* 🔄 It should update the node's `lastReportedBucket` and increment `reportCount`
+- 🔄 It should update the node's `lastReportedBucket` and increment `reportCount`
 
-* 📣 It should emit the `PriceReported` event with the sender, price, and bucket number
+- 📣 It should emit the `PriceReported` event with the sender, price, and bucket number
 
 <details markdown='1'>
 
@@ -744,17 +746,17 @@ function reportPrice(uint256 price) public onlyNode {
 
 7. **Implement `claimReward()`**
 
-* 🪙 This function allows nodes (active or inactive) to claim accumulated ORA rewards for reports
+- 🪙 This function allows nodes (active or inactive) to claim accumulated ORA rewards for reports
 
-* 🔍 It should compute `delta = reportCount - claimedReportCount`
+- 🔍 It should compute `delta = reportCount - claimedReportCount`
 
-* 🔒 It should revert with `NoRewardsAvailable` if `delta == 0`
+- 🔒 It should revert with `NoRewardsAvailable` if `delta == 0`
 
-* ✅ It should update `claimedReportCount` *before* minting (reentrancy-safe ordering)
+- ✅ It should update `claimedReportCount` _before_ minting (reentrancy-safe ordering)
 
-* 💰 It should mint `delta * REWARD_PER_REPORT` ORA tokens
+- 💰 It should mint `delta * REWARD_PER_REPORT` ORA tokens
 
-* 📣 It should emit `NodeRewarded(node, amount)`
+- 📣 It should emit `NodeRewarded(node, amount)`
 
 <details markdown='1'>
 
@@ -785,15 +787,15 @@ function claimReward() public {
 
 8. **Implement `recordBucketMedian(uint256 bucketNumber)`**
 
-* 📌 This function finalizes a bucket by recording the **median** price for that bucket
+- 📌 This function finalizes a bucket by recording the **median** price for that bucket
 
-* 🚫 It should revert with `BucketMedianAlreadyRecorded` if `medianPrice` is already set
+- 🚫 It should revert with `BucketMedianAlreadyRecorded` if `medianPrice` is already set
 
-* ⏰ It should only allow this function to be called with **past buckets**, otherwise revert with `OnlyPastBucketsAllowed`
+- ⏰ It should only allow this function to be called with **past buckets**, otherwise revert with `OnlyPastBucketsAllowed`
 
-* 🧠 It should compute the median using StatisticsUtils on a **memory copy** of `prices[]` (don’t reorder the arrays in storage as the slashing relies on the ordering!)
+- 🧠 It should compute the median using StatisticsUtils on a **memory copy** of `prices[]` (don’t reorder the arrays in storage as the slashing relies on the ordering!)
 
-* 📣 It should emit `BucketMedianRecorded(bucketNumber, medianPrice)`
+- 📣 It should emit `BucketMedianRecorded(bucketNumber, medianPrice)`
 
 <details markdown='1'>
 
@@ -827,9 +829,9 @@ function recordBucketMedian(uint256 bucketNumber) public {
 
 9. **Implement `getLatestPrice()`**
 
-* 📦 This view function returns the finalized price (recorded median) for the **most recent completed bucket**
+- 📦 This view function returns the finalized price (recorded median) for the **most recent completed bucket**
 
-* ⛔️ It should revert with `MedianNotRecorded` if the bucket has not been finalized
+- ⛔️ It should revert with `MedianNotRecorded` if the bucket has not been finalized
 
 <details markdown='1'>
 
@@ -856,9 +858,9 @@ function getLatestPrice() public view returns (uint256) {
 
 10. **Implement `getPastPrice(uint256 bucketNumber)`**
 
-* 🕰️ This view function returns the finalized price (recorded median) for **any historical bucket**
+- 🕰️ This view function returns the finalized price (recorded median) for **any historical bucket**
 
-* ⛔️ It should revert with `MedianNotRecorded` if that bucket has not been finalized
+- ⛔️ It should revert with `MedianNotRecorded` if that bucket has not been finalized
 
 <details markdown='1'>
 
@@ -885,9 +887,9 @@ function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
 
 11. **Implement `getSlashedStatus(address nodeAddress, uint256 bucketNumber)`**
 
-* 🔎 This view function returns the price a node reported in a bucket and whether they were slashed there
+- 🔎 This view function returns the price a node reported in a bucket and whether they were slashed there
 
-* 🗡️ This is just a convenience method to help onlookers check for slashable nodes
+- 🗡️ This is just a convenience method to help onlookers check for slashable nodes
 
 <details markdown='1'>
 
@@ -919,9 +921,9 @@ function getSlashedStatus(address nodeAddress, uint256 bucketNumber) public view
 
 12. **Implement `_checkPriceDeviated(uint256 reportedPrice, uint256 medianPrice)`**
 
-* 🧮 This internal pure function determines whether a reported price deviates beyond the allowed threshold
+- 🧮 This internal pure function determines whether a reported price deviates beyond the allowed threshold
 
-* 📐 It should return `true` only when deviation is **strictly greater** than `MAX_DEVIATION_BPS`
+- 📐 It should return `true` only when deviation is **strictly greater** than `MAX_DEVIATION_BPS`
 
 <details markdown='1'>
 
@@ -950,13 +952,13 @@ function _checkPriceDeviated(uint256 reportedPrice, uint256 medianPrice) interna
 
 13. **Implement `getOutlierNodes(uint256 bucketNumber)`**
 
-* 📊 This view function identifies nodes whose report deviates beyond the maximum deviation for a given bucket
+- 📊 This view function identifies nodes whose report deviates beyond the maximum deviation for a given bucket
 
-* 🔁 Loops are fine since this is just a view method that will be called from outside the chain
+- 🔁 Loops are fine since this is just a view method that will be called from outside the chain
 
-* ⛔️ It should revert with `MedianNotRecorded` if the bucket hasn’t been finalized
+- ⛔️ It should revert with `MedianNotRecorded` if the bucket hasn’t been finalized
 
-* 🚫 It should ignore nodes that are already marked slashed in that bucket
+- 🚫 It should ignore nodes that are already marked slashed in that bucket
 
 <details markdown='1'>
 
@@ -1005,13 +1007,13 @@ function getOutlierNodes(uint256 bucketNumber) public view returns (address[] me
 
 14. **Implement `_removeNode(address nodeAddress, uint256 index)`**
 
-* 🗂️ This internal function removes a node from the `nodeAddresses` array while keeping the array packed
+- 🗂️ This internal function removes a node from the `nodeAddresses` array while keeping the array packed
 
-* 🔍 It should revert with `IndexOutOfBounds` if `index` is invalid
+- 🔍 It should revert with `IndexOutOfBounds` if `index` is invalid
 
-* ✅ It should revert with `NodeNotAtGivenIndex` if the address at the index does not match `nodeAddress`
+- ✅ It should revert with `NodeNotAtGivenIndex` if the address at the index does not match `nodeAddress`
 
-* 🔁 It should use swap-and-pop, then mark `nodes[nodeAddress].active = false`
+- 🔁 It should use swap-and-pop, then mark `nodes[nodeAddress].active = false`
 
 <details markdown='1'>
 
@@ -1042,17 +1044,17 @@ function _removeNode(address nodeAddress, uint256 index) internal {
 
 15. **Implement `slashNode(address nodeToSlash, uint256 bucketNumber, uint256 reportIndex, uint256 nodeAddressesIndex)`**
 
-* 🔎 This function allows anyone to slash a node that deviated too far from the bucket’s recorded median
+- 🔎 This function allows anyone to slash a node that deviated too far from the bucket’s recorded median
 
-* ⏰ It should only allow past buckets (not the current bucket), otherwise revert with `OnlyPastBucketsAllowed`
+- ⏰ It should only allow past buckets (not the current bucket), otherwise revert with `OnlyPastBucketsAllowed`
 
-* 🧠 It should require the bucket median is recorded, otherwise revert with `MedianNotRecorded`
+- 🧠 It should require the bucket median is recorded, otherwise revert with `MedianNotRecorded`
 
-* 🧷 It should verify the provided indices (report index + node index), otherwise revert with `NodeNotAtGivenIndex` / `IndexOutOfBounds`
+- 🧷 It should verify the provided indices (report index + node index), otherwise revert with `NodeNotAtGivenIndex` / `IndexOutOfBounds`
 
-* 🚫 It should revert with `NotDeviated` if deviation is ≤ `MAX_DEVIATION_BPS` (strict `>`)
+- 🚫 It should revert with `NotDeviated` if deviation is ≤ `MAX_DEVIATION_BPS` (strict `>`)
 
-* 💰 It should slash up to `MISREPORT_PENALTY` and reward the slasher in ORA based on the `SLASHER_REWARD_PERCENTAGE`
+- 💰 It should slash up to `MISREPORT_PENALTY` and reward the slasher in ORA based on the `SLASHER_REWARD_PERCENTAGE`
 
 <details markdown='1'>
 
@@ -1105,21 +1107,21 @@ function slashNode(address nodeToSlash, uint256 bucketNumber, uint256 reportInde
 
 16. **Implement `exitNode(uint256 index)`**
 
-* 🚪 This function allows a node to exit and withdraw its stake after a waiting period
+- 🚪 This function allows a node to exit and withdraw its stake after a waiting period
 
-* 🤔 By forcing a waiting period we make sure a node can't report a bad price and then exit without being slashed
+- 🤔 By forcing a waiting period we make sure a node can't report a bad price and then exit without being slashed
 
-* ⏳ It should revert with `WaitingPeriodNotOver` if `lastReportedBucket + WAITING_PERIOD > getCurrentBucketNumber()`
+- ⏳ It should revert with `WaitingPeriodNotOver` if `lastReportedBucket + WAITING_PERIOD > getCurrentBucketNumber()`
 
-* 💰 It should compute the withdrawable stake using `getEffectiveStake` **before** removing the node
+- 💰 It should compute the withdrawable stake using `getEffectiveStake` **before** removing the node
 
-* 🗑️ It should remove the node using the index-verified swap-and-pop pattern, and mark inactive (you can use the `_removeNode` method for this)
+- 🗑️ It should remove the node using the index-verified swap-and-pop pattern, and mark inactive (you can use the `_removeNode` method for this)
 
-* 🥩 Set the nodes stakedAmount to 0
+- 🥩 Set the nodes stakedAmount to 0
 
-* 🪙 Send the node its stake and revert if the `TransferFailed`
+- 🪙 Send the node its stake and revert if the `TransferFailed`
 
-* 📣 It should emit `NodeExited(node, amount)`
+- 📣 It should emit `NodeExited(node, amount)`
 
 <details markdown='1'>
 
@@ -1169,7 +1171,7 @@ function exitNode(uint256 index) public onlyNode {
 - **Singular Nodes**: We built this where it is totally fine to just have one node mostly so that it is easy to test out but a better mechanism would heavily encourage multiple since one node doesn't have any accountability.
 - **Schelling Point**: You could do this by always allocating a certain amount of tokens to all reporting nodes (e.g. 100 tokens split between however many nodes reported) and this would encourage a large amount of participants (depending on the value of the token) and discourage too many participants which would make the `recordBucketMedian` function too expensive.
 - **Tokenomics**: Just note this; The ORA tokens are practically worthless in this system. The only demand source is people who want to run an oracle node through staking some of the token but we are constantly inflating the supply through rewards and we didn't design any other source of demand for the token. Ideally the consumer of the price would be used to create demand for the token and this would find some equilibrium but we did not design the system this way.
-- **Locked Tokens**: In this design, when a node is slashed, the portion that is not given as a reward simply stays locked in the contract. Also the ORA token contract accepts ETH for ORA but there is no way to withdraw it. Just use your imagination to fill in the gaps of our tokenomics issues. Perhaps the remains tokens could be burned and the locked ETH could be swapped for it's value in ORA tokens. This a good start but the token still needs demand to be a long term viable system.
+- **Locked Tokens**: In this design, when a node is slashed, the portion that is not given as a reward simply stays locked in the contract. Also the ORA token contract accepts ETH for ORA but there is no way to withdraw it. Just use your imagination to fill in the gaps of our tokenomics issues. Perhaps the remaining tokens could be burned and the locked ETH could be swapped for it's value in ORA tokens. This a good start but the token still needs demand to be a long term viable system.
 
 ---
 
@@ -1195,7 +1197,7 @@ yarn test --grep "Checkpoint2"
 
 > 🗺️ You can navigate to past buckets using the arrows. 
 
-✏️ Now you can press the pencil icon to report a new price. Enter your price and press the checkmark button to confirm. If you want to report the same price in the next block then just press the refresh icon next to the pencil.
+✏️ Now you can press the pencil icon to report a new price. Enter your price and press the checkmark button to confirm. If you want to report the same price in the next bucket then just press the refresh icon next to the pencil.
 
 ![SelfNodeRow](https://github.com/user-attachments/assets/51f5e8a6-da2e-4bc3-a280-68609fea0789)
 
@@ -1203,7 +1205,7 @@ yarn test --grep "Checkpoint2"
 
 > 🧠 Before you can read a finalized price for a bucket or slash an outlier, someone must call **Record Bucket Median** for that bucket. By default there is a button that enables you to run the function for the last bucket but feel free to navigate backwards and trigger the median function by pressing the button on past buckets.
 
-😮‍💨 *Whew!* That was a lot of work pressing all those buttons to keep from getting the inactive penalty! Much easier when bots are doing all the work and you can just watch. Exit your node (if it stresses you) and lets have some fun.
+😮‍💨 _Whew!_ That was a lot of work pressing all those buttons to keep from getting the inactive penalty! Much easier when bots are doing all the work and you can just watch. Exit your node (if it stresses you) and lets have some fun.
 
 🧪 **Live Simulation**: Run the `yarn simulate:staking` command to watch a live simulation of staking oracle behavior with multiple nodes:
 
@@ -1216,6 +1218,8 @@ yarn simulate:staking
 🤖 This will start automated bots and demonstrate how slashing and average aggregation impact the reported price. Right now they are all on default settings so the price won't deviate, but...
 
 ⚙️ You can update the price deviation and skip probability by pressing the gear icon. Go ahead and make some bots start to produce wild deviations then view the past buckets (by using the arrows) to see the "slash" button activated. Press it to slash any deviated nodes.
+
+💰 **Note:** When simulation nodes run out of stake (due to slashing or inactivity penalties), their stake will be automatically replenished with ~500 ORA to keep the simulation running.
 
 🥱 If you get tired of slashing deviated nodes but still want to see them get slashed you can re-run the command with this environment variable:
 
@@ -1238,13 +1242,14 @@ AUTO_SLASH=true yarn simulate:staking
 
 ## Checkpoint 3: 🧠 Optimistic Oracle Architecture
 
-🤿 Now let's dive into the most sophisticated of this challenge's three designs: the **Optimistic Oracle**. Unlike the previous two designs that focus on price data, this one will handle any type of binary (true/false) question about real-world events.
+🤿 Now let's dive into the **Optimistic Oracle**. Unlike the previous two designs that focus on price data, this one will handle any type of binary (true/false) question about real-world events.
 
 🎯 **What makes it "optimistic"?** The system assumes proposals are correct unless someone disputes them. This creates a game-theoretic mechanism where economic incentives encourage honest behavior while providing strong security guarantees through dispute resolution.
 
 💡 **Key Innovation**: Instead of requiring constant active participation from multiple parties (like staking oracles), optimistic oracles only require intervention when something goes wrong. This makes them highly efficient for events that don't need frequent updates.
 
 🔍 **Real-World Applications**:
+
 - **Cross-chain bridges**: "Did transaction X happen on chain Y?"
 - **Insurance claims**: "Did flight ABC get delayed by more than 2 hours?"
 - **Prediction markets**: "Did candidate X win the election?"
@@ -1253,16 +1258,19 @@ AUTO_SLASH=true yarn simulate:staking
 🧭 Before coding, let's understand the flow at a glance.
 
 **Roles**:
+
 - **asserter**: posts an assertion + reward
 - **proposer**: posts an outcome + bond
 - **disputer**: challenges the proposal + bond
 - **decider**: resolves disputes and sets the winner
 
 **Windows**:
+
 - Assertion window: when proposals are allowed
 - Dispute window: short period after a proposal when disputes are allowed
 
 **Incentives**:
+
 - Reward + a bond refund flow to the winner; the loser's bond goes to the decider in disputes
 
 ```mermaid
@@ -1292,6 +1300,7 @@ sequenceDiagram
 ```
 
 🧩 The way this system works is someone creates an **assertion**;
+
 - Something that needs a boolean answer (`true` or `false`)
 - After a certain time
 - Before a specific deadline
@@ -1323,29 +1332,30 @@ sequenceDiagram
 
 1. **Implement `assertEvent(string memory description, uint256 startTime, uint256 endTime)`**
 
-* 📣 This function allows users to assert that an event will have a true/false outcome
+- 📣 This function allows users to assert that an event will have a true/false outcome
 
-* 💸 It should require that the reward (`msg.value`) is greater than 0 . If it is not then revert with `InvalidValue`
+- 💸 It should require that the reward (`msg.value`) is greater than 0 . If it is not then revert with `InvalidValue`
 
-* ⏱️ It should accept 0 for `startTime` and set it to `block.timestamp`
+- ⏱️ It should accept 0 for `startTime` and set it to `block.timestamp`
 
-* ⏳ It should accept 0 for `endTime` and default to `startTime + MINIMUM_ASSERTION_WINDOW`
+- ⏳ It should accept 0 for `endTime` and default to `startTime + MINIMUM_ASSERTION_WINDOW`
 
-* 🕰️ It should check that the given `startTime` is less than the current time (`block.timestamp`) and revert with `InvalidTime` if it is
+- 🕰️ It should validate that `startTime` is not in the past (i.e., `startTime` >= `block.timestamp`), otherwise revert with `InvalidTime`
 
-* 🧭 It should validate the time window given is >= `MINIMUM_ASSERTION_WINDOW`, otherwise revert with `InvalidTime`
+- 🧭 It should validate the time window given is >= `MINIMUM_ASSERTION_WINDOW`, otherwise revert with `InvalidTime`
 
-* 🏗️ It should create a new `EventAssertion` struct with relevant properties set - see if you can figure it out
+- 🏗️ It should create a new `EventAssertion` struct with relevant properties set - see if you can figure it out
 
-* 🗂️ That struct should be stored in the `assertions` mapping. You can use `nextAssertionId` but don't forget to increment it afterwards!
+- 🗂️ That struct should be stored in the `assertions` mapping. You can use `nextAssertionId` but don't forget to increment it afterwards!
 
-* 📣 It should emit the `EventAsserted` event
+- 📣 It should emit the `EventAsserted` event
 
 <details markdown='1'>
 
 <summary>💡 Hint: Asserting Events</summary>
 
 Here are more granular instructions on setting up the EventAssertion struct:
+
 - asserter should be `msg.sender`
 - reward should be `msg.value`
 - bond should be the reward x 2 (You will know why as you understand the economics and game theory)
@@ -1402,25 +1412,26 @@ Here are more granular instructions on setting up the EventAssertion struct:
 
 2. **Implement `proposeOutcome(uint256 assertionId, bool outcome)`**
 
-* 🗳️ This function allows users to propose the outcome for an asserted event
+- 🗳️ This function allows users to propose the outcome for an asserted event
 
-* 🔍 It should check that the assertion exists and hasn't been proposed yet. Otherwise revert with `AssertionNotFound` or `AssertionProposed`
+- 🔍 It should check that the assertion exists and hasn't been proposed yet. Otherwise revert with `AssertionNotFound` or `AssertionProposed`
 
-* ⏱️ It should validate the timing constraints - it has to be after `startTime` but before the `endTime` or else revert with `InvalidTime`
+- ⏱️ It should validate the timing constraints - it has to be after `startTime` but before the `endTime` or else revert with `InvalidTime`
 
-* 💸 It should enforce the correct bond amount is provided or revert with `InvalidValue`
+- 💸 It should enforce the correct bond amount is provided or revert with `InvalidValue`
 
-* ✍️ It should update the assertion with the proposal
+- ✍️ It should update the assertion with the proposal
 
-* ⏳ It should set the `endTime` to `block.timestamp + MINIMUM_DISPUTE_WINDOW`
+- ⏳ It should set the `endTime` to `block.timestamp + MINIMUM_DISPUTE_WINDOW`
 
-* 📣 It should emit `OutcomeProposed`
+- 📣 It should emit `OutcomeProposed`
 
 <details markdown='1'>
 
 <summary>💡 Hint: Proposing Outcomes</summary>
 
 You want to set these properties on the assertion:
+
 - proposer should be `msg.sender`
 - proposedOutcome should be `outcome`
 - endTime should be updated to `block.timestamp + MINIMUM_DISPUTE_WINDOW`
@@ -1454,15 +1465,15 @@ You want to set these properties on the assertion:
 
 3. **Implement `disputeOutcome(uint256 assertionId)`**
 
-* ⚖️ This function allows users to dispute a proposed outcome
+- ⚖️ This function allows users to dispute a proposed outcome
 
-* 🔍 It should check that a proposal exists and hasn't been disputed yet, if not then revert with `NotProposedAssertion` or `ProposalDisputed`
+- 🔍 It should check that a proposal exists and hasn't been disputed yet, if not then revert with `NotProposedAssertion` or `ProposalDisputed`
 
-* ⏳ It should validate the timing constraints to make sure the `endTime` has not been passed or else it should revert with `InvalidTime`
+- ⏳ It should validate the timing constraints to make sure the `endTime` has not been passed or else it should revert with `InvalidTime`
 
-* 💸 It should require the correct bond amount (as set on the assertion)
+- 💸 It should require the correct bond amount (as set on the assertion)
 
-* 📝 It should record the disputer on the assertion struct
+- 📝 It should record the disputer on the assertion struct
 
 <details markdown='1'>
 
@@ -1517,6 +1528,7 @@ yarn test --grep "Checkpoint4"
 🎯 **Your Mission**: Implement the reward claiming mechanisms that allow participants to collect their earnings based on the outcomes of assertions, proposals, and disputes.
 
 💡 **Key Concept**: The optimistic oracle has three different scenarios for claiming rewards:
+
 - **Undisputed proposals**: Proposer gets reward + bond back
 - **Disputed proposals**: Winner (determined by decider) gets reward + bond back
 - **Refunds**: Asserter gets reward back when no proposals are made
@@ -1527,17 +1539,17 @@ yarn test --grep "Checkpoint4"
 
 The proposer can claim the reward only after the deadline, as long as no dispute was submitted before it.
 
-* 🧩 A proposal must exist (revert with `NotProposedAssertion`)
+- 🧩 A proposal must exist (revert with `NotProposedAssertion`)
 
-* 🚫 No dispute must have been raised (revert with `ProposalDisputed`)
+- 🚫 No dispute must have been raised (revert with `ProposalDisputed`)
 
-* ⏰ Current time must be after the dispute `endTime` (revert with `InvalidTime`)
+- ⏰ Current time must be after the dispute `endTime` (revert with `InvalidTime`)
 
-* 🔒 Not already claimed (revert with `AlreadyClaimed`)
+- 🔒 Not already claimed (revert with `AlreadyClaimed`)
 
-* 💸 Transfer `reward + proposer bond` to the proposer
+- 💸 Transfer `reward + proposer bond` to the proposer
 
-* 📣 Emit `RewardClaimed`
+- 📣 Emit `RewardClaimed`
 
 <details markdown='1'>
 
@@ -1583,27 +1595,27 @@ The proposer can claim the reward only after the deadline, as long as no dispute
 
 2. **Implement `claimDisputedReward(uint256 assertionId)`**
 
-Very similar to the last function except this one allows the winner of the dispute to claim *only after the Decider has resolved the dispute*.
+Very similar to the last function except this one allows the winner of the dispute to claim _only after the Decider has resolved the dispute_.
 
-* 🧩 A proposal must exist (revert with `NotProposedAssertion`)
+- 🧩 A proposal must exist (revert with `NotProposedAssertion`)
 
-* ⚖️ A dispute must exist (revert with `NotDisputedAssertion`)
+- ⚖️ A dispute must exist (revert with `NotDisputedAssertion`)
 
-* 🧑‍⚖️ The decider must have set a winner (revert with `AwaitingDecider`)
+- 🧑‍⚖️ The decider must have set a winner (revert with `AwaitingDecider`)
 
-* 🔒 Not already claimed (revert with `AlreadyClaimed`)
+- 🔒 Not already claimed (revert with `AlreadyClaimed`)
 
-* 📝 Set the `claimed` property on the assertion to `true`
+- 📝 Set the `claimed` property on the assertion to `true`
 
-* 💸 Transfer the loser's bond to the decider, then send the reward and bond refund to the winner
+- 💸 Transfer the loser's bond to the decider, then send the reward and bond refund to the winner
 
-* 📣 Emit `RewardClaimed`
+- 📣 Emit `RewardClaimed`
 
 <details markdown="1">
 <summary>💡 Hint: Claiming Disputed Rewards</summary>
 
 - Validate assertion state: proposed, disputed, winner set, not yet claimed
-- Mark as claimed *before* paying to avoid re-entrancy
+- Mark as claimed _before_ paying to avoid re-entrancy
 - Pay the losers bond to the `decider`
 - Winner receives `(reward + bond)`
 - Use safe ETH sending pattern with revert on failure (`TransferFailed`)
@@ -1643,19 +1655,19 @@ Very similar to the last function except this one allows the winner of the dispu
 
 This function enables the asserter to get a refund of their posted reward when no proposal arrives by the deadline.
 
-* 🚫 No proposer exists (revert with `AssertionProposed`)
+- 🚫 No proposer exists (revert with `AssertionProposed`)
 
-* ⏰ After assertion endTime ( revert with `InvalidTime`)
+- ⏰ After assertion endTime ( revert with `InvalidTime`)
 
-* 🔒 Not already claimed (revert with `AlreadyClaimed`)
+- 🔒 Not already claimed (revert with `AlreadyClaimed`)
 
-* 🛡️ Mark the assertion as claimed to avoid re-entrancy
+- 🛡️ Mark the assertion as claimed to avoid re-entrancy
 
-* 💸 Refund the reward to the asserter
+- 💸 Refund the reward to the asserter
 
-* ✅ Check for successful transfer (revert with `TransferFailed`)
+- ✅ Check for successful transfer (revert with `TransferFailed`)
 
-* 📣 Emit `RefundClaimed`
+- 📣 Emit `RefundClaimed`
 
 <details markdown="1">
 <summary>💡 Hint: No Proposal Refund</summary>
@@ -1694,17 +1706,17 @@ This is the method that the decider will call to settle whether the proposer or 
 
 It should be:
 
-* 🧑‍⚖️ Only callable by the `decider` contract
+- 🧑‍⚖️ Only callable by the `decider` contract
 
-* ⚖️ The assertion must be both proposed and disputed (or revert with `NotProposedAssertion` or `NotDisputedAssertion`)
+- ⚖️ The assertion must be both proposed and disputed (or revert with `NotProposedAssertion` or `NotDisputedAssertion`)
 
-* 🔒 We need to make sure the winner has not already been set (or revert with `AlreadySettled`)
+- 🔒 We need to make sure the winner has not already been set (or revert with `AlreadySettled`)
 
-* ✍️ Now we should set the resolvedOutcome property
+- ✍️ Now we should set the resolvedOutcome property
 
-* 🏁 Winner = proposer if proposedOutcome == resolvedOutcome, else disputer
+- 🏁 Winner = proposer if proposedOutcome == resolvedOutcome, else disputer
 
-* 📣 Emit `AssertionSettled`
+- 📣 Emit `AssertionSettled`
 
 <details markdown="1">
 <summary>💡 Hint: Decider Sets Winner</summary>
@@ -1713,7 +1725,7 @@ We just need the decider to use the remaining unused properties to establish whi
 
 Set resolvedOutcome to true or false based on what is the actual truth regarding an assertion.
 
-Then set the winner to the proposer if the proposer was correct *or* set it to the disputer is the disputer was correct.
+Then set the winner to the proposer if the proposer was correct _or_ set it to the disputer is the disputer was correct.
 
 <details markdown="1">
 <summary>🎯 Solution</summary>
@@ -1759,7 +1771,6 @@ yarn test --grep "Checkpoint5"
 - The decider can settle disputed assertions
 - The system prevents double-claiming and re-entrancy attacks
 - All transfers are handled safely with proper error checking
-
 
 ---
 
@@ -1829,15 +1840,18 @@ Try to deduce the rest without any help.
 
 This function will help everyone know the exact outcome of the assertion.
 
-* 🔎 It should revert with `AssertionNotFound` if it doesn't exist
+- 🔎 It should revert with `AssertionNotFound` if it doesn't exist
 
-* ⏳ Then we just need to check if anyone disputed it and that the dispute window is up to know we can rely on the `proposedOutcome` (if the time isn't over then revert with `InvalidTime`)
+- 🚫 It should revert with `NotProposedAssertion` if no proposal was ever made (important: expired assertions without proposals have no valid resolution!)
 
-* 🧑‍⚖️ Otherwise, if a disupte has been made, then we just need to make sure the `winner` has been set by the decider (or else revert with `AwaitingDecider`)
+- ⏳ Then we just need to check if anyone disputed it and that the dispute window is up to know we can rely on the `proposedOutcome` (if the time isn't over then revert with `InvalidTime`)
+
+- 🧑‍⚖️ Otherwise, if a disupte has been made, then we just need to make sure the `winner` has been set by the decider (or else revert with `AwaitingDecider`)
 
 <details markdown="1">
 <summary>💡 Hint: Read Outcome Carefully</summary>
 
+- Check that a proposal exists first — expired assertions without proposals have no valid resolution
 - Handle undisputed vs disputed paths
 - Enforce timing and readiness conditions with appropriate errors
 
@@ -1850,6 +1864,7 @@ The important thing here is that it reverts if it is not settled and if it has b
     function getResolution(uint256 assertionId) external view returns (bool) {
         EventAssertion storage a = assertions[assertionId];
         if (a.asserter == address(0)) revert AssertionNotFound();
+        if (a.proposer == address(0)) revert NotProposedAssertion();
 
         if (a.disputer == address(0)) {
             if (block.timestamp <= a.endTime) revert InvalidTime();
@@ -1887,7 +1902,8 @@ yarn test --grep "Checkpoint6"
 ![OptimisticOracle](https://github.com/user-attachments/assets/9ed4f066-152b-43a9-a5d4-933221137905)
 
 1. **Submit a New Assertion**:  
-   Go to the "Optimistic" page and fill in the required fields to create a new assertion.  
+   Go to the "Optimistic" page and fill in the required fields to create a new assertion.
+
    - Enter the assertion details and submit.
 
 2. **Propose an Outcome**:  
@@ -1896,7 +1912,8 @@ yarn test --grep "Checkpoint6"
 3. **Dispute an Outcome**:  
    If someone disagrees with the proposed outcome, they can dispute it using the dispute button shown in the table for pending assertions.
 
-4. **Wait for Dispute Window & Settlement**:  
+4. **Wait for Dispute Window & Settlement**:
+
    - Wait for the dispute window (the protocol's timer) to expire.  
    - If no dispute is made, the assertion settles automatically.
    - If disputed, the decider must choose the winner; monitor status updates in the table.
@@ -1922,6 +1939,7 @@ yarn simulate:optimistic
 - Users can query resolved outcomes for both disputed and undisputed assertions
 - All functions handle edge cases and invalid states appropriately
 - The complete optimistic oracle system works end-to-end
+
 ---
 
 ## Checkpoint 7: 🔍 Oracle Comparison & Trade-offs
@@ -1929,13 +1947,14 @@ yarn simulate:optimistic
 🧠 Now let's analyze the strengths and weaknesses of each oracle design.
 
 ### 📊 Comparison Table:
-| Aspect | Whitelist Oracle | Staking Oracle | Optimistic Oracle |
-|--------|------------------|----------------|-------------------|
-| **Speed** | Fast | Medium | Slow |
-| **Security** | Low (trusted authority) | High (economic incentives) | High (dispute resolution) |
-| **Decentralization** | Low | High | Depends on Decider Implementation |
-| **Cost** | Low | Medium (stake) | High (rewards and bonds) |
-| **Complexity** | Simple | Medium | Complex |
+
+| Aspect               | Whitelist Oracle        | Staking Oracle             | Optimistic Oracle                 |
+| -------------------- | ----------------------- | -------------------------- | --------------------------------- |
+| **Speed**            | Fast                    | Medium                     | Slow                              |
+| **Security**         | Low (trusted authority) | High (economic incentives) | High (dispute resolution)         |
+| **Decentralization** | Low                     | High                       | Depends on Decider Implementation |
+| **Cost**             | Low                     | Medium (stake)             | High (rewards and bonds)          |
+| **Complexity**       | Simple                  | Medium                     | Complex                           |
 
 ### 🤔 Key Trade-offs:
 
@@ -1977,7 +1996,7 @@ Each oracle design solves different problems:
 
 - **Whitelist Oracle**: Best for setups with trusted intermediaries already in the loop such as RWAs where speed and accuracy are more important than decentralization.
 - **Staking Oracle**: Best for high-value DeFi applications where decentralization and security are crucial. Decentralization and latency rise and fall together.
-- **Optimistic Oracle**: Best for answering complex questions and where more latency is not a huge problem. Flexible enough to resolve open-ended questions that don't have a strict binary format (e.g., "Which team won the match?").
+- **Optimistic Oracle**: Best for answering complex questions and in scenarios where higher latency is acceptable. Flexible enough to resolve open-ended questions that don't have a strict binary format (e.g., "Which team won the match?").
 
 ---
 

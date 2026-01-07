@@ -140,7 +140,10 @@ export const NodeRow = ({ address, bucketNumber, showInlineSettings }: NodeRowWi
     <>
       <tr className={isInsufficientStake ? "opacity-40" : ""}>
         <td>
-          <Address address={address} size="sm" format="short" onlyEnsOrAddress={true} />
+          <div className="flex flex-col">
+            <Address address={address} size="sm" format="short" onlyEnsOrAddress={true} />
+            <span className="text-xs opacity-70">{oraBalanceFormatted} ORA</span>
+          </div>
         </td>
         {showInlineSettings ? (
           // Inline settings mode: only show the settings sliders column

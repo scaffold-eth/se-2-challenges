@@ -257,6 +257,7 @@ describe("Checkpoint2 - StakingOracle", function () {
   });
   describe("Effective stake and addStake", function () {
     beforeEach(async function () {
+      await moveToFreshBucket();
       const MINIMUM_STAKE = await oracle.MINIMUM_STAKE();
       await fundApproveAndRegister(node1, MINIMUM_STAKE + 10n);
     });

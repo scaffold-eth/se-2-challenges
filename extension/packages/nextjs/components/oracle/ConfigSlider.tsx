@@ -71,7 +71,7 @@ export const ConfigSlider = ({ nodeAddress, endpoint, label }: ConfigSliderProps
         onTouchEnd={handleFinalChange}
         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
       />
-      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+      <div className="text-xs font-medium text-neutral dark:text-neutral-content mt-1 text-center">
         {(localValue * 100).toFixed(0)}% {label}
       </div>
       {isLoading && (

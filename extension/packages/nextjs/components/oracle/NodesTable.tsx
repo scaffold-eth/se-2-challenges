@@ -244,8 +244,6 @@ export const NodesTable = ({
     setEntering(false);
     setTimeout(() => setEntering(true), 20);
   };
-  const tooltipText =
-    "This table displays registered oracle nodes that provide price data to the system. Rows are dimmed when the node's effective ORA stake falls below the minimum. You can edit the skip probability and price variance of an oracle node with the slider.";
   const { writeContractAsync: writeStakingOracle } = useScaffoldWriteContract({ contractName: "StakingOracle" });
   const { data: nodeAddresses } = useScaffoldReadContract({
     contractName: "StakingOracle",
@@ -270,6 +268,8 @@ export const NodesTable = ({
     functionName: "MINIMUM_STAKE",
   }) as { data: bigint | undefined };
 
+  const minimumStakeFormatted = minimumStake !== undefined ? Number(formatEther(minimumStake)).toLocaleString() : "...";
+  const tooltipText = `This table displays registered oracle nodes that provide price data to the system. Rows are dimmed when the node's effective ORA stake falls below the minimum (${minimumStakeFormatted} ORA). You can edit the skip probability and price variance of an oracle node with the slider.`;
   const registerButtonLabel = "Register Node";
   const readMedianValue = useCallback(async (): Promise<boolean | null> => {
     if (!targetBucket) {
@@ -408,6 +408,9 @@ export const NodesTable = ({
             <span>
               <TooltipInfo infoText={tooltipText} />
             </span>
+            <span className="text-xs bg-base-100 px-2 py-1 rounded-full opacity-70">
+              Min Stake: {minimumStakeFormatted} ORA
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
@@ -499,7 +502,8 @@ export const NodesTable = ({
 
               {/* Inline settings toggle */}
               <button
-                className={`btn btn-ghost btn-sm ml-1 ${showInlineSettings ? "text-primary" : ""}`}
+                className={`btn btn-sm ml-1 px-3 ${showInlineSettings ? "btn-primary" : "btn-secondary"}`}
+                style={{ display: "inline-flex" }}
                 onClick={() => {
                   if (!showInlineSettings) {
                     // Opening settings: slide left

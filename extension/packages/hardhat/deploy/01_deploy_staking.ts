@@ -34,14 +34,27 @@ const deployStakingOracle: DeployFunction = async function (hre: HardhatRuntimeE
   const deployerClient = walletClients.find(wc => wc.account.address.toLowerCase() === deployer.toLowerCase());
   if (!deployerClient) throw new Error("Deployer wallet client not found");
 
-  console.log("Transferring ORA ownership to StakingOracle...");
-  const txHash = await deployerClient.writeContract({
+  // Check current owner before attempting transfer
+  const currentOwner = await publicClient.readContract({
     address: oraDeployment.address as `0x${string}`,
     abi: oraDeployment.abi,
-    functionName: "transferOwnership",
-    args: [stakingOracleAddress],
+    functionName: "owner",
+    args: [],
   });
-  await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+  if ((currentOwner as unknown as string).toLowerCase() === stakingOracleAddress.toLowerCase()) {
+    console.log("ORA ownership already transferred to StakingOracle, skipping...");
+  } else {
+    console.log("Transferring ORA ownership to StakingOracle...");
+    const txHash = await deployerClient.writeContract({
+      address: oraDeployment.address as `0x${string}`,
+      abi: oraDeployment.abi,
+      functionName: "transferOwnership",
+      args: [stakingOracleAddress],
+    });
+    await publicClient.waitForTransactionReceipt({ hash: txHash });
+  }
+
   console.log("ORA deployed at:", oraDeployment.address);
 };
 

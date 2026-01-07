@@ -43,11 +43,24 @@ export const PriceWidget = ({ contractName }: PriceWidgetProps) => {
   }, [contractBucketNum]);
 
   const isStaking = contractName === "StakingOracle";
+
+  // For WhitelistOracle, check if there are any active oracles (reported within staleness window)
+  const { data: activeOracles } = useScaffoldReadContract({
+    contractName: "WhitelistOracle",
+    functionName: "getActiveOracleNodes",
+    watch: true,
+  }) as { data: readonly `0x${string}`[] | undefined };
+
   const { data: currentPrice, isError } = useScaffoldReadContract({
     contractName,
     functionName: isStaking ? ("getLatestPrice" as any) : ("getPrice" as any),
     watch: true,
   }) as { data: bigint | undefined; isError: boolean; isLoading: boolean };
+
+  // For WhitelistOracle: no active oracles means no fresh price
+  // For StakingOracle: rely on error state
+  const noActiveOracles = !isStaking && activeOracles !== undefined && activeOracles.length === 0;
+  const hasValidPrice = !isError && !noActiveOracles && currentPrice !== undefined && currentPrice !== 0n;
 
   useEffect(() => {
     if (currentPrice !== undefined && prevPrice.current !== undefined && currentPrice !== prevPrice.current) {
@@ -77,11 +90,11 @@ export const PriceWidget = ({ contractName }: PriceWidgetProps) => {
               <div className="animate-pulse">
                 <div className="h-10 bg-secondary rounded-md w-32"></div>
               </div>
-            ) : isError || currentPrice === undefined || currentPrice === 0n ? (
-              <div className="text-error text-xl">No fresh price</div>
-            ) : (
-              <span>{`$${parseFloat(formatEther(currentPrice)).toFixed(2)}`}</span>
-            )}
+              ) : hasValidPrice ? (
+                <span>{`$${parseFloat(formatEther(currentPrice)).toFixed(2)}`}</span>
+              ) : (
+                <div className="text-error text-xl">No fresh price</div>
+              )}
           </div>
         </div>
       </div>

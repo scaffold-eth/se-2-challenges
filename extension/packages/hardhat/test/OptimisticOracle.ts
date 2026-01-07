@@ -637,6 +637,30 @@ describe("OptimisticOracle", function () {
         const state = await optimisticOracle.getState(assertionId);
         expect(state).to.equal(State.Expired); // Expired
       });
+
+      it("Should revert getResolution for expired assertions without proposals", async function () {
+        const description = "Will Ethereum reach $10k by end of 2024?";
+        const reward = ethers.parseEther("1");
+
+        const tx = await optimisticOracle.connect(asserter).assertEvent(description, 0, 0, { value: reward });
+        const receipt = await tx.wait();
+        const event = receipt!.logs.find(
+          log => optimisticOracle.interface.parseLog(log as any)?.name === "EventAsserted",
+        );
+        const parsedEvent = optimisticOracle.interface.parseLog(event as any);
+        const assertionId = parsedEvent!.args[0];
+
+        // Fast forward time past assertion window without any proposal
+        await ethers.provider.send("evm_increaseTime", [181]);
+        await ethers.provider.send("evm_mine");
+
+        // getResolution should revert because no proposal was ever made
+        // (expired assertions without proposals have no valid resolution)
+        await expect(optimisticOracle.getResolution(assertionId)).to.be.revertedWithCustomError(
+          optimisticOracle,
+          "NotProposedAssertion",
+        );
+      });
     });
   });
 });
