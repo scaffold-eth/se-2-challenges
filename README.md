@@ -65,7 +65,7 @@ yarn start
 
 ## Checkpoint 1: 🎲 Dice Game
 
-🔍 Inspect the code in the `DiceGame.sol` contract in `packages / hardhat / contracts`
+🔍 Inspect the code in the `DiceGame.sol` contract in `packages/hardhat/contracts`
 
 🔒 You will not be changing any code in the `DiceGame.sol` contract in this challenge. You will write your own contract to predict the outcome, then only roll the dice when it is favourable.
 
@@ -149,7 +149,7 @@ function riggedRoll() external {
 </details>
 </details>
 
-🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.ts` file in `packages / hardhat / deploy`
+🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.ts` file in `packages/hardhat/deploy`
 
 💸 You will need to send some funds to your RiggedRoll contract before doing your first roll, you can use the Faucet button at the bottom left of the page.
 
@@ -160,7 +160,7 @@ function riggedRoll() external {
 ### ⚔️ Side Quest
 
 - [ ] Add a statement to require `address(this).balance >= .002 ether` in your riggedRoll function. This will help prevent calling the `rollTheDice()` function without enough value.
-- [ ] Uncomment the code in `packages / nextjs / app / dice / page.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
+- [ ] Uncomment the code in `packages/nextjs/app/dice/page.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
 - [ ] Does your riggedRoll function only call `rollTheDice()` when it's going to be a winning roll? What happens when it does call `rollTheDice()`?
 
 ![RiggedLosingRoll](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/b6c8d7b4-139b-4f54-a62c-a0c77b3692a3)
@@ -254,7 +254,7 @@ yarn test --grep "Checkpoint3"
 
 ## Checkpoint 5: 🚢 Ship your frontend! 🚁
 
-✏️ Edit your frontend config in `packages / nextjs / scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia)
+✏️ Edit your frontend config in `packages/nextjs/scaffold.config.ts` to change the `targetNetwork` to `chains.sepolia` (or `chains.optimismSepolia` if you deployed to OP Sepolia)
 
 💻 View your frontend at http://localhost:3000 and verify you see the correct network.
 
@@ -268,7 +268,7 @@ yarn test --grep "Checkpoint3"
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages / nextjs / `)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -277,9 +277,9 @@ This is great to complete your **SpeedRunEthereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷`ALCHEMY_API_KEY` variable in `packages / hardhat /.env` and `packages / nextjs /.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃`ETHERSCAN_API_KEY` variable in `packages / hardhat /.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
