@@ -8,7 +8,7 @@ const spaceGrotesk = Space_Grotesk({
 `;
 
 export const metadataOverrides = {
-  title: "Crowdfunding | Speedrun Ethereum",
+  title: "Decentralized Staking | SpeedRunEthereum",
   description: "Built with 🏗 Scaffold-ETH 2",
 };
 

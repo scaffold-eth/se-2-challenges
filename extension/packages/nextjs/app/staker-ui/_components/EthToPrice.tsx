@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
-import { useFetchNativeCurrencyPrice } from "@scaffold-ui/hooks";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useGlobalState } from "~~/services/store/store";
 
 type TBalanceProps = {
   value?: string;
@@ -13,7 +13,7 @@ type TBalanceProps = {
 export const ETHToPrice = ({ value, className = "" }: TBalanceProps) => {
   const [isEthBalance, setIsEthBalance] = useState(true);
   const { targetNetwork } = useTargetNetwork();
-  const { price } = useFetchNativeCurrencyPrice();
+  const price = useGlobalState(state => state.nativeCurrency.price);
 
   const onToggleBalance = useCallback(() => {
     if (price > 0) {

@@ -1,14 +1,14 @@
 "use client";
 
-import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
+import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
-const ContributionsPage: NextPage = () => {
-  const { data: contributionEvents, isLoading } = useScaffoldEventHistory({
-    contractName: "CrowdFund",
-    eventName: "Contribution",
+const Stakings: NextPage = () => {
+  const { data: stakeEvents, isLoading } = useScaffoldEventHistory({
+    contractName: "Staker",
+    eventName: "Stake",
   });
 
   if (isLoading)
@@ -17,15 +17,13 @@ const ContributionsPage: NextPage = () => {
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
-
   return (
     <div className="flex items-center flex-col flex-grow pt-10">
       <div className="px-5">
         <h1 className="text-center mb-3">
-          <span className="block text-2xl font-bold">All Contributions</span>
+          <span className="block text-2xl font-bold">All Staking Events</span>
         </h1>
       </div>
-
       <div className="overflow-x-auto shadow-lg">
         <table className="table table-zebra w-full">
           <thead>
@@ -35,14 +33,14 @@ const ContributionsPage: NextPage = () => {
             </tr>
           </thead>
           <tbody>
-            {!contributionEvents || contributionEvents.length === 0 ? (
+            {!stakeEvents || stakeEvents.length === 0 ? (
               <tr>
                 <td colSpan={3} className="text-center">
                   No events found
                 </td>
               </tr>
             ) : (
-              contributionEvents.map((event, index) => {
+              stakeEvents?.map((event, index) => {
                 return (
                   <tr key={index}>
                     <td>
@@ -60,4 +58,4 @@ const ContributionsPage: NextPage = () => {
   );
 };
 
-export default ContributionsPage;
+export default Stakings;
