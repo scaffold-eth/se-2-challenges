@@ -17,12 +17,11 @@ export const description = `
           />
           <div className="max-w-3xl">
             <p className="text-lg mt-10">
-              🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very
-              weak form of randomness. This challenge will give you an example of a contract using block hash to create
-              random numbers. This randomness is exploitable. Other, stronger forms of randomness include commit/reveal
-              schemes, oracles, or VRF from Chainlink. the Ethereum protocol!
+              🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but
+              very weak form of randomness. This challenge will give you an example of a contract using the block
+              hash to create random numbers. This randomness is exploitable. Other, stronger forms of randomness
+              include commit/reveal schemes, oracles, or VRF from Chainlink.
             </p>
-            <p className="text-lg mt-2">👍 One day soon, randomness will be built into the Ethereum protocol!</p>
             <p className="text-lg mt-2">
               🧤 Every time a player rolls the dice, they are required to send .002 Eth. 40 percent of this value is
               added to the current prize amount while the other 60 percent stays in the contract to fund future prizes.
