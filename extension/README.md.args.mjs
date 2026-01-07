@@ -2040,7 +2040,7 @@ Each oracle design solves different problems:
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
 
-This is great to complete your **SpeedRunEthereum**.
+This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
@@ -2055,7 +2055,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 📝 Run the \`yarn verify --network your_network\` command to verify your optimistic oracle contracts on Etherscan 🛰.
 
-👉 Search your deployed optimistic oracle contract addresses on [Sepolia Etherscan](https://sepolia.etherscan.io/) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
+👉 Search your deployed optimistic oracle contract addresses on [Sepolia Etherscan](https://sepolia.etherscan.io/) to get the URL you submit to 🏃‍♀️[SpeedrunEthereum.com](https://speedrunethereum.com).
 
 ---
 

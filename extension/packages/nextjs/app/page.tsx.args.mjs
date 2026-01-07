@@ -28,7 +28,7 @@ export const description = `
             oracle to a testnet and demonstrate how it handles assertions, proposals, disputes, and settlements. 
             Then build and upload your app to a public web server. Submit the url on{" "}
             <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-              SpeedRunEthereum.com
+              SpeedrunEthereum.com
             </a>{" "}
             !
           </p>
@@ -38,4 +38,4 @@ export const description = `
   </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Oracles";
+export const externalExtensionName = "Speedrun Ethereum Oracles";
