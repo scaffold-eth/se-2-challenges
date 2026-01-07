@@ -112,7 +112,7 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
       functionName: "getPrice",
       args: [],
     });
-    console.log(`Initial median price: ${medianPrice.toString()}`);
+    console.log(`Initial median price: ${medianPrice?.toString()}`);
   }
   console.log("WhitelistOracle contract deployed and configured successfully!");
 };
