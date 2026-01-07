@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { EditableCell } from "../EditableCell";
+import { Address } from "@scaffold-ui/components";
 import { formatEther } from "viem";
 import { useBlockNumber, useReadContract } from "wagmi";
 import { HighlightedCell } from "~~/components/oracle/HighlightedCell";
 import { TimeAgo } from "~~/components/oracle/TimeAgo";
 import { WhitelistRowProps } from "~~/components/oracle/types";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
 import { SIMPLE_ORACLE_ABI } from "~~/utils/constants";
 import { getHighlightColorForPrice } from "~~/utils/helpers";

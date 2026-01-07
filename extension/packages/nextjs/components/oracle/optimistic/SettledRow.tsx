@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { SettledRowProps } from "../types";
 import { LoadingRow } from "./LoadingRow";
+import { Address } from "@scaffold-ui/components";
 import { formatEther } from "viem";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { ZERO_ADDRESS } from "~~/utils/scaffold-eth/common";
 

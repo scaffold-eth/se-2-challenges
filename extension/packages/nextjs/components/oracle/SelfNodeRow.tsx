@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef } from "react";
+import { Address } from "@scaffold-ui/components";
 import { erc20Abi, formatEther, maxUint256, parseEther } from "viem";
 import { useAccount, usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { HighlightedCell } from "~~/components/oracle/HighlightedCell";
 import { StakingEditableCell } from "~~/components/oracle/StakingEditableCell";
-import { Address } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { getHighlightColorForPrice } from "~~/utils/helpers";
 

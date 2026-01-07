@@ -1,5 +1,5 @@
+import { Address } from "@scaffold-ui/components";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useChallengeState } from "~~/services/store/challengeStore";
 

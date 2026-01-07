@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { IntegerInput } from "@scaffold-ui/debug-contracts";
 import { parseEther } from "viem";
 import { usePublicClient } from "wagmi";
 import TooltipInfo from "~~/components/TooltipInfo";
-import { IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useChallengeState } from "~~/services/store/challengeStore";
 import { getRandomQuestion } from "~~/utils/helpers";

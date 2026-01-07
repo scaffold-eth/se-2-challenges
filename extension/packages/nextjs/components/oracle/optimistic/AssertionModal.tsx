@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { AssertionWithIdAndState } from "../types";
+import { Address } from "@scaffold-ui/components";
 import { formatEther } from "viem";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useChallengeState } from "~~/services/store/challengeStore";
 import { ZERO_ADDRESS } from "~~/utils/scaffold-eth/common";

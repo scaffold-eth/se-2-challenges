@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { ConfigSlider } from "./ConfigSlider";
 import { NodeRowProps } from "./types";
+import { Address } from "@scaffold-ui/components";
 import { erc20Abi, formatEther } from "viem";
 import { useReadContract } from "wagmi";
 import { HighlightedCell } from "~~/components/oracle/HighlightedCell";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { getHighlightColorForPrice } from "~~/utils/helpers";
 

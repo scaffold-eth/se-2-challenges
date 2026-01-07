@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { Address } from "@scaffold-ui/components";
 import { formatEther } from "viem";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 export const ExpiredRow = ({ assertionId }: { assertionId: number }) => {
