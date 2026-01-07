@@ -4,10 +4,9 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
-import { AddressInput } from "@scaffold-ui/components";
-import { IntegerInput } from "@scaffold-ui/debug-contracts";
+import { AddressInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { useWatchBalance } from "@scaffold-ui/hooks";
+import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 import { getTokenPrice, multiplyTo1e18 } from "~~/utils/scaffold-eth/priceInWei";
 
 const TokenVendor: NextPage = () => {

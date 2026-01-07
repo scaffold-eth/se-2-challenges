@@ -4,7 +4,7 @@ export const description = `
   <div className="flex items-center flex-col flex-grow pt-10">
       <div className="px-5">
         <h1 className="text-center mb-6">
-          <span className="block text-2xl mb-2">Speedrun Ethereum</span>
+          <span className="block text-2xl mb-2">SpeedRunEthereum</span>
           <span className="block text-4xl font-bold">Challenge: 🏵 Token Vendor 🤖</span>
         </h1>
         <div className="flex flex-col items-center justify-center">
@@ -27,7 +27,7 @@ export const description = `
               back to the vendor. Deploy your contracts on your public chain of choice and then deploy your app to a
               public webserver. Submit the url on{" "}
               <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-                SpeedrunEthereum.com
+                SpeedRunEthereum.com
               </a>{" "}
               !
             </p>
@@ -37,4 +37,4 @@ export const description = `
     </div>
 `;
 
-export const externalExtensionName = "Speedrun Ethereum Challenge: Token Vendor";
+export const externalExtensionName = "SpeedRunEthereum Challenge: Token Vendor";

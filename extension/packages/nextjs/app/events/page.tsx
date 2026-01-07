@@ -2,7 +2,7 @@
 
 import type { NextPage } from "next";
 import { formatEther } from "viem";
-import { Address } from "@scaffold-ui/components";
+import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Events: NextPage = () => {
@@ -51,7 +51,7 @@ const Events: NextPage = () => {
                     return (
                       <tr key={index}>
                         <td className="text-center">
-                          <Address address={event.args?.buyer} />
+                          <Address address={event.args.buyer} />
                         </td>
                         <td>{formatEther(event.args?.amountOfTokens || 0n)}</td>
                         <td>{formatEther(event.args?.amountOfETH || 0n)}</td>
