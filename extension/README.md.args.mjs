@@ -1273,31 +1273,7 @@ AUTO_SLASH=true yarn simulate:staking
 
 - Reward + a bond refund flow to the winner; the loser's bond goes to the decider in disputes
 
-\`\`\`mermaid
-
-sequenceDiagram
-  participant A as Asserter
-  participant P as Proposer
-  participant D as Disputer
-  participant C as Decider
-  participant O as OptimisticOracle
-  A->>O: assertEvent(description, startTime, endTime) + reward
-  Note over O: Wait until startTime
-  alt No proposal before endTime
-    A->>O: claimRefund(assertionId)
-    O-->>A: refund reward
-  else Proposal received
-    P->>O: proposeOutcome(assertionId, outcome) + bond
-    Note over O: Start dispute window
-    alt No dispute before deadline
-      O-->>P: Claim undisputed rewards -> reward + bond refund
-    else Dispute filed in window
-      D->>O: disputeOutcome(assertionId) + bond
-      C->>O: settleAssertion(assertionId, resolvedOutcome)
-      O-->>Winner: claimDisputedReward() -> reward + bond refund
-    end
-  end
-\`\`\`
+![mermaidChart](https://github.com/user-attachments/assets/239e5c8e-6b80-4ebc-b5aa-dcb8a7572e3d)
 
 🧩 The way this system works is someone creates an **assertion**;
 
