@@ -112,6 +112,10 @@ Next add a `riggedRoll()` function. This function should predict the randomness 
 
 > 📣 Reminder! Calling `rollTheDice()` will fail unless you send a message value of at least .002 Eth! [Here is one example of how to send value with a function call.](https://ethereum.stackexchange.com/questions/6665/call-contract-and-send-value-from-solidity)
 
+🎲 Keep in mind the dice on the frontend is using hexadecimal characters but in the contract we can get by with integers. A,B,C,D,E,F = 10,11,12,13,14,15
+
+❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some \`console.log()\` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.
+
 <details markdown='1'>
 <summary>🔎 Hint</summary>
 
@@ -149,17 +153,14 @@ function riggedRoll() external {
 </details>
 </details>
 
-🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.ts` file in `packages/hardhat/deploy`
+🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the `01_deploy_riggedRoll.ts` file in `packages/hardhat/deploy` and run `yarn deploy --reset`
 
 💸 You will need to send some funds to your RiggedRoll contract before doing your first roll, you can use the Faucet button at the bottom left of the page.
 
 🐞 Go to the `Debug Contracts` tab and try the `riggedRoll` method inside the `RiggedRoll` contract.
 
-❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some `console.log()` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.
-
 ### ⚔️ Side Quest
 
-- [ ] Add a statement to require `address(this).balance >= .002 ether` in your riggedRoll function. This will help prevent calling the `rollTheDice()` function without enough value.
 - [ ] Uncomment the code in `packages/nextjs/app/dice/page.tsx` to show a riggedRoll button and contract balance on the main UI tab. Now you can test your function without switching tabs.
 - [ ] Does your riggedRoll function only call `rollTheDice()` when it's going to be a winning roll? What happens when it does call `rollTheDice()`?
 
@@ -191,6 +192,12 @@ error InsufficientBalance(uint256 requested, uint256 available);
 
 📥 Now create a `withdraw(address _addr, uint256 _amount)` function to allow you to send ETH from RiggedRoll to another address.
 
+Make sure you lock the withdraw function so it can only be called by the owner. The `Ownable` contract is already inherited so you have access to the `onlyOwner` modifier.
+
+![WithdrawOnlyOwner](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e8397b1e-a077-4009-b518-30a6d8deb6e7)
+
+> ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in `01_deploy_riggedRoll.ts`. This will allow your front end address to call the withdraw function.
+
 <details markdown='1'>
 <summary>🔎 Hint</summary>
 
@@ -216,15 +223,7 @@ function withdraw(address _addr, uint256 _amount) external onlyOwner {
 ### 🥅 Goals
 
 - [ ] Can you send value from the RiggedRoll contract to your front end address?
-- [ ] Is anyone able to call the withdraw function? What would be the downside to that?
-
-### ⚔️ Side Quest
-
-- [ ] Lock the withdraw function so it can only be called by the owner.
-
-![WithdrawOnlyOwner](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e8397b1e-a077-4009-b518-30a6d8deb6e7)
-
-> ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in `01_deploy_riggedRoll.ts`. This will allow your front end address to call the withdraw function.
+- [ ] Is anyone able to call the withdraw function or only the owner?
 
 ### Testing your progress
 
@@ -287,7 +286,7 @@ For production-grade applications, it's recommended to obtain your own API keys 
 
 ## Checkpoint 6: 📜 Contract Verification
 
-Run the `yarn verify--network your_network` command to verify your contracts on etherscan 🛰
+Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
 
