@@ -1273,7 +1273,7 @@ AUTO_SLASH=true yarn simulate:staking
 
 - Reward + a bond refund flow to the winner; the loser's bond goes to the decider in disputes
 
-[mermaidChart](https://github.com/user-attachments/assets/239e5c8e-6b80-4ebc-b5aa-dcb8a7572e3d)
+![mermaidChart](https://github.com/user-attachments/assets/239e5c8e-6b80-4ebc-b5aa-dcb8a7572e3d)
 
 🧩 The way this system works is someone creates an **assertion**;
 
