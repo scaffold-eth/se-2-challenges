@@ -381,7 +381,7 @@ Before deploying, make one important change:
 
 Once that’s done, you’re ready to deploy! 🔗
 
-Run\`yarn deploy\` and check out the front-end
+Run \`yarn deploy\` and check out the front-end
 
 ### **🥅 Goals**
 
@@ -1800,7 +1800,7 @@ Configure your keys here:
 
 ### Deploying Your Smart Contracts
 
-🔐 You will need to generate a **deployer address** using \`yarn generate\`. his creates a mnemonic and saves it locally.
+🔐 You will need to generate a **deployer address** using \`yarn generate\`. This creates a mnemonic and saves it locally.
 
 👩‍🚀 Use \`yarn account\` to view your deployer account balances.
 
