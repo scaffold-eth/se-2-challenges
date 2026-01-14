@@ -15,6 +15,13 @@ describe("Checkpoint1", function () {
     addr2: HardhatEthersSigner,
     addr3: HardhatEthersSigner,
     addr4: HardhatEthersSigner;
+  
+  const contractAddress = process.env.CONTRACT_ADDRESS;
+
+  if (contractAddress) {
+    // If env variable is set then skip this test file (for the auto-grader)
+    return true;
+  }
 
   beforeEach(async function () {
     [owner, addr1, addr2, addr3, addr4] = await ethers.getSigners();

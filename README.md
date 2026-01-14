@@ -1398,7 +1398,7 @@ Here are more granular instructions on setting up the EventAssertion struct:
 
 - ✍️ It should update the assertion with the proposal
 
-- ⏳ It should set the `endTime` to `block.timestamp + MINIMUM_DISPUTE_WINDOW`
+- ⏳ It should set the `endTime` to `block.timestamp + DISPUTE_WINDOW`
 
 - 📣 It should emit `OutcomeProposed`
 
@@ -1410,7 +1410,7 @@ You want to set these properties on the assertion:
 
 - proposer should be `msg.sender`
 - proposedOutcome should be `outcome`
-- endTime should be updated to `block.timestamp + MINIMUM_DISPUTE_WINDOW`
+- endTime should be updated to `block.timestamp + DISPUTE_WINDOW`
 
 <details markdown='1'>
 
@@ -1428,7 +1428,7 @@ You want to set these properties on the assertion:
 
         assertion.proposer = msg.sender;
         assertion.proposedOutcome = outcome;
-        assertion.endTime = block.timestamp + MINIMUM_DISPUTE_WINDOW;
+        assertion.endTime = block.timestamp + DISPUTE_WINDOW;
 
         emit OutcomeProposed(assertionId, msg.sender, outcome);
     }

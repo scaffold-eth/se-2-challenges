@@ -20,6 +20,7 @@ const deployOptimisticOracle: DeployFunction = async function (hre: HardhatRunti
     from: deployer,
     args: [futureDeciderAddress],
     log: true,
+    autoMine: false,
   });
 
   // Deploy the Decider contract
@@ -28,6 +29,7 @@ const deployOptimisticOracle: DeployFunction = async function (hre: HardhatRunti
     from: deployer,
     args: [optimisticOracle.address],
     log: true,
+    autoMine: false,
   });
 
   // Check if the decider address matches the expected address

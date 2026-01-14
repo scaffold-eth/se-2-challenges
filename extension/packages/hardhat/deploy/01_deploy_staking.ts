@@ -13,7 +13,7 @@ const deployStakingOracle: DeployFunction = async function (hre: HardhatRuntimeE
     from: deployer,
     args: [],
     log: true,
-    autoMine: true,
+    autoMine: false,
   });
 
   console.log("Deploying StakingOracle (wired to ORA)...");
@@ -22,7 +22,7 @@ const deployStakingOracle: DeployFunction = async function (hre: HardhatRuntimeE
     from: deployer,
     args: [oraDeployment.address],
     log: true,
-    autoMine: true,
+    autoMine: false,
   });
 
   const stakingOracleAddress = stakingDeployment.address as `0x${string}`;

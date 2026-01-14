@@ -20,6 +20,14 @@ describe("Checkpoint2 - StakingOracle", function () {
   let node6: HardhatEthersSigner;
   let slasher: HardhatEthersSigner;
 
+
+  const contractAddress = process.env.CONTRACT_ADDRESS;
+
+  if (contractAddress) {
+    // If env variable is set then skip this test file (for the auto-grader)
+    return true;
+  }
+
   async function mineBuckets(count: number) {
     const bucketWindow = Number(await oracle.BUCKET_WINDOW());
     await mine(bucketWindow * count);

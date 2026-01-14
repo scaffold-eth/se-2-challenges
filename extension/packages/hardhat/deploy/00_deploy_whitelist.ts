@@ -20,7 +20,7 @@ const deployWhitelistOracleContracts: DeployFunction = async function (hre: Hard
     from: deployer,
     args: [],
     log: true,
-    autoMine: true,
+    autoMine: false,
   });
   const whitelistOracleAddress = whitelistOracleDeployment.address as `0x${string}`;
   const whitelistOracleAbi = whitelistOracleDeployment.abi;
