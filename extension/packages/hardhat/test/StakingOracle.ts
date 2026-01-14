@@ -226,6 +226,7 @@ describe("Checkpoint2 - StakingOracle", function () {
       const stake = await stakeForDelayedFirstReport();
       await fundApproveAndRegister(node1, stake);
       await fundApproveAndRegister(node2, stake);
+      await moveToFreshBucket();
     });
     it("reverts getLatestPrice until a bucket median is recorded", async function () {
       await expect(oracle.getLatestPrice()).to.be.revertedWithCustomError(oracle, "MedianNotRecorded");
