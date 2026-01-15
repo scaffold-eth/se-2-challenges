@@ -1,0 +1,67 @@
+import { useEffect } from "react";
+import { EditableCell } from "../EditableCell";
+import { Address } from "@scaffold-ui/components";
+import { formatEther } from "viem";
+import { useBlockNumber, useReadContract } from "wagmi";
+import { HighlightedCell } from "~~/components/oracle/HighlightedCell";
+import { TimeAgo } from "~~/components/oracle/TimeAgo";
+import { WhitelistRowProps } from "~~/components/oracle/types";
+import { useScaffoldReadContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
+import { SIMPLE_ORACLE_ABI } from "~~/utils/constants";
+import { getHighlightColorForPrice } from "~~/utils/helpers";
+
+export const WhitelistRow = ({ address }: WhitelistRowProps) => {
+  const selectedNetwork = useSelectedNetwork();
+
+  const { data, refetch } = useReadContract({
+    address: address,
+    abi: SIMPLE_ORACLE_ABI,
+    functionName: "getPrice",
+    query: {
+      enabled: true,
+    },
+  }) as { data: readonly [bigint, bigint] | undefined; refetch: () => void };
+
+  const { data: blockNumber } = useBlockNumber({
+    watch: true,
+    chainId: selectedNetwork.id,
+    query: {
+      enabled: true,
+    },
+  });
+
+  useEffect(() => {
+    refetch();
+  }, [blockNumber, refetch]);
+
+  const { data: medianPrice } = useScaffoldReadContract({
+    contractName: "WhitelistOracle",
+    functionName: "getPrice",
+    watch: true,
+  }) as { data: bigint | undefined };
+
+  const { data: staleWindow } = useScaffoldReadContract({
+    contractName: "WhitelistOracle",
+    functionName: "STALE_DATA_WINDOW",
+  }) as { data: bigint | undefined };
+
+  const isNotReported = data !== undefined && data[0] === 0n && data[1] === 0n;
+  const lastReportedPriceFormatted =
+    data === undefined || isNotReported ? "Not reported" : Number(parseFloat(formatEther(data?.[0] ?? 0n)).toFixed(2));
+
+  return (
+    <tr className={`table-fixed`}>
+      <td>
+        <Address address={address} size="sm" format="short" onlyEnsOrAddress={true} />
+      </td>
+      <EditableCell
+        value={lastReportedPriceFormatted}
+        address={address}
+        highlightColor={getHighlightColorForPrice(data?.[0], medianPrice)}
+      />
+      <HighlightedCell value={0} highlightColor={""}>
+        <TimeAgo timestamp={data?.[1]} staleWindow={staleWindow} />
+      </HighlightedCell>
+    </tr>
+  );
+};

@@ -1,2 +1,2 @@
-export const titleTemplate = "%s | SpeedRunEthereum";
-export const thumbnailPath = "/thumbnail.png";
+export const titleTemplate = "%s | Speedrun Ethereum";
+export const thumbnailPath = "/social-card.png";
