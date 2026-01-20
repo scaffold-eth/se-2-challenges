@@ -69,7 +69,7 @@ yarn start
 - `packages/hardhat/contracts/DEX.sol`: the exchange contract you will implement
 
 > Below is what your front-end will look like without the implementation code within your smart contracts. The buttons will likely break because there are no functions tied to them yet!
-![firstLoad](SCREENSHOT)
+![firstLoad](https://github.com/user-attachments/assets/f8b2ec8f-444d-4ec0-969b-3edafcbc36c9)
 
 🗂️ You can find the page's code here: `packages/nextjs/app/dex/page.tsx`
 
@@ -168,8 +168,7 @@ function getLiquidity(address lp) public view returns (uint256 lpLiquidity) {
 ✅ Head to `http://localhost:3000/dex` and verify:
   - the DEX shows ETH + $BAL reserves
   - your liquidity value (`💦💦`) is non-zero
-
-![CheckLiquAndBalance](SCREENSHOT)
+![CheckLiquAndBalance](https://github.com/user-attachments/assets/a8b14fc4-3626-420a-9b99-a8dc5c67fe6e)
 
 ### 🧪 Testing your progress
 
