@@ -113,6 +113,11 @@ yarn start
 
 > 👨🏻‍🚒 When you close the incognito window, that account is gone forever. Burner wallets are perfect for local dev; you'll switch to a permanent wallet on public networks.
 
+> 🤖 **AI Side Quest**: Now that you've experienced gas and transactions, ask AI to help you understand:
+> - "Why do transactions need gas? Explain the relationship between gas price, gas limit, and transaction fees"
+> - "What is EIP-1559 and how does it change gas pricing?"
+> - Open `packages/hardhat/contracts/YourCollectible.sol` and ask: "How much gas does the mint function consume and why?"
+
 ---
 
 ## Checkpoint 2: 🖨 Minting
@@ -153,6 +158,12 @@ yarn start
 
 📝 If you want to edit the frontend, navigate to `packages/nextjs/app` and open the specific page you want to modify. For instance: `/myNFTs/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
 
+> 🤖 **AI Side Quest**: Deepen your understanding of ERC-721 and ownership:
+> - Ask AI: "Explain the ERC-721 interface. What functions are required and why?"
+> - "Walk me through what happens step-by-step when I call `mintItem()` in YourCollectible.sol"
+> - "What's the difference between `approve()` and `setApprovalForAll()`? Give me real-world use cases for each"
+> - "How does `tokenURI()` work and why is IPFS commonly used for NFT metadata?"
+
 ---
 
 ## Checkpoint 3: 💾 Deploy your contract! 🛰
@@ -182,6 +193,11 @@ yarn start
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+
+> 🤖 **AI Side Quest**: Understand smart contract deployment:
+> - Open `packages/hardhat/deploy/01_deploy_your_collectible.ts` and ask AI: "Explain this deployment script step-by-step. What is `deployer.deploy()` doing?"
+> - "What's the difference between deploying to localhost vs Sepolia testnet?"
+> - "Why do we verify contracts on Etherscan and what does verification prove?"
 
 ---
 
@@ -251,6 +267,46 @@ Verifying your contract is important for enabling others to be able to look at y
 ![gif](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/547612f6-97b9-4eb3-ab6d-9b6d2c0ac769)
 
 ## ⚔️ Side Quests
+
+### 🤖 AI Deep Dive Quests
+
+Now that you've completed the challenge, use AI to master the core concepts! These quests will help you understand not just *what* you built, but *why* and *how* it works.
+
+#### 🔍 Code Exploration Quests
+
+**Quest 1: Trace a Token Transfer**
+- Ask AI: "Walk me through the complete execution flow when `transferFrom()` is called in an ERC-721 contract. What checks are performed? What state changes occur? What events are emitted?"
+- "Show me the code path in OpenZeppelin's ERC721 implementation"
+
+**Quest 2: Understanding Events**
+- "Why are events important in smart contracts? How do frontends use the `Transfer` event?"
+- "What's the difference between indexed and non-indexed event parameters?"
+
+**Quest 3: Decoding tokenURI**
+- Pick one of your minted NFTs and ask AI: "Here's my IPFS URI [paste it]. Explain what happens when a marketplace like OpenSea fetches this URI"
+- "What's inside the metadata JSON? Show me the structure and explain each field"
+
+#### 💡 Conceptual Deep-Dives
+
+**Quest 4: ERC Standards Comparison**
+- "Compare ERC-721, ERC-1155, and ERC-20. When would I use each?"
+- "Why can't we use ERC-20 for unique items like game characters or real estate?"
+- "What are the gas tradeoffs between ERC-721 and ERC-1155 for collections?"
+
+**Quest 5: The Power of Composability**
+- "Give me 5 real-world examples of NFT composability (beyond the README examples)"
+- "How could another smart contract use my YourCollectible NFTs? Walk me through a code example"
+- "What makes tokenization different from traditional databases for ownership?"
+
+**Quest 6: IPFS vs Centralized Storage**
+- "Why do NFT projects use IPFS? What are the tradeoffs vs storing images on AWS?"
+- "What does it mean that 'IPFS doesn't guarantee availability'? How do projects solve this?"
+- "Can the token metadata change after minting? What are the implications?"
+
+**Quest 7: Security Considerations**
+- "What are common vulnerabilities in NFT contracts? (reentrancy, integer overflow, access control)"
+- "Why does ERC-721 have `safeTransferFrom()` in addition to `transferFrom()`?"
+- "What's the `onERC721Received` hook and why is it critical?"
 
 ### 🦊 MetaMask NFTs
 
