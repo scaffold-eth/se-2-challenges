@@ -4,20 +4,19 @@ export const extraContents = `# 🚩 Challenge: ⚖️ Build a DEX
 
 ![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-dex/extension/packages/nextjs/public/hero.png)
 
-This challenge will help you build/understand a simple decentralized exchange, with one token-pair (ERC20 BALLOONS ($BAL) and ETH). This repo is an updated version of the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) and challenge repos before it. Please read the intro for a background on what we are building first!
+💵 Build an exchange that swaps ETH to tokens and tokens to ETH. 💰 This is possible because the smart contract holds reserves of both assets and has a price function based on the ratio of the reserves. Liquidity providers are issued a token that represents their share of the reserves and fees.
 
-🌟 The final deliverable is an app that allows users to seamlessly trade ERC20 BALLOONS ($BAL) with ETH in a decentralized manner. Users will be able to connect their wallets, view their token balances, and buy or sell their tokens according to a price formula!
-Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
+🧮 You'll implement a minimal constant-product market maker (like Uniswap v2): the DEX holds reserves of both assets and uses a pricing curve \(x * y = k\). You'll add trading and liquidity provisioning, then try it out in the frontend UI.
 
-There is also a 🎥 [Youtube video](https://www.youtube.com/watch?v=eP5w6Ger1EQ) that may help you understand the concepts covered within this challenge too:
+🌟 The final deliverable is an app that lets users swap **ETH ↔︎ $BAL** and provide/withdraw liquidity. Deploy to a public testnet, ship the frontend, and submit on [SpeedrunEthereum.com](https://speedrunethereum.com)!
 
-💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+_NeUIJ664Tc1MzIx)
+> 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+_NeUIJ664Tc1MzIx)
 
 ---
 
 ## Checkpoint 0: 📦 Environment 📚
 
-> Start your local network (a blockchain emulator in your computer):
+> Start your local network (a blockchain emulator on your computer):
 
 \`\`\`sh
 yarn chain
@@ -51,671 +50,450 @@ yarn start
 
 ## Checkpoint 1: 🔭 The Structure 📺
 
-Navigate to the \`Debug Contracts\` tab, you should see two smart contracts displayed called \`DEX\` and \`Balloons\`.
+🧭 Navigate to the \`Debug Contracts\` tab, you should see two smart contracts displayed called \`DEX\` and \`Balloons\`.
 
-\`packages/hardhat/contracts/Balloons.sol\` is just an example ERC20 contract that mints 1000 $BAL to whatever address deploys it.
+- \`packages/hardhat/contracts/Balloons.sol\`: a simple ERC20 that mints the deployer some $BAL
+- \`packages/hardhat/contracts/DEX.sol\`: the exchange contract you will implement
 
-\`packages/hardhat/contracts/DEX.sol\` is what we will build in this challenge and you can see it starts instantiating a token (ERC20 interface) that we set in the constructor (on deploy).
+> Below is what your front-end will look like without the implementation code within your smart contracts. The buttons will likely break because there are no functions tied to them yet!
+![firstLoad](SCREENSHOT)
 
-> Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
+🗂️ You can find the page's code here: \`packages/nextjs/app/dex/page.tsx\`
 
-![ch-4-main](https://github.com/scaffold-eth/se-2-challenges/assets/59885513/930ec64c-d185-4a33-8941-43f44a611231)
+🔍 You'll notice the frontend calls several functions that are defined in the DEX contract.
 
-> 🎉 You've made it this far in Scaffold-Eth Challenges 👏🏼 . As things get more complex, it might be good to review the design requirements of the challenge first!
-> Check out the empty \`DEX.sol\` file to see aspects of each function. If you can explain how each function will work with one another, that's great! 😎
-
-> 🚨 🚨 🦈 **The Guiding Questions will lead you in the right direction, but try thinking about how you would structure each function before looking at these!**
-
-> 🚨 🚨 🦖 **The code blobs within the toggles in the Guiding Questions are some examples of what you can use, but try writing the implementation code for the functions first!**
+🎯 None of these functions have any logic inside them. That is your mission! Let's implement them in the following checkpoints.
 
 ---
 
-## Checkpoint 2: Reserves ⚖️
+## Checkpoint 2: ⚖️ Reserves
 
-We want to create an automatic market where our contract will hold reserves of both ETH and 🎈 Balloons. These reserves will provide liquidity that allows anyone to swap between the assets. Let's start with declaring our \`totalLiquidity\` and the \`liquidity\` of each user of our DEX!
+🏦 To start trading, the DEX needs reserves of **both** ETH and $BAL.
 
-<details markdown='1'><summary>🦉 Guiding Questions</summary>
+💧 These reserves will provide liquidity that allows anyone to swap between the assets.
 
-<details markdown='1'><summary>Question One</summary>
+🧾 Let's start with declaring our \`totalLiquidity\` and the \`liquidity\` of each user of our DEX!
 
-> How do we declare a variable that represents an amount of ETH? We don't have to assign it a value just yet.
+🌱 Then you'll implement \`init(uint256 tokens)\` to seed the pool the first time.
 
-</details>
-<details markdown='1'><summary>Question Two</summary>
+### 🏗️ Implementing reserves + \`init()\`
 
-> What data structure represents the relation between keys and values (addresses to liquidity or users to ETH)?
+- Add \`totalLiquidity\` and the \`liquidity\` mapping.
+- Define these custom errors in \`DEX.sol\`:
+  - \`DexAlreadyInitialized()\`
+  - \`TokenTransferFailed()\`
+- \`init(tokens)\` should only work once (when \`totalLiquidity == 0\`). Revert if it is already initialized.
+- It should set \`totalLiquidity\` to the ETH balance of the contract (after receiving \`msg.value\`).
+- It should assign all initial liquidity to the initializer.
+- It should pull \`tokens\` from the initializer using \`transferFrom\` (requires ERC20 \`approve\` first).
 
-</details>
+🧪 Also implement \`getLiquidity(address lp)\` since the frontend and tests use it.
 
-After thinking through the guiding questions, have a look at the solution code!
+<details markdown='1'>
+<summary>🔎 Hint</summary>
 
-<details markdown='1'><summary>👩🏽‍🏫 Solution Code</summary>
+🔑 Before \`init()\` can pull tokens from a user, the user must call \`approve(spender, amount)\` on the Balloons contract.
 
-\`\`\`
+ℹ️ Also good to know:
+
+- ETH sent with the tx arrives in the contract before your function body runs, so \`address(this).balance\` already includes \`msg.value\` inside \`init()\`.
+
+<details markdown='1'>
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+/////////////////
+/// Errors //////
+/////////////////
+
+error DexAlreadyInitialized();
+error TokenTransferFailed();
+
+//////////////////////
+/// State Variables //
+//////////////////////
+// ...
 uint256 public totalLiquidity;
-mapping (address => uint256) public liquidity;
+mapping(address => uint256) public liquidity;
+// ...
+
+function init(uint256 tokens) public payable returns (uint256 initialLiquidity) {
+    // Pool can only be initialized once.
+    if (totalLiquidity != 0) revert DexAlreadyInitialized();
+
+    // ETH arrives before function execution, so balance includes msg.value here.
+    initialLiquidity = address(this).balance;
+    totalLiquidity = initialLiquidity;
+    liquidity[msg.sender] = initialLiquidity;
+
+    if (!token.transferFrom(msg.sender, address(this), tokens)) revert TokenTransferFailed();
+    return initialLiquidity;
+}
+// ...
+function getLiquidity(address lp) public view returns (uint256 lpLiquidity) {
+    return liquidity[lp];
+}
 \`\`\`
 
 </details>
-
 </details>
 
-These variables track the total liquidity, but also the liquidity of each address.
-Now, let's create an \`init()\` function in \`DEX.sol\`.
-We want this function written in a way that when we send ETH and/or $BAL tokens through our front end or deployer script, the function will get those values from the contract and assign them onto the global variables we just defined.
+### 🧪 Try it out
 
-<details markdown='1'><summary>🦉 Guiding Questions</summary>
+🧩 Go uncomment the line in \`packages/hardhat/deploy/00_deploy_dex.ts\` that sends 10 BAL to your frontend address (and make sure you paste in your actual frontend address).
 
-<details markdown='1'><summary>Question One</summary>
-
-> How can we check and prevent liquidity being added if the contract already has liquidity?
-
-</details>
-
-<details markdown='1'><summary>Question Two</summary>
-
-> What should the value of \`totalLiquidity\` be, how do we access the balance that our contract has and assign the variable a value?
-
-</details>
-
-<details markdown='1'><summary>Question Three</summary>
-
-> How would we assign our address the liquidity we just provided? How much liquidity have we provided? The \`totalLiquidity\`? Just half? Three quarters?
-
-</details>
-
-<details markdown='1'><summary>Question Four</summary>
-
-> Now we need to take care of the tokens \`init()\` is receiving. How do we transfer the tokens from the sender (us) to this contract address? How do we make sure the transaction reverts if the sender did not have as many tokens as they wanted to send?
-
-</details>
-
-<details markdown='1'><summary> 👨🏻‍🏫 Solution Code</summary>
-
-\`\`\`
-    function init(uint256 tokens) public payable returns (uint256) {
-        require(totalLiquidity == 0, "DEX: init - already has liquidity");
-        totalLiquidity = address(this).balance;
-        liquidity[msg.sender] = totalLiquidity;
-        require(token.transferFrom(msg.sender, address(this), tokens), "DEX: init - transfer did not transact");
-        return totalLiquidity;
-    }
-\`\`\`
-
-</details>
-
-</details>
-
-Calling \`init()\` will load our contract up with both ETH and 🎈 Balloons.
-
-We can see that the DEX starts empty. We want to be able to call \`init()\` to start it off with liquidity, but we don’t have any funds or tokens yet. Add some ETH to your local account using the faucet and then find the \`00_deploy_your_contract.ts\` file. Find and uncomment the lines below and add your front-end address (your burner wallet address).
-
-\`\`\`
-  // // paste in your front-end address here to get 10 balloons on deploy:
-  // await balloons.transfer("YOUR_FRONTEND_ADDRESS", "" + 10 * 10 ** 18);
-\`\`\`
-
-> Run \`yarn deploy\`.
-
-The front end should show you that you have balloon tokens. We can’t just call \`init()\` yet because the DEX contract isn’t allowed to transfer ERC20 tokens from our account.
-
-First, we have to call \`approve()\` on the Balloons contract, approving the DEX contract address to take some amount of tokens.
-
+🔁 Now redeploy (\`yarn deploy --reset\`) and visit \`http://localhost:3000/debug\` and use the \`Balloons\` contract to call \`approve()\` with:
+  - spender = DEX address
+  - amount = some $BAL (e.g. 5)
 ![balloons-dex-tab](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/710f5c9a-d898-4012-9014-4c46f1de015f)
 
-> 🤓 Copy and paste the DEX address to the _Address Spender_ and then set the amount to 5.
-> You can confirm this worked using the \`allowance()\` function in \`Debug Contracts\` tab using your local account address as the owner and the DEX contract address as the spender.
-
-Now we are ready to call \`init()\` on the DEX, using the \`Debug Contracts\` tab. We will tell it to take 5 of our tokens and send 0.01 ETH with the transaction. Remember in the \`Debug Contracts\` tab we are calling the functions directly which means we have to convert to wei, so don't forget to multiply those values by 10¹⁸!
-
+🤝 Then go to the DEX contract and call \`init()\` with equal amounts of ETH and $BAL:
+  - tokens = 5 (* 10**18)
+  - payable value = 5 (* 10**18)
 ![multiply-wei](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/531cab0b-2b37-4489-88c3-d36c0755d2d1)
 
-In the \`DEX\` tab, to simplify user interactions, we run the conversion (_tokenAmount_ \* 10¹⁸) in the code, so they just have to input the token amount they want to swap or deposit/withdraw.
+✅ Head to \`http://localhost:3000/dex\` and verify:
+  - the DEX shows ETH + $BAL reserves
+  - your liquidity value (\`💦💦\`) is non-zero
 
-You can see the DEX contract's value update, and you can check the DEX token balance using the \`balanceOf\` function on the Balloons UI from \`DEX\` tab.
+![CheckLiquAndBalance](SCREENSHOT)
 
-This works pretty well, but it will be a lot easier if we just call the \`init()\` function as we deploy the contract. In the \`00_deploy_your_contract.ts\` script try uncommenting the init section, so our DEX will start with 5 ETH and 5 Balloons of liquidity:
+### 🧪 Testing your progress
 
+▶️ Run:
+
+\`\`\`shell
+yarn test --grep "Checkpoint2"
 \`\`\`
-  // // uncomment to init DEX on deploy:
-
-  // const dexAddress = await dex.getAddress();
-  // console.log("Approving DEX (" + dexAddress + ") to take Balloons from main account...");
-  // // If you are going to the testnet make sure your deployer account has enough ETH
-  // await balloons.approve(dexAddress, hre.ethers.parseEther("100"));
-  // console.log("INIT exchange...");
-  // await dex.init(hre.ethers.parseEther("5"), {
-  //   value: hre.ethers.parseEther("5"),
-  //   gasLimit: 200000,
-  // });
-\`\`\`
-
-Now, when we \`yarn deploy --reset\` then our contract should be initialized as soon as it deploys, and we should have equal reserves of ETH and tokens.
-
-### 🥅 Goals / Checks
-
-- [ ] 🎈 In the DEX tab is your contract showing 5 ETH and 5 Balloons of liquidity?
-- [ ] ⚠ If you are planning to submit the challenge, make sure to implement the \`getLiquidity\` getter function in \`DEX.sol\`
 
 ---
 
-## ⛳️ **Checkpoint 3: Price** 🤑
+## Checkpoint 3: 🤑 price()
 
-This section is directly from the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) "Price" section. It outlines the general details of the DEX's pricing model.
+📈 Now that our contract holds reserves of both ETH and BAL tokens, we want to use a simple formula to determine the exchange rate between the two.
 
-If you need some more clarity on how the price in a pool is calculated, [this video](https://youtu.be/IL7cRj5vzEU) by Smart Contract Programmer has a more in-depth explanation.
+✨ This is where we will begin to understand the magic of AMMs. It utilizes the constant product formula credited to Martin Koppelmann and mentioned by Vitalik in [this article](https://ipfs.io/ipfs/bafybeidtudmi6qajjcsfwnieepuuu6buz2lo7gip3no2iugut6f75vjmd4/general/2017/06/22/marketmakers.html) which was later adopted by [Uniswap](https://app.uniswap.org/).
 
-Now that our contract holds reserves of both ETH and tokens, we want to use a simple formula to determine the exchange rate between the two.
-Let’s start with the formula \`x * y = k\` where \`x\` and \`y\` are the reserves:
+🧮 Here is the formula:
+
+\`\`\`
+x * y = k
+\`\`\` 
+
+📦 where \`x\` and \`y\` are the reserves, so:
 
 \`\`\`
 (amount of ETH in DEX ) * ( amount of tokens in DEX ) = k
 \`\`\`
 
-The \`k\` is called an invariant because it doesn’t change during trades. (The \`k\` only changes as liquidity is added.) If we plot this formula, we’ll get a curve that looks something like:
+🧷 The \`k\` is called an invariant because it **doesn't change** during trades. (The \`k\` only changes as liquidity is added.) If we plot this formula, we'll get a curve that looks something like:
 
 ![image](https://user-images.githubusercontent.com/12072395/205343533-7e3a2cfe-8329-42af-a35d-6352a12bf61e.png)
 
 > 💡 We are just swapping one asset for another, the “price” is basically how much of the resulting output asset you will get if you put in a certain amount of the input asset.
 
-🤔 OH! A market based on a curve like this will always have liquidity, but as the ratio becomes more and more unbalanced, you will get less and less of the less-liquid asset from the same trade amount. Again, if the smart contract has too much ETH and not enough $BAL tokens, the price to swap $BAL tokens to ETH should be more desirable.
+🤯 This is the unlock! A market based on a curve like this will **always have liquidity**, but keep in mind, as the ratio becomes further unbalanced, you will get less and less of the less-liquid asset from the same trade amount. Again, if the smart contract has too much ETH and not enough $BAL tokens, the price to swap $BAL tokens to ETH should be more desirable.
 
-When we call \`init()\` we passed in ETH and $BAL tokens at a ratio of 1:1. As the reserves of one asset changes, the other asset must also change inversely in order to maintain the constant product formula (invariant \`k\`).
+🔄 When we call \`init()\` we passed in ETH and $BAL tokens at a ratio of 1:1. As the reserves of one asset changes, the other asset must also change inversely in order to maintain the constant product formula (invariant \`k\`).
 
-Now, try to edit your \`DEX.sol\` smart contract and bring in a price function!
+### 🛠️ Implementing the \`price()\` function
 
-The price function should take in the reserves of \`xReserves\`, \`yReserves\`, and \`xInput\` to calculate the \`yOutput\`.
-Don't forget about trading fees! These fees are important to incentivize liquidity providers. Let's make the trading fee 0.3% and remember that there are no floats or decimals in Solidity, only whole numbers!
+🛠️ Now, we will edit the \`DEX.sol\` smart contract and fill out the price function!
+
+🧠 The price function should take in the reserves of \`xReserves\`, \`yReserves\`, and \`xInput\` to calculate the \`yOutput\`.
+
+> Don't forget about trading fees! These fees are important to incentivize liquidity providers. Let's make the trading fee 0.3% and remember that there are no floats or decimals in Solidity, only whole numbers!
 
 We should apply the fee to \`xInput\`, and store it in a new variable \`xInputWithFee\`. We want the input value to pay the fee immediately, or else we will accidentally tax our \`yOutput\` or our DEX's supply \`k\` 😨 Think about how to apply a 0.3% to our \`xInput\`.
 
-> 💡 _Hints:_ For more information on calculating the Output Reserve, read the Brief Revisit of Uniswap V2 in [this article](https://hackernoon.com/formulas-of-uniswap-a-deep-dive).
+> Tip: Because there are no decimals in Solidity you can achieve the same outcome by multiplying the input by **997** (99.7% since we are deducting the 0.3% fee) and then dividing the result by **1000**.
 
-> 💡💡 _More Hints:_ Also, don't forget to think about how to implement the trading fee. Solidity doesn't allow for decimals, so one way that contracts are written to implement percentage is using whole uints (997 and 1000) as numerator and denominator factors, respectively.
+✅ Your \`price(xInput, xReserves, yReserves)\` function should return the output amount of the y-asset.
 
-<details markdown='1'><summary>🦉 Guided Explanation</summary>
+<details markdown='1'>
+<summary>🔎 Hint</summary>
 
-For the math portions of this challenge, you can black-box the math. However, it's still important to understand what the math looks like, but maybe less so how it works or why it works, in other words don't get too caught up in the mathematical details! 😅 Look at articles and videos in this challenge or on your own to find out more if you're curious though! 🤓
+🧮 The standard Uniswap-style formula with fee looks like this:
 
-1. We are multiplying \`xInput\` by 997 to "simulate" a multiplication by 0.997 since we can't use decimals in solidity. We'll divide by 1000 later to get the fee back to normal.
-2. Next, we'll make our \`numerator\` by multiplying \`xInputWithFee\` by \`yReserves\`.
-3. Then our \`denominator\` will be \`xReserves\` multiplied by 1000 (to account for the 997 in the numerator) plus \`xInputWithFee\`.
-4. Last, we will return the \`numerator\` / \`denominator\` which is our \`yOutput\`, or the amount of swapped currency. But wait, can we have decimals in Solidity? No, so the output will be rounded up or down to the nearest whole number.
+- \`xInputWithFee = xInput * 997\`
+- \`numerator = xInputWithFee * yReserves\`
+- \`denominator = (xReserves * 1000) + xInputWithFee\`
+- \`yOutput = numerator / denominator\`
 
-<details markdown='1'><summary>👩🏽‍🏫 Solution Code</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-\`\`\`
-
-    function price(
-        uint256 xInput,
-        uint256 xReserves,
-        uint256 yReserves
-    ) public pure returns (uint256 yOutput) {
-        uint256 xInputWithFee = xInput * 997;
-        uint256 numerator = xInputWithFee * yReserves;
-        uint256 denominator = (xReserves * 1000) + xInputWithFee;
-        return (numerator / denominator);
-    }
-
+\`\`\`solidity
+function price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure returns (uint256 yOutput) {
+    uint256 xInputWithFee = xInput * 997;
+    uint256 numerator = xInputWithFee * yReserves;
+    uint256 denominator = (xReserves * 1000) + xInputWithFee;
+    return numerator / denominator;
+}
 \`\`\`
 
 </details>
-
 </details>
 
-We use the ratio of the input vs output reserve to calculate the price to swap either asset for the other. Let’s deploy this and poke around:
+### 🧪 Try it out
 
-\`\`\`
-yarn run deploy
-\`\`\`
+🧩 Uncomment the last part of \`packages/hardhat/deploy/00_deploy_dex.ts\` so that you don't have to add the liquidity manually.
 
-Let’s say we have 1 million ETH and 1 million tokens, if we put this into our price formula and ask it the price of 1000 ETH it will be an almost 1:1 ratio:
+🔁 Now redeploy and go to \`http://localhost:3000/dex\` and type values into the swap inputs. The curve preview should move and show output estimates (including the 0.3% fee).
+
+Let's say we have 1 million ETH and 1 million tokens, if we put this into our price formula and ask it the price of 1000 ETH it will be an almost 1:1 ratio:
 
 ![price-example-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e2d725cc-91f3-454d-902f-b39e4b51f5e2)
 
-If we put in 1000 ETH, we will receive 996 tokens. If we’re paying a 0.3% fee, it should be 997 if everything was perfect. BUT, there is a tiny bit of slippage as our contract moves away from the original ratio. Let’s dig in more to really understand what is going on here.
-Let’s say there is 5 million ETH and only 1 million tokens. Then, we want to put 1000 tokens in. That means we should receive about 5000 ETH:
+If we put in 1000 ETH, we will receive 996 tokens. If we're paying a 0.3% fee, it should be 997 if everything was perfect. BUT, there is a tiny bit of slippage as our contract moves away from the original ratio. Let's dig in more to really understand what is going on here.
+Let's say there is 5 million ETH and only 1 million tokens. Then, we want to put 1000 tokens in. That means we should receive about 5000 ETH:
 
 ![price-example-2](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/349db3d8-e39e-4c94-8026-e01da2cefb8e)
 
-Finally, let’s say the ratio is the same, but we want to swap 100,000 tokens instead of just 1000. We’ll notice that the amount of slippage is much bigger. Instead of 498,000 back, we will only get 453,305 because we are making such a big dent in the reserves.
+Finally, let's say the ratio is the same, but we want to swap 100,000 tokens instead of just 1000. We'll notice that the amount of slippage is much bigger. Instead of 498,000 back, we will only get 453,305 because we are making such a big dent in the reserves.
 
 ![price-example-3](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f479d7cd-0e04-4aa7-aa52-cef30d747af3)
 
-❗️ The contract automatically adjusts the price as the ratio of reserves shifts away from the equilibrium. It’s called an 🤖 _Automated Market Maker (AMM)._
+❗️ The contract automatically adjusts the price as the ratio of reserves shifts away from the equilibrium. It's called an 🤖 _Automated Market Maker (AMM)._
 
-### 🥅 Goals / Checks
+### 🧪 Testing your progress
 
-- [ ] 🤔 Do you understand how the x\*y=k price curve actually works? Write down a clear explanation for yourself and derive the formula for price. You might have to shake off some old algebra skills!
-- [ ] 💃 You should be able to go through the price section of this tutorial with the sample numbers and generate the same outputChange variable.
+▶️ Run:
+
+\`\`\`shell
+yarn test --grep "Checkpoint3"
+\`\`\`
 
 ---
 
-## Checkpoint 4: Trading 🤝
+## Checkpoint 4: 🤝 Swapping
 
-Let’s edit the \`DEX.sol\` smart contract and add two new functions for swapping from each asset to the other, \`ethToToken()\` and \`tokenToEth()\`.
+🛠️ Now implement the swap functions:
 
-The basic overview for \`ethToToken()\` is we're going to define our variables to pass into \`price()\` so we can calculate what the user's \`tokenOutput\` is.
+- \`ethToToken()\` swaps **ETH → $BAL**
+- \`tokenToEth(tokenInput)\` swaps **$BAL → ETH**
 
-<details markdown='1'><summary>🦉 Guiding Questions</summary>
+🧠 Key idea: you must compute reserves from the contract **before** applying the input amount in the swap.
 
-<details markdown='1'><summary>Question One</summary>
+### 🏗️ Implementing \`ethToToken()\` + \`tokenToEth()\`
 
-> How would we make sure the value being swapped for balloons is greater than 0? Also, how do we check if they have enough ETH and have given sufficient allowance to the contract?
+🧾 Define these events in \`DEX.sol\`:
 
-</details>
-
-<details markdown='1'><summary>Question Two</summary>
-
-> Is \`xReserves\` ETH or $BAL tokens? Use a variable name that best describes which one it is. When we call this function, it will already have the value we sent it in it's \`liquidity\`. How can we make sure we are using the balance of the contract _before_ any ETH was sent to it?
-
-</details>
-
-<details markdown='1'><summary>Question Three</summary>
-
-> For \`yReserves\` we will also want to create a new more descriptive variable name. How do we find the other asset balance this address has?
-
-</details>
-
-<details markdown='1'><summary>Question Four</summary>
-
-> Now that we have all our arguments, how do we call \`price()\` and store the returned value in a new variable? What kind of name would best describe this variable?
-
-</details>
-
-<details markdown='1'><summary>Question Five</summary>
-
-> After getting how many tokens the sender should receive, how do we transfer those tokens to the sender?
-
-</details>
-
-<details markdown='1'><summary>Question Six</summary>
-
-> Which event should we emit for this function?
-
-</details>
-
-<details markdown='1'><summary>Question Seven</summary>
-
-> Last, what do we return?
-
-</details>
-
-<details markdown='1'><summary>👨🏻‍🏫 Solution Code </summary>
-
-\`\`\`
-    /**
-     * @notice sends Ether to DEX in exchange for $BAL
-     */
-    function ethToToken() public payable returns (uint256 tokenOutput) {
-        require(msg.value > 0, "cannot swap 0 ETH");
-        uint256 ethReserve = address(this).balance - msg.value;
-        uint256 tokenReserve = token.balanceOf(address(this));
-        tokenOutput = price(msg.value, ethReserve, tokenReserve);
-
-        require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
-        emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
-        return tokenOutput;
-    }
-
+\`\`\`solidity
+event EthToTokenSwap(address swapper, uint256 tokenOutput, uint256 ethInput);
+event TokenToEthSwap(address swapper, uint256 tokensInput, uint256 ethOutput);
 \`\`\`
 
-</details>
+🚫 Start by defining these custom errors in \`DEX.sol\`:
 
-</details>
-
-😎 Great now onto the next! \`tokenToEth()\` is going to do the opposite so it should be pretty straight forward. But if you get stuck, the guiding questions are always there 🦉
-
-<details markdown='1'><summary>🦉 Guiding Questions</summary>
-
-<details markdown='1'><summary>Question One</summary>
-
-> How would we make sure the value being swapped for ETH is greater than 0? Also, how do we check if the user have enough tokens and the contract has enough allowance?
-
-</details>
-
-<details markdown='1'><summary>Question Two</summary>
-
-> Is \`xReserves\` ETH or $BAL tokens this time? Use a variable name the describes which one it is.
-
-</details>
-
-<details markdown='1'><summary>Question Three</summary>
-
-> For \`yReserves\` we will also want to create a new and more descriptive variable name. How do we find the other asset balance this address has?
-
-</details>
-
-<details markdown='1'><summary>Question Four</summary>
-
-> Now that we have all our arguments, how do we call \`price()\` and store the returned value in a new variable?
-
-</details>
-
-<details markdown='1'><summary>Question Five</summary>
-
-> After getting how much ETH the sender should receive, how do we transfer the ETH to the sender?
-
-</details>
-
-<details markdown='1'><summary>Question Six</summary>
-
-> Which event do we emit for this function?
-
-</details>
-
-<details markdown='1'><summary>Question Seven</summary>
-
-> Lastly, what are we returning?
-
-</details>
-
-<details markdown='1'><summary>👨🏻‍🏫 Solution Code </summary>
-
+\`\`\`solidity
+error TokenTransferFailed(); // Should already exist
+error InvalidEthAmount();
+error InvalidTokenAmount();
+error InsufficientTokenBalance(uint256 available, uint256 required);
+error InsufficientTokenAllowance(uint256 available, uint256 required);
+error EthTransferFailed(address to, uint256 amount);
 \`\`\`
-    /**
-     * @notice sends $BAL tokens to DEX in exchange for Ether
-     */
-    function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
-        require(tokenInput > 0, "cannot swap 0 tokens");
-        require(token.balanceOf(msg.sender) >= tokenInput, "insufficient token balance");
-        require(token.allowance(msg.sender, address(this)) >= tokenInput, "insufficient allowance");
-        uint256 tokenReserve = token.balanceOf(address(this));
-        ethOutput = price(tokenInput, tokenReserve, address(this).balance);
-        require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
-        (bool sent, ) = msg.sender.call{ value: ethOutput }("");
-        require(sent, "tokenToEth: revert in transferring eth to you!");
-        emit TokenToEthSwap(msg.sender, tokenInput, ethOutput);
-        return ethOutput;
-    }
+
+✍️ Now write the \`ethToToken()\` and \`tokenToEth()\` using those events and errors as nudges in the right direction. See if you can figure it all out without the hint!
+
+<details markdown='1'>
+<summary>🔎 Hint</summary>
+
+💡 For \`ethToToken()\` the contract's ETH balance already includes \`msg.value\`, so the ETH reserve **before** the swap is:
+
+- \`ethReserve = address(this).balance - msg.value\`
+
+💡 For \`tokenToEth(tokenInput)\`, you need an allowance check and should send ETH with \`call\`:
+
+- \`(bool sent,) = msg.sender.call{value: ethOutput}("");\`
+
+📣 Don't forget to emit the swap events.
+
+<details markdown='1'>
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
+function ethToToken() public payable returns (uint256 tokenOutput) {
+    if (msg.value == 0) revert InvalidEthAmount();
+    uint256 ethReserve = address(this).balance - msg.value;
+    uint256 tokenReserve = token.balanceOf(address(this));
+    tokenOutput = price(msg.value, ethReserve, tokenReserve);
+
+    if (!token.transfer(msg.sender, tokenOutput)) revert TokenTransferFailed();
+    emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
+    return tokenOutput;
+}
+
+function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
+    if (tokenInput == 0) revert InvalidTokenAmount();
+    uint256 bal = token.balanceOf(msg.sender);
+    if (bal < tokenInput) revert InsufficientTokenBalance(bal, tokenInput);
+    uint256 allow = token.allowance(msg.sender, address(this));
+    if (allow < tokenInput) revert InsufficientTokenAllowance(allow, tokenInput);
+    uint256 tokenReserve = token.balanceOf(address(this));
+    ethOutput = price(tokenInput, tokenReserve, address(this).balance);
+    if (!token.transferFrom(msg.sender, address(this), tokenInput)) revert TokenTransferFailed();
+    (bool sent, ) = msg.sender.call{ value: ethOutput }("");
+    if (!sent) revert EthTransferFailed(msg.sender, ethOutput);
+    emit TokenToEthSwap(msg.sender, tokenInput, ethOutput);
+    return ethOutput;
+}
 \`\`\`
 
 </details>
-
 </details>
 
-> 💡 Each of these functions should calculate the resulting amount of output asset using our price function that looks at the ratio of the reserves vs the input asset. We can call tokenToEth and it will take our tokens and send us ETH or we can call ethToToken with some ETH in the transaction and it will send us $BAL tokens. Deploy it and try it out!
+### 🧪 Try it out
 
-### 🥅 Goals / Checks
+🌐 Go to \`http://localhost:3000/dex\` and try:
 
-- [ ] Can you trade ETH for Balloons and get the correct amount?
-- [ ] Can you trade Balloons for ETH?
+- \`ethToToken\`: enter some ETH and click Send
+- \`tokenToETH\`: approve the DEX in the Balloons section first, then swap tokens back to ETH
+- Check the Events tab to make sure the swap events are showing up as expected
 
-> ⚠ When trading Balloons for ETH remember about allowances. Try using \`approve()\` to approve the contract address for some amount of tokens, then try the trade again!
+🎉 Now you can actually swap back and forth between tokens and ETH. This is amazing! With minimal infrastructure you can make it possible for people to move in and out of any set of tokens using this simple \`x * y = k\` formula!
+
+### 🧪 Testing your progress
+
+▶️ Run:
+
+\`\`\`shell
+yarn test --grep "Checkpoint4"
+\`\`\`
 
 ---
 
-## Checkpoint 5: Liquidity 🌊
+## Checkpoint 5: 🌊 Liquidity
 
-So far, only the \`init()\` function controls liquidity. To make this more decentralized, it would be better if anyone could add to the liquidity pool by sending the DEX both ETH and tokens at the correct ratio.
+🧩 So far, only the \`init()\` function controls liquidity. To make this more decentralized, lets add make it so anyone can add to the liquidity pool by sending the DEX both ETH and tokens at the correct ratio.
 
-Let’s create two new functions that let us deposit and withdraw liquidity. How would you write this function out? Try before taking a peak!
+🧠 The important part is letting anyone add liquidity and allowing them to later remove liquidity while keeping the pool ratio consistent.
 
-> 💬 _Hint:_
+- \`deposit()\` takes ETH (\`msg.value\`) and pulls the right amount of $BAL from the depositor, minting LPTs to the sender in the right proportion
+- \`withdraw(amount)\` burns LPTs and returns ETH + $BAL proportional to pool reserves
 
-> The \`deposit()\` function receives ETH and also transfers $BAL tokens from the caller to the contract at the right ratio. The contract also tracks the amount of liquidity (how many liquidity provider tokens (LPTs) minted) the depositing address owns vs the totalLiquidity.
+### 🏗️ Implementing \`deposit()\` + \`withdraw()\`
 
-What does this hint mean in practice? The goal is to allow a user to \`deposit()\` ETH into our \`totalLiquidity\`, and update their \`liquidity\`. This is very similar to the \`init()\` function, except we want it to work for anyone providing liquidity. Also, since there already is liquidity we want the liquidity they provide to leave the ratio of the two assets unchanged.
+🧾 First define these events in \`DEX.sol\`:
 
-<details markdown='1'><summary>🦉 Guiding Questions</summary>
-
-Part 1: Getting Reserves 🏦
-
-<details markdown='1'><summary>Question One</summary>
-
-> How do we ensure the sender isn't sending 0 ETH? Also, how do we check if they have enough tokens and have given sufficient allowance to the contract?
-
-</details>
-
-<details markdown='1'><summary>Question Two</summary>
-
-> We need to calculate the ratio of ETH and $BAL after the liquidity provider sends ETH, what variables do we need? It's similar to the previous section. What was that operation we performed on \`ethReserve\` in Checkpoint 4 to make sure we were getting the balance _before_ the \`msg.value\` went through? We need to do that again for the same reason.
-
-</details>
-
-<details markdown='1'><summary>Question Three</summary>
-
-> What other asset do we need to declare a reserve for, and how do we get its balance in this contract?
-
-</details>
-
-- [ ] Do you have reserves of both assets?
-
-Part 2: Performing Calculations 🤖
-
-> What are we calculating again? Oh yeah, for the amount of ETH the user is depositing, we want them to also deposit a proportional amount of tokens. Let's make a reusable equation where we can swap out a value and get an output of the ETH and $BAL the user will be depositing, named \`tokenDeposit\` and \`liquidityMinted\`.
-
-<details markdown='1'><summary>Question Four</summary>
-
-> How do we calculate how many tokens the user needs to deposit? You multiply the value the user sends through by reserves of the units we want as an output. Then we divide by \`ethReserve\` and add 1 to the result.
-
-</details>
-
-<details markdown='1'><summary>Question Five</summary>
-
-> Now for \`liquidityMinted\` use the same equation but replace \`tokenReserve\` with \`totalLiquidity\`, so that we are multiplying in the numerator by the units we want.
-
-</details>
-
-- [ ] Is \`tokenDeposit\` assigned the value of our equation?
-- [ ] Now is \`liquidityMinted\` looking similar to \`tokenDeposit\` but without the \`+ 1\` at the end?
-
-Part 3: Updating, Transferring, Emitting, and Returning 🎀
-
-<details markdown='1'><summary>Question Six</summary>
-
-> Now that the DEX has more assets, should we update our two global variables? How do we update \`liquidity\`?
-
-</details>
-
-<details markdown='1'><summary>Question Seven</summary>
-
-> How do we update \`totalLiquidity\`?
-
-</details>
-
-<details markdown='1'><summary>Question Eight</summary>
-
-> The user already deposited their ETH, but they still have to deposit their tokens. How do we require a token transfer from them?
-
-</details>
-
-<details markdown='1'><summary>Question Nine</summary>
-
-> We just completed something important, which event should we emit?
-
-</details>
-
-<details markdown='1'><summary>Question Ten</summary>
-
-> What do we return?
-
-</details>
-
-<details markdown='1'><summary>👩🏽‍🏫 Solution Code </summary>
-
+\`\`\`solidity
+event LiquidityProvided(address liquidityProvider, uint256 liquidityMinted, uint256 ethInput, uint256 tokensInput);
+event LiquidityRemoved(address liquidityRemover, uint256 liquidityWithdrawn, uint256 tokensOutput, uint256 ethOutput);
 \`\`\`
+
+🚫 And then add this custom error:
+
+\`\`\`solidity
+error InsufficientLiquidity(uint256 available, uint256 required);
+\`\`\`
+
+✍️ Now go write the logic for the \`deposit()\` and \`withdraw()\` functions.
+
+🧠 Make sure you check that they have enough BAL tokens approved (and in their balance) to provide liquity to both sides so that \`x * y = k\` stays true even though \`k\` is moving this time.
+
+🧮 On the deposit side, when finding out how many BAL tokens to add, make sure you add an additional wei to the result.
+
+> Solidity does **integer division**, which always rounds **down**. That means \`msg.value * tokenReserve / ethReserve\` can be ever-so-slightly smaller than the “true” proportional amount (because the fractional remainder is discarded). If we used the rounded-down value, the LP would deposit a tiny bit too little $BAL for the ETH they're adding, nudging the pool ratio and potentially failing later checks that assume the pool stays properly collateralized. Adding \`+ 1\` is a cheap way to effectively “round up” by the minimum unit, keeping deposits safely on the conservative side (at the cost of at most 1 wei of token).
+
+Don't forget to add the new liquidity (represented by the 💦 token) to the users balance AND the total liquidity (effectively, this is \`k\`).
+
+<details markdown='1'>
+<summary>🔎 Hint</summary>
+
+💡 For \`deposit()\` you can derive the token deposit required from the existing reserves:
+
+- \`tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1\`
+
+🧾 And the liquidity minted:
+
+- \`liquidityMinted = msg.value * totalLiquidity / ethReserve\`
+
+<details markdown='1'>
+<summary>🎯 Solution</summary>
+
+\`\`\`solidity
     function deposit() public payable returns (uint256 tokensDeposited) {
-        require(msg.value > 0, "Must send value when depositing");
+        if (msg.value == 0) revert InvalidEthAmount();
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = token.balanceOf(address(this));
-        uint256 tokenDeposit;
 
-        tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
-        // 💡 Discussion on adding 1 wei at end of calculation   ^
-        // -> https://t.me/c/1655715571/106
+        uint256 tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
 
-        require(token.balanceOf(msg.sender) >= tokenDeposit, "insufficient token balance");
-        require(token.allowance(msg.sender, address(this)) >= tokenDeposit, "insufficient allowance");
+        uint256 bal = token.balanceOf(msg.sender);
+        if (bal < tokenDeposit) revert InsufficientTokenBalance(bal, tokenDeposit);
+        uint256 allow = token.allowance(msg.sender, address(this));
+        if (allow < tokenDeposit) revert InsufficientTokenAllowance(allow, tokenDeposit);
 
         uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
         liquidity[msg.sender] += liquidityMinted;
         totalLiquidity += liquidityMinted;
 
-        require(token.transferFrom(msg.sender, address(this), tokenDeposit));
+        if (!token.transferFrom(msg.sender, address(this), tokenDeposit)) revert TokenTransferFailed();
         emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
         return tokenDeposit;
     }
 
-\`\`\`
-
-</details>
-
-</details>
-
-> 💡 **Remember**: Every time you perform actions with your $BAL tokens (deposit, exchange), you'll need to call \`approve()\` from the \`Balloons.sol\` contract **to authorize the DEX address to handle a specific number of your $BAL tokens**. To keep things simple, you can just do that from \`Debug Contracts\` tab, **ensure you approve a large enough quantity of tokens to not face allowance problems**.
-
-> 💬💬 _More Hints:_ The \`withdraw()\` function lets a user take his Liquidity Provider Tokens out, withdrawing both ETH and $BAL tokens out at the correct ratio. The actual amount of ETH and tokens a liquidity provider withdraws could be higher than what they deposited because of the 0.3% fees collected from each trade. It also could be lower depending on the price fluctuations of $BAL to ETH and vice versa (from token swaps taking place using your AMM!). The 0.3% fee incentivizes third parties to provide liquidity, but they must be cautious of [Impermanent Loss (IL)](https://www.youtube.com/watch?v=8XJ1MSTEuU0&t=2s&ab_channel=Finematics).
-
-<details markdown='1'><summary>🦉 Guiding Questions</summary>
-
-Part 1: Getting Reserves 🏦
-
-<details markdown='1'><summary>Question One</summary>
-
-> How can we verify that a user is withdrawing an \`amount\` of \`liquidity\` that they actually have?
-
-</details>
-
-<details markdown='1'><summary>Question Two</summary>
-
-> Just like the \`deposit()\` function we need both assets. How much ETH does our DEX have? Remember, this function is not payable, so we don't have to subtract anything.
-
-</details>
-
-<details markdown='1'><summary>Question Three</summary>
-
-> What is the value of \`tokenReserve\`?
-
-</details>
-
-Part 2: Performing Calculations 🤖
-
-> We need to calculate how much of each asset our user is going withdraw, call them \`ethWithdrawn\` and \`tokenAmount\`. The equation is: \`amount *\` reserveOfDesiredUnits \`/ totalLiquidity\`
-
-<details markdown='1'><summary>Question Four</summary>
-
-> How do we get \`ethWithdrawn\`?
-
-</details>
-
-<details markdown='1'><summary>Question Five</summary>
-
-> How do we get \`tokenOutput\`?
-
-</details>
-
-Part 3: Updating, Transferring, Emitting, and Returning 🎀
-
-<details markdown='1'><summary>Question Six</summary>
-
-> The user is withdrawing, how do we represent this decrease in this individual's \`liquidity\`?
-
-</details>
-
-<details markdown='1'><summary>Question Seven</summary>
-
-> The DEX also lost liquidity, how should we update \`totalLiquidity\`?
-
-</details>
-
-<details markdown='1'><summary>Question Eight</summary>
-
-> How do pay the user the value of \`ethWithdrawn\`?
-
-</details>
-
-<details markdown='1'><summary>Question Nine</summary>
-
-> How do we give them their tokens?
-
-</details>
-
-<details markdown='1'><summary>Question Ten</summary>
-
-> We have an event to emit, which one?
-
-</details>
-
-<details markdown='1'><summary>Question Eleven</summary>
-
-> Last, what are we returning?
-
-</details>
-
-<details markdown='1'><summary>👩🏽‍🏫 Solution Code </summary>
-
-\`\`\`
-
-    function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tokenAmount) {
-        require(liquidity[msg.sender] >= amount, "withdraw: sender does not have enough liquidity to withdraw.");
+function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tokenAmount) {
+    uint256 availableLp = liquidity[msg.sender];
+    if (availableLp < amount) revert InsufficientLiquidity(availableLp, amount);
         uint256 ethReserve = address(this).balance;
         uint256 tokenReserve = token.balanceOf(address(this));
-        uint256 ethWithdrawn;
 
-        ethWithdrawn = amount * ethReserve / totalLiquidity;
+    uint256 ethWithdrawn = amount * ethReserve / totalLiquidity;
+    uint256 tokensWithdrawn = amount * tokenReserve / totalLiquidity;
 
-        uint256 tokenAmount = amount * tokenReserve / totalLiquidity;
         liquidity[msg.sender] -= amount;
         totalLiquidity -= amount;
-        (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
-        require(sent, "withdraw(): revert in transferring eth to you!");
-        require(token.transfer(msg.sender, tokenAmount));
-        emit LiquidityRemoved(msg.sender, amount, tokenAmount, ethWithdrawn);
-        return (ethWithdrawn, tokenAmount);
-    }
 
+        (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
+    if (!sent) revert EthTransferFailed(msg.sender, ethWithdrawn);
+    if (!token.transfer(msg.sender, tokensWithdrawn)) revert TokenTransferFailed();
+
+    emit LiquidityRemoved(msg.sender, amount, tokensWithdrawn, ethWithdrawn);
+    return (ethWithdrawn, tokensWithdrawn);
+}
 \`\`\`
 
  </details>
-
  </details>
 
-🚨 Take a second to understand what these functions are doing if you pasted them into your \`DEX.sol\` file in packages/hardhat/contracts:
+### 🧪 Try it out
 
-### 🥅 Goals / Checks
+🔁 Redeploy, then go to \`http://localhost:3000/dex\` and try:
 
-- [ ] 💧 Deposit liquidity, and then check your liquidity amount through the mapping in the debug tab. Has it changed properly? Did the right amount of assets get deposited?
+- Approve the DEX to spend your $BAL
+- Deposit some ETH (and observe that it also pulls tokens)
+- Withdraw some liquidity and verify you receive both ETH and $BAL back
+- Check the Events tab to make sure the events are showing up as expected
 
-- [ ] 🧐 What happens if you \`deposit()\` at the beginning of the deployed contract, then another user starts swapping out for most of the balloons, and then you try to withdraw your position as a liquidity provider? Answer: you should get the amount of liquidity proportional to the ratio of assets within the isolated liquidity pool. It will not be 1:1.
+### 🧪 Testing your progress
 
----
+▶️ Run:
 
-## Checkpoint 6: UI 🖼
-
-Cool beans! Your front-end should be showing something like this now!
-
-![reserve-graph-updating](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/ef5ddc5f-2fc8-4bb6-910f-d6c17e579a74)
-
-Now, a user can just enter the amount of ETH or tokens they want to swap and the chart will display how the price is calculated. The user can also visualize how larger swaps result in more slippage and less output asset.
-
-### ⚔️ Side Quests
-
-- [ ] In \`packages/nextjs/app/events/page.tsx\` implement an event and emit for the \`approve()\` function to make it clear when it has been executed.
-
-### ⚠️ Test it!
-
-- Now is a good time to run \`yarn test\` to run the automated testing function. It will test that you hit the core checkpoints. You are looking for all green checkmarks and passing tests!
+\`\`\`shell
+yarn test --grep "Checkpoint5"
+\`\`\`
 
 ---
 
-## Checkpoint 7: 💾 Deploy your contracts! 🛰
+## Checkpoint 6: 💾 Deploy your contracts! 🛰
 
-📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages/hardhat/hardhat.config.ts\`
+📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\`
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
 👩‍🚀 Use \`yarn account\` to view your deployer account balances.
 
-⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network.
+⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network. You can also request ETH by sending a message with your new deployer address and preferred network in the [challenge Telegram](https://t.me/+_NeUIJ664Tc1MzIx). People are usually more than willing to share.
 
-🚀 Run \`yarn deploy\` to deploy your smart contracts to a public network (selected in \`hardhat.config.ts\`)
+🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in \`hardhat.config.ts\`)
 
-> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` or \`optimismSepolia\` **OR** you can \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.
+> 💬 Hint: Instead of editing \`hardhat.config.ts\` you can just add a network flag to the deploy command like this: \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`
 
 ---
 
-## Checkpoint 8: 🚢 Ship your frontend! 🚁
+## Checkpoint 7: 🚢 Ship your frontend! 🚁
 
 ✏️ Edit your frontend config in \`packages/nextjs/scaffold.config.ts\` to change the \`targetNetwork\` to \`chains.sepolia\` (or \`chains.optimismSepolia\` if you deployed to OP Sepolia)
 
@@ -733,34 +511,44 @@ Now, a user can just enter the amount of ETH or tokens they want to swap and the
 
 > 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`onlyLocalBurnerWallet: false\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
-#### Configuration of Third-Party Services for Production-Grade Apps.
+#### ⚙️ Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
-This is great to complete your **SpeedRunEthereum**.
+This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
 - 🔷\`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
-
 - 📃\`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
-
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
 ---
 
-## Checkpoint 9: 📜 Contract Verification
+## Checkpoint 8: 📜 Contract Verification
 
 Run the \`yarn verify --network your_network\` command to verify your contracts on etherscan 🛰
 
-👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
+👀 You may see an address for both YourToken and Vendor. You will want the Vendor address.
 
-## Checkpoint 10: 💪 Flex!
+👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedrunEthereum.com](https://speedrunethereum.com).
 
-👩‍❤️‍👨 Send some $BAL and share your public url with a friend and ask them to swap their tokens :)
+## Checkpoint 10: Deeper Understanding and Next Steps
+
+🎉 So you have built a functioning DEX. What an accomplishment! Now you have great context to begin to understand different DEX designs. Go research the latest DEX designs and their improvements.
+
+🧩 Something you will run into quickly are some limitations that your own DEX has.
+
+📖 Because the swap functions don't promise a certain amount of "out" tokens anyone who sees your transaction in the mempool can send a transaction in front of you (e.g. with a higher gas price) and move the liquidity down the curve so that you get fewer tokens. Then immediately after your transaction executes they can have another transaction lined up to swap the tokens back in the other direction. The outcome is that they walk away with the "slippage", the difference between the amount of tokens you were quoted originally and how many you actually ended up with in the end.
+> Side note: This is called a sandwich attack and is a popular form of MEV (Look it up!).
+
+💡 The solution is obvious: Just revert the function if the quote price != the amount of "out" tokens. This would work to protect you from sandwich attacks but it introduces another problem...
+
+🤼 Two honest people want to make a swap. The amounts don't matter and the direction doesn't matter. They get their quotes and execute it at nearly the same time (both transactions will be included in the same block). But wait, if one of them swaps then the liquidity will have changed when the second person's swap is attempted, causing it to revert because the "out" tokens would differ from the quote they received. Only one person can execute a swap in a single block. What a huge bottleneck!
+
+🎯 A fuller solution is to allow *some* "slippage" in the swap. This way your transaction will execute as long as the execution price is within a certain percent of the quote price. This way you know that you will receive *at least* X amount of tokens with each swap you do and others can still swap in either direction before and after you in the same block. Bingo!
 
 ---
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
-
 > 💬 Problems, questions, comments on the stack? Post them to the [🏗 scaffold-eth developers chat](https://t.me/joinchat/F7nCRK3kI93PoCOk)
 `;
