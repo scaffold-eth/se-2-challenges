@@ -1,0 +1,119 @@
+# CHALLENGE.yaml Example Template
+# Copy this file as CHALLENGE.yaml and customize for your challenge
+#
+# The contract code is kept COMPLETE in the repo. The setup.template contains
+# the TODO-marked version that gets applied when user runs /start.
+# As users complete checkpoints, code gets "unlocked" and added to the contract.
+
+name: "Your Challenge Name"
+version: "1.0"
+description: "Brief description of what users will learn and build"
+difficulty: "beginner" # beginner, intermediate, advanced
+estimated_time: "30-45 minutes"
+
+# Setup template - Applied when user runs /start
+# This transforms the complete contract into a TODO-marked version for learning
+setup:
+  description: "Transform the contract to TODO template for progressive learning"
+  file: "packages/hardhat/contracts/YourContract.sol"
+  template: |
+    // SPDX-License-Identifier: MIT
+    pragma solidity ^0.8.20;
+
+    // TODO[imports]: Imports will be added here
+    // Complete the "First Concept" checkpoint to unlock
+
+    contract YourContract
+        // TODO[inheritance]: Contract inheritance will be added here
+        // Complete the "Second Concept" checkpoint to unlock
+    {
+        // TODO[state]: State variables will be added here
+        // Complete the "Third Concept" checkpoint to unlock
+
+        // TODO[functions]: Functions will be added here
+        // Complete the remaining checkpoints to unlock
+    }
+
+welcome_message: |
+  Welcome to the [Challenge Name]!
+
+  [Brief exciting intro about what they'll learn]
+
+  **How this works:**
+  I'll teach you each concept, then ask you a question to check your understanding.
+  As you complete each checkpoint, I'll add the corresponding code to your contract!
+
+  Say "hint" anytime you're stuck, or use `/continue` if you need a break.
+
+  Let's get started!
+
+checkpoints:
+  - id: "checkpoint-1"
+    title: "First Concept Title"
+    description: "Brief description of what this checkpoint covers"
+
+    context: |
+      ## Concept Heading
+
+      [Teach the concept here. This is shown BEFORE any questions.]
+      [Reference specific parts of the README or contract code.]
+      [Include code examples, explanations, and real-world analogies.]
+
+      ## Key Points
+
+      - Point 1
+      - Point 2
+      - Point 3
+
+    questions:
+      - text: "Your question here? Make it specific and test understanding."
+        concepts: ["keyword1", "keyword2", "keyword3"]  # Words/phrases that indicate understanding
+        hint: "A helpful hint that guides without giving away the answer"
+
+      - text: "Second question for this checkpoint?"
+        concepts: ["concept1", "concept2"]
+        hint: "Another helpful hint"
+
+    # Code unlocked when this checkpoint is completed
+    unlocks:
+      file: "packages/hardhat/contracts/YourContract.sol"
+      todo: "imports"  # Matches // TODO[imports] marker
+      code: |
+        import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+        // ... other imports
+
+  - id: "checkpoint-2"
+    title: "Second Concept Title"
+    description: "What this checkpoint covers"
+
+    context: |
+      ## Building on What You Learned
+
+      [Continue teaching, building on previous checkpoint]
+      [Reference the contract code to show implementation]
+
+    questions:
+      - text: "Question about this concept?"
+        concepts: ["key", "words"]
+        hint: "Helpful hint"
+
+    unlocks:
+      file: "packages/hardhat/contracts/YourContract.sol"
+      todo: "inheritance"
+      code: "is ERC721, Ownable"
+
+# Add more checkpoints as needed...
+
+completion_message: |
+  Congratulations! You've completed the [Challenge Name]!
+
+  Your contract is now complete! You can see all the code you unlocked by learning.
+
+  ## Next Steps
+
+  Follow the README to:
+  - Deploy your contract locally with `yarn deploy`
+  - Deploy to a testnet
+  - Share your work with friends!
+
+  Head to your next challenge at [SpeedRunEthereum.com](https://speedrunethereum.com)!
