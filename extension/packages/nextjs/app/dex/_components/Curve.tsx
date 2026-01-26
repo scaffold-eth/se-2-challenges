@@ -164,6 +164,7 @@ export interface ICurveProps {
 export const Curve: FC<ICurveProps> = (props: ICurveProps) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const [themeTick, setThemeTick] = useState(0);
+  const [view, setView] = useState<{ centerEth: number; scale: number } | null>(null);
 
   // Re-render on theme toggle (daisyUI toggles via data-theme and/or class changes).
   useEffect(() => {
@@ -173,6 +174,42 @@ export const Curve: FC<ICurveProps> = (props: ICurveProps) => {
     obs.observe(root, { attributes: true, attributeFilter: ["data-theme", "class"] });
     return () => obs.disconnect();
   }, []);
+
+  // Keep a stable viewport so the point actually moves along the curve when reserves change.
+  // If a swap is so large that the point would go out of view, we *zoom out* (expand the x-range)
+  // instead of re-centering (which would visually pin the point back to the same location).
+  useEffect(() => {
+    if (!(props.ethReserve > 0) || !(props.tokenReserve > 0)) return;
+
+    setView(prev => {
+      if (!prev || !Number.isFinite(prev.centerEth) || prev.centerEth <= 0) {
+        return { centerEth: props.ethReserve, scale: 4 };
+      }
+
+      const centerEth = prev.centerEth;
+      let scale = prev.scale;
+      if (!Number.isFinite(scale) || scale <= 0) scale = 4;
+
+      const minX = Math.max(centerEth / scale, 1e-9);
+      const maxX = centerEth * scale;
+
+      // Expand x-range when the new point would be off-screen.
+      // Keep a little margin so it doesn't sit flush on the edge.
+      const margin = 1.2;
+      const x = Math.max(props.ethReserve, 1e-9);
+      if (x < minX) {
+        scale = Math.max(scale, (centerEth * margin) / x);
+      } else if (x > maxX) {
+        scale = Math.max(scale, (x * margin) / centerEth);
+      }
+
+      // Avoid pathological zoom-out.
+      scale = Math.min(Math.max(scale, 1.5), 1e6);
+
+      if (scale === prev.scale) return prev;
+      return { ...prev, scale };
+    });
+  }, [props.ethReserve, props.tokenReserve]);
 
   const colors = useMemo(() => {
     // Intentionally "use" themeTick so this recomputes on theme toggle.
@@ -275,10 +312,12 @@ export const Curve: FC<ICurveProps> = (props: ICurveProps) => {
 
     const k = props.ethReserve * props.tokenReserve;
 
-    // Keep the viewport stable while the user types preview inputs.
-    // The curve/axes should only shift when the actual reserves change.
-    const minX = Math.max(props.ethReserve / 4, 1e-9);
-    const maxX = props.ethReserve * 4;
+    // Viewport X-range: stable and anchored to the initial reserves (not the current ones),
+    // otherwise the point would appear "stuck" at the same place.
+    const centerEth = view?.centerEth ?? props.ethReserve;
+    const scale = view?.scale ?? 4;
+    const minX = Math.max(centerEth / scale, 1e-9);
+    const maxX = centerEth * scale;
 
     const plotWidth = width - padding * 2;
     const plotHeight = height - padding * 2;
@@ -479,7 +518,16 @@ export const Curve: FC<ICurveProps> = (props: ICurveProps) => {
         });
       }
     }
-  }, [props.width, props.height, props.ethReserve, props.tokenReserve, props.addingEth, props.addingToken, colors]);
+  }, [
+    props.width,
+    props.height,
+    props.ethReserve,
+    props.tokenReserve,
+    props.addingEth,
+    props.addingToken,
+    colors,
+    view,
+  ]);
 
   return (
     <div className="rounded-2xl bg-base-100 shadow-lg shadow-secondary border border-base-300 p-4">

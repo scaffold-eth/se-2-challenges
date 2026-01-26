@@ -142,17 +142,17 @@ function getLiquidity(address lp) public view returns (uint256 lpLiquidity) {
 
 🧩 Go uncomment the line in \`packages/hardhat/deploy/00_deploy_dex.ts\` that sends 10 BAL to your frontend address (and make sure you paste in your actual frontend address).
 
-🔁 Now redeploy (\`yarn deploy --reset\`) and visit \`http://localhost:3000/debug\` and use the \`Balloons\` contract to call \`approve()\` with:
+🔁 Now redeploy (\`yarn deploy --reset\`) and visit \`http://localhost:3000/dex\` and use the \`Balloons\` contract to call \`approve()\` with:
   - spender = DEX address
   - amount = some $BAL (e.g. 5)
 ![balloons-dex-tab](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/710f5c9a-d898-4012-9014-4c46f1de015f)
 
-🤝 Then go to the DEX contract and call \`init()\` with equal amounts of ETH and $BAL:
+🤝 Get over 5 ETH from the faucet and then go to the DEX contract in the Debug tab (\`http://localhost:3000/debug\`) and call \`init()\` with equal amounts of ETH and $BAL:
   - tokens = 5 (* 10**18)
   - payable value = 5 (* 10**18)
 ![multiply-wei](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/531cab0b-2b37-4489-88c3-d36c0755d2d1)
 
-✅ Head to \`http://localhost:3000/dex\` and verify:
+✅ Go back to the DEX tab \`http://localhost:3000/dex\` and verify:
   - the DEX shows ETH + $BAL reserves
   - your liquidity value (\`💦💦\`) is non-zero
 ![CheckLiquAndBalance](https://github.com/user-attachments/assets/a8b14fc4-3626-420a-9b99-a8dc5c67fe6e)
@@ -240,7 +240,7 @@ function price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure
 
 🔁 Now redeploy and go to \`http://localhost:3000/dex\` and type values into the swap inputs. The curve preview should move and show output estimates (including the 0.3% fee).
 
-Let's say we have 1 million ETH and 1 million tokens, if we put this into our price formula and ask it the price of 1000 ETH it will be an almost 1:1 ratio:
+Let's say we have 1 million ETH and 1 million tokens, if we put this into our price formula and ask it the price of 1000 ETH it will be an almost 1:1 ratio. Try it in the Debug tab:
 
 ![price-example-1](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e2d725cc-91f3-454d-902f-b39e4b51f5e2)
 

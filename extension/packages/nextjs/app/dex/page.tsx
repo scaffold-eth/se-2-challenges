@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Curve } from "./_components";
 import { Address, AddressInput, Balance, EtherInput } from "@scaffold-ui/components";
 import { IntegerInput } from "@scaffold-ui/debug-contracts";
@@ -15,6 +15,8 @@ const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
 
 const Dex: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const curveWrapRef = useRef<HTMLDivElement>(null);
+  const [curveSize, setCurveSize] = useState(500);
   const [ethToTokenAmount, setEthToTokenAmount] = useState("");
   const [tokenToETHAmount, setTokenToETHAmount] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
@@ -41,6 +43,23 @@ const Dex: NextPage = () => {
       setIsLoading(false);
     }
   }, [DEXBalloonBalance]);
+
+  useEffect(() => {
+    const el = curveWrapRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+
+    const ro = new ResizeObserver(entries => {
+      const entry = entries[0];
+      const width = entry?.contentRect?.width ?? 0;
+      if (!Number.isFinite(width) || width <= 0) return;
+      // Keep the chart from causing horizontal overflow and scrollbars.
+      const next = Math.max(260, Math.min(500, Math.floor(width)));
+      setCurveSize(next);
+    });
+
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const { data: DEXtotalLiquidity } = useScaffoldReadContract({
     contractName: "DEX",
@@ -93,7 +112,7 @@ const Dex: NextPage = () => {
         <span className="block text-4xl font-bold">Challenge: ⚖️ Build a DEX </span>
       </h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pt-10 content-start">
-        <div className="px-5 py-5 space-y-6">
+        <div className="px-5 py-5 space-y-6 min-w-0">
           <div className="bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-8">
             <div className="flex flex-col text-center">
               <span className="text-3xl font-semibold mb-2">DEX Contract</span>
@@ -311,15 +330,15 @@ const Dex: NextPage = () => {
           </div>
         </div>
 
-        <div className="flex justify-center px-2 pb-10 lg:pt-5 lg:px-4 lg:sticky lg:top-24 overflow-x-auto">
-          <div className="flex justify-center w-full">
+        <div className="flex justify-center px-2 pb-10 lg:pt-5 lg:px-4 lg:sticky lg:top-24 min-w-0">
+          <div ref={curveWrapRef} className="flex justify-center w-full max-w-[520px] min-w-0">
             <Curve
               addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
               addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
               ethReserve={parseFloat(formatEther(contractETHBalance?.value || 0n))}
               tokenReserve={parseFloat(formatEther(contractBalance || 0n))}
-              width={500}
-              height={500}
+              width={curveSize}
+              height={curveSize}
             />
           </div>
         </div>
