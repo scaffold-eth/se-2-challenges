@@ -97,7 +97,7 @@ Challenges can include an **AI-guided learning mode** that teaches users concept
 - **Teaches first, asks second** - Explains concepts before testing understanding
 - **Provides progressive hints** - No one gets stuck
 - **References real code** - Learn by understanding the complete contract
-- **Tracks progress** - Users can take breaks and resume with `/continue`
+- **Tracks progress** - Progress is saved, so users can take breaks and resume anytime
 
 ### How It Works for Users
 
@@ -105,7 +105,7 @@ Challenges can include an **AI-guided learning mode** that teaches users concept
 2. Open in **Claude Code** or **Cursor**
 3. Run `/start` to begin the interactive learning
 4. Learn concepts, answer questions, build your contract
-5. Use `/continue` to resume if you take a break
+5. Your progress is saved - use `/start` again to resume if you take a break
 
 ### Available AI-Guided Challenges
 
@@ -206,19 +206,18 @@ Your challenge extension should include these directories:
 extension/
 ├── .ai/
 │   ├── CHALLENGE.yaml          # Challenge definition with setup template & checkpoints
-│   └── instructions/           # (copied from main branch)
-│       ├── start-content.md
-│       └── continue-content.md
+│   ├── agents/
+│   │   └── progress-tracker-content.md  # (copied from main branch)
+│   └── instructions/
+│       └── start-content.md    # (copied from main branch)
 ├── .claude/
 │   ├── skills/
-│   │   ├── start/SKILL.md      # (copied from main branch)
-│   │   └── continue/SKILL.md
+│   │   └── start/SKILL.md      # (copied from main branch)
 │   └── agents/
 │       └── progress-tracker.md # (copied from main branch)
 ├── .cursor/
 │   ├── commands/
-│   │   ├── start.md            # (copied from main branch)
-│   │   └── continue.md
+│   │   └── start.md            # (copied from main branch)
 │   └── agents/
 │       └── progress-tracker.md # (copied from main branch)
 ├── .cursorignore               # Copy from .cursorignore.example
@@ -229,7 +228,8 @@ extension/
 ### Step 1: Copy Template Files
 
 Copy the generic files from the main branch:
-- `.ai/instructions/` (start-content.md, continue-content.md)
+- `.ai/agents/` (progress-tracker-content.md)
+- `.ai/instructions/` (start-content.md)
 - `.claude/` directory
 - `.cursor/` directory
 - `.cursorignore.example` -> `.cursorignore`

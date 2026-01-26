@@ -1,6 +1,6 @@
 ---
 name: start
-description: Start the SpeedRunEthereum challenge. Sets up your contract for progressive learning and guides you through blockchain concepts interactively. Use /continue to resume if you take a break.
+description: Start the SpeedRunEthereum challenge. Sets up your contract for progressive learning and guides you through blockchain concepts interactively. Your progress is saved, so you can resume anytime.
 ---
 
 # SpeedRunEthereum Challenge - Start

@@ -54,7 +54,7 @@ Set the first checkpoint to in_progress.
 Display the welcome_message from CHALLENGE.yaml, then explain:
 - How the challenge works (I'll teach, then ask questions)
 - That they can say "hint" anytime they're stuck
-- That they can use `/continue` if they need to take a break
+- That their progress is saved, so they can take a break and use `/start` to resume later
 
 ### Step 5: Begin First Checkpoint
 Start with the first checkpoint.
@@ -214,8 +214,7 @@ This keeps the progress updates in a separate context and ensures clean file ope
 
 At the start, inform users:
 
-- **`/start`** - Begin the challenge (resets contract to TODO template)
-- **`/continue`** - Resume from where you left off
+- **`/start`** - Begin the challenge (resumes from where you left off if you have existing progress)
 - **`hint`** - Get help on the current question
 - **`skip`** - Skip to the code (not recommended - you learn more by answering!)
 
