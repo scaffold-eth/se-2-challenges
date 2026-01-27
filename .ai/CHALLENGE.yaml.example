@@ -43,7 +43,7 @@ welcome_message: |
   I'll teach you each concept, then ask you a question to check your understanding.
   As you complete each checkpoint, I'll add the corresponding code to your contract!
 
-  Say "hint" anytime you're stuck, or use `/continue` if you need a break.
+  Say "hint" anytime you're stuck. Your progress is saved, so you can take a break and use `/start` to resume later.
 
   Let's get started!
 
