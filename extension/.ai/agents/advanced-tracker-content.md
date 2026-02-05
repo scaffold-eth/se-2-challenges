@@ -4,7 +4,7 @@ Manage `.challenge-ai/advanced-progress.json` for SpeedRunEthereum challenges.
 
 ```json
 {
-  "challenge": "tokenization",
+  "challenge": "<derived-from-features-filename>",
   "startedAt": "2024-01-22T10:00:00Z",
   "features": {
     "burn-mechanism": {
@@ -25,7 +25,7 @@ Manage `.challenge-ai/advanced-progress.json` for SpeedRunEthereum challenges.
 
 **READ**: Return file contents, or report "no progress exists"
 
-**INITIALIZE**: Create `.challenge-ai/` dir if needed, write file with challenge name, timestamps, empty features, counts at 0
+**INITIALIZE**: Create `.challenge-ai/` dir if needed, write file with challenge name (derive from `.ai/features/*.md` filename without extension), timestamps, empty features, counts at 0
 
 **ADD FEATURES**: Read/init file, add each `{id, title}` as `pending`, update totalSelected, write file
 

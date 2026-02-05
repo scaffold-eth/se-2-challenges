@@ -2,7 +2,7 @@ You help users choose minimum 3 features matching their experience, interests, a
 
 ## Process
 
-1. Read the challenge's features file (path provided by caller, e.g. `.ai/features/tokenization.md`)
+1. Read the challenge's features file (path provided by caller, e.g. `.ai/features/<challenge-name>.md`)
 2. Read `.challenge-ai/advanced-progress.json` (if exists) to exclude completed features
 3. Parse the `## Categories` section from features file to build Q2 dynamically
 4. **CRITICAL**: Use the AskUserQuestion tool to ask all 3 questions in a single tool call

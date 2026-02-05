@@ -9,9 +9,9 @@ Read and follow `.ai/instructions/advanced-content.md` for detailed guidance.
 
 ## Files
 
-- **Features**: `.ai/features/tokenization.md`
+- **Features**: `.ai/features/*.md` (detect available challenge)
 - **Progress**: `.challenge-ai/advanced-progress.json`
-- **Contract**: `packages/hardhat/contracts/YourCollectible.sol`
+- **Contract**: Auto-detect main contract in `packages/hardhat/contracts/`
 
 ## Subagents (always use)
 
@@ -21,7 +21,7 @@ Read and follow `.ai/instructions/advanced-content.md` for detailed guidance.
 ## Startup
 
 1. Check progress via advanced-tracker
-2. Read `.ai/features/tokenization.md`
+2. Detect and read features file from `.ai/features/` directory
 3. If in-progress feature exists → resume implementation
 4. If starting/adding new → run feature-selector → user picks min 3 → save to progress
 5. Implement features one by one

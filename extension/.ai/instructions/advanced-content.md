@@ -24,11 +24,12 @@ Use **advanced-tracker** subagent to read `.challenge-ai/advanced-progress.json`
 
 ### 2. Feature Selection (if needed)
 
-1. Read `.ai/features/tokenization.md`
-2. Use **feature-selector** subagent - tell it: "Read features from `.ai/features/tokenization.md`" (it builds Q2 options from the Categories section dynamically)
-3. Present recommendations to user
-4. Use `AskUserQuestion` with `multiSelect: true` - user picks minimum 3
-5. Use **advanced-tracker** to save selections
+1. Detect features file: glob `.ai/features/*.md` and use the first match
+2. Read the detected features file
+3. Use **feature-selector** subagent - tell it: "Read features from [detected file path]" (it builds Q2 options from the Categories section dynamically)
+4. Present recommendations to user
+5. Use `AskUserQuestion` with `multiSelect: true` - user picks minimum 3
+6. Use **advanced-tracker** to save selections
 
 ### 3. Begin Implementation
 
