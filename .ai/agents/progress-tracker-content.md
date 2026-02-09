@@ -20,9 +20,24 @@ The progress file lives at `.challenge-ai/progress.json` with this structure:
   "currentQuestion": 0,
   "checkpoints": {
     "<checkpoint-1-id>": {
-      "status": "in_progress"
+      "status": "completed",
+      "completedAt": "2024-01-22T10:15:00Z",
+      "method": "answered"
     },
     "<checkpoint-2-id>": {
+      "status": "completed",
+      "completedAt": "2024-01-22T10:25:00Z",
+      "method": "coded"
+    },
+    "<checkpoint-3-id>": {
+      "status": "completed",
+      "completedAt": "2024-01-22T10:30:00Z",
+      "method": "skipped"
+    },
+    "<checkpoint-4-id>": {
+      "status": "in_progress"
+    },
+    "<checkpoint-5-id>": {
       "status": "pending"
     }
   }
@@ -33,7 +48,13 @@ The progress file lives at `.challenge-ai/progress.json` with this structure:
 
 - `pending` - Not started yet
 - `in_progress` - Currently working on this checkpoint
-- `completed` - Finished (add `completedAt` timestamp)
+- `completed` - Finished (add `completedAt` timestamp and `method`)
+
+## Method Values (on completed checkpoints)
+
+- `answered` - Completed by answering conceptual questions (concept checkpoint)
+- `coded` - Completed by writing code that passes tests (code-writing checkpoint)
+- `skipped` - Skipped via /skip command (solution was applied automatically)
 
 ## Operations
 
@@ -53,7 +74,9 @@ The progress file lives at `.challenge-ai/progress.json` with this structure:
 ### When asked to UPDATE a checkpoint:
 1. Read current progress
 2. Update the specified checkpoint's status
-3. If marking complete, add `completedAt` timestamp
+3. If marking complete:
+   - Add `completedAt` timestamp
+   - Add `method` field (`"answered"`, `"coded"`, or `"skipped"`)
 4. If there's a next checkpoint, set it to `in_progress`
 5. Update `currentCheckpoint` field
 6. Write back to file

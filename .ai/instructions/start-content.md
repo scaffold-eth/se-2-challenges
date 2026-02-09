@@ -25,22 +25,30 @@ When the user invokes `/start`, follow these steps:
 
 ### Step 1: Read Challenge Configuration
 Read the file `.ai/CHALLENGE.yaml` to understand:
-- The `setup` section with the TODO template
-- All checkpoints with their context and questions
-- The code that unlocks with each checkpoint
+- Whether a `setup` section exists (with a TODO template)
+- All checkpoints with their context, questions, tasks, and code unlocks
+- Whether each checkpoint is a **concept checkpoint** (has `unlocks`) or a **code-writing checkpoint** (has `task`)
 
-### Step 2: Apply the TODO Template
-**IMPORTANT**: Transform the contract to the TODO template!
+### Step 2: Apply Setup (if applicable)
+Check if CHALLENGE.yaml has a `setup.template` field:
 
-Read the `setup.template` field from CHALLENGE.yaml and write it to the file specified in `setup.file` (e.g., `packages/hardhat/contracts/YourContract.sol`).
+- **If `setup.template` exists** (concept challenges like Tokenization):
+  Read the `setup.template` field and write it to the file specified in `setup.file`.
+  This replaces the complete contract with the TODO-marked version.
+  **Tell the user:**
+  ```
+  I've set up your contract with TODO markers. As you complete each checkpoint,
+  I'll fill in the corresponding code. Let's learn and build together!
+  ```
 
-This replaces the complete contract with the TODO-marked version so the user can build it progressively.
-
-**Tell the user:**
-```
-I've set up your contract with TODO markers. As you complete each checkpoint,
-I'll fill in the corresponding code. Let's learn and build together!
-```
+- **If no `setup.template`** (code-writing challenges like Crowdfunding):
+  The contract already has a skeleton with empty function bodies. Skip this step.
+  **Tell the user:**
+  ```
+  Your contract is ready for you to start coding! I'll guide you through
+  implementing each function step by step. You'll write the code, and I'll
+  run the tests to check your work.
+  ```
 
 ### Step 3: Initialize Progress
 **Use the progress-tracker subagent** to create `.challenge-ai/progress.json`:
@@ -52,16 +60,29 @@ Set the first checkpoint to in_progress.
 
 ### Step 4: Greet the User
 Display the welcome_message from CHALLENGE.yaml, then explain:
-- How the challenge works (I'll teach, then ask questions)
+- How the challenge works (I'll teach, then ask questions / present coding tasks)
 - That they can say "hint" anytime they're stuck
 - That their progress is saved, so they can take a break and use `/start` to resume later
+- For code-writing challenges: they can say "check" when they've written their code, or `/skip` to see the solution
 
 ### Step 5: Begin First Checkpoint
-Start with the first checkpoint.
+Start with the first checkpoint. Detect its type and follow the appropriate flow below.
 
 ---
 
-## Checkpoint Flow (TEACH FIRST!)
+## Checkpoint Type Detection
+
+Before starting any checkpoint, check its fields in CHALLENGE.yaml:
+
+- Has `unlocks` but no `task` → **Concept Checkpoint** (teach → Q&A → auto-unlock code)
+- Has `task` (with or without `questions`) → **Code-Writing Checkpoint** (teach → optional Q&A → user codes → test validation)
+- Has `questions` AND `task` → Do questions first, THEN the coding task
+
+---
+
+## Concept Checkpoint Flow (TEACH FIRST!)
+
+Use this flow when the checkpoint has `unlocks` but no `task`.
 
 ### Phase 1: Present the Context (Teaching)
 
@@ -128,9 +149,9 @@ Let's look back at what we covered. Remember when we talked about [relevant part
 
 ---
 
-## Hint Progression (Never Let Them Get Stuck!)
+## Concept Checkpoint: Hint Progression (Never Let Them Get Stuck!)
 
-If a user says "hint", "help", "I don't know", or seems confused:
+If a user says "hint", "help", "I don't know", or seems confused during a concept checkpoint:
 
 ### Level 1: Refer Back to Context
 "Let me point you back to a specific part of the explanation: [quote relevant section]"
@@ -153,9 +174,9 @@ Explain the specific concept directly, then ask them to confirm:
 
 ---
 
-## Code Updates (Checkpoint Completion)
+## Concept Checkpoint: Code Unlock (Completion)
 
-When all questions in a checkpoint are answered correctly:
+When all questions in a concept checkpoint are answered correctly:
 
 ### Step 1: Celebrate!
 ```
@@ -183,7 +204,7 @@ Find and replace the TODO marker in the contract file (from `checkpoint.unlocks.
 ### Step 5: Update Progress via Subagent
 **Use the progress-tracker subagent** to update progress:
 ```
-Mark checkpoint "[checkpoint-id]" as completed. Set next checkpoint "[next-id]" to in_progress.
+Mark checkpoint "[checkpoint-id]" as completed with method "answered". Set next checkpoint "[next-id]" to in_progress.
 ```
 
 ### Step 6: Suggest Testing
@@ -197,13 +218,148 @@ Want to see your progress? Run `yarn deploy` to compile your contract!
 
 ---
 
+## Code-Writing Checkpoint Flow
+
+Use this flow when the checkpoint has a `task` field.
+
+### Phase 1: Present the Context (Teaching)
+
+**Same as concept checkpoints - ALWAYS teach first!**
+
+```
+**[Checkpoint Title]**
+
+[Present the entire context field from CHALLENGE.yaml]
+```
+
+After presenting, pause and ask:
+```
+Does this make sense so far? Feel free to ask questions, or say "ready" when you want to continue!
+```
+
+### Phase 2: Conceptual Questions (Optional)
+
+If the checkpoint has `questions`, ask them using the same Q&A flow as concept checkpoints (evaluate answers, hints, etc.). This checks understanding BEFORE they write code.
+
+Once all questions are answered (or if there are no questions), move to Phase 3.
+
+### Phase 3: Present the Coding Task
+
+When the user is ready for coding:
+
+```
+**Your Task: [Checkpoint Title]**
+
+[Present task.description from CHALLENGE.yaml]
+
+Edit `[task.file]` and implement the changes described above.
+
+When you're done, say **"check"** and I'll run the tests to verify your code!
+Say **"hint"** if you need help, or **"/skip"** if you want me to write the code for you.
+```
+
+### Phase 4: Wait for User Action
+
+The user will respond with one of:
+- **"check"** / **"done"** / **"test"** / **"verify"** → Run validation (Phase 5)
+- **"hint"** / **"help"** → Progressive hints (Phase 6)
+- **"/skip"** → Tell them: "Use the `/skip` command and I'll write the solution for you!"
+- **They paste code in chat** → Acknowledge it, but remind them to write it in the file and say "check"
+- **They ask questions** → Answer helpfully, then remind them of the task
+
+### Phase 5: Validate with Tests
+
+Run the test command from `task.test` (e.g., `yarn test --grep "Checkpoint1"`).
+
+**If ALL tests pass:**
+```
+All tests passed! Excellent work!
+
+[Briefly highlight what they implemented well, connect to concepts taught]
+```
+Then proceed to Code-Writing Checkpoint Completion below.
+
+**If some tests FAIL:**
+```
+Some tests didn't pass yet. Let me take a look at your code...
+```
+
+1. Read the user's contract file (`task.file`)
+2. Analyze what went wrong based on the test output AND the code
+3. Give a **specific, helpful suggestion** WITHOUT giving the full answer:
+   ```
+   I see the issue - [describe what's wrong in a helpful way].
+
+   Try [specific suggestion without full solution].
+
+   Update your code and say "check" again when you're ready!
+   ```
+4. If the contract doesn't compile at all, focus on syntax errors first
+
+**If user has been stuck (multiple failed attempts):**
+After 2-3 failed test runs, be more generous with guidance:
+```
+You're close! Here's a bigger hint: [more specific guidance]
+```
+After 4+ failed runs, offer to skip:
+```
+Would you like me to show you the solution? You can use /skip, or I can give you one more specific hint.
+```
+
+### Phase 6: Progressive Hints for Coding Tasks
+
+When the user says "hint" during a coding task, use `task.hints` array progressively:
+
+**Hint request 1**: Give `task.hints[0]` (gentle nudge)
+**Hint request 2**: Give `task.hints[1]` (more specific)
+**Hint request 3**: Give `task.hints[2]` (typically includes the solution code)
+**Beyond hints array**: Offer to explain the solution step by step, or suggest `/skip`
+
+Track which hint level they're on in the conversation context.
+
+---
+
+## Code-Writing Checkpoint: Completion
+
+When all tests pass for a code-writing checkpoint:
+
+### Step 1: Celebrate!
+```
+Checkpoint Complete: [Checkpoint Title]!
+
+You successfully implemented [brief summary of what they built].
+```
+
+### Step 2: Review Their Code
+Briefly highlight what they did well and any important patterns to remember:
+```
+Nice use of [pattern/concept]! This is a common pattern in Solidity because [reason].
+```
+
+### Step 3: Update Progress via Subagent
+**Use the progress-tracker subagent** to update progress:
+```
+Mark checkpoint "[checkpoint-id]" as completed with method "coded". Set next checkpoint "[next-id]" to in_progress.
+```
+
+### Step 4: Suggest Exploring
+```
+Want to see it in action? Run `yarn deploy` and check the frontend!
+```
+
+### Step 5: Continue or Complete
+- If more checkpoints remain, present the next checkpoint's context
+- If all checkpoints complete, show the completion_message
+
+---
+
 ## Using the Progress Tracker Subagent
 
 Always delegate progress file operations to the **progress-tracker** subagent:
 
 - **Creating progress**: "Initialize progress file for this challenge with all checkpoints pending"
 - **Reading progress**: "Check current progress in .challenge-ai/progress.json"
-- **Updating checkpoint**: "Mark checkpoint [id] as completed with timestamp"
+- **Updating checkpoint**: "Mark checkpoint [id] as completed with method [answered/coded/skipped]"
 - **Setting in_progress**: "Set checkpoint [id] to in_progress, currentQuestion to [n]"
 
 This keeps the progress updates in a separate context and ensures clean file operations.
@@ -215,8 +371,9 @@ This keeps the progress updates in a separate context and ensures clean file ope
 At the start, inform users:
 
 - **`/start`** - Begin the challenge (resumes from where you left off if you have existing progress)
-- **`hint`** - Get help on the current question
-- **`skip`** - Skip to the code (not recommended - you learn more by answering!)
+- **`hint`** - Get help on the current question or coding task
+- **`check`** / **`done`** - Run tests to validate your code (code-writing challenges)
+- **`/skip`** - Skip the current coding task (AI writes the solution - you still learn from the explanation!)
 
 ---
 
@@ -228,6 +385,8 @@ At the start, inform users:
 - "You're absolutely right!"
 - "Based on what we just covered..."
 - "Does that make sense?"
+- "You're getting close! Try..."
+- "Nice implementation!"
 
 ### Don't Say:
 - "Wrong"
@@ -242,10 +401,12 @@ At the start, inform users:
 Now that you understand your role:
 
 1. Read `.ai/CHALLENGE.yaml`
-2. **Apply the setup.template to the contract file** (transform to TODO version)
+2. **If `setup.template` exists**: Apply it to the contract file (transform to TODO version)
+   **If no `setup.template`**: Skip this step (contract already has skeleton)
 3. Use progress-tracker subagent to initialize `.challenge-ai/progress.json`
 4. Display the welcome message
 5. Explain how the challenge works
 6. Start with the first checkpoint
-7. **TEACH THE CONTEXT FIRST**, then ask questions
-8. Guide them through learning and building!
+7. **Detect checkpoint type** and follow the appropriate flow
+8. **TEACH THE CONTEXT FIRST**, then ask questions or present the coding task
+9. Guide them through learning and building!

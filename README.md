@@ -99,18 +99,26 @@ Challenges can include an **AI-guided learning mode** that teaches users concept
 - **References real code** - Learn by understanding the complete contract
 - **Tracks progress** - Progress is saved, so users can take breaks and resume anytime
 
+### Two Types of AI-Guided Challenges
+
+- **Concept challenges** (e.g., Tokenization): AI teaches and auto-builds code as you answer questions correctly
+- **Code-writing challenges** (e.g., Crowdfunding): AI teaches, then you write the code yourself - tests validate your work
+
 ### How It Works for Users
 
 1. Clone and set up the challenge
 2. Open in **Claude Code** or **Cursor**
 3. Run `/start` to begin the interactive learning
-4. Learn concepts, answer questions, build your contract
-5. Your progress is saved - use `/start` again to resume if you take a break
+4. Learn concepts, answer questions, and build your contract
+   - For code-writing challenges: edit the contract, say "check" to run tests
+5. Stuck? Say "hint" for help, or use `/skip` to see the solution
+6. Your progress is saved - use `/start` again to resume if you take a break
 
 ### Available AI-Guided Challenges
 
 Look for challenges with the 🤖 badge - these support the AI learning mode:
-- 🤖 **Tokenization** - ERC-721 NFTs and onchain ownership
+- 🤖 **Tokenization** - ERC-721 NFTs and onchain ownership (concept-based)
+- 🤖 **Crowdfunding** - Payable functions, mappings, state machines (code-writing)
 
 ---
 
@@ -193,10 +201,20 @@ To make your challenge interactive, add AI-guided learning mode so users can lea
 
 ### How It Works
 
-1. **Contract stays COMPLETE** in the repo (the working version)
-2. **CHALLENGE.yaml** contains a `setup.template` with TODO markers
+There are two types of AI-guided challenges:
+
+**Concept Challenges** (e.g., Tokenization):
+1. Contract stays **COMPLETE** in the repo (the working version)
+2. CHALLENGE.yaml contains a `setup.template` with TODO markers
 3. When user runs `/start`, the TODO template replaces the complete contract
-4. As users complete checkpoints, code gets "unlocked" and added back
+4. As users answer questions, code gets "unlocked" and added back
+
+**Code-Writing Challenges** (e.g., Crowdfunding):
+1. Contract has a **SKELETON** with empty function bodies
+2. No `setup.template` needed - the contract stays as-is
+3. When user runs `/start`, AI teaches concepts and presents coding tasks
+4. Users write code themselves; tests validate their work
+5. Users can use `/skip` to see the solution if stuck
 
 ### Directory Structure
 
@@ -205,19 +223,21 @@ Your challenge extension should include these directories:
 ```
 extension/
 ├── .ai/
-│   ├── CHALLENGE.yaml          # Challenge definition with setup template & checkpoints
+│   ├── CHALLENGE.yaml          # Challenge definition with checkpoints
 │   ├── agents/
 │   │   └── progress-tracker-content.md  # (copied from main branch)
 │   └── instructions/
 │       └── start-content.md    # (copied from main branch)
 ├── .claude/
 │   ├── skills/
-│   │   └── start/SKILL.md      # (copied from main branch)
+│   │   ├── start/SKILL.md      # (copied from main branch)
+│   │   └── skip/SKILL.md       # (copied from main branch)
 │   └── agents/
 │       └── progress-tracker.md # (copied from main branch)
 ├── .cursor/
 │   ├── commands/
-│   │   └── start.md            # (copied from main branch)
+│   │   ├── start.md            # (copied from main branch)
+│   │   └── skip.md             # (copied from main branch)
 │   └── agents/
 │       └── progress-tracker.md # (copied from main branch)
 ├── .cursorignore               # Copy from .cursorignore.example
@@ -230,14 +250,14 @@ extension/
 Copy the generic files from the main branch:
 - `.ai/agents/` (progress-tracker-content.md)
 - `.ai/instructions/` (start-content.md)
-- `.claude/` directory
-- `.cursor/` directory
+- `.claude/` directory (skills: start, skip; agents: progress-tracker)
+- `.cursor/` directory (commands: start, skip; agents: progress-tracker)
 - `.cursorignore.example` -> `.cursorignore`
 - Add `.challenge-ai/` to your `.gitignore`
 
 ### Step 2: Create CHALLENGE.yaml
 
-Copy `.ai/CHALLENGE.yaml.example` to `.ai/CHALLENGE.yaml` and customize:
+Copy `.ai/CHALLENGE.yaml.example` to `.ai/CHALLENGE.yaml` and customize. Each checkpoint can be either a **concept checkpoint** (has `unlocks`) or a **code-writing checkpoint** (has `task`):
 
 ```yaml
 name: "Your Challenge Name"
@@ -245,42 +265,49 @@ version: "1.0"
 description: "What users will learn"
 difficulty: "beginner"
 
-# Setup template - Applied when user runs /start
-# This transforms the complete contract into a TODO-marked version
+# Setup template - OPTIONAL
+# Only needed for concept challenges. Omit for code-writing challenges.
 setup:
   file: "packages/hardhat/contracts/YourContract.sol"
   template: |
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.20;
-
-    // TODO[imports]: Imports will be added here
-    // Complete the "First Concept" checkpoint to unlock
-
-    contract YourContract {
-        // TODO[state]: State variables will be added here
-        // Complete the "Second Concept" checkpoint to unlock
-    }
+    // TODO-marked version of the contract...
 
 welcome_message: |
   Welcome to [Your Challenge]!
   ...
 
 checkpoints:
+  # CONCEPT CHECKPOINT - AI auto-unlocks code after Q&A
   - id: "checkpoint-1"
     title: "First Concept"
     context: |
-      ## Teaching Content
-      [Explain the concept here - this is shown BEFORE questions]
+      [Teaching content - shown BEFORE questions]
     questions:
       - text: "Question to check understanding?"
         concepts: ["keyword1", "keyword2"]
         hint: "Helpful hint"
-    # Code unlocked when checkpoint is completed
     unlocks:
       file: "packages/hardhat/contracts/YourContract.sol"
-      todo: "imports"  # Matches // TODO[imports] marker
+      todo: "imports"
       code: |
         import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+  # CODE-WRITING CHECKPOINT - user writes code, tests validate
+  - id: "checkpoint-2"
+    title: "Implement a Function"
+    context: |
+      [Teaching content]
+    task:
+      description: |
+        Implement the myFunction() in the contract...
+      file: "packages/hardhat/contracts/YourContract.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      hints:
+        - "Gentle hint"
+        - "More specific hint"
+        - "Solution hint with code"
+      solution: |
+        // Full solution code for /skip
 
 completion_message: |
   Congratulations! You've completed the challenge!
@@ -289,13 +316,18 @@ completion_message: |
 
 ### Step 3: Design Your Checkpoints
 
-For each concept users need to learn:
-
+**For concept checkpoints** (AI unlocks code):
 1. **Write the context** - Teaching material explaining the concept
 2. **Create questions** - Test understanding (not memorization)
 3. **Define concepts** - Keywords that indicate understanding
 4. **Provide hints** - Progressive help for stuck users
 5. **Define unlocks** - Code that gets added when checkpoint completes
+
+**For code-writing checkpoints** (user writes code):
+1. **Write the context** - Teaching material explaining the concept
+2. **Define the task** - What to implement, which file, which test command
+3. **Provide progressive hints** - Array from gentle to solution code
+4. **Include the solution** - Full solution code for the `/skip` command
 
 ### Best Practices
 
