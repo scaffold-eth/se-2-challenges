@@ -12,5 +12,5 @@ Run `/start` to begin. The AI will ask your experience level and guide you throu
 - `check` — Validate your code (code-writing challenges)
 
 ## Key Files
-- `.ai/CHALLENGE.yaml` — Challenge definition
+- `extension/.ai/CHALLENGE.yaml` — Challenge definition
 - `.challenge-ai/progress.json` — Your progress (auto-generated)
