@@ -67,14 +67,17 @@ Read the file `.ai/CHALLENGE.yaml` to understand:
 
 **If resuming** (progress.json exists with a `level` field): use the saved level silently — do NOT ask again.
 
-**If starting fresh**, ask before anything else:
+**If starting fresh**, use the `AskUserQuestion` tool to ask interactively:
 
 ```
-Before we dive in — what's your experience with blockchain and Solidity?
-
-1. **Beginner** — New to blockchain or Solidity
-2. **Intermediate** — Know the basics, want to go deeper
-3. **Advanced** — Comfortable with Solidity, want the deep dive
+AskUserQuestion with:
+  question: "What's your experience with blockchain and Solidity?"
+  header: "Level"
+  options:
+    - label: "Beginner", description: "New to blockchain or Solidity"
+    - label: "Intermediate", description: "Know the basics, want to go deeper"
+    - label: "Advanced", description: "Comfortable with Solidity, want the deep dive"
+  multiSelect: false
 ```
 
 Wait for their answer and remember it. You'll pass this to the progress-tracker when initializing progress.
