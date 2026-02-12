@@ -260,7 +260,7 @@ Mark checkpoint "[checkpoint-id]" as completed with method "answered". Set next 
 ```
 
 ### Step 6: Suggest Deploying (Conditional)
-If `setup.deployAfterCheckpoint` is `true` in CHALLENGE.yaml, suggest:
+If the current checkpoint has `deployAfterCheckpoint: true` in CHALLENGE.yaml, suggest:
 ```
 Want to see your progress? Run `yarn deploy` to compile your contract!
 ```
@@ -397,7 +397,7 @@ Mark checkpoint "[checkpoint-id]" as completed with method "coded". Set next che
 ```
 
 ### Step 4: Suggest Deploying (Conditional)
-If `setup.deployAfterCheckpoint` is `true` in CHALLENGE.yaml, suggest:
+If the current checkpoint has `deployAfterCheckpoint: true` in CHALLENGE.yaml, suggest:
 ```
 Want to see it in action? Run `yarn deploy` and check the frontend!
 ```
