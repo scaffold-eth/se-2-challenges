@@ -1,0 +1,493 @@
+name: "Crowdfunding App"
+version: "1.0"
+description: "Build a decentralized crowdfunding contract where users pool ETH, enforce a deadline/threshold, and either fund a recipient or refund contributors."
+difficulty: "intermediate"
+estimated_time: "60-90 minutes"
+
+# CODE-WRITING challenge — the contract already has a skeleton with empty function bodies.
+# No setup.template needed.
+setup:
+  file: "packages/hardhat/contracts/CrowdFund.sol"
+
+welcome_message: |
+  Welcome to the Crowdfunding Challenge!
+
+  You'll build a `CrowdFund` smart contract that lets users coordinate a group funding effort.
+  If enough ETH is collected before a deadline, the funds go to a `FundingRecipient` contract.
+  If not, everyone gets their money back. Users only trust the code, not each other.
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's get started!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: Contributing
+  # ============================================================
+  - id: "contributing"
+    title: "Contributing"
+    description: "Add a balances mapping, a Contribution event, and implement the contribute() function"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Mappings, Events, and Payable Functions
+
+      Three Solidity building blocks you'll use right away:
+
+      ### Mappings
+
+      A mapping is a key-value store that lives on-chain. We need one to track how much each address contributed:
+
+      ```solidity
+      mapping(address => uint256) public balances;
+      ```
+
+      - `address => uint256` means "given an address, return a number"
+      - `public` auto-generates a getter so anyone can query `balances(0xABC...)`
+      - Every key starts at the default value (`0` for uint256)
+
+      ### Events
+
+      Events are log entries emitted during a transaction. Off-chain code (frontends, indexers) listens for them:
+
+      ```solidity
+      event Contribution(address, uint256);
+      // ...
+      emit Contribution(msg.sender, msg.value);
+      ```
+
+      Without events the frontend would have to poll the contract repeatedly to detect changes.
+
+      ### Payable Functions & Transaction Context
+
+      A function marked `payable` can receive ETH. Inside any function two global variables describe the current transaction:
+      - **`msg.sender`** — address that called the function
+      - **`msg.value`** — ETH sent (in wei)
+
+      ### Your contract skeleton
+
+      Open `packages/hardhat/contracts/CrowdFund.sol`. You'll see organised sections (Errors, State Variables, Events, Functions, etc.) with placeholder comments. The `contribute()` function exists but its body is empty — your job is to fill it in.
+
+    questions:
+      - text: "If someone contributes 0.5 ETH and then contributes 0.3 ETH, what should their balance show? Why does the update use `+=` instead of `=`?"
+        concepts: ["accumulate", "add up", "total", "0.8", "sum", "plus", "overwrite", "previous"]
+        hint: "Think about what `=` would do — it replaces the old value entirely. With `+=` we add to it."
+
+    task:
+      description: |
+        Implement the `contribute()` function and add the supporting state/events.
+
+        In `packages/hardhat/contracts/CrowdFund.sol`:
+
+        1. **Add a mapping** under *State Variables* (below `fundingRecipient`):
+           ```solidity
+           mapping(address => uint256) public balances;
+           ```
+
+        2. **Add an event** under *Events* (replace the placeholder comment):
+           ```solidity
+           event Contribution(address, uint256);
+           ```
+
+        3. **Fill in `contribute()`** to:
+           - Add `msg.value` to the caller's entry in `balances`
+           - Emit the `Contribution` event
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/CrowdFund.sol"
+      test: "yarn test --grep 'Checkpoint1'"
+      hints:
+        - "`msg.sender` is the caller, `msg.value` is the ETH they sent. Use `+=` so contributions accumulate."
+        - |
+          The function body is two lines:
+          ```solidity
+          balances[msg.sender] += msg.value;
+          emit Contribution(msg.sender, msg.value);
+          ```
+        - |
+          Full solution:
+          ```solidity
+          // State Variables — add below fundingRecipient:
+          mapping(address => uint256) public balances;
+
+          // Events — replace placeholder:
+          event Contribution(address, uint256);
+
+          // contribute() body:
+          function contribute() public payable {
+              balances[msg.sender] += msg.value;
+              emit Contribution(msg.sender, msg.value);
+          }
+          ```
+      solution: |
+        // State Variables section — add below fundingRecipient:
+        mapping(address => uint256) public balances;
+
+        // Events section — replace "// Events go here...":
+        event Contribution(address, uint256);
+
+        // contribute() function body:
+        balances[msg.sender] += msg.value;
+        emit Contribution(msg.sender, msg.value);
+
+  # ============================================================
+  # CHECKPOINT 2: Withdrawing Funds
+  # ============================================================
+  - id: "withdrawing"
+    title: "Withdrawing Funds"
+    description: "Add custom errors, an openToWithdraw flag, and implement withdraw() using the Checks-Effects-Interactions pattern"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Custom Errors, Sending ETH, and Reentrancy Safety
+
+      When a crowdfunding campaign fails, contributors need a way to get their money back. Let's learn the patterns you'll use.
+
+      ### Custom Errors
+
+      Modern Solidity replaces `require(cond, "message")` with custom errors — cheaper on gas because no string is stored on-chain:
+
+      ```solidity
+      error NotOpenToWithdraw();
+      error WithdrawTransferFailed(address to, uint256 amount);
+
+      if (!openToWithdraw) revert NotOpenToWithdraw();
+      ```
+
+      Errors with parameters (like `WithdrawTransferFailed`) carry useful debugging info.
+
+      ### Boolean State Flags
+
+      A simple `bool` can gate access to a function:
+
+      ```solidity
+      bool public openToWithdraw; // defaults to false
+      ```
+
+      We'll flip it to `true` in the next checkpoint when the campaign fails. For now just declare it.
+
+      ### Sending ETH with `call`
+
+      The recommended way to send ETH:
+
+      ```solidity
+      (bool success, ) = recipient.call{value: amount}("");
+      if (!success) revert WithdrawTransferFailed(recipient, amount);
+      ```
+
+      Older patterns (`transfer`, `send`) forward only 2300 gas and can break smart-contract wallets. `call` forwards all remaining gas.
+
+      ### Checks-Effects-Interactions (CEI)
+
+      The most important security pattern in Solidity. Always:
+      1. **Checks** — validate preconditions
+      2. **Effects** — update state
+      3. **Interactions** — call external contracts / send ETH
+
+      If you send ETH *before* zeroing the balance, a malicious contract's `receive()` could re-enter `withdraw()` and drain the contract. This is called a **reentrancy attack** (the infamous DAO hack).
+
+      ```solidity
+      uint256 amount = balances[msg.sender];
+      balances[msg.sender] = 0;            // effect first!
+      (bool ok, ) = msg.sender.call{value: amount}("");  // interaction after
+      ```
+
+    questions:
+      - text: "Why must we set `balances[msg.sender] = 0` BEFORE sending the ETH? What could happen if we did it after?"
+        concepts: ["reentrancy", "re-enter", "call again", "drain", "recursive", "before", "external call", "state first", "attack"]
+        hint: "If the recipient is a smart contract its `receive()` runs when it gets ETH. What if that function calls `withdraw()` again while your balance is still non-zero?"
+
+    task:
+      description: |
+        Implement `withdraw()` and add the supporting state & errors.
+
+        In `packages/hardhat/contracts/CrowdFund.sol`:
+
+        1. **Add a bool** under *State Variables*:
+           ```solidity
+           bool public openToWithdraw;
+           ```
+
+        2. **Add two custom errors** under *Errors* (replace the placeholder):
+           ```solidity
+           error NotOpenToWithdraw();
+           error WithdrawTransferFailed(address to, uint256 amount);
+           ```
+
+        3. **Fill in `withdraw()`** following Checks-Effects-Interactions:
+           - **Check**: revert with `NotOpenToWithdraw` if withdrawals aren't open
+           - **Effect**: save the caller's balance to a local variable, then zero it out
+           - **Interaction**: send the saved amount via `call`; revert with `WithdrawTransferFailed` on failure
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/CrowdFund.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      hints:
+        - "Start with `if (!openToWithdraw) revert NotOpenToWithdraw();`. Then save, zero, send — in that order."
+        - |
+          Structure:
+          ```solidity
+          if (!openToWithdraw) revert NotOpenToWithdraw();
+          uint256 balance = balances[msg.sender];
+          balances[msg.sender] = 0;
+          (bool success, ) = msg.sender.call{value: balance}("");
+          if (!success) revert WithdrawTransferFailed(msg.sender, balance);
+          ```
+        - |
+          Full solution:
+          ```solidity
+          // Errors section:
+          error NotOpenToWithdraw();
+          error WithdrawTransferFailed(address to, uint256 amount);
+
+          // State variable:
+          bool public openToWithdraw;
+
+          // withdraw() body:
+          function withdraw() public {
+              if (!openToWithdraw) revert NotOpenToWithdraw();
+              uint256 balance = balances[msg.sender];
+              balances[msg.sender] = 0;
+              (bool success, ) = msg.sender.call{value: balance}("");
+              if (!success) revert WithdrawTransferFailed(msg.sender, balance);
+          }
+          ```
+      solution: |
+        // Errors section — replace "// Errors go here...":
+        error NotOpenToWithdraw();
+        error WithdrawTransferFailed(address to, uint256 amount);
+
+        // State Variables — add:
+        bool public openToWithdraw;
+
+        // withdraw() function body:
+        if (!openToWithdraw) revert NotOpenToWithdraw();
+        uint256 balance = balances[msg.sender];
+        balances[msg.sender] = 0;
+        (bool success, ) = msg.sender.call{value: balance}("");
+        if (!success) revert WithdrawTransferFailed(msg.sender, balance);
+
+  # ============================================================
+  # CHECKPOINT 3: State Machine / Timing
+  # ============================================================
+  - id: "state-machine"
+    title: "State Machine / Timing"
+    description: "Add deadline, threshold, TooEarly error, and implement execute() and timeLeft()"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## State Machines, Deadlines, and Thresholds
+
+      Your contract is a **state machine** with three states:
+
+      ```
+      [FUNDING] ──deadline passes──> [SUCCESS]  (threshold met → funds sent to recipient)
+                                  \─> [FAILED]   (threshold not met → withdrawals open)
+      ```
+
+      The `execute()` function is the trigger — anyone calls it after the deadline to transition the contract.
+
+      ### Time in Solidity
+
+      `block.timestamp` gives the Unix timestamp (seconds) of the current block:
+
+      ```solidity
+      uint256 public deadline = block.timestamp + 30 seconds;
+      ```
+
+      Solidity time suffixes (`seconds`, `minutes`, `hours`, `days`, `weeks`) are just multipliers. The `deadline` is set once — when the contract deploys.
+
+      ### Constants
+
+      Values that never change should be `constant` — the compiler inlines them so they cost zero storage gas:
+
+      ```solidity
+      uint256 public constant threshold = 1 ether;
+      ```
+
+      `1 ether` = 10^18 wei.
+
+      ### Calling Another Contract with ETH
+
+      When the campaign succeeds, send all collected ETH to the `FundingRecipient`:
+
+      ```solidity
+      fundingRecipient.complete{value: address(this).balance}();
+      ```
+
+      - `address(this).balance` — the ETH held by your CrowdFund contract
+      - `{value: ...}` — attaches that ETH to the call
+      - `complete()` marks the recipient as funded (check `FundingRecipient.sol` to see it)
+
+      ### Safe Subtraction in timeLeft()
+
+      `timeLeft()` must return `deadline - block.timestamp` *only* if the deadline hasn't passed. Otherwise it should return `0`. In Solidity 0.8+ a subtraction that goes negative reverts with an underflow, so the guard is essential.
+
+    questions:
+      - text: "Why can't `openToWithdraw` flip to true automatically when the deadline passes? Why do we need `execute()` at all?"
+        concepts: ["someone must call", "transaction", "can't auto", "trigger", "no cron", "blockchain doesn't run code on its own", "external"]
+        hint: "Smart contracts don't have a scheduler. Nothing happens on-chain unless a transaction triggers it."
+
+    task:
+      description: |
+        Implement `execute()`, `timeLeft()`, and add the state variables and error.
+
+        In `packages/hardhat/contracts/CrowdFund.sol`:
+
+        1. **Add state variables** under *State Variables*:
+           ```solidity
+           uint256 public deadline = block.timestamp + 30 seconds;
+           uint256 public constant threshold = 1 ether;
+           ```
+
+        2. **Add a custom error** under *Errors*:
+           ```solidity
+           error TooEarly(uint256 deadline, uint256 currentTimestamp);
+           ```
+
+        3. **Fill in `execute()`**:
+           - Revert with `TooEarly` if the deadline hasn't passed
+           - If `address(this).balance >= threshold`: call `fundingRecipient.complete{value: address(this).balance}()`
+           - Otherwise: set `openToWithdraw = true`
+
+        4. **Update `timeLeft()`** (currently returns `0`):
+           - Return `deadline - block.timestamp` if deadline is in the future
+           - Return `0` otherwise (prevents underflow)
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/CrowdFund.sol"
+      test: "yarn test --grep 'Checkpoint3'"
+      hints:
+        - "Time check: `if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);`. Then if/else on the balance vs threshold."
+        - |
+          `timeLeft()` as a ternary:
+          ```solidity
+          return deadline > block.timestamp ? deadline - block.timestamp : 0;
+          ```
+          `execute()` after the time check:
+          ```solidity
+          if (address(this).balance >= threshold) {
+              fundingRecipient.complete{value: address(this).balance}();
+          } else {
+              openToWithdraw = true;
+          }
+          ```
+        - |
+          Full solution:
+          ```solidity
+          // State Variables:
+          uint256 public deadline = block.timestamp + 30 seconds;
+          uint256 public constant threshold = 1 ether;
+
+          // Error:
+          error TooEarly(uint256 deadline, uint256 currentTimestamp);
+
+          // execute():
+          function execute() public {
+              if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);
+              if (address(this).balance >= threshold) {
+                  fundingRecipient.complete{value: address(this).balance}();
+              } else {
+                  openToWithdraw = true;
+              }
+          }
+
+          // timeLeft():
+          function timeLeft() public view returns (uint256) {
+              return deadline > block.timestamp ? deadline - block.timestamp : 0;
+          }
+          ```
+      solution: |
+        // State Variables — add:
+        uint256 public deadline = block.timestamp + 30 seconds;
+        uint256 public constant threshold = 1 ether;
+
+        // Errors — add:
+        error TooEarly(uint256 deadline, uint256 currentTimestamp);
+
+        // execute() function body:
+        if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);
+        if (address(this).balance >= threshold) {
+            fundingRecipient.complete{value: address(this).balance}();
+        } else {
+            openToWithdraw = true;
+        }
+
+        // timeLeft() function body (replace `return 0;`):
+        return deadline > block.timestamp ? deadline - block.timestamp : 0;
+
+  # ============================================================
+  # CHECKPOINT 4: Receive Function / UX
+  # ============================================================
+  - id: "receive-function"
+    title: "Receive Function / UX"
+    description: "Implement receive() so direct ETH transfers are tracked as contributions"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## The receive() Special Function
+
+      Right now users must call `contribute()` explicitly. If someone sends ETH directly to the contract address (e.g. from a wallet's "Send" button) the transaction has no calldata, so no function is matched.
+
+      Solidity provides a special function for exactly this case:
+
+      ```solidity
+      receive() external payable {
+          // runs when plain ETH is sent with no calldata
+      }
+      ```
+
+      Rules:
+      - Must be `external payable`
+      - No arguments, no return value
+      - Only one per contract
+
+      ### Why it matters
+
+      Without `receive()`, a plain ETH transfer either reverts or succeeds without updating `balances` — either way the user loses track of their contribution. By forwarding to `contribute()`, every deposit is recorded the same way regardless of how it arrives.
+
+      This is a one-liner but an important UX improvement: make it hard for users to make mistakes.
+
+    task:
+      description: |
+        Fill in the `receive()` function so that sending ETH directly to the contract behaves exactly like calling `contribute()`.
+
+        The skeleton already has `receive() external payable { }` — just add the call inside.
+      file: "packages/hardhat/contracts/CrowdFund.sol"
+      test: "yarn test --grep 'Checkpoint4'"
+      hints:
+        - "Just call `contribute();` inside `receive()`. That's the whole thing."
+        - |
+          ```solidity
+          receive() external payable {
+              contribute();
+          }
+          ```
+      solution: |
+        // receive() function body:
+        contribute();
+
+completion_message: |
+  Congratulations — you've completed the Crowdfunding Challenge!
+
+  Your contract now has:
+  - **Contribution tracking** via mappings and events
+  - **Secure withdrawals** using Checks-Effects-Interactions
+  - **A state machine** with deadline, threshold, and `execute()`
+  - **UX polish** with the `receive()` function
+
+  Key concepts you learned:
+  - Mappings as on-chain key-value stores
+  - Events for off-chain communication
+  - Custom errors for gas-efficient reverts
+  - The CEI pattern to prevent reentrancy
+  - State machines and time-based logic in Solidity
+  - Sending ETH safely with `call`
+
+  **Next steps:** run `yarn test` to verify everything passes, then follow the README to deploy to a testnet, ship the frontend, and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
