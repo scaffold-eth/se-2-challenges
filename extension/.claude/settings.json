@@ -1,0 +1,6 @@
+{
+  "allowedTools": [
+    "Write(.challenge-ai/**)",
+    "Edit(.challenge-ai/**)"
+  ]
+}

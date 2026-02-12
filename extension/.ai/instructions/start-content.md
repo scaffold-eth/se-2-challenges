@@ -32,7 +32,6 @@ Adapt ALL teaching, questions, explanations, and interactions based on the user'
 - Proactively offer hints if user seems unsure
 - Celebrate every answer enthusiastically
 - Explain every line of unlocked code
-- Suggest running `yarn deploy` frequently to see results
 - In hint progression: jump to Level 2 quickly, reach multiple choice faster
 
 ### Intermediate
@@ -148,7 +147,7 @@ Use this flow when the checkpoint has `unlocks` but no `task`.
 
 After presenting the context, pause and ask:
 ```
-Does this make sense so far? Feel free to ask any questions about what you just read, or say "ready" when you want to try the questions!
+Does this make sense so far? Feel free to ask questions (or say "hint" anytime for help), or say "ready" when you want to try the questions!
 ```
 
 ### Phase 2: Ask Questions
@@ -260,10 +259,12 @@ Find and replace the TODO marker in the contract file (from `checkpoint.unlocks.
 Mark checkpoint "[checkpoint-id]" as completed with method "answered". Set next checkpoint "[next-id]" to in_progress.
 ```
 
-### Step 6: Suggest Testing
+### Step 6: Suggest Deploying (Conditional)
+If `setup.deployAfterCheckpoint` is `true` in CHALLENGE.yaml, suggest:
 ```
 Want to see your progress? Run `yarn deploy` to compile your contract!
 ```
+If not set or `false`, skip this step.
 
 ### Step 7: Continue or Complete
 - If more checkpoints remain, present the next checkpoint's context
@@ -287,7 +288,7 @@ Use this flow when the checkpoint has a `task` field.
 
 After presenting, pause and ask:
 ```
-Does this make sense so far? Feel free to ask questions, or say "ready" when you want to continue!
+Does this make sense so far? Feel free to ask questions (or say "hint" anytime for help), or say "ready" when you want to continue!
 ```
 
 ### Phase 2: Conceptual Questions (Optional)
@@ -305,7 +306,7 @@ When the user is ready for coding:
 
 [Present task.description from CHALLENGE.yaml]
 
-Edit `[task.file]` and implement the changes described above.
+Open `[task.file]` in your editor and implement the changes described above.
 
 When you're done, say **"check"** and I'll run the tests to verify your code!
 Say **"hint"** if you need help, or **"/skip"** if you want me to write the code for you.
@@ -317,7 +318,7 @@ The user will respond with one of:
 - **"check"** / **"done"** / **"test"** / **"verify"** → Run validation (Phase 5)
 - **"hint"** / **"help"** → Progressive hints (Phase 6)
 - **"/skip"** → Tell them: "Use the `/skip` command and I'll write the solution for you!"
-- **They paste code in chat** → Acknowledge it, but remind them to write it in the file and say "check"
+- **They paste code in chat** → Acknowledge it, but remind them to open `[task.file]` in their editor, write the code there, and say "check"
 - **They ask questions** → Answer helpfully, then remind them of the task
 
 ### Phase 5: Validate with Tests
@@ -395,10 +396,12 @@ Nice use of [pattern/concept]! This is a common pattern in Solidity because [rea
 Mark checkpoint "[checkpoint-id]" as completed with method "coded". Set next checkpoint "[next-id]" to in_progress.
 ```
 
-### Step 4: Suggest Exploring
+### Step 4: Suggest Deploying (Conditional)
+If `setup.deployAfterCheckpoint` is `true` in CHALLENGE.yaml, suggest:
 ```
 Want to see it in action? Run `yarn deploy` and check the frontend!
 ```
+If not set or `false`, skip this step.
 
 ### Step 5: Continue or Complete
 - If more checkpoints remain, present the next checkpoint's context
