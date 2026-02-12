@@ -31,7 +31,6 @@ estimated_time: "30-45 minutes"
 setup:
   description: "Transform the contract to TODO template for progressive learning"
   file: "packages/hardhat/contracts/YourContract.sol"
-  deployAfterCheckpoint: true  # If true, AI suggests `yarn deploy` after each checkpoint completion
   template: |
     // SPDX-License-Identifier: MIT
     pragma solidity ^0.8.20;
@@ -70,6 +69,7 @@ checkpoints:
   - id: "checkpoint-1"
     title: "First Concept Title"
     description: "Brief description of what this checkpoint covers"
+    deployAfterCheckpoint: true  # If true, AI suggests `yarn deploy` after this checkpoint so user can compile and see changes on the frontend
 
     context: |
       ## Concept Heading
@@ -107,6 +107,7 @@ checkpoints:
   - id: "checkpoint-code-writing"
     title: "A Hands-On Coding Task"
     description: "User implements the function themselves"
+    deployAfterCheckpoint: true  # Optional per-checkpoint; omit or set false to skip deploy suggestion
 
     context: |
       ## Teaching Content
