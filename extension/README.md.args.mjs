@@ -48,6 +48,25 @@ NFT stands for Non-Fungible Token. Non-fungible means that each token is unique.
 
 ## Checkpoint 0: 📦 Environment 📚
 
+---
+
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts as you go? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the \`/start\` command
+3. The AI teaches each concept, then asks questions to check your understanding
+4. Answer correctly and the AI adds the corresponding code to your contract — building it up piece by piece
+5. Say **"hint"** anytime you're stuck, or **\`/skip\`** to move forward
+6. Your progress is saved — use \`/start\` to resume anytime
+
+The AI won't just hand you the code — it teaches first, then checks your understanding through questions. As you demonstrate each concept, the contract assembles itself!
+
+---
+
+## Standard Learning Mode
+
 > Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
@@ -68,7 +87,6 @@ yarn start
 
 📱 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
----
 
 ⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
 
