@@ -21,7 +21,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.4 -e challenge-crowdfunding challenge-crowdfunding
+npx create-eth@2.0.6 -e challenge-crowdfunding challenge-crowdfunding
 cd challenge-crowdfunding
 ```
 
