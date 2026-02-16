@@ -1,122 +1,195 @@
-# AGENTS.md — Multisig Challenge
+# AGENTS.md
 
 ## Challenge Overview
 
-The learner builds a multi-signature wallet (`MetaMultiSigWallet`) that requires multiple owners to approve transactions before execution. Signatures are collected **off-chain** using ECDSA and submitted together on-chain. Core learning goals are multi-sig security patterns, off-chain ECDSA signatures, EIP-712-style hashing, nonce management, and a pool server for signature coordination.
+This is a SpeedRunEthereum challenge. The learner builds a multi-signature wallet (`MetaMultiSigWallet`) that requires multiple owners to approve transactions before execution. Signatures are collected **off-chain** using ECDSA and submitted together on-chain. The goal is to understand multi-sig security patterns, off-chain ECDSA signatures, meta-transactions, nonce management, and a pool server for signature coordination.
 
-## Repository Structure
+The final deliverable: a multisig wallet where you can propose adding/removing signers, transferring funds, and updating the signature threshold. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
-This is a Scaffold-ETH 2 **external extension**. The learner-editable code lives under `extension/`:
+## Project Structure
+
+This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
 
 ```
-extension/
-├── packages/
-│   ├── hardhat/
-│   │   ├── contracts/
-│   │   │   └── MetaMultiSigWallet.sol  # Main multisig contract (learner implements)
-│   │   └── deploy/
-│   │       └── 00_deploy_meta_multisig_wallet.ts
-│   ├── nextjs/
-│   │   ├── app/
-│   │   │   ├── create/page.tsx         # Create new transaction proposals
-│   │   │   ├── multisig/page.tsx       # View & execute pending transactions
-│   │   │   ├── owners/page.tsx         # Manage wallet owners
-│   │   │   └── pool/page.tsx           # Off-chain signature pool
-│   │   └── utils/
-│   │       ├── getPoolServerUrl.ts
-│   │       └── methods.ts              # Signature helpers
-│   └── backend-local/
-│       ├── index.ts                    # Express pool server for signatures
-│       └── package.json
+packages/
+  hardhat/
+    contracts/
+      MetaMultiSigWallet.sol       # Main multisig contract
+    deploy/
+      00_deploy_meta_multisig_wallet.ts
+  nextjs/
+    app/
+      create/
+        page.tsx                   # Create new transaction proposals
+      multisig/
+        page.tsx                   # View & execute pending transactions
+      owners/
+        page.tsx                   # Manage wallet owners
+      pool/
+        page.tsx                   # Off-chain signature pool
+    utils/
+      getPoolServerUrl.ts
+      methods.ts                   # Signature helpers
+  backend-local/
+    index.ts                       # Express pool server for signatures
+    package.json
 ```
 
-## Contracts
+## Common Commands
 
-### MetaMultiSigWallet.sol (Learner Implements)
+```bash
+# Development workflow (run each in a separate terminal)
+yarn chain          # Start local Hardhat blockchain
+yarn deploy         # Deploy contracts to local network
+yarn start          # Start Next.js frontend at http://localhost:3000
+yarn backend-local  # Start local pool server (required on localhost only)
 
-A multi-signature wallet where N-of-M owners must sign off-chain before a transaction can be executed.
+# Redeploy fresh
+yarn deploy --reset
 
-#### Key State
+# Testing
+yarn test           # Run all challenge tests
 
-- `signaturesRequired` — minimum number of signatures needed to execute a transaction.
-- `isOwner[address]` — mapping of authorised signers.
-- `nonce` — incremented on each successful execution to prevent replay attacks.
+# Code quality
+yarn lint           # Lint both packages
+yarn format         # Format both packages
 
-#### Functions to Implement
+# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+yarn deploy --network sepolia
 
-1. **`executeTransaction(address to, uint256 value, bytes calldata data, bytes[] calldata signatures)`** — Verify that enough valid owner signatures are provided for the transaction hash, then execute the call. Increment nonce.
-2. **`getTransactionHash(uint256 _nonce, address to, uint256 value, bytes calldata data)`** — Compute the hash that signers must sign: `keccak256(abi.encodePacked(address(this), chainId, _nonce, to, value, data))`.
-3. **`recover(bytes32 _hash, bytes calldata _signature)`** — Recover the signer address from an ECDSA signature using `ecrecover` (via OpenZeppelin's ECDSA library). Uses `_hash.toEthSignedMessageHash()` for Ethereum signed message prefix.
-4. **`addSigner(address newSigner, uint256 newSignaturesRequired)`** — Add a new owner (only callable by the wallet itself via `executeTransaction`).
-5. **`removeSigner(address oldSigner, uint256 newSignaturesRequired)`** — Remove an owner (only callable by the wallet itself).
-6. **`updateSignaturesRequired(uint256 newSignaturesRequired)`** — Update the threshold (only callable by the wallet itself).
-7. **`receive() external payable`** — Accept ETH deposits.
+# Contract verification (requires interactive password prompt — cannot be run by agents)
+yarn verify --network sepolia
 
-#### Key Security Pattern
+# Account management (requires interactive password prompt — cannot be run by agents)
+yarn generate       # Generate deployer account (encrypted private key)
+yarn account        # View deployer account balances
 
-Owner management functions (`addSigner`, `removeSigner`, `updateSignaturesRequired`) are restricted with `onlySelf` — they can only be called by the wallet contract itself, meaning they must go through the multi-sig approval flow.
+# Frontend deployment
+yarn vercel         # Deploy frontend to Vercel
+yarn vercel --prod  # Redeploy to production URL
+```
 
-## Off-Chain Signature Flow
+## Smart Contract: MetaMultiSigWallet.sol
+
+A multi-signature wallet where N-of-M owners must sign off-chain before a transaction can be executed on-chain.
+
+### Key State
+
+- `signaturesRequired` — minimum number of signatures needed to execute a transaction
+- `isOwner[address]` — mapping of authorized signers
+- `nonce` — incremented on each successful execution to prevent replay attacks
+
+### Functions
+
+1. **`executeTransaction(address to, uint256 value, bytes calldata data, bytes[] calldata signatures)`** — Verify that enough valid owner signatures are provided for the transaction hash, then execute the call via `call()`. Increment nonce on success.
+2. **`getTransactionHash(uint256 _nonce, address to, uint256 value, bytes calldata data)`** — Compute the hash: `keccak256(abi.encodePacked(address(this), chainId, _nonce, to, value, data))`.
+3. **`recover(bytes32 _hash, bytes calldata _signature)`** — Recover the signer address from an ECDSA signature. Uses `_hash.toEthSignedMessageHash()` for Ethereum signed message prefix.
+4. **`addSigner(address newSigner, uint256 newSignaturesRequired)`** — Add a new owner (restricted to `onlySelf`).
+5. **`removeSigner(address oldSigner, uint256 newSignaturesRequired)`** — Remove an owner (restricted to `onlySelf`).
+6. **`updateSignaturesRequired(uint256 newSignaturesRequired)`** — Update the threshold (restricted to `onlySelf`).
+7. **`transferFunds(address payable to, uint256 value)`** — Transfer ETH from the wallet (restricted to `onlySelf`).
+8. **`receive() external payable`** — Accept ETH deposits.
+
+### Key Security Pattern: `onlySelf` Modifier
+
+Owner management functions (`addSigner`, `removeSigner`, `updateSignaturesRequired`, `transferFunds`) can only be called by the wallet contract itself. This means they must go through the full multi-sig approval flow — propose, collect signatures, then `executeTransaction` calls `this.addSigner(...)` via `call()`.
+
+### Off-Chain Signature Flow
 
 1. An owner **creates** a transaction proposal (to, value, data) on the frontend.
 2. The proposal is sent to the **pool server** (Express backend).
 3. Other owners **sign** the transaction hash off-chain and submit signatures to the pool.
 4. Once enough signatures are collected, any owner calls `executeTransaction` with all signatures.
 
-## Backend Pool Server
-
-**Location:** `extension/packages/backend-local/index.ts`
-
-- Express server that stores pending transaction proposals and their collected signatures.
-- Runs locally alongside the frontend.
-- Provides API endpoints for creating proposals, adding signatures, and retrieving pending transactions.
-
 ## Deploy Script
 
 - **`00_deploy_meta_multisig_wallet.ts`** — Deploys `MetaMultiSigWallet` with initial owner(s) and `signaturesRequired = 1` (for development). Funds the wallet with some ETH.
+- Set your frontend address as the first signer in the deploy script.
 
-## Frontend
+## Backend Pool Server
+
+**Location:** `packages/backend-local/index.ts`
+
+- Express server that stores pending transaction proposals and their collected signatures.
+- Required when running locally (`yarn backend-local` in a separate terminal).
+- On testnet, the deployed backend at `https://multisigs.buidlguidl.com:49832/` is used automatically.
+
+## Frontend Architecture
+
+### Hook Usage (Scaffold-ETH 2 Hooks)
+
+Use the correct hook names:
+- `useScaffoldReadContract` - NOT ~~useScaffoldContractRead~~
+- `useScaffoldWriteContract` - NOT ~~useScaffoldContractWrite~~
+- `useScaffoldEventHistory` - for reading past events
+- `useScaffoldContract` - for getting the contract instance directly
 
 ### Pages
 
-1. **`/create`** — Form to propose a new transaction (recipient, value, calldata).
-2. **`/multisig`** — View pending transactions, see collected signatures, execute when threshold is met.
-3. **`/owners`** — View current owners and signatures required.
-4. **`/pool`** — View the off-chain signature pool, sign pending transactions.
+1. **`/create`** — Form to propose a new transaction (recipient, value, calldata). Creating a transaction also signs it.
+2. **`/pool`** — View the off-chain signature pool, sign pending transactions.
+3. **`/multisig`** — View executed transactions and wallet state.
+4. **`/owners`** — View current owners and signatures required. Buttons to add/remove owners populate the create transaction form with the correct calldata.
 
 ### Utils
 
 - **`methods.ts`** — Helper functions for signing transaction hashes and interacting with the pool server.
-- **`getPoolServerUrl.ts`** — Returns the pool server URL based on environment.
+- **`getPoolServerUrl.ts`** — Returns the pool server URL based on environment (local vs deployed).
 
-## Key Concepts
+### UI Components
 
-- **Multi-sig Security** — No single owner can move funds; requires M-of-N approval.
-- **Off-chain Signatures** — ECDSA signatures are collected off-chain to save gas; only the final execution is on-chain.
-- **Nonce Replay Protection** — Each executed transaction increments a nonce, preventing signature reuse.
-- **Self-only Modifications** — Owner management must go through the multi-sig flow itself, preventing a single compromised key from taking over.
-- **EIP-191 Signed Messages** — Uses `\x19Ethereum Signed Message:\n32` prefix for signature recovery.
+Use `@scaffold-ui/components` for web3 UI:
+- `Address` - display ETH addresses with ENS resolution and blockie avatars
+- `AddressInput` - input with address validation and ENS resolution
+- `Balance` - show ETH balance
+- `EtherInput` - number input with ETH/USD toggle
 
-## Common Pitfalls
+### Styling
 
-- Forgetting to increment the nonce after execution (allows replay attacks).
-- Not using `toEthSignedMessageHash()` before `ecrecover` (mismatched hash format).
-- Allowing duplicate signatures from the same owner to count toward the threshold.
-- Not restricting `addSigner`/`removeSigner` to `onlySelf`.
-- Forgetting the `receive()` function (wallet cannot accept ETH).
+Use **DaisyUI** classes for components (cards, buttons, badges, tables). The project uses Tailwind CSS with DaisyUI.
 
-## Commands
+## Architecture Notes
 
-| Action | Command |
-|---|---|
-| Compile contracts | `yarn hardhat compile` |
-| Run tests | `yarn hardhat test` |
-| Deploy locally | `yarn deploy` |
-| Start frontend | `yarn start` |
-| Start pool server | `cd extension/packages/backend-local && npx ts-node index.ts` |
-| Deploy to testnet | `yarn deploy --network sepolia` *(interactive password — cannot be run by agents)* |
-| Verify contract | `yarn verify --network sepolia` *(interactive password — cannot be run by agents)* |
-| Generate deployer account | `yarn generate` *(interactive password — cannot be run by agents)* |
-| View deployer balances | `yarn account` *(interactive password — cannot be run by agents)* |
-| Deploy frontend | `yarn vercel` |
-| Deploy frontend (prod) | `yarn vercel --prod` |
+- **Next.js App Router** (not Pages Router) - pages are at `app/<route>/page.tsx`
+- **Import alias**: use `~~` for nextjs package imports (e.g., `import { ... } from "~~/hooks/scaffold-eth"`)
+- After `yarn deploy`, contract ABIs auto-generate to `packages/nextjs/contracts/deployedContracts.ts`
+- Signing transactions is **gasless** — only executing costs gas
+- Open multiple browsers/incognito tabs to simulate different signers
+- The pool server is all off-chain — pending transactions are not stored on the blockchain
+- `yarn backend-local` is only required for localhost; testnet uses the deployed backend automatically
+
+## Testing
+
+Run with `yarn test`. These tests verify the core multisig functionality.
+
+## Deployment Checklist (Testnet)
+
+1. Set your deployer address as the first signer in the deploy script
+2. Set `defaultNetwork` to `sepolia` in `packages/hardhat/hardhat.config.ts` (or use `--network sepolia`)
+3. `yarn generate` to create deployer account
+4. Fund deployer with testnet ETH from a faucet
+5. `yarn deploy` to deploy contracts
+6. Set `targetNetwork` to `chains.sepolia` in `packages/nextjs/scaffold.config.ts`
+7. `yarn vercel` to deploy frontend
+8. `yarn verify --network sepolia` to verify contracts on Etherscan
+
+## Code Style
+
+| Style | Category |
+|-------|----------|
+| `UpperCamelCase` | Components, types, interfaces, contracts |
+| `lowerCamelCase` | Variables, functions, parameters |
+| `CONSTANT_CASE` | Constants, enum values |
+| `snake_case` | Hardhat deploy files (e.g., `00_deploy_meta_multisig_wallet.ts`) |
+
+## Key Warnings
+
+- Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
+- Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
+- Forgetting to increment the nonce after execution allows replay attacks
+- Must use `toEthSignedMessageHash()` before `ecrecover` — mismatched hash format breaks signature recovery
+- Do not allow duplicate signatures from the same owner to count toward the threshold
+- `addSigner`/`removeSigner`/`updateSignaturesRequired` must be restricted to `onlySelf`
+- Forgetting the `receive()` function means the wallet cannot accept ETH
+- The pool server must be running locally (`yarn backend-local`) for the frontend to work on localhost
+- Set your frontend address as the first signer in the deploy script, then `yarn deploy --reset`
