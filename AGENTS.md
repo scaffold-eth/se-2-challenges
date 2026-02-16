@@ -50,13 +50,13 @@ yarn test --grep "Checkpoint4"  # Test receive function
 # Redeploy fresh (resets deadline timer)
 yarn deploy --reset
 
-# Deploy to testnet
+# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification
+# Contract verification (requires interactive password prompt — cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management
+# Account management (requires interactive password prompt — cannot be run by agents)
 yarn generate       # Generate deployer account
 yarn account        # View deployer account balances
 
