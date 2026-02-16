@@ -1,52 +1,91 @@
-# AGENTS.md — SVG NFT Challenge
+# AGENTS.md
 
 ## Challenge Overview
 
-The learner builds a fully on-chain SVG NFT collection called **"Optimistic Loogies"** where all metadata and artwork live directly on the blockchain — no IPFS or external storage required. Core learning goals are on-chain SVG generation, Base64 encoding, dynamic pricing, deterministic trait generation, and composable NFT rendering.
+This is a SpeedRunEthereum challenge. The learner builds a fully on-chain SVG NFT collection called **"Optimistic Loogies"** where all metadata and artwork live directly on the blockchain — no IPFS or external storage required. The goal is to understand on-chain SVG generation, Base64 encoding, dynamic pricing, deterministic trait generation, and composable NFT rendering.
 
-## Repository Structure
+The final deliverable: an app that allows users to mint their own dynamic SVG NFTs with unique traits. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
-This is a Scaffold-ETH 2 **external extension**. The learner-editable code lives under `extension/`:
+## Project Structure
+
+This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
 
 ```
-extension/
-├── packages/
-│   ├── hardhat/
-│   │   ├── contracts/
-│   │   │   ├── YourCollectible.sol    # Main ERC-721 NFT contract
-│   │   │   ├── HexStrings.sol         # uint256 to hex string utility
-│   │   │   └── ToColor.sol            # bytes3 to hex color string utility
-│   │   └── deploy/
-│   │       └── 00_deploy_your_collectible.ts
-│   └── nextjs/
-│       └── app/
-│           ├── loogies/               # Gallery of all minted NFTs
-│           └── your-loogies/          # Connected user's NFTs
+packages/
+  hardhat/
+    contracts/
+      YourCollectible.sol    # Main ERC-721 NFT contract (learner edits)
+      HexStrings.sol         # uint256 to hex string utility library
+      ToColor.sol            # bytes3 to hex color string utility library
+    deploy/
+      00_deploy_your_collectible.ts
+  nextjs/
+    app/
+      loogies/
+        page.tsx             # Gallery of all minted NFTs
+      your-loogies/
+        page.tsx             # Connected user's NFTs
 ```
 
-## Contracts
+## Common Commands
 
-### YourCollectible.sol
+```bash
+# Development workflow (run each in a separate terminal)
+yarn chain          # Start local Hardhat blockchain
+yarn deploy         # Deploy contracts to local network
+yarn start          # Start Next.js frontend at http://localhost:3000
 
-- **ERC-721** token named `"OptimisticLoogies"` with symbol `"OPLOOG"`.
-- **Max supply**: 3728 tokens.
-- **Dynamic pricing**: Starts at `0.001 ETH`, increases by `0.2%` per mint (`price = price * 10002 / 10000`).
-- **On-chain traits** stored per token:
-  - `color` (`bytes3`) — random hex color
-  - `chubbiness` (`uint256`, range 35–90) — width of the Loogie body
-  - `mouthLength` (`uint256`) — calculated from chubbiness
+# Redeploy fresh
+yarn deploy --reset
 
-#### Key Functions
+# Code quality
+yarn lint           # Lint both packages
+yarn format         # Format both packages
+
+# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+yarn deploy --network sepolia
+
+# Contract verification (requires interactive password prompt — cannot be run by agents)
+yarn verify --network sepolia
+
+# Account management (requires interactive password prompt — cannot be run by agents)
+yarn generate       # Generate deployer account (encrypted private key)
+yarn account        # View deployer account balances
+
+# Frontend deployment
+yarn vercel         # Deploy frontend to Vercel
+yarn vercel --prod  # Redeploy to production URL
+```
+
+## Smart Contract: YourCollectible.sol
+
+The main ERC-721 contract that generates dynamic SVG NFTs entirely on-chain.
+
+- **Standard**: ERC-721 (inherits from OpenZeppelin `ERC721`)
+- **Token name/symbol**: "OptimisticLoogies" / "OPLOOG"
+- **Max supply**: 3728 tokens
+- **Dynamic pricing**: Starts at `0.001 ETH`, increases by **0.2%** per mint (`price = price * 10002 / 10000`)
+- **Payment recipient**: ETH is forwarded to a designated recipient address on each mint
+
+### On-Chain Traits (stored per token)
+
+| Trait | Type | Description |
+|-------|------|-------------|
+| `color` | `bytes3` | Random hex color for the Loogie body |
+| `chubbiness` | `uint256` | Width of the Loogie body (range 35–90) |
+| `mouthLength` | `uint256` | Calculated from chubbiness |
+
+### Key Functions
 
 | Function | Description |
-|---|---|
-| `mintItem()` | Payable. Generates traits via deterministic randomness, mints the NFT, updates price. |
-| `tokenURI(uint256 id)` | Returns a Base64-encoded JSON data URI with the SVG image embedded. |
-| `renderTokenById(uint256 id)` | Public. Returns the raw SVG string for a given token. Designed for composability. |
+|----------|-------------|
+| `mintItem()` | Payable. Generates traits via deterministic randomness, mints the NFT, forwards payment, increases price for next mint. |
+| `tokenURI(uint256 id)` | Returns a Base64-encoded JSON data URI with the SVG image embedded (`data:application/json;base64,...`). |
+| `renderTokenById(uint256 id)` | **Public.** Returns the raw SVG string for a given token. Designed for composability — other contracts can call this to compose Loogies into larger SVG scenes. |
 
-#### Randomness
+### Deterministic Randomness
 
-Traits are generated deterministically using:
+Traits are generated using:
 
 ```solidity
 keccak256(abi.encodePacked(tokenId, blockhash(block.number - 1), msg.sender, address(this)))
@@ -54,35 +93,38 @@ keccak256(abi.encodePacked(tokenId, blockhash(block.number - 1), msg.sender, add
 
 This is **not** cryptographically secure — it is predictable and suitable only for non-adversarial NFT trait generation.
 
-### HexStrings.sol
+### Helper Libraries
 
-- Library that converts a `uint256` to its hex string representation.
-- Used internally for building SVG attributes.
+- **HexStrings.sol** — Converts a `uint256` to its hex string representation. Used internally for SVG attributes.
+- **ToColor.sol** — Converts `bytes3` to a 6-character hex color string (e.g., `"a3f2b1"`). Used to render the Loogie's color in SVG.
 
-### ToColor.sol
+### Dependencies
 
-- Library that converts `bytes3` to a 6-character hex color string (e.g., `"a3f2b1"`).
-- Used to render the Loogie's color in SVG.
-
-## Dependencies
-
-- **base64-sol**: On-chain Base64 encoding library used to encode the JSON metadata and SVG into a data URI (`data:application/json;base64,...`).
+- **base64-sol**: On-chain Base64 encoding library used to encode JSON metadata and SVG into a data URI.
 - **OpenZeppelin**: ERC-721 and related contracts.
 
-## Frontend
+## Frontend Architecture
 
-### `/loogies` Page
+### Hook Usage (Scaffold-ETH 2 Hooks)
+
+Use the correct hook names:
+- `useScaffoldReadContract` - NOT ~~useScaffoldContractRead~~
+- `useScaffoldWriteContract` - NOT ~~useScaffoldContractWrite~~
+- `useScaffoldEventHistory` - for reading past events
+- `useScaffoldContract` - for getting the contract instance directly
+
+### Gallery Page (/loogies)
 
 - Displays all minted NFTs in a gallery view with pagination.
 - Includes a **Mint** button that calls `mintItem()` with the current price.
 
-### `/your-loogies` Page
+### Your Loogies Page (/your-loogies)
 
 - Shows only the NFTs owned by the currently connected wallet.
 
 ### Token URI Decoding
 
-The frontend decodes the Base64-encoded `tokenURI` to extract metadata and the SVG:
+The frontend decodes the Base64-encoded `tokenURI` to extract metadata and SVG:
 
 ```typescript
 atob(tokenURI.substring(29))
@@ -90,29 +132,52 @@ atob(tokenURI.substring(29))
 
 The `substring(29)` strips the `data:application/json;base64,` prefix before decoding.
 
-## Key Concepts
+### UI Components
 
-1. **Fully on-chain SVG/metadata** — All NFT artwork and metadata are stored and generated on-chain with no external dependencies (no IPFS, no off-chain servers).
-2. **Deterministic trait generation** — Token traits are derived from a hash of the token ID, block hash, sender, and contract address.
-3. **Dynamic pricing curve** — Each mint increases the price by 0.2%, creating a bonding-curve-like mechanism.
-4. **Composable SVG rendering** — `renderTokenById()` is public, allowing other contracts to compose Loogies into larger SVG scenes.
+Use `@scaffold-ui/components` for web3 UI:
+- `Address` - display ETH addresses with ENS resolution and blockie avatars
+- `Balance` - show ETH balance
 
-## Development Notes
+### Styling
 
-- **No test files** are included in this challenge.
-- **Hardhat optimizer** is disabled.
-- Deployment is handled by `00_deploy_your_collectible.ts`.
+Use **DaisyUI** classes for components (cards, buttons, badges, tables). The project uses Tailwind CSS with DaisyUI.
 
-## Commands
+## Architecture Notes
 
-| Action | Command |
-|---|---|
-| Compile contracts | `yarn hardhat compile` |
-| Deploy locally | `yarn deploy` |
-| Start frontend | `yarn start` |
-| Deploy to testnet | `yarn deploy --network sepolia` *(interactive password — cannot be run by agents)* |
-| Verify contract | `yarn verify --network sepolia` *(interactive password — cannot be run by agents)* |
-| Generate deployer account | `yarn generate` *(interactive password — cannot be run by agents)* |
-| View deployer balances | `yarn account` *(interactive password — cannot be run by agents)* |
-| Deploy frontend | `yarn vercel` |
-| Deploy frontend (prod) | `yarn vercel --prod` |
+- **Next.js App Router** (not Pages Router) - pages are at `app/<route>/page.tsx`
+- **Import alias**: use `~~` for nextjs package imports (e.g., `import { ... } from "~~/hooks/scaffold-eth"`)
+- After `yarn deploy`, contract ABIs auto-generate to `packages/nextjs/contracts/deployedContracts.ts`
+- All artwork and metadata are stored on-chain — no IPFS, no off-chain servers
+- SVG is built using `abi.encodePacked()` string concatenation
+- Base64 encoding happens in-contract for both the JSON metadata and SVG image
+- **No test files** are included in this challenge
+- Hardhat optimizer is disabled by default
+
+## Deployment Checklist (Testnet)
+
+1. Set `defaultNetwork` to `sepolia` in `packages/hardhat/hardhat.config.ts` (or use `--network sepolia`)
+2. `yarn generate` to create deployer account
+3. Fund deployer with testnet ETH from a faucet
+4. `yarn deploy` to deploy contracts
+5. Set `targetNetwork` to `chains.sepolia` in `packages/nextjs/scaffold.config.ts`
+6. `yarn vercel` to deploy frontend
+7. `yarn verify --network sepolia` to verify contracts on Etherscan
+
+## Code Style
+
+| Style | Category |
+|-------|----------|
+| `UpperCamelCase` | Components, types, interfaces, contracts |
+| `lowerCamelCase` | Variables, functions, parameters |
+| `CONSTANT_CASE` | Constants, enum values |
+| `snake_case` | Hardhat deploy files (e.g., `00_deploy_your_collectible.ts`) |
+
+## Key Warnings
+
+- Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
+- Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
+- `renderTokenById()` is intentionally `public` — this enables composability with other contracts
+- The deterministic randomness is not cryptographically secure — it is predictable
+- Dynamic pricing means each mint is more expensive than the last (0.2% increase)
+- SVG generation uses `abi.encodePacked()` which can be gas-intensive for complex SVGs
+- The `tokenURI` returns a `data:` URI, not an HTTP/IPFS URL
