@@ -114,3 +114,9 @@ Owner management functions (`addSigner`, `removeSigner`, `updateSignaturesRequir
 | Deploy locally | `yarn deploy` |
 | Start frontend | `yarn start` |
 | Start pool server | `cd extension/packages/backend-local && npx ts-node index.ts` |
+| Deploy to testnet | `yarn deploy --network sepolia` *(interactive password — cannot be run by agents)* |
+| Verify contract | `yarn verify --network sepolia` *(interactive password — cannot be run by agents)* |
+| Generate deployer account | `yarn generate` *(interactive password — cannot be run by agents)* |
+| View deployer balances | `yarn account` *(interactive password — cannot be run by agents)* |
+| Deploy frontend | `yarn vercel` |
+| Deploy frontend (prod) | `yarn vercel --prod` |
