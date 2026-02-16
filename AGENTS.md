@@ -6,6 +6,23 @@ This is a SpeedRunEthereum challenge. The learner builds a **crowdfunding dApp**
 
 The final deliverable: a dApp that lets users contribute ETH, tracks balances, executes funding on deadline, and handles withdrawals. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why Crowdfunding Matters
+
+Crowdfunding is one of the most intuitive applications of smart contracts because it solves a real coordination problem: **how do you pool money from strangers without trusting a middleman?**
+
+Traditional crowdfunding (Kickstarter, GoFundMe) requires trusting a platform to hold funds, enforce deadlines, and process refunds. A smart contract replaces that trust with code — the rules are public, immutable, and self-enforcing. Contributors only have to trust the code, not each other or a company.
+
+Real-world examples of onchain crowdfunding and coordination:
+
+- **Gitcoin Grants** — Quadratic funding for public goods. Smart contracts distribute matching funds based on the number of unique contributors, not just the amount raised. This mechanism gives small donors outsized influence.
+- **Juicebox** — A protocol for funding projects with programmable treasuries. Projects like ConstitutionDAO used Juicebox to raise $47M in ETH from 17,000+ contributors, with automatic refunds when the bid failed.
+- **Nouns DAO** — Daily NFT auctions fund a community treasury governed by token holders. The treasury has funded public goods, art installations, and open-source software — all via onchain votes.
+- **Mirror** — Publishing platform where writers can crowdfund essays and projects. Backers receive NFTs representing their contribution, creating a composable record of patronage.
+
+**Key insight**: The power of onchain crowdfunding isn't just replacing Kickstarter — it's that the funding rules become **composable primitives**. A crowdfunding contract can be plugged into governance systems, paired with token distributions, or composed with DeFi protocols. The same pattern (pool funds → check condition → distribute or refund) underlies DAOs, insurance pools, and prediction markets.
+
+**The trust model**: In this challenge, the `CrowdFund` contract enforces two guarantees: (1) if the threshold is met by the deadline, funds go to the recipient, and (2) if not, every contributor can withdraw their exact contribution. No admin key, no platform fee, no trust required.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
@@ -117,30 +134,18 @@ Simple contract with:
 
 ## Frontend Architecture
 
-### Hook Usage (Scaffold-ETH 2 Hooks)
+### Scaffold-ETH 2 Hooks
 
-Use the correct hook names:
-- `useScaffoldReadContract` — NOT ~~useScaffoldContractRead~~
-- `useScaffoldWriteContract` — NOT ~~useScaffoldContractWrite~~
-- `useScaffoldEventHistory` — for reading past events
-- `useDeployedContractInfo` — for getting contract address/ABI
+Use the correct hook names: `useScaffoldReadContract`, `useScaffoldWriteContract`, `useScaffoldEventHistory`, `useDeployedContractInfo`. Do NOT use deprecated names (`useScaffoldContractRead`, `useScaffoldContractWrite`).
 
-### Main UI (ContributeContractInteraction.tsx)
+### Frontend Flows
 
-Displays:
-- Time left (using `humanize-duration` library)
-- User's contribution balance (`balances[connectedAddress]`)
-- Total contract balance vs threshold (with ETH-to-USD price)
-- Whether `FundingRecipient` has been completed
-- Buttons: Execute, Withdraw, Contribute 0.5 ETH
+- **Main UI** (`ContributeContractInteraction.tsx`): Displays time left, user's contribution balance, total contract balance vs threshold (with ETH-to-USD price), completion status. Buttons: Execute, Withdraw, Contribute 0.5 ETH.
+- **Contributions page**: Shows all `Contribution` events via `useScaffoldEventHistory`. Event args accessed by index (`event.args?.[0]`, `event.args?.[1]`). If learner uses named event params, update references to match.
 
-### Contributions Page
+### UI & Styling
 
-Reads `Contribution` events using `useScaffoldEventHistory`. Event args accessed by index (`event.args?.[0]` for address, `event.args?.[1]` for amount). If learner uses named event parameters, they need to update references to use names instead.
-
-### Styling
-
-Use **DaisyUI** classes for components. The project uses Tailwind CSS with DaisyUI.
+- Use **DaisyUI** classes for components (cards, buttons, badges, tables) with Tailwind CSS
 
 ## Architecture Notes
 
@@ -184,7 +189,6 @@ Tests use `evm_increaseTime` and `evm_mine` to simulate time passing. Run `yarn 
 ## Key Warnings
 
 - Do NOT edit `FundingRecipient.sol` — it can break autograding
-- Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
 - Contract ABIs in `deployedContracts.ts` are auto-generated — do not edit manually
 - The `contribute()` function must be `payable`
 - Use custom errors (gas efficient) instead of `require` with string messages
