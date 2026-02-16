@@ -52,13 +52,13 @@ yarn test           # Run challenge grading tests (packages/hardhat/test/)
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Deploy to testnet
+# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification
+# Contract verification (requires interactive password prompt — cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management
+# Account management (requires interactive password prompt — cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
 yarn account        # View deployer account balances
 
