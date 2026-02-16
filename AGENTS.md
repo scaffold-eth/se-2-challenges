@@ -6,6 +6,21 @@ This is a SpeedRunEthereum challenge. The learner builds an NFT minting and tran
 
 The final deliverable: an app that lets users mint and transfer NFTs. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why Tokenization Matters
+
+NFTs are **not** just profile-picture JPEGs. The ERC-721 standard is a building block for representing unique onchain ownership, and that unlocks **composability** - the ability for any smart contract or app to recognize, transfer, and build on top of that ownership.
+
+Real-world examples of tokenization beyond images:
+
+- **ENS (Ethereum Name Service)** - Domain names as NFTs. `vitalik.eth` resolves wallet addresses, content hashes, and more. Visit [vitalik.eth.limo](https://vitalik.eth.limo) to see a contentHash record resolving to a personal webpage. ENS improves upon DNS by making names programmable and composable.
+- **Uniswap V3 LP Positions** - Each liquidity provider's position is a unique NFT tracking their share of a pool. Financial positions as composable tokens.
+- **Real-World Assets (RWAs)** - Stocks, bonds, gold, real estate can be tokenized. The token acts as a digital claim; for real-world effect, a legal framework must link onchain transfers to off-chain rights.
+- **Blockchain-native assets** - Art, game items, concert tickets designed for onchain verification. Here the token *is* the thing - globally transferable, permissionless, and composable across marketplaces, auctions, lending, and games.
+
+**Key insight**: Even if the NFT itself represents speculation on a "worthless" image, the composability of the standard means it can be plugged into DeFi protocols, fractionalized, used as collateral, or built upon in ways the original creator never imagined. Composability is what makes tokenization powerful.
+
+**Who can tokenize?** Only the legitimate owner or authorized issuer. Without control of the underlying thing, a token is unofficial fan art, not enforceable rights.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
@@ -69,69 +84,27 @@ yarn vercel --prod  # Redeploy to production URL
 
 ## Smart Contract: YourCollectible.sol
 
-The single contract in this challenge. Key details:
+ERC-721 contract with Enumerable + URIStorage extensions. Token name/symbol: "YourCollectible" / "YCB". Base URI: `https://ipfs.io/ipfs/`.
 
-- **Standard**: ERC-721 with ERC721Enumerable + ERC721URIStorage extensions
-- **Inherits**: `ERC721`, `ERC721Enumerable`, `ERC721URIStorage`, `Ownable`
-- **Token name/symbol**: "YourCollectible" / "YCB"
-- **Base URI**: `https://ipfs.io/ipfs/`
-- **Key function**: `mintItem(address to, string memory uri)` - mints a new token with incrementing `tokenIdCounter` and sets the token URI
-- **No access control on minting** - anyone can call `mintItem`
-- The override functions (`_update`, `_increaseBalance`, `tokenURI`, `supportsInterface`) resolve multiple inheritance between ERC721, ERC721Enumerable, and ERC721URIStorage
-
-### ERC-721 Ownership Concepts (Core to This Challenge)
-
-- `ownerOf(tokenId)` returns the current owner of a specific token
-- `balanceOf(address)` returns how many tokens an address owns
-- `tokenOfOwnerByIndex(address, index)` returns the token ID at a given index for an owner (from Enumerable)
-- `transferFrom(from, to, tokenId)` transfers a token (caller must be owner or approved)
-- `approve(to, tokenId)` approves another address to transfer a specific token
-- `setApprovalForAll(operator, approved)` approves an operator for all tokens
-- Every transfer emits a `Transfer(from, to, tokenId)` event
+- **Key function**: `mintItem(address to, string memory uri)` - mints with incrementing `tokenIdCounter`, sets token URI. No access control (anyone can mint).
+- **Ownership model**: Standard ERC-721 - `ownerOf`, `balanceOf`, `transferFrom`, `approve`, `setApprovalForAll`. Every transfer emits a `Transfer` event. Enumerable extension adds `tokenOfOwnerByIndex` for iterating an owner's tokens.
+- **Inheritance overrides**: `_update`, `_increaseBalance`, `tokenURI`, `supportsInterface` resolve multiple inheritance between the three ERC-721 extensions.
 
 ## Frontend Architecture
 
-### Hook Usage (Scaffold-ETH 2 Hooks)
+### Scaffold-ETH 2 Hooks
 
-Use the correct hook names:
-- `useScaffoldReadContract` - NOT ~~useScaffoldContractRead~~
-- `useScaffoldWriteContract` - NOT ~~useScaffoldContractWrite~~
-- `useScaffoldEventHistory` - for reading past events
-- `useScaffoldContract` - for getting the contract instance directly
+Use the correct hook names: `useScaffoldReadContract`, `useScaffoldWriteContract`, `useScaffoldEventHistory`, `useScaffoldContract`. Do NOT use deprecated names (`useScaffoldContractRead`, `useScaffoldContractWrite`).
 
-### How Minting Works (Frontend Flow)
+### Frontend Flows
 
-1. `tokenIdCounter` is read from the contract to determine which metadata to use
-2. Metadata is selected from `nftsMetadata` array (cycles through Buffalo, Zebra, Rhino, Fish, Flamingo, Godzilla)
-3. Metadata is uploaded to IPFS via `/api/ipfs/add` API route
-4. `mintItem(connectedAddress, ipfsPath)` is called on the contract
-5. The NFT card renders with image, name, description, attributes from IPFS metadata
+- **Minting**: Reads `tokenIdCounter` to pick metadata from `nftsMetadata` (cycles through 6 animals), uploads to IPFS via `/api/ipfs/add`, then calls `mintItem(address, ipfsPath)`.
+- **Transfers**: `NFTCard` has an `AddressInput` for the receiver, calls `transferFrom`. The Transfers page shows all `Transfer` events via `useScaffoldEventHistory`.
 
-### How Transfers Work (Frontend Flow)
+### UI & Styling
 
-1. `NFTCard` component has an `AddressInput` for the receiver
-2. Calls `transferFrom(owner, receiverAddress, tokenId)` on the contract
-3. The `Transfers` page reads all `Transfer` events using `useScaffoldEventHistory`
-
-### UI Components
-
-Use `@scaffold-ui/components` for web3 UI:
-- `Address` - display ETH addresses with ENS resolution and blockie avatars
-- `AddressInput` - input with address validation and ENS resolution
-- `Balance` - show ETH balance
-- `EtherInput` - number input with ETH/USD toggle
-
-### Styling
-
-Use **DaisyUI** classes for components (cards, buttons, badges, tables). The project uses Tailwind CSS with DaisyUI.
-
-```tsx
-// Correct
-<button className="btn btn-secondary">Mint NFT</button>
-<div className="card card-compact bg-base-100 shadow-lg">...</div>
-
-// Avoid raw Tailwind when DaisyUI has a component class
-```
+- Use `@scaffold-ui/components` for web3 UI (`Address`, `AddressInput`, `Balance`, `EtherInput`)
+- Use **DaisyUI** classes for components (cards, buttons, badges, tables) with Tailwind CSS
 
 ## Architecture Notes
 
@@ -171,7 +144,6 @@ Run with `yarn test`. These same tests are used by the SpeedRunEthereum autograd
 
 ## Key Warnings
 
-- Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
 - Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
 - The `mintItem` function has no access control by design (anyone can mint)
 - NFT metadata cycles through 6 predefined items; `tokenIdCounter % nftsMetadata.length` determines which one
