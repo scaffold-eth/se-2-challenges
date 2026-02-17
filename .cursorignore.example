@@ -1,19 +1,4 @@
-# SpeedRunEthereum Challenge - AI Configuration
-#
-# By default, AI features are ENABLED for the AI-guided learning path.
-# If you want to complete the challenge WITHOUT AI assistance (traditional mode),
-# uncomment the line below to block AI from accessing your files:
-#
-# *
-#
-# With AI enabled, you can use:
-# - /start  : Begin the interactive learning challenge
-# - /continue : Resume from where you left off
-#
-# The AI will guide you through learning concepts and help you build
-# your contract step by step.
+# AI mode is ENABLED by default. To disable AI for Cursor and do the challenge manually,
+# uncomment the next line with "*".
 
-# Always ignore these (even with AI enabled)
-node_modules/
-.yarn/
-.git/
+# *
