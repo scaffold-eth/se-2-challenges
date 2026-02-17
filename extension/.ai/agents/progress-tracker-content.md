@@ -15,7 +15,6 @@ The progress file lives at `.challenge-ai/progress.json` with this structure:
 {
   "challenge": "<challenge-name>",
   "version": "1.0",
-  "level": "beginner",
   "startedAt": "2024-01-22T10:00:00Z",
   "currentCheckpoint": "<first-checkpoint-id>",
   "currentQuestion": 0,
@@ -67,11 +66,10 @@ The progress file lives at `.challenge-ai/progress.json` with this structure:
 ### When asked to CREATE/INITIALIZE progress:
 1. Create the `.challenge-ai/` directory if needed
 2. Read `.ai/CHALLENGE.yaml` to get checkpoint IDs
-3. Accept and include the `level` parameter ("beginner", "intermediate", or "advanced")
-4. Create progress.json with all checkpoints as "pending"
-5. Set the first checkpoint to "in_progress"
-6. Set currentQuestion to 0
-7. Add startedAt timestamp
+3. Create progress.json with all checkpoints as "pending"
+4. Set the first checkpoint to "in_progress"
+5. Set currentQuestion to 0
+6. Add startedAt timestamp
 
 ### When asked to UPDATE a checkpoint:
 1. Read current progress

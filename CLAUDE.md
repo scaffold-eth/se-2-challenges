@@ -3,7 +3,7 @@
 This project has an interactive AI learning mode for blockchain development.
 
 ## Quick Start
-Run `/start` to begin. The AI will ask your experience level and guide you through building a smart contract interactively.
+Run `/start` to begin. The AI will guide you through building a smart contract interactively.
 
 ## Commands
 - `/start` — Begin or resume the challenge

@@ -29,7 +29,6 @@ No worries! Here's the solution for this checkpoint:
 from the checkpoint's context field. This is still a learning moment!]
 ```
 
-Adapt explanation depth to the user's level saved in progress.json (see Level-Adaptive Teaching in `start-content.md`).
 
 ### Step 4: Apply the Solution
 Read the current contract file (`task.file`) and apply the solution code:
