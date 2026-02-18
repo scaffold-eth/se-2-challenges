@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **DEX**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds a simple decentralized exchange (DEX) using the **constant product formula** (`x * y = k`). The DEX allows swapping ETH for an ERC-20 token (Balloons / $BAL) and vice versa, plus adding and removing liquidity. The goal is to understand AMM mechanics, liquidity pools, pricing curves, swap fees, and LP token math.
+The learner builds a simple decentralized exchange (DEX) using the **constant product formula** (`x * y = k`). The DEX allows swapping ETH for an ERC-20 token (Balloons / $BAL) and vice versa, plus adding and removing liquidity. The goal is to understand AMM mechanics, liquidity pools, pricing curves, swap fees, and LP token math.
 
 The final deliverable: an app that allows users to seamlessly trade ERC-20 Balloons with ETH in a decentralized manner. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
