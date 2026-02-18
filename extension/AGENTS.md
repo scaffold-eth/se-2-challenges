@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **Multisig**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds a multi-signature wallet (`MetaMultiSigWallet`) that requires multiple owners to approve transactions before execution. Signatures are collected **off-chain** using ECDSA and submitted together on-chain. The goal is to understand multi-sig security patterns, off-chain ECDSA signatures, meta-transactions, nonce management, and a pool server for signature coordination.
+The learner builds a multi-signature wallet (`MetaMultiSigWallet`) that requires multiple owners to approve transactions before execution. Signatures are collected **off-chain** using ECDSA and submitted together on-chain. The goal is to understand multi-sig security patterns, off-chain ECDSA signatures, meta-transactions, nonce management, and a pool server for signature coordination.
 
 The final deliverable: a multisig wallet where you can propose adding/removing signers, transferring funds, and updating the signature threshold. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
