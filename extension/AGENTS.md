@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **Over-Collateralized Lending**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds an over-collateralized lending protocol where users deposit ETH as collateral and borrow an ERC-20 token (Corn) against it. The system enforces a minimum 120% collateral ratio and supports liquidation of under-collateralized positions with a 10% liquidator reward. The goal is to understand DeFi lending mechanics, price oracles, collateral management, and liquidation incentives.
+The learner builds an over-collateralized lending protocol where users deposit ETH as collateral and borrow an ERC-20 token (Corn) against it. The system enforces a minimum 120% collateral ratio and supports liquidation of under-collateralized positions with a 10% liquidator reward. The goal is to understand DeFi lending mechanics, price oracles, collateral management, and liquidation incentives.
 
 The final deliverable: an app that allows anyone to take out a loan in Corn while making sure it is always backed by its value in ETH. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
