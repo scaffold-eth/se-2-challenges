@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **SVG NFT**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds a fully on-chain SVG NFT collection called **"Optimistic Loogies"** where all metadata and artwork live directly on the blockchain — no IPFS or external storage required. The goal is to understand on-chain SVG generation, Base64 encoding, dynamic pricing, deterministic trait generation, and composable NFT rendering.
+The learner builds a fully on-chain SVG NFT collection called **"Optimistic Loogies"** where all metadata and artwork live directly on the blockchain — no IPFS or external storage required. The goal is to understand on-chain SVG generation, Base64 encoding, dynamic pricing, deterministic trait generation, and composable NFT rendering.
 
 The final deliverable: an app that allows users to mint their own dynamic SVG NFTs with unique traits. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
