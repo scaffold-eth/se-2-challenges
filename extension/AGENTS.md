@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **Token Vendor**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds a decentralized token vending machine: an ERC-20 token (`YourToken`, named "Gold" / "GLD") and a `Vendor` contract that sells and buys back tokens at a fixed exchange rate. The goal is to understand ERC-20 basics, the `approve`/`transferFrom` pattern for token buybacks, and simple access control with `Ownable`.
+The learner builds a decentralized token vending machine: an ERC-20 token (`YourToken`, named "Gold" / "GLD") and a `Vendor` contract that sells and buys back tokens at a fixed exchange rate. The goal is to understand ERC-20 basics, the `approve`/`transferFrom` pattern for token buybacks, and simple access control with `Ownable`.
 
 The final deliverable: an app that lets users purchase ERC-20 tokens, transfer them, and sell them back to the vendor. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
