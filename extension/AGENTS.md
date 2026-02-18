@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **Crowdfunding**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds a **crowdfunding dApp** where users can coordinate a group funding effort using two smart contracts: `CrowdFund` and `FundingRecipient`. If enough ETH is contributed before a deadline, funds are forwarded to the recipient. If not, contributors can withdraw their funds. The users only have to trust the code, not each other.
+The learner builds a **crowdfunding dApp** where users can coordinate a group funding effort using two smart contracts: `CrowdFund` and `FundingRecipient`. If enough ETH is contributed before a deadline, funds are forwarded to the recipient. If not, contributors can withdraw their funds. The users only have to trust the code, not each other.
 
 The final deliverable: a dApp that lets users contribute ETH, tracks balances, executes funding on deadline, and handles withdrawals. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
