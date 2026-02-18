@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **Tokenization**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds an NFT minting and transferring dApp using an ERC-721 contract (`YourCollectible`). The goal is to understand onchain ownership, compile and deploy smart contracts with Hardhat, interact with them via a Next.js frontend, and finally deploy to a public testnet.
+The learner builds an NFT minting and transferring dApp using an ERC-721 contract (`YourCollectible`). The goal is to understand onchain ownership, compile and deploy smart contracts with Hardhat, interact with them via a Next.js frontend, and finally deploy to a public testnet.
 
 The final deliverable: an app that lets users mint and transfer NFTs. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
