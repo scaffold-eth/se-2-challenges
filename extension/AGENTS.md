@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **Dice Game**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner explores on-chain pseudo-randomness by interacting with a dice game contract (`DiceGame`) and building an attacker contract (`RiggedRoll`) that predicts the randomness and only rolls when guaranteed to win. The goal is to understand why `block.prevrandao`-based randomness is exploitable, and how to build (and break) simple game mechanics.
+The learner explores on-chain pseudo-randomness by interacting with a dice game contract (`DiceGame`) and building an attacker contract (`RiggedRoll`) that predicts the randomness and only rolls when guaranteed to win. The goal is to understand why `block.prevrandao`-based randomness is exploitable, and how to build (and break) simple game mechanics.
 
 The final deliverable: an app that demonstrates the dice game exploit. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
