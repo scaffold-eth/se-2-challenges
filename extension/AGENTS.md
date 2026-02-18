@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What is SpeedRunEthereum?
+
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **Prediction Markets**.
+
 ## Challenge Overview
 
-This is a SpeedRunEthereum challenge. The learner builds an AMM-based prediction market where users bet on binary outcomes (e.g., "Will the green car win the race?") using ERC-20 outcome tokens. The challenge teaches prediction market mechanics, automated market maker pricing, ERC-20 token interactions, oracle reporting, and liquidity provision. The learner takes on three roles: Liquidity Provider, Oracle, and User.
+The learner builds an AMM-based prediction market where users bet on binary outcomes (e.g., "Will the green car win the race?") using ERC-20 outcome tokens. The challenge teaches prediction market mechanics, automated market maker pricing, ERC-20 token interactions, oracle reporting, and liquidity provision. The learner takes on three roles: Liquidity Provider, Oracle, and User.
 
 The final deliverable: an app that allows users to buy/sell outcome tokens, with an oracle to settle the result and a liquidity provider to seed the market. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
