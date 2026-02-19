@@ -2,7 +2,7 @@
 
 ## What is SpeedRunEthereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
 **This extension is one of the SpeedRunEthereum challenges.** It covers **Over-Collateralized Lending**.
 
@@ -57,13 +57,13 @@ yarn simulate
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+# Deploy to testnet (requires interactive password prompt, cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification (requires interactive password prompt — cannot be run by agents)
+# Contract verification (requires interactive password prompt, cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management (requires interactive password prompt — cannot be run by agents)
+# Account management (requires interactive password prompt, cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
 yarn account        # View deployer account balances
 
@@ -77,13 +77,13 @@ yarn vercel --prod  # Redeploy to production URL
 ### Corn.sol (Provided)
 
 - ERC-20 token inheriting from OpenZeppelin.
-- `mint(address to, uint256 amount)` — **owner-only**; used by the deploy script and Lending contract.
+- `mint(address to, uint256 amount)` - **owner-only**; used by the deploy script and Lending contract.
 - The Lending contract must be set as an authorized minter (via ownership transfer) so it can mint Corn when users borrow.
 
 ### CornDEX.sol (Provided)
 
 - Constant product AMM (x * y = k) for ETH/Corn trading.
-- Acts as the **price oracle** — `currentPrice()` returns the current value of ETH in Corn.
+- Acts as the **price oracle**: `currentPrice()` returns the current value of ETH in Corn.
 - Also used by the MovePrice helper and the frontend to change the CORN price for testing.
 
 ### Lending.sol (Learner Implements)
@@ -99,25 +99,25 @@ This is the primary contract the learner must complete.
 
 #### Custom Errors (provided in skeleton)
 
-- `Lending__InvalidAmount()` — zero or insufficient amount
-- `Lending__TransferFailed()` — ETH transfer failed
-- `Lending__UnsafePositionRatio()` — position below 120% ratio
-- `Lending__NotLiquidatable()` — trying to liquidate a healthy position
-- `Lending__InsufficientLiquidatorCorn()` — liquidator doesn't have enough Corn
-- `Lending__BorrowingFailed()` — token transfer failed during borrow
-- `Lending__RepayingFailed()` — token transfer failed during repay
+- `Lending__InvalidAmount()` - zero or insufficient amount
+- `Lending__TransferFailed()` - ETH transfer failed
+- `Lending__UnsafePositionRatio()` - position below 120% ratio
+- `Lending__NotLiquidatable()` - trying to liquidate a healthy position
+- `Lending__InsufficientLiquidatorCorn()` - liquidator doesn't have enough Corn
+- `Lending__BorrowingFailed()` - token transfer failed during borrow
+- `Lending__RepayingFailed()` - token transfer failed during repay
 
 #### Functions to Implement
 
-1. **`addCollateral() public payable`** — Accept ETH deposit, increase `s_userCollateral[msg.sender]`. Revert if `msg.value == 0`. Emit `CollateralAdded`.
-2. **`withdrawCollateral(uint256 amount) public`** — Reduce collateral and send ETH back. Validate position afterwards (skip if no debt). Revert if amount is 0 or exceeds balance. Emit `CollateralWithdrawn`.
-3. **`calculateCollateralValue(address user) public view returns (uint256)`** — Return `(s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18`.
-4. **`_calculatePositionRatio(address user) internal view returns (uint256)`** — Return `(collateralValue * 1e18) / borrowedAmount`. Return `type(uint256).max` if debt is zero.
-5. **`isLiquidatable(address user) public view returns (bool)`** — Return `true` if `(positionRatio * 100) < COLLATERAL_RATIO * 1e18`.
-6. **`_validatePosition(address user) internal view`** — Revert with `Lending__UnsafePositionRatio` if `isLiquidatable(user)` returns true.
-7. **`borrowCorn(uint256 borrowAmount) public`** — Add to `s_userBorrowed`, validate position, transfer Corn to user. Emit `AssetBorrowed`.
-8. **`repayCorn(uint256 repayAmount) public`** — Subtract from `s_userBorrowed`, pull Corn back via `transferFrom`. Emit `AssetRepaid`.
-9. **`liquidate(address user) public`** — Check `isLiquidatable`, verify liquidator has enough Corn, `transferFrom` Corn from liquidator, clear debt, calculate collateral to seize plus 10% reward (capped at user's total collateral), send ETH to liquidator. Emit `Liquidation`.
+1. **`addCollateral() public payable`** - Accept ETH deposit, increase `s_userCollateral[msg.sender]`. Revert if `msg.value == 0`. Emit `CollateralAdded`.
+2. **`withdrawCollateral(uint256 amount) public`** - Reduce collateral and send ETH back. Validate position afterwards (skip if no debt). Revert if amount is 0 or exceeds balance. Emit `CollateralWithdrawn`.
+3. **`calculateCollateralValue(address user) public view returns (uint256)`** - Return `(s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18`.
+4. **`_calculatePositionRatio(address user) internal view returns (uint256)`** - Return `(collateralValue * 1e18) / borrowedAmount`. Return `type(uint256).max` if debt is zero.
+5. **`isLiquidatable(address user) public view returns (bool)`** - Return `true` if `(positionRatio * 100) < COLLATERAL_RATIO * 1e18`.
+6. **`_validatePosition(address user) internal view`** - Revert with `Lending__UnsafePositionRatio` if `isLiquidatable(user)` returns true.
+7. **`borrowCorn(uint256 borrowAmount) public`** - Add to `s_userBorrowed`, validate position, transfer Corn to user. Emit `AssetBorrowed`.
+8. **`repayCorn(uint256 repayAmount) public`** - Subtract from `s_userBorrowed`, pull Corn back via `transferFrom`. Emit `AssetRepaid`.
+9. **`liquidate(address user) public`** - Check `isLiquidatable`, verify liquidator has enough Corn, `transferFrom` Corn from liquidator, clear debt, calculate collateral to seize plus 10% reward (capped at user's total collateral), send ETH to liquidator. Emit `Liquidation`.
 
 #### Key Precision Note
 
@@ -174,7 +174,7 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 - **Next.js App Router** (not Pages Router) - pages are at `app/<route>/page.tsx`
 - **Import alias**: use `~~` for nextjs package imports (e.g., `import { ... } from "~~/hooks/scaffold-eth"`)
 - After `yarn deploy`, contract ABIs auto-generate to `packages/nextjs/contracts/deployedContracts.ts`
-- `hardhat/console.sol` is available — use `console.log()` in Solidity for debugging (output in `yarn chain` terminal)
+- `hardhat/console.sol` is available, use `console.log()` in Solidity for debugging (output in `yarn chain` terminal)
 - Open a private browser tab to simulate multiple accounts (borrower + liquidator)
 - Use the CORN price controls on the frontend to make positions liquidatable for testing
 - `yarn simulate` runs bot accounts that interact with your lending platform
@@ -224,7 +224,7 @@ Build a `Leverage` contract with iterative borrow-swap-deposit loops to maximize
 - Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
 - Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
 - Forgetting to use 1e18 scaling in ratio calculations causes precision loss
-- Must validate position after `withdrawCollateral` and `borrowCorn` — not just before
+- Must validate position after `withdrawCollateral` and `borrowCorn`, not just before
 - Return `type(uint256).max` (not `0`) when debt is zero in `_calculatePositionRatio`
 - Do not allow liquidation on healthy positions (ratio >= 120%)
 - Corn ownership must be transferred to the Lending contract in the deploy script
