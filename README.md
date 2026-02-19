@@ -27,7 +27,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.4 -e challenge-token-vendor challenge-token-vendor
+npx create-eth@2.0.6 -e challenge-token-vendor challenge-token-vendor
 cd challenge-token-vendor
 ```
 
@@ -58,6 +58,7 @@ yarn start
 ⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
 
 🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
+
 - Cursor: remove `*` from `.cursorignore` file
 - VSCode: set `chat.disableAIFeatures` to `false` in `.vscode/settings.json` file
 
@@ -239,9 +240,11 @@ The OpenZeppelin Ownable contract adds special methods, modifiers and state vari
 
 - Notice how the vendor contract already imports `Ownable` from OpenZeppelin
 - See how it is inherited in the line defining the contract:
+
 ```solidity
 contract Vendor is Ownable ...
 ```
+
 - Lastly see how we define ownership in the constructor with `Ownable(msg.sender)`, making the deployer of the contract the `owner`
 
 We are using the `onlyOwner` modifier to protect the `withdraw` method so that only the owner can withdraw the contract's ETH balance.
@@ -288,7 +291,7 @@ function withdraw() external onlyOwner {
 
 ### Try it out
 
-Deploy the updated contract with `yarn deploy --reset` and then go test it out by depositing ETH and withdrawing. You can do this from the `Debug Contracts` tab. 
+Deploy the updated contract with `yarn deploy --reset` and then go test it out by depositing ETH and withdrawing. You can do this from the `Debug Contracts` tab.
 
 ### 🥅 Goals
 
@@ -320,7 +323,7 @@ yarn test --grep "Checkpoint3"
 <details markdown='1'>
 <summary>🤔 But why do we need the <code>approve</code> method?</summary>
 
-The crux of the issue is this: if smart contracts can move tokens out of your wallet, how do you make sure that only the smart contract you *want* to take tokens is the one that’s allowed to do it?
+The crux of the issue is this: if smart contracts can move tokens out of your wallet, how do you make sure that only the smart contract you _want_ to take tokens is the one that’s allowed to do it?
 
 Here’s the simple mental model:
 
@@ -337,7 +340,6 @@ What this unlocks: **safe, pull-based token interactions** where a contract can 
 Luckily, wallet UX is improving fast. With proposals like **EIP-7702** now being enabled on Ethereum, a wallet can let you sign **one** “sell” action that executes a small bundle of steps atomically (e.g. `approve` + `sellTokens` / `transferFrom`) in a single transaction, instead of making you click through two separate user actions. The underlying ERC-20 allowance model still exists; you’re just authorizing a smarter, batched execution path. This only needs to be adopted by wallets and frontends for users to reap the benefits.
 
 </details>
-
 
 ### Step 1: Add custom errors + event
 
