@@ -2,7 +2,7 @@
 
 ## What is SpeedRunEthereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
 **This extension is one of the SpeedRunEthereum challenges.** It covers **Prediction Markets**.
 
@@ -21,7 +21,7 @@ packages/
   hardhat/
     contracts/
       PredictionMarket.sol        # Main contract skeleton (learner implements)
-      PredictionMarketToken.sol   # ERC-20 outcome tokens (provided — DO NOT EDIT)
+      PredictionMarketToken.sol   # ERC-20 outcome tokens (provided, DO NOT EDIT)
     deploy/
       00_deploy_your_contract.ts  # Deploys PredictionMarket with initial params
     test/
@@ -62,13 +62,13 @@ yarn test --grep "Checkpoint9"  # Test redeeming winning tokens
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+# Deploy to testnet (requires interactive password prompt, cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification (requires interactive password prompt — cannot be run by agents)
+# Contract verification (requires interactive password prompt, cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management (requires interactive password prompt — cannot be run by agents)
+# Account management (requires interactive password prompt, cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
 yarn account        # View deployer account balances
 
@@ -79,7 +79,7 @@ yarn vercel --prod  # Redeploy to production URL
 
 ## Smart Contracts
 
-### PredictionMarket.sol (Skeleton — Learner Implements)
+### PredictionMarket.sol (Skeleton, Learner Implements)
 
 The main contract implementing an AMM prediction market.
 
@@ -96,19 +96,19 @@ The main contract implementing an AMM prediction market.
 
 #### Three Roles
 
-1. **Liquidity Provider (LP)** — Seeds the market with ETH, manages liquidity, resolves market
-2. **Oracle** — Reports the true outcome after the event concludes
-3. **User** — Buys/sells outcome tokens, redeems winnings
+1. **Liquidity Provider (LP)** - Seeds the market with ETH, manages liquidity, resolves market
+2. **Oracle** - Reports the true outcome after the event concludes
+3. **User** - Buys/sells outcome tokens, redeems winnings
 
 #### State Variables
 
-- `i_oracle`, `i_initialTokenValue`, `i_percentageLocked`, `i_initialYesProbability` — immutable config
-- `i_yesToken`, `i_noToken` — the two ERC-20 outcome token contracts
-- `s_question` — the market question
-- `s_ethCollateral` — total ETH backing the tokens (prize pool)
-- `s_lpTradingRevenue` — fees earned from trading
-- `s_winningToken` — set after oracle reports
-- `s_isReported` — whether the outcome has been reported
+- `i_oracle`, `i_initialTokenValue`, `i_percentageLocked`, `i_initialYesProbability` - immutable config
+- `i_yesToken`, `i_noToken` - the two ERC-20 outcome token contracts
+- `s_question` - the market question
+- `s_ethCollateral` - total ETH backing the tokens (prize pool)
+- `s_lpTradingRevenue` - fees earned from trading
+- `s_winningToken` - set after oracle reports
+- `s_isReported` - whether the outcome has been reported
 
 #### Functions to Implement (by Checkpoint)
 
@@ -138,12 +138,12 @@ price = initialTokenValue * probabilityAvg * tradingAmount
 
 #### Modifiers
 
-- `predictionNotReported` — prevents actions after outcome is reported (used on buy/sell/addLiquidity/removeLiquidity)
-- `predictionReported` — requires outcome to be reported (used on resolve/redeem)
-- `notOwner` — prevents LP from buying/selling tokens
-- `amountGreaterThanZero` — validates non-zero amounts
+- `predictionNotReported` - prevents actions after outcome is reported (used on buy/sell/addLiquidity/removeLiquidity)
+- `predictionReported` - requires outcome to be reported (used on resolve/redeem)
+- `notOwner` - prevents LP from buying/selling tokens
+- `amountGreaterThanZero` - validates non-zero amounts
 
-### PredictionMarketToken.sol (Provided — DO NOT EDIT)
+### PredictionMarketToken.sol (Provided, DO NOT EDIT)
 
 - ERC-20 token representing YES or NO outcome shares.
 - Only the PredictionMarket contract can mint and burn tokens.
@@ -172,9 +172,9 @@ Use the correct hook names:
 
 ### Pages
 
-1. **`/liquidity-provider`** — LP dashboard to add/remove liquidity, view market state, resolve market and withdraw
-2. **`/oracle`** — Oracle interface to report the outcome (YES or NO)
-3. **`/user`** — User interface to buy/sell tokens and redeem winnings
+1. **`/liquidity-provider`** - LP dashboard to add/remove liquidity, view market state, resolve market and withdraw
+2. **`/oracle`** - Oracle interface to report the outcome (YES or NO)
+3. **`/user`** - User interface to buy/sell tokens and redeem winnings
 
 ### Race Visualization
 
@@ -241,10 +241,10 @@ Run with `yarn test` for all or `yarn test --grep "CheckpointN"` for specific ch
 
 - Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
 - Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
-- Tests check for specific custom errors — use the exact error names from the contract's error section
-- The LP (market owner) cannot buy or sell tokens — use a different account for testing trades
+- Tests check for specific custom errors, use the exact error names from the contract's error section
+- The LP (market owner) cannot buy or sell tokens, use a different account for testing trades
 - Uncomment `getPrediction()` sections after Checkpoints 3 and 5 or the frontend won't show data
 - When using an `enum` as a function parameter, invalid values cause an immediate revert (no custom error possible)
 - `i_<variableName>` indicates immutable; `s_<variableName>` indicates mutable state
-- Implement functions incrementally, checkpoint by checkpoint — each builds on the previous
+- Implement functions incrementally, checkpoint by checkpoint, each builds on the previous
 - Before deploying to testnet, reduce the initial ETH amount in the deploy script to match your budget
