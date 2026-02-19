@@ -2,7 +2,7 @@
 
 ## What is SpeedRunEthereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
 **This extension is one of the SpeedRunEthereum challenges.** It covers **Tokenization**.
 
@@ -73,13 +73,13 @@ yarn test           # Run challenge grading tests (packages/hardhat/test/)
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+# Deploy to testnet (requires interactive password prompt, cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification (requires interactive password prompt — cannot be run by agents)
+# Contract verification (requires interactive password prompt, cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management (requires interactive password prompt — cannot be run by agents)
+# Account management (requires interactive password prompt, cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
 yarn account        # View deployer account balances
 
