@@ -2,7 +2,7 @@
 
 ## What is SpeedRunEthereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
 **This extension is one of the SpeedRunEthereum challenges.** It covers **Token Vendor**.
 
@@ -59,13 +59,13 @@ yarn test --grep "Checkpoint4"  # Test sellTokens (approve + sell flow)
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+# Deploy to testnet (requires interactive password prompt, cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification (requires interactive password prompt — cannot be run by agents)
+# Contract verification (requires interactive password prompt, cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management (requires interactive password prompt — cannot be run by agents)
+# Account management (requires interactive password prompt, cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
 yarn account        # View deployer account balances
 
@@ -80,7 +80,7 @@ yarn vercel --prod  # Redeploy to production URL
 
 - **Standard**: ERC-20 (inherits from OpenZeppelin `ERC20`)
 - **Token name/symbol**: "Gold" / "GLD"
-- **Solidity version**: `0.8.20` (do **not** change — affects grading)
+- **Solidity version**: `0.8.20` (do **not** change, affects grading)
 - **Learner task**: Mint **1000 tokens** (i.e. `1000 * 10**18` base units) to `msg.sender` in the constructor
 - Hint: `1000 ether` in Solidity equals `1000 * 10**18`, which works for ERC-20 tokens with 18 decimals
 
@@ -110,22 +110,22 @@ yarn vercel --prod  # Redeploy to production URL
 
 #### Functions to Implement
 
-1. **`buyTokens() external payable`** — Reject 0 ETH, calculate token amount (`msg.value * tokensPerEth`), check vendor balance, transfer tokens to caller, emit `BuyTokens`.
-2. **`withdraw() external onlyOwner`** — Send the entire ETH balance of the Vendor to the owner using `call`. Revert with `EthTransferFailed` on failure.
-3. **`sellTokens(uint256 amount) external`** — Reject 0 tokens, calculate ETH owed (`amount / tokensPerEth`), check vendor ETH balance, pull tokens from caller via `transferFrom`, send ETH to caller, emit `SellTokens`.
+1. **`buyTokens() external payable`** - Reject 0 ETH, calculate token amount (`msg.value * tokensPerEth`), check vendor balance, transfer tokens to caller, emit `BuyTokens`.
+2. **`withdraw() external onlyOwner`** - Send the entire ETH balance of the Vendor to the owner using `call`. Revert with `EthTransferFailed` on failure.
+3. **`sellTokens(uint256 amount) external`** - Reject 0 tokens, calculate ETH owed (`amount / tokensPerEth`), check vendor ETH balance, pull tokens from caller via `transferFrom`, send ETH to caller, emit `SellTokens`.
 
 ### Key Concept: ERC-20 Approve Pattern
 
 Selling tokens back to the Vendor requires **two** transactions from the user:
-1. `yourToken.approve(vendorAddress, amount)` — grants the Vendor permission to spend tokens
-2. `vendor.sellTokens(amount)` — Vendor calls `yourToken.transferFrom(msg.sender, address(this), amount)`
+1. `yourToken.approve(vendorAddress, amount)` - grants the Vendor permission to spend tokens
+2. `vendor.sellTokens(amount)` - Vendor calls `yourToken.transferFrom(msg.sender, address(this), amount)`
 
 ## Deploy Scripts
 
-- **`00_deploy_your_token.ts`** — Deploys `YourToken`.
-- **`01_deploy_vendor.ts`** — Deploys `Vendor`. Has two toggles:
-  - `SEND_TOKENS_TO_VENDOR` — when `true`, transfers 1000 tokens to the Vendor contract
-  - `FRONTEND_ADDRESS` — when set, sends tokens to a frontend wallet for testing (only used when `SEND_TOKENS_TO_VENDOR` is `false`)
+- **`00_deploy_your_token.ts`** - Deploys `YourToken`.
+- **`01_deploy_vendor.ts`** - Deploys `Vendor`. Has two toggles:
+  - `SEND_TOKENS_TO_VENDOR` - when `true`, transfers 1000 tokens to the Vendor contract
+  - `FRONTEND_ADDRESS` - when set, sends tokens to a frontend wallet for testing (only used when `SEND_TOKENS_TO_VENDOR` is `false`)
 
 ## Frontend Architecture
 
@@ -143,8 +143,8 @@ Displays:
 - User's token balance and ETH balance
 - Vendor's token balance and ETH balance
 - Token transfer form (send tokens to another address)
-- Buy tokens section (input ETH amount, preview token amount) — **learner must uncomment**
-- Sell tokens section (approve + sell flow) — **learner must uncomment**
+- Buy tokens section (input ETH amount, preview token amount) - **learner must uncomment**
+- Sell tokens section (approve + sell flow) - **learner must uncomment**
 
 ### Events Page (events/page.tsx)
 
@@ -167,7 +167,7 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 - **Next.js App Router** (not Pages Router) - pages are at `app/<route>/page.tsx`
 - **Import alias**: use `~~` for nextjs package imports (e.g., `import { ... } from "~~/hooks/scaffold-eth"`)
 - After `yarn deploy`, contract ABIs auto-generate to `packages/nextjs/contracts/deployedContracts.ts`
-- Some UI sections are intentionally commented out — the learner enables them as they implement each checkpoint
+- Some UI sections are intentionally commented out, the learner enables them as they implement each checkpoint
 - `priceInWei.ts` provides `multiplyTo1e18(amount)` and `getTokenPrice(amount, tokensPerEth)` helper functions
 
 ## Testing
@@ -175,9 +175,9 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 The grading tests (`packages/hardhat/test/Vendor.ts`) are organized into four checkpoints:
 
 - **Checkpoint 1**: `YourToken` mints exactly 1000 tokens to the deployer
-- **Checkpoint 2**: `buyTokens` works correctly — sends ETH, receives tokens, emits `BuyTokens`
-- **Checkpoint 3**: `withdraw` is `onlyOwner` — non-owner reverts, owner receives ETH
-- **Checkpoint 4**: `sellTokens` works — approve + sell flow, emits `SellTokens`, handles errors
+- **Checkpoint 2**: `buyTokens` works correctly: sends ETH, receives tokens, emits `BuyTokens`
+- **Checkpoint 3**: `withdraw` is `onlyOwner`: non-owner reverts, owner receives ETH
+- **Checkpoint 4**: `sellTokens` works: approve + sell flow, emits `SellTokens`, handles errors
 
 Run with `yarn test` for all or `yarn test --grep "CheckpointN"` for specific checkpoints. These same tests are used by the SpeedRunEthereum autograder.
 
@@ -204,8 +204,8 @@ Run with `yarn test` for all or `yarn test --grep "CheckpointN"` for specific ch
 
 - Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
 - Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
-- Solidity version must stay `0.8.20` — do not change it
-- Tests check for custom errors and events by name — define them exactly as specified
+- Solidity version must stay `0.8.20`, do not change it
+- Tests check for custom errors and events by name, define them exactly as specified
 - Integer division truncation: use `amount / tokensPerEth` (not the other way around) when computing ETH from tokens
 - Use `transfer` for `buyTokens` (Vendor sends its own tokens) but `transferFrom` for `sellTokens` (Vendor pulls user's tokens)
 - The `SEND_TOKENS_TO_VENDOR` toggle in the deploy script must be `true` for Checkpoints 2–4
