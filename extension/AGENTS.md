@@ -2,7 +2,7 @@
 
 ## What is SpeedRunEthereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
 **This extension is one of the SpeedRunEthereum challenges.** It covers **DEX**.
 
@@ -20,7 +20,7 @@ This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `cre
 packages/
   hardhat/
     contracts/
-      Balloons.sol           # ERC-20 token (provided — DO NOT EDIT)
+      Balloons.sol           # ERC-20 token (provided, DO NOT EDIT)
       DEX.sol                # Decentralized exchange (learner implements)
     deploy/
       00_deploy_your_contract.ts   # Deploys Balloons, DEX, seeds initial liquidity
@@ -52,13 +52,13 @@ yarn test           # Run all challenge tests
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+# Deploy to testnet (requires interactive password prompt, cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification (requires interactive password prompt — cannot be run by agents)
+# Contract verification (requires interactive password prompt, cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management (requires interactive password prompt — cannot be run by agents)
+# Account management (requires interactive password prompt, cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
 yarn account        # View deployer account balances
 
@@ -69,7 +69,7 @@ yarn vercel --prod  # Redeploy to production URL
 
 ## Smart Contracts
 
-### Balloons.sol (Provided — DO NOT EDIT)
+### Balloons.sol (Provided, DO NOT EDIT)
 
 - Standard ERC-20 token.
 - Mints **1000 tokens** to the deployer in the constructor.
@@ -80,9 +80,9 @@ The main AMM contract. Learner fills in the function bodies.
 
 #### State Variables
 
-- `token` — reference to the Balloons ERC-20 contract
-- `totalLiquidity` — total LP shares outstanding
-- `liquidity[address]` — per-user LP share balance
+- `token` - reference to the Balloons ERC-20 contract
+- `totalLiquidity` - total LP shares outstanding
+- `liquidity[address]` - per-user LP share balance
 
 #### Events (learner must define)
 
@@ -95,13 +95,13 @@ The main AMM contract. Learner fills in the function bodies.
 
 #### Functions to Implement
 
-1. **`init(uint256 tokens) public payable returns (uint256)`** — Initialize the pool with ETH + tokens. Sets initial liquidity equal to `msg.value`. Can only be called once (when `totalLiquidity == 0`). Transfers tokens from caller via `transferFrom`.
-2. **`price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure returns (uint256)`** — Constant product price function with **0.3% fee**: `yOutput = (yReserves * xInput * 997) / (xReserves * 1000 + xInput * 997)`.
-3. **`ethToToken() public payable returns (uint256)`** — Swap ETH for tokens. Use `address(this).balance - msg.value` as the ETH reserve (before the incoming ETH). Transfer tokens to caller.
-4. **`tokenToEth(uint256 tokenInput) public returns (uint256)`** — Swap tokens for ETH. Pull tokens via `transferFrom`, send ETH to caller via `call`.
-5. **`deposit() public payable returns (uint256)`** — Add liquidity proportionally. Mint LP shares based on `msg.value * totalLiquidity / ethReserve`. Token deposit: `msg.value * tokenReserve / ethReserve + 1`.
-6. **`withdraw(uint256 amount) public returns (uint256, uint256)`** — Remove liquidity. Burn LP shares, return proportional ETH and tokens.
-7. **`getLiquidity(address lp) public view returns (uint256)`** — Return the LP share balance of an address (needed for autograder submission).
+1. **`init(uint256 tokens) public payable returns (uint256)`** - Initialize the pool with ETH + tokens. Sets initial liquidity equal to `msg.value`. Can only be called once (when `totalLiquidity == 0`). Transfers tokens from caller via `transferFrom`.
+2. **`price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure returns (uint256)`** - Constant product price function with **0.3% fee**: `yOutput = (yReserves * xInput * 997) / (xReserves * 1000 + xInput * 997)`.
+3. **`ethToToken() public payable returns (uint256)`** - Swap ETH for tokens. Use `address(this).balance - msg.value` as the ETH reserve (before the incoming ETH). Transfer tokens to caller.
+4. **`tokenToEth(uint256 tokenInput) public returns (uint256)`** - Swap tokens for ETH. Pull tokens via `transferFrom`, send ETH to caller via `call`.
+5. **`deposit() public payable returns (uint256)`** - Add liquidity proportionally. Mint LP shares based on `msg.value * totalLiquidity / ethReserve`. Token deposit: `msg.value * tokenReserve / ethReserve + 1`.
+6. **`withdraw(uint256 amount) public returns (uint256, uint256)`** - Remove liquidity. Burn LP shares, return proportional ETH and tokens.
+7. **`getLiquidity(address lp) public view returns (uint256)`** - Return the LP share balance of an address (needed for autograder submission).
 
 #### Key Formula
 
@@ -113,7 +113,7 @@ The `997/1000` factor implements a **0.3% swap fee** that accrues to liquidity p
 
 ## Deploy Script
 
-- **`00_deploy_your_contract.ts`** — Deploys `Balloons`, then `DEX`, then approves and calls `dex.init()` to seed the pool with initial liquidity (typically 5 ETH + 5 tokens). The learner must **uncomment** the init section.
+- **`00_deploy_your_contract.ts`** - Deploys `Balloons`, then `DEX`, then approves and calls `dex.init()` to seed the pool with initial liquidity (typically 5 ETH + 5 tokens). The learner must **uncomment** the init section.
 - Also sends 10 Balloons to the frontend address for testing (learner must set `YOUR_FRONTEND_ADDRESS`).
 
 ## Frontend Architecture
@@ -196,8 +196,8 @@ Run with `yarn test`. These same tests are used by the SpeedRunEthereum autograd
 - Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
 - Forgetting the 0.3% fee in the price function (using `1000` instead of `997`) will fail tests
 - Not requiring `totalLiquidity == 0` in `init()` allows re-initialization
-- Integer division rounding — always multiply before dividing
+- Integer division rounding, always multiply before dividing
 - Tokens require user to `approve` the DEX before any `transferFrom` call (swaps, deposits)
 - In `ethToToken()`, use `address(this).balance - msg.value` as the ETH reserve to get the balance *before* the incoming ETH
 - LP share calculation in `deposit()` must use the pre-deposit ETH reserve
-- Implement `getLiquidity()` getter — the autograder checks for it
+- Implement `getLiquidity()` getter, the autograder checks for it
