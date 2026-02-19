@@ -69,7 +69,17 @@ checkpoints:
 
     questions:
       - text: "Why do we multiply by `10 ** 18` when minting 1000 tokens? What would happen if we just minted `1000` without the multiplier?"
-        concepts: ["decimal", "wei", "smallest unit", "18", "precision", "fraction", "tiny", "indivisible"]
+        concepts:
+          [
+            "decimal",
+            "wei",
+            "smallest unit",
+            "18",
+            "precision",
+            "fraction",
+            "tiny",
+            "indivisible",
+          ]
         hint: "ERC-20 tokens work like ETH — 1 ETH = 10^18 wei. Without the multiplier, you'd have a tiny fraction of a token."
 
     task:
@@ -151,7 +161,7 @@ checkpoints:
       Events log important actions on-chain for frontends and indexers:
 
       ```solidity
-      event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
+      event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
       ```
 
       ### Token Transfer
@@ -160,11 +170,24 @@ checkpoints:
 
       ## Deploy Script
 
-      After writing `buyTokens()`, you'll also need to uncomment the Vendor deployment code in `packages/hardhat/deploy/01_deploy_vendor.ts`. This script deploys the Vendor, transfers 1000 tokens to it, and transfers ownership to your frontend address.
+      The deploy script at `packages/hardhat/deploy/01_deploy_vendor.ts` uses a `SEND_TOKENS_TO_VENDOR` toggle. It should already be set to `true` — this deploys the Vendor, transfers 1000 tokens to it, and transfers ownership to your frontend address. You must set `FRONTEND_ADDRESS` to the wallet address you use in the frontend, so that ownership is transferred correctly (otherwise it stays with the Hardhat deployer, which is different from your burner wallet).
+
+      ## Frontend
+
+      After deploying, uncomment the **Vendor Balances** and **Buy Tokens** sections in `packages/nextjs/app/token-vendor/page.tsx` to display the Vendor's ETH/token balances and enable buying tokens from the UI.
 
     questions:
       - text: "Why don't we need to worry about decimal conversion when calculating `msg.value * tokensPerEth`? Why does the math just work?"
-        concepts: ["wei", "18 decimals", "both", "same", "cancel", "match", "smallest unit"]
+        concepts:
+          [
+            "wei",
+            "18 decimals",
+            "both",
+            "same",
+            "cancel",
+            "match",
+            "smallest unit",
+          ]
         hint: "Both ETH (msg.value in wei) and ERC-20 tokens use 18 decimal places. What happens when you multiply wei by a whole number?"
 
     task:
@@ -184,7 +207,7 @@ checkpoints:
 
         3. **Add the BuyTokens event** under *Events*:
            ```solidity
-           event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
+           event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
            ```
 
         4. **Fill in `buyTokens()`**:
@@ -194,7 +217,9 @@ checkpoints:
            - Transfer tokens to `msg.sender`
            - Emit `BuyTokens`
 
-        5. **Uncomment the deploy script** in `packages/hardhat/deploy/01_deploy_vendor.ts`. Update the frontend address placeholder.
+        5. **Deploy script**: In `packages/hardhat/deploy/01_deploy_vendor.ts`, make sure `SEND_TOKENS_TO_VENDOR` is set to `true` (it should already be). Set `FRONTEND_ADDRESS` to the wallet address you use in the frontend.
+
+        6. **Frontend**: Uncomment the **Vendor Balances** and **Buy Tokens** sections in `packages/nextjs/app/token-vendor/page.tsx`.
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Vendor.sol"
@@ -218,7 +243,7 @@ checkpoints:
           uint256 public constant tokensPerEth = 100;
 
           // Events section:
-          event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
+          event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
 
           // buyTokens() body:
           function buyTokens() external payable {
@@ -239,7 +264,7 @@ checkpoints:
         uint256 public constant tokensPerEth = 100;
 
         // Events section — replace placeholder:
-        event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
+        event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
 
         // buyTokens() body:
         if (msg.value == 0) revert InvalidEthAmount();
@@ -306,7 +331,17 @@ checkpoints:
 
     questions:
       - text: "Why do we need to restrict who can call `withdraw()`? What would happen without access control?"
-        concepts: ["anyone", "drain", "steal", "take", "permission", "restrict", "only owner", "unauthorized"]
+        concepts:
+          [
+            "anyone",
+            "drain",
+            "steal",
+            "take",
+            "permission",
+            "restrict",
+            "only owner",
+            "unauthorized",
+          ]
         hint: "Without restrictions, any address could call the function. What would they do with all that ETH?"
 
     task:
@@ -342,7 +377,7 @@ checkpoints:
           error EthTransferFailed(address to, uint256 amount);
 
           // withdraw() body:
-          function withdraw() public onlyOwner {
+          function withdraw() external onlyOwner {
               uint256 ownerAmount = address(this).balance;
               (bool success, ) = owner().call{value: ownerAmount}("");
               if (!success) revert EthTransferFailed(owner(), ownerAmount);
@@ -416,7 +451,7 @@ checkpoints:
 
       Mirror the buy event so the frontend can track sells:
       ```solidity
-      event SellTokens(address seller, uint256 amountOfTokens, uint256 amountOfETH);
+      event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
       ```
 
       ### Why Two Transactions?
@@ -425,7 +460,17 @@ checkpoints:
 
     questions:
       - text: "Why can't the Vendor just call `yourToken.transfer()` to take tokens from the user? Why is the two-step approve/transferFrom needed?"
-        concepts: ["permission", "authorize", "approve", "security", "can't take", "user must allow", "separate contract", "consent"]
+        concepts:
+          [
+            "permission",
+            "authorize",
+            "approve",
+            "security",
+            "can't take",
+            "user must allow",
+            "separate contract",
+            "consent",
+          ]
         hint: "What if any contract could just take tokens from your wallet without asking? The approve step is the user giving explicit consent."
 
     task:
@@ -440,7 +485,7 @@ checkpoints:
 
         2. **Add the SellTokens event** under *Events*:
            ```solidity
-           event SellTokens(address seller, uint256 amountOfTokens, uint256 amountOfETH);
+           event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
            ```
 
         3. **Fill in `sellTokens(uint256 amount)`**:
@@ -452,7 +497,7 @@ checkpoints:
            - Revert with `EthTransferFailed` if the ETH send fails
            - Emit `SellTokens`
 
-        After implementing, uncomment the approve/sell UI sections in `packages/nextjs/app/token-vendor/page.tsx`.
+        After implementing, uncomment the **Sell Tokens** section in `packages/nextjs/app/token-vendor/page.tsx` and the **SellTokens Events** section in `packages/nextjs/app/events/page.tsx`.
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Vendor.sol"
@@ -477,10 +522,10 @@ checkpoints:
           error InsufficientVendorEthBalance(uint256 vendorBalance, uint256 requestedAmount);
 
           // Events section — add:
-          event SellTokens(address seller, uint256 amountOfTokens, uint256 amountOfETH);
+          event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
 
           // sellTokens() body:
-          function sellTokens(uint256 amount) public {
+          function sellTokens(uint256 amount) external {
               if (amount == 0) revert InvalidTokenAmount();
               uint256 amountOfETH = amount / tokensPerEth;
               if (address(this).balance < amountOfETH) revert InsufficientVendorEthBalance(address(this).balance, amountOfETH);
@@ -496,7 +541,7 @@ checkpoints:
         error InsufficientVendorEthBalance(uint256 vendorBalance, uint256 requestedAmount);
 
         // Events — add:
-        event SellTokens(address seller, uint256 amountOfTokens, uint256 amountOfETH);
+        event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
 
         // sellTokens() body:
         if (amount == 0) revert InvalidTokenAmount();
