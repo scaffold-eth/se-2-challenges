@@ -2,7 +2,7 @@
 
 ## What is SpeedRunEthereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept — from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
 **This extension is one of the SpeedRunEthereum challenges.** It covers **Dice Game**.
 
@@ -55,13 +55,13 @@ yarn test --grep "Checkpoint3"  # Test withdraw function
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Deploy to testnet (requires interactive password prompt — cannot be run by agents)
+# Deploy to testnet (requires interactive password prompt, cannot be run by agents)
 yarn deploy --network sepolia
 
-# Contract verification (requires interactive password prompt — cannot be run by agents)
+# Contract verification (requires interactive password prompt, cannot be run by agents)
 yarn verify --network sepolia
 
-# Account management (requires interactive password prompt — cannot be run by agents)
+# Account management (requires interactive password prompt, cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
 yarn account        # View deployer account balances
 
@@ -72,7 +72,7 @@ yarn vercel --prod  # Redeploy to production URL
 
 ## Smart Contracts
 
-### DiceGame.sol (Provided — DO NOT EDIT)
+### DiceGame.sol (Provided, DO NOT EDIT)
 
 - Accepts exactly **0.002 ETH** per roll via `rollTheDice()`.
 - Generates a pseudo-random number: `uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), address(this), nonce))) % 16`
@@ -97,18 +97,18 @@ The learner must write a contract that **predicts** the dice roll before calling
 
 #### Functions to Implement
 
-1. **`riggedRoll() external`** — Replicate the DiceGame randomness calculation using the same `blockhash`, `address(diceGame)`, and `diceGame.nonce()`. If the predicted roll is 0–5 (winner), call `diceGame.rollTheDice{value: 0.002 ether}()`. Otherwise revert with `NotWinningRoll`.
-2. **`withdraw(address _addr, uint256 _amount) external onlyOwner`** — Allow the owner to withdraw winnings from the contract. Revert with `InsufficientBalance` if amount exceeds balance.
-3. **`receive() external payable`** — Accept ETH (winnings from DiceGame and faucet funding).
+1. **`riggedRoll() external`** - Replicate the DiceGame randomness calculation using the same `blockhash`, `address(diceGame)`, and `diceGame.nonce()`. If the predicted roll is 0–5 (winner), call `diceGame.rollTheDice{value: 0.002 ether}()`. Otherwise revert with `NotWinningRoll`.
+2. **`withdraw(address _addr, uint256 _amount) external onlyOwner`** - Allow the owner to withdraw winnings from the contract. Revert with `InsufficientBalance` if amount exceeds balance.
+3. **`receive() external payable`** - Accept ETH (winnings from DiceGame and faucet funding).
 
 #### Key Insight
 
-Because `blockhash(block.number - 1)` and `address(diceGame)` are known at call time, and the nonce is public, the attacker can compute the exact same hash the DiceGame will compute — and only proceed when the result is a winning number.
+Because `blockhash(block.number - 1)` and `address(diceGame)` are known at call time, and the nonce is public, the attacker can compute the exact same hash the DiceGame will compute, and only proceed when the result is a winning number.
 
 ## Deploy Scripts
 
-- **`00_deploy_dice_game.ts`** — Deploys `DiceGame` and funds it with **0.05 ETH**.
-- **`01_deploy_rigged_roll.ts`** — Deploys `RiggedRoll` with the DiceGame address. The learner must **uncomment** the relevant lines in this file. The owner should be set to the frontend address so the UI can call `withdraw`.
+- **`00_deploy_dice_game.ts`** - Deploys `DiceGame` and funds it with **0.05 ETH**.
+- **`01_deploy_rigged_roll.ts`** - Deploys `RiggedRoll` with the DiceGame address. The learner must **uncomment** the relevant lines in this file. The owner should be set to the frontend address so the UI can call `withdraw`.
 
 ## Frontend Architecture
 
@@ -141,9 +141,9 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 - **Next.js App Router** (not Pages Router) - pages are at `app/<route>/page.tsx`
 - **Import alias**: use `~~` for nextjs package imports (e.g., `import { ... } from "~~/hooks/scaffold-eth"`)
 - After `yarn deploy`, contract ABIs auto-generate to `packages/nextjs/contracts/deployedContracts.ts`
-- Fund the RiggedRoll contract from the faucet before attempting `riggedRoll()` — it needs 0.002 ETH
+- Fund the RiggedRoll contract from the faucet before attempting `riggedRoll()`, it needs 0.002 ETH
 - The frontend dice displays hexadecimal characters (A–F = 10–15) but the contract uses integers
-- `hardhat/console.sol` can be imported for debugging — output appears in `yarn chain` terminal
+- `hardhat/console.sol` can be imported for debugging, output appears in `yarn chain` terminal
 
 ## Testing
 
@@ -175,11 +175,11 @@ Run with `yarn test` for all or `yarn test --grep "CheckpointN"` for specific ch
 
 ## Key Warnings
 
-- Do NOT edit `DiceGame.sol` — it is provided as-is and must not be modified
+- Do NOT edit `DiceGame.sol`, it is provided as-is and must not be modified
 - Do NOT use deprecated hook names (`useScaffoldContractRead`, `useScaffoldContractWrite`)
 - Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
 - The RiggedRoll must send exactly 0.002 ETH when calling `rollTheDice()`
 - Forgetting the `receive()` function means the contract cannot receive winnings
-- Use `address(diceGame)` (not `address(this)` or `msg.sender`) when replicating the hash — DiceGame uses `msg.sender` which will be the RiggedRoll contract's address
+- Use `address(diceGame)` (not `address(this)` or `msg.sender`) when replicating the hash, DiceGame uses `msg.sender` which will be the RiggedRoll contract's address
 - The `01_deploy_rigged_roll.ts` deploy script lines must be uncommented before deploying
-- On-chain pseudo-randomness is **not** secure — this challenge demonstrates the vulnerability
+- On-chain pseudo-randomness is **not** secure, this challenge demonstrates the vulnerability
