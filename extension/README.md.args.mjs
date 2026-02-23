@@ -14,26 +14,6 @@ export const extraContents = `# 🚩 Challenge: 🎲 Dice Game
 
 > 💬 Meet other builders working on this challenge and get help in the [Challenge telegram](https://t.me/+3StA0aBSArFjNjUx)!
 
-<details markdown='1'><summary>❓ Why does onchain randomness matter?</summary>
-Randomness on a public, deterministic blockchain is one of the hardest problems in crypto. Every node executes the same transactions and must arrive at the same result -- so where does "random" come from? Naive approaches like \`block.prevrandao\` are entirely predictable within the same transaction, which is exactly the exploit you'll build in this challenge.
-
-Production systems use commit-reveal schemes, VRF oracles (like Chainlink VRF), or other external randomness sources to solve this problem securely.
-</details>
-
----
-
-🎰 **"It's just a dice game, how hard can randomness be?"** Harder than you think! On a public blockchain, every value is visible to every contract in the same transaction -- including the "random" seed.
-
-🐵 **NFT minting fairness** is a real casualty of bad randomness. Projects like [Bored Ape Yacht Club](https://boredapeyachtclub.com/) had to carefully design reveal mechanics because without secure randomness, insiders or miners could cherry-pick rare traits before anyone else.
-
-🎱 [PoolTogether](https://pooltogether.com/) is a no-loss savings protocol where depositors are randomly selected to win prizes. They use [Chainlink VRF](https://chain.link/vrf) (Verifiable Random Function) -- an oracle providing provably fair randomness that can't be predicted or manipulated. Your dice game shows exactly why they need it.
-
-🤖 The exploit you're building (\`RiggedRoll\`) is a real attack pattern: **any contract** can compute the same "random" value and decide whether to proceed. This is the same class of vulnerability that [MEV bots](https://ethereum.org/en/developers/docs/mev/) exploit to front-run transactions worth millions.
-
-🔓 Understanding why randomness breaks -- and how to fix it -- is essential for building fair NFT drops, games, lotteries, governance, and dispute resolution systems like [Kleros](https://kleros.io/).
-
-🚀 Ready to break some "randomness"? Let's go!
-
 ---
 
 ## Checkpoint 0: 📦 Environment 📚
