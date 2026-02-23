@@ -17,6 +17,26 @@ This guide will walk you through creating a Multisig Wallet. Feel free to use it
 
 💬 Meet other builders working on this challenge and get help in the [Multisig Build Cohort telegram](https://t.me/+zKllN8OlGuxmYzFh).
 
+<details markdown='1'><summary>❓ Why do multisig wallets matter?</summary>
+A single private key is a single point of failure -- if it's compromised, stolen, or lost, all funds are gone. Multisig eliminates this by requiring multiple parties to agree before any transaction executes, creating a shared custody model enforced entirely by code.
+
+The off-chain signature collection pattern you'll learn here (ECDSA signatures gathered off-chain, submitted together on-chain) is a meta-transaction technique that saves gas and underpins modern account abstraction.
+</details>
+
+---
+
+🔐 **"Why not just use one wallet?"** Because in crypto, there's no "forgot password" button. One compromised key = everything gone. Multisig is how the industry secures billions.
+
+🏦 [Safe (formerly Gnosis Safe)](https://safe.global/) is the most widely used multisig, securing over **$100B in assets**. It's the standard for DAO treasuries, protocol admin keys, and team wallets. The propose-sign-execute pattern you're building is the same architecture.
+
+🏛️ **Protocol governance** runs on multisig. When [Uniswap](https://uniswap.org/), [Aave](https://aave.com/), or [Compound](https://compound.finance/) need to update their contracts, a multisig of core contributors must approve. No single person can unilaterally change a protocol -- that's the security guarantee.
+
+✍️ The **off-chain ECDSA signatures** you'll implement are a meta-transaction pattern -- collect approvals off-chain, submit them in one transaction. This saves gas and is the same technique behind [EIP-4337 account abstraction](https://eips.ethereum.org/EIPS/eip-4337) and gasless transaction relayers.
+
+🔓 The multisig pattern separates *proposing* from *executing* -- anyone can propose, but it only runs when enough signers agree. This is the building block for all onchain governance.
+
+🚀 Ready to build shared security? Let's go!
+
 ---
 
 ## 📜 Quest Journal 🧭
@@ -111,11 +131,12 @@ When deployed to any other chain, it will automatically use our deployed backend
 
 ---
 
-⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via \`.vscode/settings.json\` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included \`AGENTS.md\` and \`CLAUDE.md\` files with project context to help AI assistants understand the codebase.
 
-🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
-- Cursor: remove \`*\` from \`.cursorignore\` file
-- VSCode: set \`chat.disableAIFeatures\` to \`false\` in \`.vscode/settings.json\` file
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
+
+- Cursor: add \`*\` to a \`.cursorignore\` file in the root of your project
+- VSCode: set \`chat.disableAIFeatures\` to \`true\` in \`.vscode/settings.json\` file
 
 ---
 

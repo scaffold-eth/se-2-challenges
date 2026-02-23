@@ -12,6 +12,19 @@ The learner builds a multi-signature wallet (`MetaMultiSigWallet`) that requires
 
 The final deliverable: a multisig wallet where you can propose adding/removing signers, transferring funds, and updating the signature threshold. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why Multisig Matters
+
+Multisig wallets are one of the most critical security primitives in crypto. A single private key is a single point of failure -- if it's compromised, stolen, or lost, all funds are gone. Multisig eliminates this by requiring multiple parties to agree before any transaction executes, creating a shared custody model enforced by code.
+
+Why understanding multisig is essential:
+
+- **Gnosis Safe (now Safe)** is the most widely used multisig, securing over $100B in assets. It's the standard for DAO treasuries, protocol admin keys, and team wallets. The architecture -- propose, collect signatures, execute -- is the same pattern you're building.
+- **Protocol governance** -- Most DeFi protocols use multisigs to control upgrades and parameter changes. When Uniswap, Aave, or Compound need to update their contracts, a multisig of core contributors must approve. This prevents any single person from unilaterally changing the protocol.
+- **Off-chain signatures** -- Your challenge collects ECDSA signatures off-chain and submits them together on-chain. This is a meta-transaction pattern that saves gas (only one on-chain transaction regardless of how many signers) and is used extensively in account abstraction and gasless transactions.
+- **Social recovery** -- Multisig is the foundation for wallet recovery schemes. Vitalik Buterin has advocated for social recovery wallets where a group of trusted contacts (guardians) can help recover access if you lose your key, using the same m-of-n signature pattern.
+
+**Key insight**: The multisig pattern separates *proposing* from *executing*. Anyone can propose a transaction, but it only executes when enough signers agree. This separation of concerns is the building block for all onchain governance -- from simple team wallets to complex DAO voting systems.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
