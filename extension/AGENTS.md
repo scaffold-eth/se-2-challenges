@@ -12,6 +12,19 @@ The learner builds a simple decentralized exchange (DEX) using the **constant pr
 
 The final deliverable: an app that allows users to seamlessly trade ERC-20 Balloons with ETH in a decentralized manner. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why DEXs Matter
+
+Decentralized exchanges are the backbone of DeFi. By replacing order books and centralized matching engines with a simple mathematical formula (`x * y = k`), AMMs enable anyone to trade any token, anytime, without permission or intermediaries. The constant product formula you implement here is the same core mechanism that powers real DEXs handling billions in daily volume.
+
+Why understanding AMMs is essential:
+
+- **Uniswap** pioneered the constant product AMM and now processes more volume than many centralized exchanges. The V2 version uses the same `x * y = k` formula you're building. V3 and V4 add concentrated liquidity and hooks, but the foundation is identical.
+- **Liquidity providing** is a core DeFi primitive. When you add liquidity to a pool, you become a market maker earning fees on every trade. Understanding how LP shares work, how impermanent loss occurs, and how the pricing curve shifts is fundamental to participating in DeFi.
+- **Price discovery** on AMMs happens automatically through arbitrage. If the DEX price drifts from the market price, arbitrageurs trade until it realigns. This creates an emergent, decentralized price oracle that other protocols depend on.
+- **Composability** -- DEX pools are building blocks. Other protocols can route trades through them, use them as price feeds, or build complex multi-hop swaps. Aggregators like [1inch](https://1inch.io/) and [Paraswap](https://www.paraswap.io/) split trades across multiple DEXs to find the best price.
+
+**Key insight**: The `x * y = k` formula means every trade moves the price. Larger trades relative to pool size create more "slippage" (worse price). This is why liquidity depth matters -- and why real DEXs incentivize liquidity providers with trading fees.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
