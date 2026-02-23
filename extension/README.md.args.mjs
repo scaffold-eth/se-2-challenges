@@ -13,26 +13,6 @@ There is also a 🎥 [Youtube video](https://www.youtube.com/watch?v=eP5w6Ger1EQ
 
 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+_NeUIJ664Tc1MzIx)
 
-<details markdown='1'><summary>❓ Why do DEXs matter?</summary>
-Decentralized exchanges replace order books and centralized matching engines with a simple mathematical formula (\`x * y = k\`). This means anyone can trade any token, anytime, without permission or intermediaries. The constant product formula you implement here is the same core mechanism that powers real DEXs handling billions in daily volume.
-
-When you add liquidity to a pool, you become a market maker earning fees on every trade. Understanding how LP shares work, how the pricing curve shifts, and how arbitrage keeps prices aligned is fundamental to DeFi.
-</details>
-
----
-
-⚖️ **"Can math really replace a stock exchange?"** Yes -- and it already has! The \`x * y = k\` formula is elegantly simple, yet it powers one of DeFi's most important categories.
-
-🦄 [Uniswap](https://uniswap.org/) pioneered this exact constant product AMM and now processes more volume than many centralized exchanges. V2 uses the same \`x * y = k\` formula you're building. V3 adds concentrated liquidity, V4 adds hooks -- but the foundation is identical to what you'll implement.
-
-💧 **Liquidity providing** is a new form of earning. By depositing tokens into a pool, you earn a share of every trade's fee. Protocols like [Curve](https://curve.fi/) specialize in low-slippage stablecoin swaps, while [Balancer](https://balancer.fi/) generalizes to multi-token pools with custom weights.
-
-🔀 **Composability** makes DEXs even more powerful. Aggregators like [1inch](https://1inch.io/) split trades across multiple DEXs to find the best price. Other protocols use DEX pools as price feeds, build flash loans on top of them, or create complex multi-hop swap routes -- all possible because AMMs are open smart contracts anyone can interact with.
-
-🔓 Every trade moves the price on the curve. Larger trades create more "slippage." This is why liquidity depth matters -- and why understanding this curve is the key to understanding all of DeFi.
-
-🚀 Ready to build your own exchange? Let's go!
-
 ---
 
 ## Checkpoint 0: 📦 Environment 📚
