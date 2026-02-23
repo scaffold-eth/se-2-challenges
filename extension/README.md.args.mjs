@@ -31,20 +31,6 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ---
 
-🏦 **"Why lock up more than you borrow?"** Because on a pseudonymous blockchain, there are no credit scores, no courts, and no debt collectors. Collateral is the only guarantee -- and the math enforces it automatically.
-
-💰 [Aave](https://aave.com/) and [Compound](https://compound.finance/) are the two largest lending protocols, collectively holding billions in deposits. They use the same core pattern you're building: deposit collateral, borrow against it, get liquidated if your ratio drops too low.
-
-⚡ **Flash loans** are a mind-bending DeFi primitive that Aave pioneered -- borrow any amount with zero collateral, as long as you repay within the same transaction. If you don't repay, the entire transaction reverts as if it never happened. You'll explore this in the side quests!
-
-🔮 **Price oracles** are the Achilles' heel of lending protocols. Your challenge uses a DEX as a price feed, but real protocols use [Chainlink](https://chain.link/) oracles or TWAP (Time-Weighted Average Price) to prevent manipulation. Oracle failures have caused some of [DeFi's largest exploits](https://rekt.news/).
-
-📈 The **liquidation mechanics** you're building are how lending protocols stay solvent. Economic incentives (the 10% reward) replace legal enforcement -- liquidators are motivated to close risky positions before bad debt accumulates. This game-theoretic design is what makes trustless lending possible.
-
-🚀 Ready to build your own lending protocol? Let's go!
-
----
-
 ## Checkpoint 0: 📦 Environment 📚
 
 > 💻 Start your local network (a blockchain emulator in your computer):
