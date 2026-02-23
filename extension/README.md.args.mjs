@@ -74,18 +74,6 @@ Let's jump into the challenge.
 
 ---
 
-🔮 **"Isn't this just gambling?"** Not quite! Prediction markets are information machines. When real money is at stake, people are incentivized to be accurate rather than persuasive -- making market prices potentially more reliable than polls or pundits.
-
-📊 [Polymarket](https://polymarket.com/) proved this during the 2024 U.S. elections with $3.3B+ wagered. Its prediction accuracy rivaled traditional forecasting, attracting both crypto natives and mainstream users. The concept dates back to [election betting on Wall Street in 1884](https://en.wikipedia.org/wiki/Prediction_market) -- blockchain just makes it permissionless and global.
-
-🤖 Your challenge uses an **AMM** instead of an order book, meaning trades execute instantly without needing a counterparty. This is simpler and more gas-efficient onchain, though real platforms like Polymarket use a Central Limit Order Book (CLOB) for tighter spreads.
-
-🔗 The pattern you're building -- outcome tokens + AMM + oracle settlement -- is composable. These tokens can be used as collateral in lending protocols, traded on DEXs, or integrated into structured products. Prediction market shares are just ERC-20 tokens with a conditional payout.
-
-🚀 Ready to build the future of information markets? Let's go!
-
----
-
 ## Checkpoint 0: 📦 Environment 📚
 
 > Start your local network (a blockchain emulator in your computer)
