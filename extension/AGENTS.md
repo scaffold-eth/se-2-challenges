@@ -12,6 +12,19 @@ The learner builds an over-collateralized lending protocol where users deposit E
 
 The final deliverable: an app that allows anyone to take out a loan in Corn while making sure it is always backed by its value in ETH. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why Over-Collateralized Lending Matters
+
+Lending is one of the largest sectors in DeFi, with protocols holding tens of billions in deposits. Over-collateralized lending solves a fundamental problem: **how do you lend to anonymous borrowers with no credit scores, no legal recourse, and no identity?** The answer is collateral -- borrowers lock up more value than they borrow, and smart contracts enforce the rules automatically.
+
+Why understanding lending protocols is essential:
+
+- **Aave** and **Compound** are the two largest lending protocols, collectively holding billions in deposits. They use the same core pattern you're building: deposit collateral, borrow against it, get liquidated if your ratio drops. Aave pioneered flash loans -- borrowing without collateral as long as you repay within the same transaction.
+- **Liquidation mechanics** are how lending protocols stay solvent. When a borrower's collateral drops below the minimum ratio, anyone can repay the debt and claim the collateral plus a reward. This creates a self-correcting system where economic incentives replace legal enforcement.
+- **Price oracles** are the critical dependency. Your challenge uses a DEX as a price feed, but production protocols use Chainlink oracles or TWAP (Time-Weighted Average Price) to prevent manipulation. Oracle failures have caused some of DeFi's largest exploits.
+- **Leverage and composability** -- Borrowers can use their loans to buy more collateral (leveraged long), or borrow stablecoins against volatile assets to maintain exposure without selling. Flash loans enable atomic liquidations and arbitrage without upfront capital.
+
+**Key insight**: The 120% collateral ratio with a 10% liquidator reward creates a self-reinforcing safety mechanism. Liquidators are economically motivated to close risky positions before the protocol accumulates bad debt. This game-theoretic design replaces the role of credit officers and legal systems in traditional finance.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:

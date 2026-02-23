@@ -31,6 +31,20 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 
 ---
 
+🏦 **"Why lock up more than you borrow?"** Because on a pseudonymous blockchain, there are no credit scores, no courts, and no debt collectors. Collateral is the only guarantee -- and the math enforces it automatically.
+
+💰 [Aave](https://aave.com/) and [Compound](https://compound.finance/) are the two largest lending protocols, collectively holding billions in deposits. They use the same core pattern you're building: deposit collateral, borrow against it, get liquidated if your ratio drops too low.
+
+⚡ **Flash loans** are a mind-bending DeFi primitive that Aave pioneered -- borrow any amount with zero collateral, as long as you repay within the same transaction. If you don't repay, the entire transaction reverts as if it never happened. You'll explore this in the side quests!
+
+🔮 **Price oracles** are the Achilles' heel of lending protocols. Your challenge uses a DEX as a price feed, but real protocols use [Chainlink](https://chain.link/) oracles or TWAP (Time-Weighted Average Price) to prevent manipulation. Oracle failures have caused some of [DeFi's largest exploits](https://rekt.news/).
+
+📈 The **liquidation mechanics** you're building are how lending protocols stay solvent. Economic incentives (the 10% reward) replace legal enforcement -- liquidators are motivated to close risky positions before bad debt accumulates. This game-theoretic design is what makes trustless lending possible.
+
+🚀 Ready to build your own lending protocol? Let's go!
+
+---
+
 ## Checkpoint 0: 📦 Environment 📚
 
 > 💻 Start your local network (a blockchain emulator in your computer):
@@ -57,11 +71,12 @@ yarn start
 
 ---
 
-⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via \`.vscode/settings.json\` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included \`AGENTS.md\` and \`CLAUDE.md\` files with project context to help AI assistants understand the codebase.
 
-🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
-- Cursor: remove \`*\` from \`.cursorignore\` file
-- VSCode: set \`chat.disableAIFeatures\` to \`false\` in \`.vscode/settings.json\` file
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
+
+- Cursor: add \`*\` to a \`.cursorignore\` file in the root of your project
+- VSCode: set \`chat.disableAIFeatures\` to \`true\` in \`.vscode/settings.json\` file
 
 ---
 
