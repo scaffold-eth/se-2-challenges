@@ -85,7 +85,8 @@ describe("🚩 Challenge: 🎲 Dice Game", function () {
       await expect(riggedRoll.riggedRoll()).to.be.reverted;
     });
 
-    it("Should transfer sufficient eth to RiggedRoll", async function () {
+    // Checkpoint1
+    it("Checkpoint1: Should transfer sufficient eth to RiggedRoll", async function () {
       console.log("\t", "💸 Funding RiggedRoll contract");
       await fundRiggedContract();
       const riggedRollAddress = await riggedRoll.getAddress();
@@ -99,7 +100,8 @@ describe("🚩 Challenge: 🎲 Dice Game", function () {
   });
 
   describe("🔑 Rigged Rolls", function () {
-    it("Should call diceGame.rollTheDice for a roll <= 5", async () => {
+    // Checkpoint2
+    it("Checkpoint2: Should call diceGame.rollTheDice for a roll <= 5", async () => {
       const getRollLessThanFive = true;
       const expectedRoll = await getRoll(getRollLessThanFive);
       console.log(
@@ -117,7 +119,8 @@ describe("🚩 Challenge: 🎲 Dice Game", function () {
       await expect(tx).to.emit(diceGame, "Winner");
     });
 
-    it("Should not call diceGame.rollTheDice for a roll > 5", async () => {
+    // Checkpoint2
+    it("Checkpoint2: Should not call diceGame.rollTheDice for a roll > 5", async () => {
       const getRollLessThanFive = false;
       const expectedRoll = await getRoll(getRollLessThanFive);
       console.log(
@@ -130,7 +133,8 @@ describe("🚩 Challenge: 🎲 Dice Game", function () {
       await expect(riggedRoll.riggedRoll()).to.be.reverted;
     });
 
-    it("Should withdraw funds", async () => {
+    // Checkpoint3
+    it("Checkpoint3: Should withdraw funds", async () => {
       console.log("\t", "💸 Funding RiggedRoll contract");
       await fundRiggedContract();
 
