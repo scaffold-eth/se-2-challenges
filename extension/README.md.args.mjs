@@ -72,6 +72,20 @@ Let's jump into the challenge.
 
 > 💬 Meet other builders working on this challenge and get help in the [Prediction Markets Challenge Telegram Group](https://t.me/+NY00cDZ7PdBmNWEy)
 
+---
+
+🔮 **"Isn't this just gambling?"** Not quite! Prediction markets are information machines. When real money is at stake, people are incentivized to be accurate rather than persuasive -- making market prices potentially more reliable than polls or pundits.
+
+📊 [Polymarket](https://polymarket.com/) proved this during the 2024 U.S. elections with $3.3B+ wagered. Its prediction accuracy rivaled traditional forecasting, attracting both crypto natives and mainstream users. The concept dates back to [election betting on Wall Street in 1884](https://en.wikipedia.org/wiki/Prediction_market) -- blockchain just makes it permissionless and global.
+
+🤖 Your challenge uses an **AMM** instead of an order book, meaning trades execute instantly without needing a counterparty. This is simpler and more gas-efficient onchain, though real platforms like Polymarket use a Central Limit Order Book (CLOB) for tighter spreads.
+
+🔗 The pattern you're building -- outcome tokens + AMM + oracle settlement -- is composable. These tokens can be used as collateral in lending protocols, traded on DEXs, or integrated into structured products. Prediction market shares are just ERC-20 tokens with a conditional payout.
+
+🚀 Ready to build the future of information markets? Let's go!
+
+---
+
 ## Checkpoint 0: 📦 Environment 📚
 
 > Start your local network (a blockchain emulator in your computer)
@@ -102,11 +116,12 @@ Head to the **\`Debug Contracts\`** tab and you should find a smart contract nam
 
 ---
 
-⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via \`.vscode/settings.json\` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included \`AGENTS.md\` and \`CLAUDE.md\` files with project context to help AI assistants understand the codebase.
 
-🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
-- Cursor: remove \`*\` from \`.cursorignore\` file
-- VSCode: set \`chat.disableAIFeatures\` to \`false\` in \`.vscode/settings.json\` file
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
+
+- Cursor: add \`*\` to a \`.cursorignore\` file in the root of your project
+- VSCode: set \`chat.disableAIFeatures\` to \`true\` in \`.vscode/settings.json\` file
 
 ---
 

@@ -12,6 +12,19 @@ The learner builds an AMM-based prediction market where users bet on binary outc
 
 The final deliverable: an app that allows users to buy/sell outcome tokens, with an oracle to settle the result and a liquidity provider to seed the market. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why Prediction Markets Matter
+
+Prediction markets are one of the most compelling applications of blockchain technology because they turn speculation into **information aggregation**. When real money is at stake, participants are incentivized to be accurate rather than persuasive, making prediction markets potentially more reliable than polls, pundits, or expert panels.
+
+Why understanding prediction markets is essential:
+
+- **Polymarket** became one of the most widely used blockchain applications during the 2024 U.S. elections, with over $3.3 billion wagered on the presidential race alone. It demonstrated that onchain prediction markets can attract mainstream users and provide real-time probability estimates that rival traditional forecasting.
+- **Information discovery** -- When people bet money on outcomes, the prices reflect genuine beliefs backed by financial incentives. This creates an emergent price signal that aggregates dispersed knowledge more efficiently than surveys or expert opinions. There's a financial incentive to update your position when you have better information, and a disincentive to be wrong.
+- **AMM-based pricing** -- Unlike order book markets (Polymarket uses a CLOB), your challenge uses an Automated Market Maker. This means trades execute instantly without needing a counterparty, making it simpler to build and more gas-efficient onchain. The tradeoff is that AMMs require liquidity providers and have different slippage characteristics.
+- **Oracle problem** -- Prediction markets need a trusted source to report the actual outcome. Your challenge uses a simple oracle role, but production markets use decentralized oracle networks, optimistic oracles (like UMA), or multi-sig committees to prevent manipulation.
+
+**Key insight**: The AMM pricing in your prediction market ensures that both outcome token prices always sum to the payout amount (0.01 ETH). As more people buy "Yes" tokens, the "Yes" price rises and "No" price falls -- the prices directly reflect the market's implied probability of each outcome.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
