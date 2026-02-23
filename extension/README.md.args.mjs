@@ -16,6 +16,26 @@ export const extraContents = `# 🚩 Challenge: 🏵 Token Vendor 🤖
 
 > 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/joinchat/IfARhZFc5bfPwpjq)!
 
+<details markdown='1'><summary>❓ Why does token vending matter?</summary>
+A Token Vendor -- a smart contract that buys and sells tokens at a fixed rate -- is the simplest form of an automated market maker (AMM). It introduces the core mechanics that power DeFi's most important protocols: holding assets, exchanging them trustlessly, and enforcing rules without intermediaries.
+
+The ERC-20 \`approve\`/\`transferFrom\` pattern you implement here is the universal mechanism for contract-to-contract token transfers. Every DEX, lending protocol, and yield farm uses it.
+</details>
+
+---
+
+🤖 **"Isn't this just a simple exchange?"** It is -- and that's exactly the point! The Vendor is the simplest possible version of what powers billion-dollar protocols.
+
+🦄 [Uniswap](https://uniswap.org/) started as a constant-product AMM -- conceptually a more sophisticated version of your Vendor that uses a pricing curve instead of a fixed rate. Today it processes billions in daily volume with no order books and no intermediaries. Your Vendor is where that journey begins.
+
+🔐 The **approve pattern** you learn here (\`approve\` then \`transferFrom\`) is everywhere in DeFi. When you deposit tokens into [Aave](https://aave.com/) for lending, stake in a [Lido](https://lido.fi/) pool, or provide liquidity on a DEX -- they all use the same two-step flow you're building now.
+
+💰 By minting a fixed supply and selling through a vendor, you're implementing a simple **token distribution mechanism**. Real projects use [bonding curves](https://medium.com/coinmonks/token-bonding-curves-explained-7a9332198e0e), Dutch auctions, and airdrops -- but the core idea is the same: control how tokens enter circulation.
+
+🔓 The Vendor is **trustless** -- users don't need to trust you, they verify the exchange rate in the contract code. Anyone can inspect it, anyone can trade. This is the foundation of DeFi: replacing trusted intermediaries with transparent, auditable code.
+
+🚀 Ready to build your own token economy? Let's go!
+
 ---
 
 ## Checkpoint 0: 📦 Environment 📚
@@ -44,11 +64,12 @@ yarn start
 
 ---
 
-⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via \`.vscode/settings.json\` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included \`AGENTS.md\` and \`CLAUDE.md\` files with project context to help AI assistants understand the codebase.
 
-🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
-- Cursor: remove \`*\` from \`.cursorignore\` file
-- VSCode: set \`chat.disableAIFeatures\` to \`false\` in \`.vscode/settings.json\` file
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
+
+- Cursor: add \`*\` to a \`.cursorignore\` file in the root of your project
+- VSCode: set \`chat.disableAIFeatures\` to \`true\` in \`.vscode/settings.json\` file
 
 ---
 

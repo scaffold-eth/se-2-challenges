@@ -12,6 +12,19 @@ The learner builds a decentralized token vending machine: an ERC-20 token (`Your
 
 The final deliverable: an app that lets users purchase ERC-20 tokens, transfer them, and sell them back to the vendor. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why Token Vending Matters
+
+The Token Vendor pattern -- a smart contract that automatically buys and sells tokens at a fixed rate -- is the simplest form of an **automated market maker (AMM)**. Understanding this pattern is fundamental because it introduces the core mechanics that power DeFi's most important protocols.
+
+What you learn building this vendor scales directly to real protocols:
+
+- **Uniswap** started as a simple constant-product AMM -- conceptually, a more sophisticated version of your Vendor that uses a pricing curve instead of a fixed rate. Uniswap processes billions in daily volume with no order books and no intermediaries.
+- **The ERC-20 approve pattern** you implement here (`approve` then `transferFrom`) is the universal mechanism for contract-to-contract token transfers across all of DeFi. Every DEX, lending protocol, and yield farm uses it.
+- **Ownable withdraw** demonstrates the simplest access control pattern -- only the owner can withdraw ETH. This same concept extends to timelocks, multisigs, and DAO governance in production protocols.
+- **Token economics**: By minting a fixed supply and selling through a vendor, you're implementing a simple token distribution mechanism. Real projects use bonding curves, auctions, and airdrops, but the core idea is the same.
+
+**Key insight**: The Vendor is trustless -- users don't need to trust you, they verify the exchange rate in the contract code. Anyone can inspect it, anyone can trade. This is the foundation of DeFi: replacing trusted intermediaries (banks, brokers, exchanges) with transparent, auditable code.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
