@@ -12,6 +12,19 @@ The learner explores on-chain pseudo-randomness by interacting with a dice game 
 
 The final deliverable: an app that demonstrates the dice game exploit. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
+## Why the Dice Game Matters
+
+Randomness on a public, deterministic blockchain is one of the hardest unsolved UX problems in crypto. Every validator and every node executes the same transactions in the same order and must arrive at the same result -- so where does "random" come from? This challenge teaches you why naive approaches fail and why secure randomness requires external infrastructure.
+
+Why this matters beyond dice:
+
+- **NFT minting fairness** -- Many NFT drops need fair, unbiased random assignment. Projects like [Bored Ape Yacht Club](https://boredapeyachtclub.com/) had to carefully design reveal mechanics. Without secure randomness, insiders or miners could cherry-pick rare traits.
+- **DeFi liquidation ordering** -- Some protocols randomize liquidation priority to prevent MEV (Miner Extractable Value) bots from front-running. Understanding how block-level values can be predicted is essential for designing MEV-resistant systems.
+- **Gaming and lotteries** -- [PoolTogether](https://pooltogether.com/) is a no-loss savings protocol that uses randomness to select winners. They rely on [Chainlink VRF](https://chain.link/vrf) (Verifiable Random Function) -- an oracle that provides provably fair randomness that can't be predicted or manipulated.
+- **Governance and jury selection** -- Fair random selection for DAOs, dispute resolution (like [Kleros](https://kleros.io/)), and validator selection all require randomness that no single party can influence.
+
+**Key insight**: `block.prevrandao` (formerly `block.difficulty`) looks random but is entirely predictable within the same transaction. Any contract can compute the same "random" value before calling yours. This is why the `RiggedRoll` exploit works -- and why production systems use commit-reveal schemes, VRF oracles, or other external randomness sources.
+
 ## Project Structure
 
 This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
