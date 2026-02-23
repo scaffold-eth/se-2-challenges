@@ -10,26 +10,6 @@ export const extraContents = `# 🚩 Challenge: 📣 Crowdfunding App
 
 > 💬 Meet other builders working on this challenge and get help in the [challenge Telegram](https://t.me/joinchat/E6r91UFt4oMJlt01)!
 
-<details markdown='1'><summary>❓ Why does onchain crowdfunding matter?</summary>
-Traditional crowdfunding (Kickstarter, GoFundMe) requires trusting a platform to hold funds, enforce deadlines, and process refunds. A smart contract replaces that trust with code: the rules are public, immutable, and self-enforcing. Contributors only have to trust the code, not each other or a company.
-
-In this challenge, the \`CrowdFund\` contract enforces two guarantees: (1) if the threshold is met by the deadline, funds go to the recipient, and (2) if not, every contributor can withdraw their exact contribution. No admin key, no platform fee, no trust required.
-</details>
-
----
-
-🏛️ **"But isn't Kickstarter good enough?"** Not when you need trustless coordination! With smart contracts, the rules are the code itself -- no platform can change them, freeze funds, or take a cut unless it's programmed in.
-
-🤝 Look at how [ConstitutionDAO](https://www.constitutiondao.com/) used [Juicebox](https://juicebox.money/) to raise **$47M in ETH** from 17,000+ contributors to bid on a copy of the US Constitution. When the bid failed, contributors could withdraw their funds automatically -- no committee, no delays, just code.
-
-🌱 Or check out [Gitcoin Grants](https://grants.gitcoin.co/) which uses **quadratic funding** -- a mechanism where the number of unique contributors matters more than the amount, giving small donors outsized influence. Smart contracts make this math trustless and transparent.
-
-🏗️ [Nouns DAO](https://nouns.wtf/) runs daily NFT auctions that fund a community treasury governed by token holders. The treasury has funded public goods, art installations, and open-source software -- all via onchain votes. The same pool-then-decide pattern you're building here powers real governance.
-
-🔓 The pattern you're learning (pool funds -> check condition -> distribute or refund) is a **composable primitive**. It underlies DAOs, insurance pools, prediction markets, and any scenario where strangers need to coordinate money without trusting a middleman.
-
-🚀 Ready to build trustless coordination? Let's go!
-
 ---
 
 ## Checkpoint 0: 📦 Environment 📚
