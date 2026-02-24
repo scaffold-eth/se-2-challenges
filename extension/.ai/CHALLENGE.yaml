@@ -570,4 +570,10 @@ completion_message: |
   - Ownable access control
   - Sending ETH safely with `call`
 
-  **Next steps:** follow the README to deploy to a testnet, ship the frontend, and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/token-vendor):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
