@@ -4,7 +4,7 @@ export const description = `
   <div className="flex items-center flex-col flex-grow pt-10">
       <div className="px-5">
         <h1 className="text-center mb-6">
-          <span className="block text-2xl mb-2">SpeedRunEthereum</span>
+          <span className="block text-2xl mb-2">Speedrun Ethereum</span>
           <span className="block text-4xl font-bold">Challenge: 🎲 Dice Game</span>
         </h1>
         <div className="flex flex-col items-center justify-center">
@@ -17,12 +17,11 @@ export const description = `
           />
           <div className="max-w-3xl">
             <p className="text-lg mt-10">
-              🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but very
-              weak form of randomness. This challenge will give you an example of a contract using block hash to create
-              random numbers. This randomness is exploitable. Other, stronger forms of randomness include commit/reveal
-              schemes, oracles, or VRF from Chainlink. the Ethereum protocol!
+              🎰 Randomness is tricky on a public deterministic blockchain. The block hash is an easy to use, but
+              very weak form of randomness. This challenge will give you an example of a contract using the block
+              hash to create random numbers. This randomness is exploitable. Other, stronger forms of randomness
+              include commit/reveal schemes, oracles, or VRF from Chainlink.
             </p>
-            <p className="text-lg mt-2">👍 One day soon, randomness will be built into the Ethereum protocol!</p>
             <p className="text-lg mt-2">
               🧤 Every time a player rolls the dice, they are required to send .002 Eth. 40 percent of this value is
               added to the current prize amount while the other 60 percent stays in the contract to fund future prizes.
@@ -40,7 +39,7 @@ export const description = `
             </p>
             <p className="text-center text-lg">
               <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-                SpeedRunEthereum.com
+                SpeedrunEthereum.com
               </a>
               !
             </p>
@@ -50,4 +49,4 @@ export const description = `
     </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Challenge: Dice game";
+export const externalExtensionName = "Speedrun Ethereum Challenge: Dice game";

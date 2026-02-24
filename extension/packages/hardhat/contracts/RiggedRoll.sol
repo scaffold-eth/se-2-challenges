@@ -6,15 +6,29 @@ import "./DiceGame.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract RiggedRoll is Ownable {
+    /////////////////
+    /// Errors //////
+    /////////////////
+
+    // Errors go here...
+
+    //////////////////////
+    /// State Variables //
+    //////////////////////
+    
     DiceGame public diceGame;
 
+    ///////////////////
+    /// Constructor ///
+    ///////////////////
+    
     constructor(address payable diceGameAddress) Ownable(msg.sender) {
         diceGame = DiceGame(diceGameAddress);
     }
 
-    // Implement the `withdraw` function to transfer Ether from the rigged contract to a specified address.
+    ///////////////////
+    /// Functions /////
+    ///////////////////
 
-    // Create the `riggedRoll()` function to predict the randomness in the DiceGame contract and only initiate a roll when it guarantees a win.
-
-    // Include the `receive()` function to enable the contract to receive incoming Ether.
+    // Functions go here...
 }

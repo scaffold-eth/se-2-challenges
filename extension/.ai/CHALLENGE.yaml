@@ -169,12 +169,29 @@ checkpoints:
 
       The `{value: ...}` syntax attaches ETH to the function call. The ETH comes from RiggedRoll's balance.
 
+      ### Custom Errors
+
+      Instead of using `require` with string messages, Solidity supports **custom errors** which are more gas-efficient and descriptive:
+
+      ```solidity
+      error NotEnoughETH(uint256 required, uint256 available);
+      error NotWinningRoll(uint256 roll);
+      ```
+
+      You revert with them using `if` + `revert`:
+
+      ```solidity
+      if (condition) revert NotEnoughETH(required, available);
+      ```
+
       ### Balance Check
 
       Before rolling, verify that RiggedRoll has enough ETH:
 
       ```solidity
-      require(address(this).balance >= 0.002 ether, "Not enough ETH");
+      uint256 required = 0.002 ether;
+      uint256 available = address(this).balance;
+      if (available < required) revert NotEnoughETH(required, available);
       ```
 
       `address(this).balance` returns the contract's current ETH balance.
@@ -204,23 +221,30 @@ checkpoints:
       description: |
         Open `packages/hardhat/contracts/RiggedRoll.sol`.
 
-        Implement `riggedRoll()`:
+        First, add these custom errors to the error section in `RiggedRoll.sol`:
 
-        1. **Check balance** — require at least 0.002 ether
+        ```solidity
+        error NotEnoughETH(uint256 required, uint256 available);
+        error NotWinningRoll(uint256 roll);
+        ```
+
+        Then implement `riggedRoll()`:
+
+        1. **Check balance** — revert with `NotEnoughETH` if less than 0.002 ether
         2. **Predict the roll** — replicate DiceGame's hash calculation:
            ```solidity
            bytes32 prevHash = blockhash(block.number - 1);
            bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), diceGame.nonce()));
            uint256 roll = uint256(hash) % 16;
            ```
-        3. **Only roll if winning** — revert if `roll > 5`
+        3. **Only roll if winning** — revert with `NotWinningRoll` if `roll > 5`
         4. **Call DiceGame** — `diceGame.rollTheDice{value: 0.002 ether}();`
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/RiggedRoll.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
-        - "Start with `require(address(this).balance >= 0.002 ether, \"Not enough ETH\");`, then compute the hash exactly like DiceGame does."
+        - "Start with a balance check using `if (available < required) revert NotEnoughETH(required, available);`, then compute the hash exactly like DiceGame does."
         - |
           The hash computation must match DiceGame exactly:
           ```solidity
@@ -231,29 +255,35 @@ checkpoints:
         - |
           Full function:
           ```solidity
-          function riggedRoll() public {
-              require(address(this).balance >= 0.002 ether, "Not enough ETH");
+          function riggedRoll() external {
+              uint256 required = 0.002 ether;
+              uint256 available = address(this).balance;
+              if (available < required) revert NotEnoughETH(required, available);
 
               bytes32 prevHash = blockhash(block.number - 1);
-              bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), diceGame.nonce()));
+              uint256 nonce = diceGame.nonce();
+              bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), nonce));
               uint256 roll = uint256(hash) % 16;
 
-              require(roll <= 5, "Roll would not win");
+              if (roll > 5) revert NotWinningRoll(roll);
 
-              diceGame.rollTheDice{value: 0.002 ether}();
+              diceGame.rollTheDice{value: required}();
           }
           ```
       solution: |
-        function riggedRoll() public {
-            require(address(this).balance >= 0.002 ether, "Not enough ETH");
+        function riggedRoll() external {
+            uint256 required = 0.002 ether;
+            uint256 available = address(this).balance;
+            if (available < required) revert NotEnoughETH(required, available);
 
             bytes32 prevHash = blockhash(block.number - 1);
-            bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), diceGame.nonce()));
+            uint256 nonce = diceGame.nonce();
+            bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), nonce));
             uint256 roll = uint256(hash) % 16;
 
-            require(roll <= 5, "Roll would not win");
+            if (roll > 5) revert NotWinningRoll(roll);
 
-            diceGame.rollTheDice{value: 0.002 ether}();
+            diceGame.rollTheDice{value: required}();
         }
 
   # ============================================================
@@ -293,13 +323,28 @@ checkpoints:
       }
       ```
 
+      ### Balance Check with Custom Error
+
+      Before withdrawing, verify the contract has enough ETH. Add a custom error:
+
+      ```solidity
+      error InsufficientBalance(uint256 requested, uint256 available);
+      ```
+
+      Then check before sending:
+
+      ```solidity
+      uint256 available = address(this).balance;
+      if (_amount > available) revert InsufficientBalance(_amount, available);
+      ```
+
       ### Sending ETH with `call`
 
       To send a specific amount of ETH to an address:
 
       ```solidity
-      (bool sent, ) = _addr.call{value: _amount}("");
-      require(sent, "Failed to send Ether");
+      (bool success, ) = payable(_addr).call{value: _amount}("");
+      require(success, "Withdraw failed");
       ```
 
       - `_addr.call{value: _amount}("")` — sends `_amount` wei to `_addr`
@@ -329,40 +374,46 @@ checkpoints:
       description: |
         Open `packages/hardhat/contracts/RiggedRoll.sol`.
 
-        Implement `withdraw(address _addr, uint256 _amount)` with `onlyOwner`:
-
-        1. Send `_amount` ETH to `_addr` using `call`
-        2. Require that the transfer succeeded
+        First, add this custom error to the error section:
 
         ```solidity
-        function withdraw(address _addr, uint256 _amount) public onlyOwner {
-            (bool sent, ) = _addr.call{value: _amount}("");
-            require(sent, "Failed to send Ether");
-        }
+        error InsufficientBalance(uint256 requested, uint256 available);
         ```
+
+        Then implement `withdraw(address _addr, uint256 _amount)` with `onlyOwner`:
+
+        1. **Check balance** — revert with `InsufficientBalance` if `_amount` exceeds the contract balance
+        2. **Send ETH** — send `_amount` to `_addr` using `call`
+        3. **Check success** — require that the transfer succeeded
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/RiggedRoll.sol"
       test: "yarn test --grep 'Checkpoint3'"
       hints:
-        - "The function signature is `function withdraw(address _addr, uint256 _amount) public onlyOwner`. Use `.call{value: _amount}` to send ETH."
+        - "The function signature is `function withdraw(address _addr, uint256 _amount) external onlyOwner`. Check balance first, then use `.call{value: _amount}` to send ETH."
         - |
           ```solidity
-          (bool sent, ) = _addr.call{value: _amount}("");
-          require(sent, "Failed to send Ether");
+          uint256 available = address(this).balance;
+          if (_amount > available) revert InsufficientBalance(_amount, available);
+          (bool success, ) = payable(_addr).call{value: _amount}("");
+          require(success, "Withdraw failed");
           ```
         - |
           Full function:
           ```solidity
-          function withdraw(address _addr, uint256 _amount) public onlyOwner {
-              (bool sent, ) = _addr.call{value: _amount}("");
-              require(sent, "Failed to send Ether");
+          function withdraw(address _addr, uint256 _amount) external onlyOwner {
+              uint256 available = address(this).balance;
+              if (_amount > available) revert InsufficientBalance(_amount, available);
+              (bool success, ) = payable(_addr).call{value: _amount}("");
+              require(success, "Withdraw failed");
           }
           ```
       solution: |
-        function withdraw(address _addr, uint256 _amount) public onlyOwner {
-            (bool sent, ) = _addr.call{value: _amount}("");
-            require(sent, "Failed to send Ether");
+        function withdraw(address _addr, uint256 _amount) external onlyOwner {
+            uint256 available = address(this).balance;
+            if (_amount > available) revert InsufficientBalance(_amount, available);
+            (bool success, ) = payable(_addr).call{value: _amount}("");
+            require(success, "Withdraw failed");
         }
 
 completion_message: |
