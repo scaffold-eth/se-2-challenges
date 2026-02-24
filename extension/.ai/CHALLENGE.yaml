@@ -309,4 +309,8 @@ completion_message: |
   - Run `yarn start` to launch the frontend
   - Mint some NFTs and see them in your wallet!
 
-  When you're ready, deploy to Sepolia testnet and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
+  To submit your challenge, complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/tokenization):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
