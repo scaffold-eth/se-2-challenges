@@ -383,4 +383,10 @@ completion_message: |
 
   **The big takeaway:** Never use on-chain data (block hash, timestamp, etc.) as a source of randomness. Use an oracle like Chainlink VRF for secure randomness.
 
-  **Next steps:** follow the README to deploy to a testnet, ship the frontend, and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/dice-game):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
