@@ -1,0 +1,685 @@
+name: "ZK Voting"
+version: "1.0"
+description: "Build a private, Sybil-resistant voting system using zero-knowledge proofs, Merkle trees, and Noir circuits"
+difficulty: "advanced"
+estimated_time: "90-120 minutes"
+
+setup:
+  file: "packages/hardhat/contracts/Voting.sol"
+
+welcome_message: |
+  Welcome to the ZK Voting Challenge!
+
+  You'll build a **private voting system** where voters prove eligibility and vote exactly once — **without revealing who they are**. You'll work across three languages:
+
+  1. **Solidity** — voter registration with a Merkle tree + on-chain vote verification
+  2. **Noir** — ZK circuits for commitment schemes and Merkle proof verification
+  3. **TypeScript** — frontend for proof generation and voting (covered in the README)
+
+  In this guided flow, we'll focus on the **Solidity and Noir** parts:
+
+  1. **Registration** — add voters to an on-chain Merkle tree
+  2. **Commitment circuit** — write a ZK circuit proving you know a secret
+  3. **Merkle root circuit** — extend the circuit to prove tree membership
+  4. **Voting** — verify ZK proofs on-chain and cast anonymous votes
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's build private voting!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: Registration with Merkle Tree
+  # ============================================================
+  - id: "register"
+    title: "Register with a Merkle Tree"
+    description: "Implement the register function with state variables, allowlist checks, and Merkle tree insertion"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Voter Registration with a Merkle Tree
+
+      Our voting system has three phases: **registration → proof generation → voting**. We start with registration.
+
+      ### How it works
+
+      The contract owner adds addresses to an allowlist. Registered voters submit a **commitment** (a hash) that gets inserted into a **Lean Incremental Merkle Tree (LeanIMT)** on-chain. Later, voters will prove their commitment is in the tree using a ZK proof — without revealing which commitment is theirs.
+
+      ### LeanIMT in short
+
+      A standard Merkle tree stores every node, which is expensive. LeanIMT is optimized:
+      - Pre-fills positions with zeros
+      - Only stores a "frontier" (one active node per level)
+      - New leaves replace zeros and only the frontier updates
+      - Uses **Poseidon** hashing (ZK-friendly, much cheaper than Keccak inside circuits)
+
+      Adding leaves works like a binary counter: if a slot is empty, put the leaf there. If full, hash the two values and carry the result up.
+
+      ### What you need to implement
+
+      You need **three state variables** and the `register` function:
+
+      **State variables** (add below the `/// Checkpoint 2 //////` comment in state variables section):
+      - `mapping(address => bool) private s_hasRegistered` — tracks who has registered
+      - `mapping(uint256 => bool) private s_commitments` — tracks used commitments
+      - `LeanIMTData private s_tree` — the Merkle tree
+
+      **Register function** enforces:
+      1. Caller must be on the allowlist AND not already registered
+      2. Commitment must be unique (not used by anyone else)
+      3. Insert commitment into the tree
+      4. Emit `NewLeaf` with the leaf index and commitment value
+
+      **Also uncomment** the lines in `getVotingData()` and `getVoterData()` below `/// Checkpoint 2 //////` comments.
+
+    questions:
+      - text: "Why do we use a Merkle tree for voter registration instead of just a simple mapping? What does it enable for the ZK proof later?"
+        concepts:
+          [
+            "prove membership",
+            "without revealing",
+            "which leaf",
+            "privacy",
+            "root",
+            "efficient",
+            "set membership",
+          ]
+        hint: "A mapping would require revealing your address to prove you're registered. A Merkle tree lets you prove your commitment is in the tree by just showing a path to the root — without revealing which leaf is yours."
+
+      - text: "Why do we need to check for duplicate commitments even across different addresses?"
+        concepts:
+          [
+            "same commitment",
+            "link",
+            "collide",
+            "unique",
+            "privacy",
+            "identify",
+          ]
+        hint: "If two addresses could use the same commitment, it could create a link between them or cause confusion about which voter the commitment belongs to."
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Voting.sol` and make these changes:
+
+        **1. Add state variables** (below `/// Checkpoint 2 //////` in the state variables section):
+        ```solidity
+        mapping(address => bool) private s_hasRegistered;
+        mapping(uint256 => bool) private s_commitments;
+        LeanIMTData private s_tree;
+        ```
+
+        **2. Implement `register(uint256 _commitment)`:**
+        - If `!s_voters[msg.sender] || s_hasRegistered[msg.sender]`, revert with `Voting__NotAllowedToVote()`
+        - If `s_commitments[_commitment]` is true, revert with `Voting__CommitmentAlreadyAdded(_commitment)`
+        - Set `s_commitments[_commitment] = true`
+        - Set `s_hasRegistered[msg.sender] = true`
+        - Call `s_tree.insert(_commitment)`
+        - Emit `NewLeaf(s_tree.size - 1, _commitment)`
+
+        **3. Uncomment getter lines:**
+        - In `getVotingData()`: uncomment the 3 lines below `/// Checkpoint 2 //////`
+        - In `getVoterData()`: uncomment the line below `/// Checkpoint 2 //////`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Voting.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      hints:
+        - "The two guard checks use existing state: `s_voters` (allowlist) and the new `s_hasRegistered` mapping."
+        - |
+          The key is the order: validate → mark as used → insert into tree → emit event:
+          ```solidity
+          s_commitments[_commitment] = true;
+          s_hasRegistered[msg.sender] = true;
+          s_tree.insert(_commitment);
+          emit NewLeaf(s_tree.size - 1, _commitment);
+          ```
+        - |
+          Full solution — state variables + register function:
+          ```solidity
+          // State variables (add below /// Checkpoint 2 ////// comment):
+          mapping(address => bool) private s_hasRegistered;
+          mapping(uint256 => bool) private s_commitments;
+          LeanIMTData private s_tree;
+
+          // Register function:
+          function register(uint256 _commitment) public {
+              if (!s_voters[msg.sender] || s_hasRegistered[msg.sender]) {
+                  revert Voting__NotAllowedToVote();
+              }
+              if (s_commitments[_commitment]) {
+                  revert Voting__CommitmentAlreadyAdded(_commitment);
+              }
+              s_commitments[_commitment] = true;
+              s_hasRegistered[msg.sender] = true;
+              s_tree.insert(_commitment);
+              emit NewLeaf(s_tree.size - 1, _commitment);
+          }
+          ```
+          Also uncomment the lines in `getVotingData()` and `getVoterData()`.
+      solution: |
+        // State variables:
+        mapping(address => bool) private s_hasRegistered;
+        mapping(uint256 => bool) private s_commitments;
+        LeanIMTData private s_tree;
+
+        // Register function:
+        function register(uint256 _commitment) public {
+            if (!s_voters[msg.sender] || s_hasRegistered[msg.sender]) {
+                revert Voting__NotAllowedToVote();
+            }
+            if (s_commitments[_commitment]) {
+                revert Voting__CommitmentAlreadyAdded(_commitment);
+            }
+            s_commitments[_commitment] = true;
+            s_hasRegistered[msg.sender] = true;
+            s_tree.insert(_commitment);
+            emit NewLeaf(s_tree.size - 1, _commitment);
+        }
+
+        // Uncomment in getVotingData():
+        size = s_tree.size;
+        depth = s_tree.depth;
+        root = s_tree.root();
+
+        // Uncomment in getVoterData():
+        registered = s_hasRegistered[_voter];
+
+  # ============================================================
+  # CHECKPOINT 2: ZK Circuit — Commitment Scheme
+  # ============================================================
+  - id: "commitment-circuit"
+    title: "Write Your First ZK Circuit — Commitment Scheme"
+    description: "Write a Noir circuit that proves knowledge of a nullifier and secret without revealing them"
+    deployAfterCheckpoint: false
+
+    context: |
+      ## Your First ZK Circuit
+
+      Now we switch to **Noir**, a language for writing ZK circuits. The goal: let a voter **prove they know a secret** without revealing it.
+
+      ### What's a ZK circuit?
+
+      A circuit is a set of mathematical constraints. Noir lets you write these as a program, which compiles into math that a proving system (Barretenberg) turns into cryptographic proofs.
+
+      - **Public inputs** (marked `pub`) are visible to the verifier/on-chain
+      - **Private inputs** (witnesses) stay hidden — they never leave the prover's machine
+
+      ### Commitment Scheme
+
+      We combine two private values:
+      - **nullifier** — will be hashed and tracked on-chain to prevent double-voting
+      - **secret** — combined with nullifier to form the commitment
+
+      `commitment = hash(nullifier, secret)` — this is what was stored in the Merkle tree during registration.
+
+      ### What you'll implement
+
+      Inside the circuit's `main` function (at `////// Checkpoint 3 //////`):
+
+      1. **Recompute the nullifier hash**: Hash the private `nullifier` with `hash_1` and assert it equals the public `nullifier_hash`
+      2. **Build the commitment**: Hash `nullifier` and `secret` together with `hash_2`
+
+      The `assert` ensures the prover really knows the nullifier (not just guessing). The commitment will be used in the next checkpoint to prove Merkle tree membership.
+
+      ### Poseidon hashing
+
+      We use Poseidon (already imported as `hash_1` and `hash_2`) instead of SHA256/Keccak because it's dramatically cheaper inside ZK circuits.
+
+    questions:
+      - text: "Why do we hash the nullifier before making it public, instead of just exposing the nullifier directly?"
+        concepts:
+          [
+            "privacy",
+            "link",
+            "commitment",
+            "reveal",
+            "one-way",
+            "can't reverse",
+            "hidden",
+          ]
+        hint: "If the nullifier were public, someone could link it to the commitment (which is on-chain) and figure out which voter cast the vote."
+
+      - text: "What's the difference between public and private inputs in a ZK circuit? Why must the nullifier be private?"
+        concepts:
+          [
+            "visible",
+            "verifier",
+            "witness",
+            "hidden",
+            "never leave",
+            "prover",
+            "on-chain",
+          ]
+        hint: "Public inputs are visible to everyone (including on-chain verifiers). Private inputs stay on the prover's machine — they're used to generate the proof but never revealed."
+
+    task:
+      description: |
+        Open `packages/circuits/src/main.nr` and add code at `////// Checkpoint 3 //////`:
+
+        1. **Recompute and verify the nullifier hash:**
+           ```
+           let computed_nullifier_hash: Field = hash_1([nullifier]);
+           assert(computed_nullifier_hash == nullifier_hash);
+           ```
+
+        2. **Build the commitment:**
+           ```
+           let commitment: Field = hash_2([nullifier, secret]);
+           ```
+
+        The commitment will be used in the next checkpoint.
+
+        Say **"check"** when you're ready!
+      file: "packages/circuits/src/main.nr"
+      test: "cd extension/packages/circuits && nargo check 2>&1 | grep -v warning && echo 'Circuit check passed!'"
+      hints:
+        - "`hash_1` takes an array of one element: `hash_1([nullifier])`. `hash_2` takes an array of two: `hash_2([nullifier, secret])`."
+        - |
+          Full solution (add at `////// Checkpoint 3 //////`):
+          ```rust
+          let computed_nullifier_hash: Field = hash_1([nullifier]);
+          assert(computed_nullifier_hash == nullifier_hash);
+
+          let commitment: Field = hash_2([nullifier, secret]);
+          ```
+      solution: |
+        let computed_nullifier_hash: Field = hash_1([nullifier]);
+        assert(computed_nullifier_hash == nullifier_hash);
+
+        let commitment: Field = hash_2([nullifier, secret]);
+
+  # ============================================================
+  # CHECKPOINT 3: ZK Circuit — Merkle Root Verification
+  # ============================================================
+  - id: "merkle-circuit"
+    title: "Implement Merkle Root Check in ZK Circuit"
+    description: "Extend the Noir circuit to prove Merkle tree membership and bind the vote"
+    deployAfterCheckpoint: false
+
+    context: |
+      ## Proving Tree Membership
+
+      Now we extend the circuit to prove that your commitment actually exists in the Merkle tree — the **core of the ZK voting system**.
+
+      ### How Merkle proofs work in ZK
+
+      Given your commitment (leaf) and a set of **sibling hashes**, you can recompute the Merkle root by hashing your way up the tree. If the computed root matches the on-chain root, you've proven membership.
+
+      ### New inputs needed
+
+      **Public (uncomment these):**
+      - `root: pub Field` — the on-chain Merkle root to verify against
+      - `vote: pub bool` — Yes/No choice, bound to the proof so it can't be changed
+      - `depth: pub u32` — tree depth
+
+      **Private (uncomment these):**
+      - `index: Field` — your leaf position (must stay private to preserve anonymity!)
+      - `siblings: [Field; 16]` — neighbor hashes for the Merkle path (16 levels = up to 65,536 voters)
+
+      ### What you'll implement
+
+      Also **uncomment the import** of `binary_merkle_root` at the top of the file.
+
+      At `////// Checkpoint 4 //////`:
+
+      1. **Count non-zero siblings** — not all 16 slots are used
+      2. **Assert depth ≤ 16** — safety bound
+      3. **Convert index to bits** — `index.to_le_bits()` gives 16 little-endian bits that tell left vs. right at each tree level
+      4. **Compute root** — use `binary_merkle_root(hash_2, commitment, siblings_num, index_bits, siblings)`
+      5. **Assert computed root == public root**
+      6. **Bind the vote** — cast to Field and assert `x² = x` (prevents compiler warning, ensures 0 or 1)
+
+    questions:
+      - text: "Why must the leaf index be a private input? What would happen if it were public?"
+        concepts:
+          [
+            "reveal",
+            "which leaf",
+            "identity",
+            "link",
+            "anonymous",
+            "position",
+            "registered",
+          ]
+        hint: "The index tells you exactly which leaf in the tree belongs to this voter. If it were public, anyone could look up the registration transaction for that leaf index and identify the voter."
+
+    task:
+      description: |
+        Open `packages/circuits/src/main.nr` and make these changes:
+
+        **1. Uncomment the import** at the top:
+        ```
+        use binary_merkle_root::binary_merkle_root;
+        ```
+
+        **2. Uncomment the additional inputs** in the `main` function signature (below `////// Checkpoint 4 //////`):
+        ```
+        root: pub Field,
+        vote: pub bool,
+        depth: pub u32,
+        index: Field,
+        siblings: [Field; 16],
+        ```
+
+        **3. Add code at `////// Checkpoint 4 //////`** inside the function body:
+
+        - Count non-zero siblings:
+          ```
+          let mut siblings_num = 0;
+          for i in 0..siblings.len() {
+              if siblings[i] != 0 {
+                  siblings_num += 1;
+              }
+          }
+          assert(depth <= siblings.len());
+          ```
+
+        - Convert index to bits and compute root:
+          ```
+          let index_bits: [u1; 16] = index.to_le_bits();
+          let computed_root = binary_merkle_root(hash_2, commitment, siblings_num, index_bits, siblings);
+          assert(computed_root == root);
+          ```
+
+        - Bind the vote:
+          ```
+          let vote_field = vote as Field;
+          assert((vote_field * vote_field) == vote_field);
+          ```
+
+        Say **"check"** when you're ready!
+      file: "packages/circuits/src/main.nr"
+      test: "cd extension/packages/circuits && nargo check 2>&1 | grep -v warning && echo 'Circuit check passed!'"
+      hints:
+        - "Don't forget to uncomment BOTH the import at the top AND the function parameters. The parameters are commented out below the `////// Checkpoint 4 //////` comment in the function signature."
+        - |
+          The full `main.nr` after this checkpoint:
+          ```rust
+          use std::hash::poseidon::bn254::hash_1;
+          use std::hash::poseidon::bn254::hash_2;
+          use binary_merkle_root::binary_merkle_root;
+
+          fn main(
+              nullifier_hash: pub Field,
+              nullifier: Field,
+              secret: Field,
+              root: pub Field,
+              vote: pub bool,
+              depth: pub u32,
+              index: Field,
+              siblings: [Field; 16],
+          ) {
+              let computed_nullifier_hash: Field = hash_1([nullifier]);
+              assert(computed_nullifier_hash == nullifier_hash);
+              let commitment: Field = hash_2([nullifier, secret]);
+
+              let mut siblings_num = 0;
+              for i in 0..siblings.len() {
+                  if siblings[i] != 0 {
+                      siblings_num += 1;
+                  }
+              }
+              assert(depth <= siblings.len());
+              let index_bits: [u1; 16] = index.to_le_bits();
+              let computed_root = binary_merkle_root(hash_2, commitment, siblings_num, index_bits, siblings);
+              assert(computed_root == root);
+
+              let vote_field = vote as Field;
+              assert((vote_field * vote_field) == vote_field);
+          }
+          ```
+      solution: |
+        use std::hash::poseidon::bn254::hash_1;
+        use std::hash::poseidon::bn254::hash_2;
+        use binary_merkle_root::binary_merkle_root;
+
+        fn main(
+            nullifier_hash: pub Field,
+            nullifier: Field,
+            secret: Field,
+            root: pub Field,
+            vote: pub bool,
+            depth: pub u32,
+            index: Field,
+            siblings: [Field; 16],
+        ) {
+            let computed_nullifier_hash: Field = hash_1([nullifier]);
+            assert(computed_nullifier_hash == nullifier_hash);
+            let commitment: Field = hash_2([nullifier, secret]);
+
+            let mut siblings_num = 0;
+            for i in 0..siblings.len() {
+                if siblings[i] != 0 {
+                    siblings_num += 1;
+                }
+            }
+            assert(depth <= siblings.len());
+            let index_bits: [u1; 16] = index.to_le_bits();
+            let computed_root = binary_merkle_root(hash_2, commitment, siblings_num, index_bits, siblings);
+            assert(computed_root == root);
+
+            let vote_field = vote as Field;
+            assert((vote_field * vote_field) == vote_field);
+        }
+
+  # ============================================================
+  # CHECKPOINT 4: Enable Voting with ZK Proof Verification
+  # ============================================================
+  - id: "vote"
+    title: "Enable Voting — Verify ZK Proofs On-Chain"
+    description: "Implement the vote function with proof verification, nullifier tracking, and vote counting"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Bringing It All Together: On-Chain Voting
+
+      You've built the circuit and the registration system. Now we connect them by implementing the `vote` function in Solidity.
+
+      ### How voting works
+
+      A voter sends:
+      - **proof** — the ZK proof generated from their circuit
+      - **public inputs** — `nullifierHash`, `root`, `vote`, `depth`
+
+      The contract verifies the proof against the on-chain Merkle root and counts the vote.
+
+      ### Three layers of defense
+
+      **1. Root validation** — The submitted root must match `s_tree.root()`. Without this, an attacker could create a fake Merkle tree, generate a valid proof against it, and vote without ever registering. The root check binds the proof to the actual on-chain tree.
+
+      **2. Proof verification** — Call `i_verifier.verify(_proof, publicInputs)`. The verifier contract (generated from your Noir circuit via Barretenberg) checks the cryptographic proof. Public inputs must be passed as `bytes32[]` in the **exact same order** as in the circuit.
+
+      **3. Nullifier check** — Each `_nullifierHash` can only be used once. This prevents double-voting while maintaining privacy — the nullifier hash can't be linked back to the voter's registration address.
+
+      ### Setup required
+
+      Before implementing `vote`, you need to:
+      1. **Uncomment** the `IVerifier` import at the top of the file
+      2. **Add state variables** below `/// Checkpoint 6 //////`:
+         - `IVerifier public immutable i_verifier`
+         - `mapping(bytes32 => bool) private s_nullifierHashes`
+      3. **Add to constructor**: `i_verifier = IVerifier(_verifier);`
+
+    questions:
+      - text: "Why must root validation happen before proof verification? What attack does it prevent?"
+        concepts:
+          [
+            "fake tree",
+            "fake root",
+            "bypass",
+            "not registered",
+            "create their own",
+            "allowlist",
+          ]
+        hint: "Without root validation, someone could create their own Merkle tree with a commitment they control, generate a valid proof against that fake tree, and vote without being on the allowlist."
+
+      - text: "Why does the nullifier check happen after proof verification, not before?"
+        concepts:
+          [
+            "gas",
+            "fail fast",
+            "invalid proof",
+            "state change",
+            "waste",
+            "efficiency",
+          ]
+        hint: "If the proof is invalid, we want to revert as quickly as possible. Checking the nullifier first would waste gas on state reads for an invalid proof."
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Voting.sol` and make these changes:
+
+        **1. Uncomment the import** at the top (line 7):
+        ```solidity
+        import {IVerifier} from "./Verifier.sol";
+        ```
+
+        **2. Add state variables** below `/// Checkpoint 6 //////`:
+        ```solidity
+        IVerifier public immutable i_verifier;
+        mapping(bytes32 => bool) private s_nullifierHashes;
+        ```
+
+        **3. Add to constructor** at `/// Checkpoint 6 //////`:
+        ```solidity
+        i_verifier = IVerifier(_verifier);
+        ```
+
+        **4. Implement `vote(...)`:**
+
+        a. **Validate root:**
+           - If `_root == bytes32(0)`, revert with `Voting__EmptyTree()`
+           - If `_root != bytes32(s_tree.root())`, revert with `Voting__InvalidRoot()`
+
+        b. **Build and verify proof:**
+           - Create `bytes32[] memory publicInputs = new bytes32[](4)`
+           - Set: `[0] = _nullifierHash`, `[1] = _root`, `[2] = _vote`, `[3] = _depth`
+           - If `!i_verifier.verify(_proof, publicInputs)`, revert with `Voting__InvalidProof()`
+
+        c. **Check nullifier:**
+           - If `s_nullifierHashes[_nullifierHash]` is true, revert with `Voting__NullifierHashAlreadyUsed(_nullifierHash)`
+           - Set `s_nullifierHashes[_nullifierHash] = true`
+
+        d. **Count vote:**
+           - If `_vote == bytes32(uint256(1))`, increment `s_yesVotes`, else increment `s_noVotes`
+           - Emit `VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes)`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Voting.sol"
+      test: "yarn test --grep 'Checkpoint6'"
+      hints:
+        - "Don't forget the three setup steps: uncomment the import, add the two state variables, and initialize `i_verifier` in the constructor."
+        - |
+          The public inputs array must match the circuit's order exactly:
+          ```solidity
+          bytes32[] memory publicInputs = new bytes32[](4);
+          publicInputs[0] = _nullifierHash;
+          publicInputs[1] = _root;
+          publicInputs[2] = _vote;
+          publicInputs[3] = _depth;
+          ```
+        - |
+          Full solution for the `vote` function:
+          ```solidity
+          function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes32 _vote, bytes32 _depth) public {
+              if (_root == bytes32(0)) {
+                  revert Voting__EmptyTree();
+              }
+              if (_root != bytes32(s_tree.root())) {
+                  revert Voting__InvalidRoot();
+              }
+
+              bytes32[] memory publicInputs = new bytes32[](4);
+              publicInputs[0] = _nullifierHash;
+              publicInputs[1] = _root;
+              publicInputs[2] = _vote;
+              publicInputs[3] = _depth;
+
+              if (!i_verifier.verify(_proof, publicInputs)) {
+                  revert Voting__InvalidProof();
+              }
+
+              if (s_nullifierHashes[_nullifierHash]) {
+                  revert Voting__NullifierHashAlreadyUsed(_nullifierHash);
+              }
+              s_nullifierHashes[_nullifierHash] = true;
+
+              if (_vote == bytes32(uint256(1))) {
+                  s_yesVotes++;
+              } else {
+                  s_noVotes++;
+              }
+
+              emit VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes);
+          }
+          ```
+          Don't forget to also uncomment the import, add state variables, and initialize `i_verifier` in the constructor.
+      solution: |
+        // Uncomment import:
+        import {IVerifier} from "./Verifier.sol";
+
+        // State variables:
+        IVerifier public immutable i_verifier;
+        mapping(bytes32 => bool) private s_nullifierHashes;
+
+        // Constructor addition:
+        i_verifier = IVerifier(_verifier);
+
+        // Vote function:
+        function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes32 _vote, bytes32 _depth) public {
+            if (_root == bytes32(0)) {
+                revert Voting__EmptyTree();
+            }
+
+            if (_root != bytes32(s_tree.root())) {
+                revert Voting__InvalidRoot();
+            }
+
+            bytes32[] memory publicInputs = new bytes32[](4);
+            publicInputs[0] = _nullifierHash;
+            publicInputs[1] = _root;
+            publicInputs[2] = _vote;
+            publicInputs[3] = _depth;
+
+            if (!i_verifier.verify(_proof, publicInputs)) {
+                revert Voting__InvalidProof();
+            }
+
+            if (s_nullifierHashes[_nullifierHash]) {
+                revert Voting__NullifierHashAlreadyUsed(_nullifierHash);
+            }
+            s_nullifierHashes[_nullifierHash] = true;
+
+            if (_vote == bytes32(uint256(1))) {
+                s_yesVotes++;
+            } else {
+                s_noVotes++;
+            }
+
+            emit VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes);
+        }
+
+completion_message: |
+  Congratulations! You've built a **private, Sybil-resistant voting system**!
+
+  You implemented:
+  - **Voter registration** with a Lean Incremental Merkle Tree
+  - **A ZK commitment circuit** proving knowledge of a nullifier and secret
+  - **Merkle proof verification** in a Noir circuit
+  - **On-chain vote verification** with proof checking, nullifier tracking, and vote counting
+
+  Your system ensures:
+  - Voters prove eligibility via ZK proofs (no identity revealed)
+  - Double-voting is prevented via nullifier hashes
+  - Results are transparently tracked on-chain
+  - No one can link a vote to the voter who cast it
+
+  The remaining README checkpoints cover **frontend integration** (proof generation, burner wallets, smart accounts) and deployment to Sepolia.
+  Deploy to a testnet and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
