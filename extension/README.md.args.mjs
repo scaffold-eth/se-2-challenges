@@ -1840,7 +1840,13 @@ Now vote! Register yourself, create the proof, and hit the **Vote** button.
 
 Take a moment to celebrate, this is big! 🥳 Give yourself a pat on the back (or two 👏👏).
 
-## Checkpoint 12: 🧠🍔 Final Considerations & Food for Thought
+## Checkpoint 12: 📜 Contract Verification
+
+Run the \`yarn verify --network your_network\` command to verify your contracts on etherscan 🛰
+
+👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com/).
+
+## Checkpoint 13: 🧠🍔 Final Considerations & Food for Thought
 
 You now have a **working ZK voting dApp,** a big milestone! 🚀
 
