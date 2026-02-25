@@ -772,6 +772,10 @@ function report(Outcome _winningOutcome) external predictionNotReported {
     s_isReported = true;
     emit MarketReported(msg.sender, _winningOutcome, address(s_winningToken));
 }
+
+// 🔒 Don't forget to add the predictionNotReported modifier to your existing liquidity functions:
+function addLiquidity() external payable onlyOwner predictionNotReported { ... }
+function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner predictionNotReported { ... }
 \`\`\`
 
 </details>
@@ -1159,7 +1163,7 @@ Now that you've built the pricing engine (\`getBuyPriceInEth\` / \`getSellPriceI
 
 - \`sellTokensForEth\`
 
-## 🛒 Buying Tokens
+### 🛒 Buying Tokens
 
 Before a user can grab some "Yes" or "No" tokens, we need to run a few sanity checks:
 
