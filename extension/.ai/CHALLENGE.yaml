@@ -1,0 +1,841 @@
+name: "Prediction Markets"
+version: "1.0"
+description: "Build a binary prediction market with ERC20 outcome tokens, AMM pricing, oracle reporting, and token redemption"
+difficulty: "advanced"
+estimated_time: "2-3 hours"
+
+setup:
+  file: "packages/hardhat/contracts/PredictionMarket.sol"
+
+welcome_message: |
+  Welcome to the Prediction Markets Challenge!
+
+  You'll build a complete **binary prediction market** where users bet on a yes-or-no question (a car race!) by buying and selling ERC20 outcome tokens.
+
+  You'll implement:
+  1. **Market setup** — constructor with state variables and token minting
+  2. **Liquidity management** — add/remove ETH liquidity
+  3. **Oracle reporting** — report the outcome on-chain
+  4. **Market resolution** — LP withdraws winnings and fees
+  5. **Pricing engine** — linear AMM pricing based on probability
+  6. **Trading** — buy/sell outcome tokens
+  7. **Redemption** — winners cash out
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's build a prediction market!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: Constructor Setup
+  # ============================================================
+  - id: "constructor-setup"
+    title: "Market Setup — Constructor"
+    description: "Set up state variables and validate constructor parameters"
+
+    context: |
+      ## How Prediction Markets Work
+
+      A prediction market lets users bet on yes-or-no questions. Users buy **outcome tokens** — "Yes" or "No" — and if their token wins, it pays out a fixed ETH amount (e.g., 0.01 ETH). Losing tokens are worth 0.
+
+      ### The Architecture
+
+      Our market has three roles:
+      1. **Market Owner / LP** — deploys the market, provides initial liquidity
+      2. **Oracle** — reports which outcome won
+      3. **Users** — buy/sell outcome tokens
+
+      ### Constructor Parameters
+
+      When deploying, the LP provides:
+      - `_oracle` — address authorized to report the outcome
+      - `_question` — the question being asked
+      - `_initialTokenValue` — ETH payout per winning token (e.g., 0.01 ETH)
+      - `_initialYesProbability` — starting probability (1-99)
+      - `_percentageToLock` — how many tokens to lock for initial probability (1-99)
+      - `msg.value` — initial ETH liquidity
+
+      ### State Variables
+
+      You need to declare and store:
+      ```solidity
+      address public immutable i_oracle;
+      uint256 public immutable i_initialTokenValue;
+      uint256 public immutable i_percentageLocked;
+      uint256 public immutable i_initialYesProbability;
+      string public s_question;
+      uint256 public s_ethCollateral;      // total ETH backing tokens
+      uint256 public s_lpTradingRevenue;   // fees from trading
+      ```
+
+      ### Validations
+      - `msg.value` must be > 0 (need initial liquidity)
+      - `_initialYesProbability` must be > 0 and < 100
+      - `_percentageToLock` must be > 0 and < 100
+
+    questions:
+      - text: "Why must the initial probability be strictly between 0% and 100%? What would happen at the extremes?"
+        concepts:
+          [
+            "certain",
+            "no point",
+            "already decided",
+            "no trading",
+            "meaningless",
+            "one side",
+            "100%",
+            "0%",
+          ]
+        hint: "If the probability is 100%, what's the point of betting? One outcome is already guaranteed."
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/PredictionMarket.sol`.
+
+        1. **Declare state variables** in the State Variables section:
+           ```solidity
+           address public immutable i_oracle;
+           uint256 public immutable i_initialTokenValue;
+           uint256 public immutable i_percentageLocked;
+           uint256 public immutable i_initialYesProbability;
+           string public s_question;
+           uint256 public s_ethCollateral;
+           uint256 public s_lpTradingRevenue;
+           ```
+
+        2. **In the constructor**, add validations and assignments under `/// Checkpoint 2 ///`:
+           - Revert with `PredictionMarket__MustProvideETHForInitialLiquidity()` if `msg.value == 0`
+           - Revert with `PredictionMarket__InvalidProbability()` if probability is 0 or >= 100
+           - Revert with `PredictionMarket__InvalidPercentageToLock()` if percentage is 0 or >= 100
+           - Store all immutable and state variables
+           - Set `s_ethCollateral = msg.value`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      hints:
+        - "Declare immutables at the contract level, then assign them in the constructor. Use `i_oracle = _oracle;` etc."
+        - |
+          Full constructor checkpoint 2 code:
+          ```solidity
+          if (msg.value == 0) revert PredictionMarket__MustProvideETHForInitialLiquidity();
+          if (_initialYesProbability >= 100 || _initialYesProbability == 0) revert PredictionMarket__InvalidProbability();
+          if (_percentageToLock >= 100 || _percentageToLock == 0) revert PredictionMarket__InvalidPercentageToLock();
+          i_oracle = _oracle;
+          s_question = _question;
+          i_initialTokenValue = _initialTokenValue;
+          i_initialYesProbability = _initialYesProbability;
+          i_percentageLocked = _percentageToLock;
+          s_ethCollateral = msg.value;
+          ```
+      solution: |
+        // State Variables:
+        address public immutable i_oracle;
+        uint256 public immutable i_initialTokenValue;
+        uint256 public immutable i_percentageLocked;
+        uint256 public immutable i_initialYesProbability;
+        string public s_question;
+        uint256 public s_ethCollateral;
+        uint256 public s_lpTradingRevenue;
+
+        // Constructor Checkpoint 2:
+        if (msg.value == 0) revert PredictionMarket__MustProvideETHForInitialLiquidity();
+        if (_initialYesProbability >= 100 || _initialYesProbability == 0) revert PredictionMarket__InvalidProbability();
+        if (_percentageToLock >= 100 || _percentageToLock == 0) revert PredictionMarket__InvalidPercentageToLock();
+        i_oracle = _oracle;
+        s_question = _question;
+        i_initialTokenValue = _initialTokenValue;
+        i_initialYesProbability = _initialYesProbability;
+        i_percentageLocked = _percentageToLock;
+        s_ethCollateral = msg.value;
+
+  # ============================================================
+  # CHECKPOINT 2: Mint Tokens
+  # ============================================================
+  - id: "mint-tokens"
+    title: "Mint Outcome Tokens"
+    description: "Deploy Yes/No ERC20 tokens and lock initial amounts to set starting probability"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Token Minting & Probability
+
+      The market needs two ERC20 tokens — "Yes" and "No". These are deployed as `PredictionMarketToken` contracts inside the constructor.
+
+      ### Calculating Token Supply
+
+      The number of tokens equals the ETH liquidity divided by the token value:
+      ```solidity
+      uint256 initialTokenAmount = (msg.value * PRECISION) / _initialTokenValue;
+      ```
+      `PRECISION = 1e18` handles decimal math in Solidity.
+
+      ### Setting Initial Probability Through Locking
+
+      Without any trades, the probability is undefined. We simulate initial trades by **locking** tokens (transferring them to the owner address, where they can't be traded back):
+
+      ```
+      lockedYes = initialTokenAmount * yesProbability * percentageToLock * 2 / 10000
+      lockedNo  = initialTokenAmount * (100 - yesProbability) * percentageToLock * 2 / 10000
+      ```
+
+      For example: 100 tokens, 60% yes probability, 10% lock:
+      - lockedYes = 100 * 60 * 10 * 2 / 10000 = 12
+      - lockedNo = 100 * 40 * 10 * 2 / 10000 = 8
+      - Starting probability = 12 / (12 + 8) = 60%
+
+      ### Why Lock Tokens?
+
+      Without locking, a single buy pushes probability to 100%. Locking provides price stability from the start.
+
+      After implementing, uncomment the code below `/// Checkpoint 3 ///` in `getPrediction()`.
+
+    questions:
+      - text: "Why do we lock tokens to the owner instead of just setting a probability variable? What advantage does this approach have?"
+        concepts:
+          [
+            "consistent",
+            "same formula",
+            "pricing",
+            "reserve",
+            "traded",
+            "AMM",
+            "natural",
+            "reflects",
+          ]
+        hint: "The pricing engine calculates probability from tokens sold/locked. If we just stored a number, the pricing would be inconsistent with the actual token distribution."
+
+    task:
+      description: |
+        Still in the constructor, under `/// Checkpoint 3 ///`:
+
+        1. **Declare token state variables**:
+           ```solidity
+           PredictionMarketToken public immutable i_yesToken;
+           PredictionMarketToken public immutable i_noToken;
+           ```
+
+        2. **Calculate initial token amount**: `(msg.value * PRECISION) / _initialTokenValue`
+
+        3. **Deploy both tokens**:
+           ```solidity
+           i_yesToken = new PredictionMarketToken("Yes", "Y", msg.sender, initialTokenAmount);
+           i_noToken = new PredictionMarketToken("No", "N", msg.sender, initialTokenAmount);
+           ```
+
+        4. **Calculate locked amounts** and transfer to `msg.sender`
+
+        5. **Uncomment** the code below `/// Checkpoint 3 ///` in `getPrediction()`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      test: "yarn test --grep 'Checkpoint3'"
+      hints:
+        - |
+          Token locking math:
+          ```solidity
+          uint256 initialYesAmountLocked = (initialTokenAmount * _initialYesProbability * _percentageToLock * 2) / 10000;
+          uint256 initialNoAmountLocked = (initialTokenAmount * (100 - _initialYesProbability) * _percentageToLock * 2) / 10000;
+          ```
+        - |
+          Full checkpoint 3 code:
+          ```solidity
+          uint256 initialTokenAmount = (msg.value * PRECISION) / _initialTokenValue;
+          i_yesToken = new PredictionMarketToken("Yes", "Y", msg.sender, initialTokenAmount);
+          i_noToken = new PredictionMarketToken("No", "N", msg.sender, initialTokenAmount);
+          uint256 initialYesAmountLocked = (initialTokenAmount * _initialYesProbability * _percentageToLock * 2) / 10000;
+          uint256 initialNoAmountLocked = (initialTokenAmount * (100 - _initialYesProbability) * _percentageToLock * 2) / 10000;
+          bool success1 = i_yesToken.transfer(msg.sender, initialYesAmountLocked);
+          bool success2 = i_noToken.transfer(msg.sender, initialNoAmountLocked);
+          if (!success1 || !success2) revert PredictionMarket__TokenTransferFailed();
+          ```
+      solution: |
+        // State variables:
+        PredictionMarketToken public immutable i_yesToken;
+        PredictionMarketToken public immutable i_noToken;
+
+        // Constructor Checkpoint 3:
+        uint256 initialTokenAmount = (msg.value * PRECISION) / _initialTokenValue;
+        i_yesToken = new PredictionMarketToken("Yes", "Y", msg.sender, initialTokenAmount);
+        i_noToken = new PredictionMarketToken("No", "N", msg.sender, initialTokenAmount);
+        uint256 initialYesAmountLocked = (initialTokenAmount * _initialYesProbability * _percentageToLock * 2) / 10000;
+        uint256 initialNoAmountLocked = (initialTokenAmount * (100 - _initialYesProbability) * _percentageToLock * 2) / 10000;
+        bool success1 = i_yesToken.transfer(msg.sender, initialYesAmountLocked);
+        bool success2 = i_noToken.transfer(msg.sender, initialNoAmountLocked);
+        if (!success1 || !success2) revert PredictionMarket__TokenTransferFailed();
+
+  # ============================================================
+  # CHECKPOINT 3: Liquidity Management
+  # ============================================================
+  - id: "liquidity"
+    title: "Add and Remove Liquidity"
+    description: "Let the LP inject or withdraw ETH while minting/burning proportional tokens"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Liquidity Management
+
+      The LP needs to add or remove ETH from the market. When ETH is added, proportional Yes/No tokens are minted. When removed, tokens are burned.
+
+      ### addLiquidity
+
+      - Update `s_ethCollateral += msg.value`
+      - Calculate tokens: `(msg.value * PRECISION) / i_initialTokenValue`
+      - Mint both Yes and No tokens to `address(this)`
+      - Emit `LiquidityAdded`
+
+      ### removeLiquidity
+
+      - Calculate tokens to burn: `(_ethToWithdraw / i_initialTokenValue) * PRECISION`
+      - Check both token reserves are sufficient (revert with `PredictionMarket__InsufficientTokenReserve`)
+      - Update `s_ethCollateral -= _ethToWithdraw`
+      - Burn tokens from `address(this)`
+      - Send ETH to owner
+      - Emit `LiquidityRemoved`
+
+    questions:
+      - text: "Why do we mint BOTH Yes and No tokens when adding liquidity, rather than just one?"
+        concepts:
+          [
+            "balanced",
+            "both sides",
+            "neutral",
+            "ratio",
+            "probability",
+            "doesn't change",
+            "proportional",
+          ]
+        hint: "What would happen to the probability if we only minted Yes tokens? The market should stay balanced when adding liquidity."
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/PredictionMarket.sol`.
+
+        Implement under `/// Checkpoint 4 ///`:
+
+        1. **`addLiquidity()`**: Update collateral, calculate and mint tokens, emit event
+        2. **`removeLiquidity(uint256 _ethToWithdraw)`**: Calculate burn amount, check reserves, update collateral, burn tokens, send ETH, emit event
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      test: "yarn test --grep 'Checkpoint4'"
+      hints:
+        - "For `addLiquidity`: `uint256 tokensAmount = (msg.value * PRECISION) / i_initialTokenValue;` then mint both tokens to `address(this)`."
+        - |
+          Full solutions:
+          ```solidity
+          function addLiquidity() external payable onlyOwner {
+              s_ethCollateral += msg.value;
+              uint256 tokensAmount = (msg.value * PRECISION) / i_initialTokenValue;
+              i_yesToken.mint(address(this), tokensAmount);
+              i_noToken.mint(address(this), tokensAmount);
+              emit LiquidityAdded(msg.sender, msg.value, tokensAmount);
+          }
+
+          function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner {
+              uint256 amountTokenToBurn = (_ethToWithdraw / i_initialTokenValue) * PRECISION;
+              if (amountTokenToBurn > i_yesToken.balanceOf(address(this))) revert PredictionMarket__InsufficientTokenReserve(Outcome.YES, amountTokenToBurn);
+              if (amountTokenToBurn > i_noToken.balanceOf(address(this))) revert PredictionMarket__InsufficientTokenReserve(Outcome.NO, amountTokenToBurn);
+              s_ethCollateral -= _ethToWithdraw;
+              i_yesToken.burn(address(this), amountTokenToBurn);
+              i_noToken.burn(address(this), amountTokenToBurn);
+              (bool success, ) = msg.sender.call{value: _ethToWithdraw}("");
+              if (!success) revert PredictionMarket__ETHTransferFailed();
+              emit LiquidityRemoved(msg.sender, _ethToWithdraw, amountTokenToBurn);
+          }
+          ```
+      solution: |
+        function addLiquidity() external payable onlyOwner {
+            s_ethCollateral += msg.value;
+            uint256 tokensAmount = (msg.value * PRECISION) / i_initialTokenValue;
+            i_yesToken.mint(address(this), tokensAmount);
+            i_noToken.mint(address(this), tokensAmount);
+            emit LiquidityAdded(msg.sender, msg.value, tokensAmount);
+        }
+
+        function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner {
+            uint256 amountTokenToBurn = (_ethToWithdraw / i_initialTokenValue) * PRECISION;
+            if (amountTokenToBurn > i_yesToken.balanceOf(address(this))) revert PredictionMarket__InsufficientTokenReserve(Outcome.YES, amountTokenToBurn);
+            if (amountTokenToBurn > i_noToken.balanceOf(address(this))) revert PredictionMarket__InsufficientTokenReserve(Outcome.NO, amountTokenToBurn);
+            s_ethCollateral -= _ethToWithdraw;
+            i_yesToken.burn(address(this), amountTokenToBurn);
+            i_noToken.burn(address(this), amountTokenToBurn);
+            (bool success, ) = msg.sender.call{value: _ethToWithdraw}("");
+            if (!success) revert PredictionMarket__ETHTransferFailed();
+            emit LiquidityRemoved(msg.sender, _ethToWithdraw, amountTokenToBurn);
+        }
+
+  # ============================================================
+  # CHECKPOINT 4: Oracle Report & Market Resolution
+  # ============================================================
+  - id: "oracle-resolution"
+    title: "Oracle Report & Market Resolution"
+    description: "Implement oracle reporting, market resolution, and the predictionNotReported/predictionReported modifiers"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Oracle & Resolution
+
+      ### Report Function
+
+      The oracle reports which outcome won. Only the `i_oracle` address can call it, and it can only be called once.
+
+      You need:
+      - State variables: `s_winningToken` (PredictionMarketToken) and `s_isReported` (bool)
+      - A `predictionNotReported` modifier that reverts if already reported
+      - Apply this modifier to `addLiquidity` and `removeLiquidity` too
+
+      ### resolveMarketAndWithdraw
+
+      After reporting, the LP can:
+      1. Redeem the contract's winning tokens for ETH
+      2. Collect accumulated `s_lpTradingRevenue`
+      3. Burn the winning tokens
+      4. Send total ETH to the LP
+
+      You need a `predictionReported` modifier (opposite of `predictionNotReported`).
+
+      After implementing report, uncomment code below `/// Checkpoint 5 ///` in `getPrediction()`.
+
+    questions:
+      - text: "Why do we need the predictionNotReported modifier on addLiquidity and removeLiquidity? What could go wrong without it?"
+        concepts:
+          [
+            "manipulat",
+            "after result",
+            "known outcome",
+            "unfair",
+            "game",
+            "change liquidity",
+            "cheat",
+          ]
+        hint: "If the outcome is known, could the LP add/remove liquidity to their advantage before users redeem?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/PredictionMarket.sol`.
+
+        1. **Add state variables**:
+           ```solidity
+           PredictionMarketToken public s_winningToken;
+           bool public s_isReported;
+           ```
+
+        2. **Implement modifiers**:
+           - `predictionNotReported` — revert with `PredictionMarket__PredictionAlreadyReported()` if `s_isReported`
+           - `predictionReported` — revert with `PredictionMarket__PredictionNotReported()` if `!s_isReported`
+           - Add `predictionNotReported` to `addLiquidity` and `removeLiquidity`
+
+        3. **Implement `report(Outcome _winningOutcome)`** (Checkpoint 5):
+           - Only `i_oracle` can call (revert with `PredictionMarket__OnlyOracleCanReport()`)
+           - Set `s_winningToken` based on outcome
+           - Set `s_isReported = true`
+           - Emit `MarketReported`
+
+        4. **Implement `resolveMarketAndWithdraw()`** (Checkpoint 6):
+           - Get contract's winning token balance, calculate ETH value
+           - Cap at `s_ethCollateral`
+           - Add `s_lpTradingRevenue`, reset it to 0
+           - Burn winning tokens, send ETH
+           - Emit `MarketResolved`
+
+        5. **Uncomment** code below `/// Checkpoint 5 ///` in `getPrediction()`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      test: "yarn test --grep 'Checkpoint5|Checkpoint6'"
+      hints:
+        - "For `report`: `s_winningToken = _winningOutcome == Outcome.YES ? i_yesToken : i_noToken;`"
+        - |
+          Full `resolveMarketAndWithdraw`:
+          ```solidity
+          function resolveMarketAndWithdraw() external onlyOwner predictionReported returns (uint256 ethRedeemed) {
+              uint256 contractWinningTokens = s_winningToken.balanceOf(address(this));
+              if (contractWinningTokens > 0) {
+                  ethRedeemed = (contractWinningTokens * i_initialTokenValue) / PRECISION;
+                  if (ethRedeemed > s_ethCollateral) ethRedeemed = s_ethCollateral;
+                  s_ethCollateral -= ethRedeemed;
+              }
+              uint256 totalEthToSend = ethRedeemed + s_lpTradingRevenue;
+              s_lpTradingRevenue = 0;
+              s_winningToken.burn(address(this), contractWinningTokens);
+              (bool success, ) = msg.sender.call{value: totalEthToSend}("");
+              if (!success) revert PredictionMarket__ETHTransferFailed();
+              emit MarketResolved(msg.sender, totalEthToSend);
+              return ethRedeemed;
+          }
+          ```
+      solution: |
+        // State variables:
+        PredictionMarketToken public s_winningToken;
+        bool public s_isReported;
+
+        // Modifiers:
+        modifier predictionNotReported() {
+            if (s_isReported) revert PredictionMarket__PredictionAlreadyReported();
+            _;
+        }
+        modifier predictionReported() {
+            if (!s_isReported) revert PredictionMarket__PredictionNotReported();
+            _;
+        }
+
+        // report:
+        function report(Outcome _winningOutcome) external predictionNotReported {
+            if (msg.sender != i_oracle) revert PredictionMarket__OnlyOracleCanReport();
+            s_winningToken = _winningOutcome == Outcome.YES ? i_yesToken : i_noToken;
+            s_isReported = true;
+            emit MarketReported(msg.sender, _winningOutcome, address(s_winningToken));
+        }
+
+        // resolveMarketAndWithdraw:
+        function resolveMarketAndWithdraw() external onlyOwner predictionReported returns (uint256 ethRedeemed) {
+            uint256 contractWinningTokens = s_winningToken.balanceOf(address(this));
+            if (contractWinningTokens > 0) {
+                ethRedeemed = (contractWinningTokens * i_initialTokenValue) / PRECISION;
+                if (ethRedeemed > s_ethCollateral) ethRedeemed = s_ethCollateral;
+                s_ethCollateral -= ethRedeemed;
+            }
+            uint256 totalEthToSend = ethRedeemed + s_lpTradingRevenue;
+            s_lpTradingRevenue = 0;
+            s_winningToken.burn(address(this), contractWinningTokens);
+            (bool success, ) = msg.sender.call{value: totalEthToSend}("");
+            if (!success) revert PredictionMarket__ETHTransferFailed();
+            emit MarketResolved(msg.sender, totalEthToSend);
+            return ethRedeemed;
+        }
+
+  # ============================================================
+  # CHECKPOINT 5: Pricing Engine
+  # ============================================================
+  - id: "pricing"
+    title: "Pricing & Probability Calculations"
+    description: "Implement the linear AMM pricing engine with probability-based token prices"
+
+    context: |
+      ## Linear Pricing Model
+
+      Token prices reflect the market's implied probability. The formula:
+
+      ```
+      price = initialTokenValue * probabilityAvg * tradingAmount
+      ```
+
+      ### How Probability Is Calculated
+
+      Probability = tokens sold / total tokens sold (both sides):
+      ```solidity
+      probability = (tokensSold * PRECISION) / totalSold
+      ```
+
+      ### The Pricing Flow
+
+      1. **Get reserves**: `_getCurrentReserves` returns (selected token reserve, other token reserve)
+      2. **Calculate probability before trade**: based on current tokens sold
+      3. **Calculate probability after trade**: simulate the trade
+      4. **Average** the before/after probabilities
+      5. **Final price**: `(initialTokenValue * probabilityAvg * tradingAmount) / (PRECISION * PRECISION)`
+
+      For buying: reserve decreases → more tokens "sold" → probability goes up
+      For selling: reserve increases → fewer tokens "sold" → probability goes down
+
+      `getBuyPriceInEth` and `getSellPriceInEth` are thin wrappers calling `_calculatePriceInEth` with a `_isSelling` flag.
+
+    questions:
+      - text: "Why do we average the probability before and after the trade instead of just using the current probability?"
+        concepts:
+          [
+            "fair",
+            "gradual",
+            "average",
+            "slippage",
+            "large trade",
+            "integral",
+            "approximat",
+            "impact",
+          ]
+        hint: "A large buy dramatically shifts probability. If we only used the starting probability, the buyer wouldn't pay for the price impact they cause."
+
+    task:
+      description: |
+        Implement five functions in `PredictionMarket.sol` under `/// Checkpoint 7 ///`:
+
+        1. **`_calculateProbability(uint256 tokensSold, uint256 totalSold)`**: Return `(tokensSold * PRECISION) / totalSold`
+
+        2. **`_getCurrentReserves(Outcome _outcome)`**: Return (selected token balance, other token balance) of `address(this)`
+
+        3. **`_calculatePriceInEth(Outcome _outcome, uint256 _tradingAmount, bool _isSelling)`**:
+           - Get reserves, calculate before/after probabilities, average them
+           - If buying: check reserve >= tradingAmount
+           - Return `(i_initialTokenValue * probabilityAvg * _tradingAmount) / (PRECISION * PRECISION)`
+
+        4. **`getBuyPriceInEth`**: Call `_calculatePriceInEth(..., false)`
+        5. **`getSellPriceInEth`**: Call `_calculatePriceInEth(..., true)`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      test: "yarn test --grep 'Checkpoint7'"
+      hints:
+        - |
+          `_getCurrentReserves`:
+          ```solidity
+          if (_outcome == Outcome.YES) {
+              return (i_yesToken.balanceOf(address(this)), i_noToken.balanceOf(address(this)));
+          } else {
+              return (i_noToken.balanceOf(address(this)), i_yesToken.balanceOf(address(this)));
+          }
+          ```
+        - |
+          Key `_calculatePriceInEth` logic:
+          ```solidity
+          uint256 totalTokenSupply = i_yesToken.totalSupply();
+          uint256 currentTokenSoldBefore = totalTokenSupply - currentTokenReserve;
+          uint256 currentOtherTokenSold = totalTokenSupply - currentOtherTokenReserve;
+          uint256 totalTokensSoldBefore = currentTokenSoldBefore + currentOtherTokenSold;
+          uint256 probabilityBefore = _calculateProbability(currentTokenSoldBefore, totalTokensSoldBefore);
+          // After trade: adjust reserves based on _isSelling
+          uint256 currentTokenReserveAfter = _isSelling ? currentTokenReserve + _tradingAmount : currentTokenReserve - _tradingAmount;
+          uint256 currentTokenSoldAfter = totalTokenSupply - currentTokenReserveAfter;
+          uint256 totalTokensSoldAfter = _isSelling ? totalTokensSoldBefore - _tradingAmount : totalTokensSoldBefore + _tradingAmount;
+          uint256 probabilityAfter = _calculateProbability(currentTokenSoldAfter, totalTokensSoldAfter);
+          uint256 probabilityAvg = (probabilityBefore + probabilityAfter) / 2;
+          return (i_initialTokenValue * probabilityAvg * _tradingAmount) / (PRECISION * PRECISION);
+          ```
+      solution: |
+        function getBuyPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
+            return _calculatePriceInEth(_outcome, _tradingAmount, false);
+        }
+        function getSellPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
+            return _calculatePriceInEth(_outcome, _tradingAmount, true);
+        }
+        function _calculatePriceInEth(Outcome _outcome, uint256 _tradingAmount, bool _isSelling) private view returns (uint256) {
+            (uint256 currentTokenReserve, uint256 currentOtherTokenReserve) = _getCurrentReserves(_outcome);
+            if (!_isSelling) {
+                if (currentTokenReserve < _tradingAmount) revert PredictionMarket__InsufficientLiquidity();
+            }
+            uint256 totalTokenSupply = i_yesToken.totalSupply();
+            uint256 currentTokenSoldBefore = totalTokenSupply - currentTokenReserve;
+            uint256 currentOtherTokenSold = totalTokenSupply - currentOtherTokenReserve;
+            uint256 totalTokensSoldBefore = currentTokenSoldBefore + currentOtherTokenSold;
+            uint256 probabilityBefore = _calculateProbability(currentTokenSoldBefore, totalTokensSoldBefore);
+            uint256 currentTokenReserveAfter = _isSelling ? currentTokenReserve + _tradingAmount : currentTokenReserve - _tradingAmount;
+            uint256 currentTokenSoldAfter = totalTokenSupply - currentTokenReserveAfter;
+            uint256 totalTokensSoldAfter = _isSelling ? totalTokensSoldBefore - _tradingAmount : totalTokensSoldBefore + _tradingAmount;
+            uint256 probabilityAfter = _calculateProbability(currentTokenSoldAfter, totalTokensSoldAfter);
+            uint256 probabilityAvg = (probabilityBefore + probabilityAfter) / 2;
+            return (i_initialTokenValue * probabilityAvg * _tradingAmount) / (PRECISION * PRECISION);
+        }
+        function _getCurrentReserves(Outcome _outcome) private view returns (uint256, uint256) {
+            if (_outcome == Outcome.YES) return (i_yesToken.balanceOf(address(this)), i_noToken.balanceOf(address(this)));
+            else return (i_noToken.balanceOf(address(this)), i_yesToken.balanceOf(address(this)));
+        }
+        function _calculateProbability(uint256 tokensSold, uint256 totalSold) private pure returns (uint256) {
+            return (tokensSold * PRECISION) / totalSold;
+        }
+
+  # ============================================================
+  # CHECKPOINT 6: Buy/Sell Tokens
+  # ============================================================
+  - id: "trading"
+    title: "Buy and Sell Tokens"
+    description: "Implement buyTokensWithETH and sellTokensForEth with modifiers"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Trading
+
+      Users buy/sell outcome tokens. Two custom modifiers are needed:
+      - `notOwner` — the LP can't trade (they already have exposure)
+      - `amountGreaterThanZero(uint256 _amount)` — reject zero-amount trades
+
+      ### buyTokensWithETH
+
+      - Calculate price with `getBuyPriceInEth`, require `msg.value == ethNeeded`
+      - Check token reserve is sufficient
+      - Add `msg.value` to `s_lpTradingRevenue` (the LP earns from trades)
+      - Transfer tokens to buyer
+      - Emit `TokensPurchased`
+
+      ### sellTokensForEth
+
+      - Check user has enough tokens AND has approved the contract
+      - Calculate ETH with `getSellPriceInEth`
+      - Subtract from `s_lpTradingRevenue`
+      - Send ETH to seller, pull tokens back via `transferFrom`
+      - Emit `TokensSold`
+
+    questions:
+      - text: "Why can't the market owner buy or sell tokens? What unfair advantage would they have?"
+        concepts:
+          [
+            "insider",
+            "manipulat",
+            "liquidity",
+            "both sides",
+            "conflict",
+            "oracle",
+            "know outcome",
+          ]
+        hint: "The owner often also controls the oracle. If they could trade, they could bet on the outcome they're going to report."
+
+    task:
+      description: |
+        In `PredictionMarket.sol`:
+
+        1. **Add modifiers** (Checkpoint 8):
+           ```solidity
+           modifier notOwner() { if (msg.sender == owner()) revert PredictionMarket__OwnerCannotCall(); _; }
+           modifier amountGreaterThanZero(uint256 _amount) { if (_amount == 0) revert PredictionMarket__AmountMustBeGreaterThanZero(); _; }
+           ```
+
+        2. **Implement `buyTokensWithETH`** with modifiers `amountGreaterThanZero`, `predictionNotReported`, `notOwner`
+
+        3. **Implement `sellTokensForEth`** with same modifiers
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      test: "yarn test --grep 'Checkpoint8'"
+      hints:
+        - "For buy: `uint256 ethNeeded = getBuyPriceInEth(_outcome, _amountTokenToBuy); if (msg.value != ethNeeded) revert PredictionMarket__MustSendExactETHAmount();`"
+        - |
+          Full solutions in the last hint of the previous checkpoint's solution pattern — check the README for complete code.
+      solution: |
+        modifier notOwner() { if (msg.sender == owner()) revert PredictionMarket__OwnerCannotCall(); _; }
+        modifier amountGreaterThanZero(uint256 _amount) { if (_amount == 0) revert PredictionMarket__AmountMustBeGreaterThanZero(); _; }
+
+        function buyTokensWithETH(Outcome _outcome, uint256 _amountTokenToBuy) external payable amountGreaterThanZero(_amountTokenToBuy) predictionNotReported notOwner {
+            uint256 ethNeeded = getBuyPriceInEth(_outcome, _amountTokenToBuy);
+            if (msg.value != ethNeeded) revert PredictionMarket__MustSendExactETHAmount();
+            PredictionMarketToken optionToken = _outcome == Outcome.YES ? i_yesToken : i_noToken;
+            if (_amountTokenToBuy > optionToken.balanceOf(address(this))) revert PredictionMarket__InsufficientTokenReserve(_outcome, _amountTokenToBuy);
+            s_lpTradingRevenue += msg.value;
+            bool success = optionToken.transfer(msg.sender, _amountTokenToBuy);
+            if (!success) revert PredictionMarket__TokenTransferFailed();
+            emit TokensPurchased(msg.sender, _outcome, _amountTokenToBuy, msg.value);
+        }
+
+        function sellTokensForEth(Outcome _outcome, uint256 _tradingAmount) external amountGreaterThanZero(_tradingAmount) predictionNotReported notOwner {
+            PredictionMarketToken optionToken = _outcome == Outcome.YES ? i_yesToken : i_noToken;
+            uint256 userBalance = optionToken.balanceOf(msg.sender);
+            if (userBalance < _tradingAmount) revert PredictionMarket__InsufficientBalance(_tradingAmount, userBalance);
+            uint256 allowance = optionToken.allowance(msg.sender, address(this));
+            if (allowance < _tradingAmount) revert PredictionMarket__InsufficientAllowance(_tradingAmount, allowance);
+            uint256 ethToReceive = getSellPriceInEth(_outcome, _tradingAmount);
+            s_lpTradingRevenue -= ethToReceive;
+            (bool sent, ) = msg.sender.call{value: ethToReceive}("");
+            if (!sent) revert PredictionMarket__ETHTransferFailed();
+            bool success = optionToken.transferFrom(msg.sender, address(this), _tradingAmount);
+            if (!success) revert PredictionMarket__TokenTransferFailed();
+            emit TokensSold(msg.sender, _outcome, _tradingAmount, ethToReceive);
+        }
+
+  # ============================================================
+  # CHECKPOINT 7: Redeem Winning Tokens
+  # ============================================================
+  - id: "redeem"
+    title: "Redeem Winning Tokens"
+    description: "Let winners cash out their tokens for ETH"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Token Redemption
+
+      After the oracle reports the outcome, users holding winning tokens can redeem each one for `i_initialTokenValue` ETH.
+
+      The redemption process:
+      1. Check market is reported (`predictionReported`)
+      2. Verify user has enough winning tokens
+      3. Calculate ETH: `(_amount * i_initialTokenValue) / PRECISION`
+      4. Subtract from `s_ethCollateral`
+      5. Burn the winning tokens
+      6. Send ETH to user
+      7. Emit `WinningTokensRedeemed`
+
+      The `notOwner` modifier prevents the LP from redeeming (they use `resolveMarketAndWithdraw` instead).
+
+    questions:
+      - text: "Why do we burn the winning tokens during redemption rather than just transferring them back to the contract?"
+        concepts:
+          [
+            "supply",
+            "prevent reuse",
+            "double",
+            "permanent",
+            "destroy",
+            "can't redeem twice",
+            "deflat",
+          ]
+        hint: "If tokens were returned to the contract instead of burned, could they somehow be redeemed again?"
+
+    task:
+      description: |
+        Implement `redeemWinningTokens(uint256 _amount)` with modifiers `amountGreaterThanZero`, `predictionReported`, `notOwner`:
+
+        1. Check user has enough winning tokens (revert with `PredictionMarket__InsufficientWinningTokens()`)
+        2. Calculate ETH: `(_amount * i_initialTokenValue) / PRECISION`
+        3. Subtract from `s_ethCollateral`
+        4. Burn tokens from user: `s_winningToken.burn(msg.sender, _amount)`
+        5. Send ETH to user
+        6. Emit `WinningTokensRedeemed`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      test: "yarn test --grep 'Checkpoint9'"
+      hints:
+        - "The ETH calculation: `uint256 ethToReceive = (_amount * i_initialTokenValue) / PRECISION;` — then subtract from `s_ethCollateral`, burn, and send."
+        - |
+          Full solution:
+          ```solidity
+          function redeemWinningTokens(uint256 _amount) external amountGreaterThanZero(_amount) predictionReported notOwner {
+              if (s_winningToken.balanceOf(msg.sender) < _amount) revert PredictionMarket__InsufficientWinningTokens();
+              uint256 ethToReceive = (_amount * i_initialTokenValue) / PRECISION;
+              s_ethCollateral -= ethToReceive;
+              s_winningToken.burn(msg.sender, _amount);
+              (bool success, ) = msg.sender.call{value: ethToReceive}("");
+              if (!success) revert PredictionMarket__ETHTransferFailed();
+              emit WinningTokensRedeemed(msg.sender, _amount, ethToReceive);
+          }
+          ```
+      solution: |
+        function redeemWinningTokens(uint256 _amount) external amountGreaterThanZero(_amount) predictionReported notOwner {
+            if (s_winningToken.balanceOf(msg.sender) < _amount) revert PredictionMarket__InsufficientWinningTokens();
+            uint256 ethToReceive = (_amount * i_initialTokenValue) / PRECISION;
+            s_ethCollateral -= ethToReceive;
+            s_winningToken.burn(msg.sender, _amount);
+            (bool success, ) = msg.sender.call{value: ethToReceive}("");
+            if (!success) revert PredictionMarket__ETHTransferFailed();
+            emit WinningTokensRedeemed(msg.sender, _amount, ethToReceive);
+        }
+
+completion_message: |
+  Congratulations — you've completed the Prediction Markets Challenge!
+
+  You built a complete binary prediction market with:
+  - **ERC20 outcome tokens** — Yes/No tokens minted and locked for initial probability
+  - **Liquidity management** — add/remove ETH with proportional token minting/burning
+  - **Oracle reporting** — on-chain outcome resolution with access control
+  - **Linear AMM pricing** — probability-based pricing with before/after averaging
+  - **Token trading** — buy/sell with proper validation, modifiers, and fee tracking
+  - **Token redemption** — winners cash out at fixed payout value
+
+  Key concepts you learned:
+  - AMM pricing vs order books
+  - Probability calculations from token distributions
+  - Token locking for initial market conditions
+  - Oracle patterns for off-chain data
+  - Modifier composition for access control
+  - LP economics — revenue from trades, risk from outcome exposure
+
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/prediction-markets):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
