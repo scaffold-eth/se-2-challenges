@@ -1,0 +1,553 @@
+name: "Over-Collateralized Lending"
+version: "1.0"
+description: "Build a lending platform where users deposit ETH collateral and borrow CORN tokens, with position validation and liquidation mechanics"
+difficulty: "intermediate"
+estimated_time: "60-90 minutes"
+
+setup:
+  file: "packages/hardhat/contracts/Lending.sol"
+
+welcome_message: |
+  Welcome to the Over-Collateralized Lending Challenge!
+
+  You'll build a **Lending** contract that accepts ETH as collateral and lets users borrow **CORN** tokens against it. You'll implement:
+
+  1. **Collateral management** — deposit and withdraw ETH
+  2. **Position validation** — ensure loans stay above 120% collateralization
+  3. **Borrowing & repaying** — borrow CORN against collateral, repay to free it up
+  4. **Liquidation** — let anyone liquidate unsafe positions for a 10% reward
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's build a lending protocol!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: Adding and Removing Collateral
+  # ============================================================
+  - id: "collateral"
+    title: "Adding and Removing Collateral"
+    description: "Implement addCollateral and withdrawCollateral functions"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## How On-Chain Lending Works
+
+      In DeFi, all lending is **over-collateralized** — borrowers must lock up collateral worth MORE than what they borrow. Unlike traditional lending where identity and legal systems enforce repayment, on-chain lending relies purely on smart contract mechanics.
+
+      Our `Lending` contract uses ETH as collateral and lets users borrow **CORN** (an ERC-20 token). The contract tracks each user's collateral in a mapping:
+
+      ```solidity
+      mapping(address => uint256) public s_userCollateral;
+      ```
+
+      ### addCollateral
+
+      This is a `payable` function — users send ETH with the call. The contract:
+      1. Validates `msg.value > 0`
+      2. Records the ETH in `s_userCollateral`
+      3. Emits `CollateralAdded` with the user, amount, and current CORN price
+
+      The price comes from `i_cornDEX.currentPrice()` — a DEX being used as a price oracle.
+
+      ### withdrawCollateral
+
+      Users should be able to withdraw their collateral. The function:
+      1. Validates the amount (not 0, not more than deposited)
+      2. Reduces `s_userCollateral`
+      3. Sends ETH back using `call{value: amount}`
+      4. Emits `CollateralWithdrawn`
+
+      We'll add a safety check later (Checkpoint 3) to prevent withdrawals that would make a position liquidatable.
+
+    questions:
+      - text: "Why is on-chain lending always over-collateralized? What's different from traditional lending that makes this necessary?"
+        concepts:
+          [
+            "identity",
+            "anonymous",
+            "no enforcement",
+            "can't force",
+            "walk away",
+            "pseudonymous",
+            "no legal",
+            "trustless",
+          ]
+        hint: "In traditional lending, the bank knows who you are and can take legal action. What happens on-chain where addresses are pseudonymous?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Lending.sol`.
+
+        Implement two functions:
+
+        1. **`addCollateral()`** (payable):
+           - Revert with `Lending__InvalidAmount()` if `msg.value == 0`
+           - Add `msg.value` to `s_userCollateral[msg.sender]`
+           - Emit `CollateralAdded(msg.sender, msg.value, i_cornDEX.currentPrice())`
+
+        2. **`withdrawCollateral(uint256 amount)`**:
+           - Revert with `Lending__InvalidAmount()` if `amount == 0` or `s_userCollateral[msg.sender] < amount`
+           - Subtract from `s_userCollateral[msg.sender]`
+           - Send ETH back with `payable(msg.sender).call{value: amount}("")`
+           - Revert with `Lending__TransferFailed()` if transfer fails
+           - Emit `CollateralWithdrawn(msg.sender, amount, i_cornDEX.currentPrice())`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Lending.sol"
+      test: "yarn test --grep 'Collateral Operations'"
+      hints:
+        - "For `addCollateral`: it's just `s_userCollateral[msg.sender] += msg.value` after the validation check."
+        - |
+          For `withdrawCollateral`, update the mapping BEFORE sending ETH (checks-effects-interactions):
+          ```solidity
+          s_userCollateral[msg.sender] = s_userCollateral[msg.sender] - amount;
+          (bool success, ) = payable(msg.sender).call{value: amount}("");
+          if (!success) revert Lending__TransferFailed();
+          ```
+        - |
+          Full solutions:
+          ```solidity
+          function addCollateral() public payable {
+              if (msg.value == 0) revert Lending__InvalidAmount();
+              s_userCollateral[msg.sender] += msg.value;
+              emit CollateralAdded(msg.sender, msg.value, i_cornDEX.currentPrice());
+          }
+
+          function withdrawCollateral(uint256 amount) public {
+              if (amount == 0 || s_userCollateral[msg.sender] < amount) revert Lending__InvalidAmount();
+              s_userCollateral[msg.sender] -= amount;
+              (bool success, ) = payable(msg.sender).call{value: amount}("");
+              if (!success) revert Lending__TransferFailed();
+              emit CollateralWithdrawn(msg.sender, amount, i_cornDEX.currentPrice());
+          }
+          ```
+      solution: |
+        function addCollateral() public payable {
+            if (msg.value == 0) revert Lending__InvalidAmount();
+            s_userCollateral[msg.sender] += msg.value;
+            emit CollateralAdded(msg.sender, msg.value, i_cornDEX.currentPrice());
+        }
+
+        function withdrawCollateral(uint256 amount) public {
+            if (amount == 0 || s_userCollateral[msg.sender] < amount) revert Lending__InvalidAmount();
+            s_userCollateral[msg.sender] -= amount;
+            (bool success, ) = payable(msg.sender).call{value: amount}("");
+            if (!success) revert Lending__TransferFailed();
+            emit CollateralWithdrawn(msg.sender, amount, i_cornDEX.currentPrice());
+        }
+
+  # ============================================================
+  # CHECKPOINT 2: Helper Methods
+  # ============================================================
+  - id: "helpers"
+    title: "Helper Methods"
+    description: "Implement collateral valuation, position ratio, liquidation check, and position validation"
+
+    context: |
+      ## Position Health
+
+      The lending protocol needs to constantly verify that each user's collateral is worth at least **120%** of their borrowed CORN (`COLLATERAL_RATIO = 120`). Four helper functions make this work:
+
+      ### calculateCollateralValue
+
+      Converts a user's ETH collateral to its value in CORN:
+      ```solidity
+      collateralInCORN = (ethCollateral * cornPrice) / 1e18
+      ```
+      Since both ETH and CORN use 18 decimals, dividing by `1e18` normalizes the result.
+
+      ### _calculatePositionRatio
+
+      Returns the ratio of collateral value to borrowed amount, scaled by `1e18` for precision:
+      ```solidity
+      ratio = (collateralValue * 1e18) / borrowedAmount
+      ```
+      If the user hasn't borrowed anything, return `type(uint256).max` (infinite ratio = perfectly safe).
+
+      **Why 1e18 scaling?** Solidity has no decimals. Without scaling, a 133% ratio would truncate to `1` (since `1.33` rounds down). Multiplying by `1e18` preserves precision: `1330000000000000000`.
+
+      ### isLiquidatable
+
+      Checks if the position ratio falls below the required 120%:
+      ```solidity
+      (positionRatio * 100) < COLLATERAL_RATIO * 1e18
+      ```
+
+      ### _validatePosition
+
+      A guard function that simply reverts with `Lending__UnsafePositionRatio` if `isLiquidatable` returns true. Used after any operation that changes a user's collateral-to-debt ratio.
+
+    questions:
+      - text: "Why do we multiply by 1e18 in `_calculatePositionRatio` instead of just dividing collateral by borrowed? What would go wrong?"
+        concepts:
+          [
+            "precision",
+            "truncat",
+            "round",
+            "integer",
+            "no decimal",
+            "loss",
+            "zero",
+            "floor",
+          ]
+        hint: "Solidity only has integers. What happens when you divide 133 by 100 in integer math?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Lending.sol`.
+
+        Implement four functions:
+
+        1. **`calculateCollateralValue(address user)`** — Return `(s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18`
+
+        2. **`_calculatePositionRatio(address user)`** — Return `type(uint256).max` if no debt, otherwise `(collateralValue * 1e18) / borrowedAmount`
+
+        3. **`isLiquidatable(address user)`** — Return `(positionRatio * 100) < COLLATERAL_RATIO * 1e18`
+
+        4. **`_validatePosition(address user)`** — Revert with `Lending__UnsafePositionRatio()` if `isLiquidatable(user)` returns true
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Lending.sol"
+      test: "yarn test --grep 'Collateral Operations'"
+      hints:
+        - "`calculateCollateralValue` is a one-liner: `return (s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18;`"
+        - |
+          For `_calculatePositionRatio`:
+          ```solidity
+          uint256 borrowedAmount = s_userBorrowed[user];
+          uint256 collateralValue = calculateCollateralValue(user);
+          if (borrowedAmount == 0) return type(uint256).max;
+          return (collateralValue * 1e18) / borrowedAmount;
+          ```
+        - |
+          Full solutions:
+          ```solidity
+          function calculateCollateralValue(address user) public view returns (uint256) {
+              return (s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18;
+          }
+
+          function _calculatePositionRatio(address user) internal view returns (uint256) {
+              uint256 borrowedAmount = s_userBorrowed[user];
+              uint256 collateralValue = calculateCollateralValue(user);
+              if (borrowedAmount == 0) return type(uint256).max;
+              return (collateralValue * 1e18) / borrowedAmount;
+          }
+
+          function isLiquidatable(address user) public view returns (bool) {
+              uint256 positionRatio = _calculatePositionRatio(user);
+              return (positionRatio * 100) < COLLATERAL_RATIO * 1e18;
+          }
+
+          function _validatePosition(address user) internal view {
+              if (isLiquidatable(user)) revert Lending__UnsafePositionRatio();
+          }
+          ```
+      solution: |
+        function calculateCollateralValue(address user) public view returns (uint256) {
+            return (s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18;
+        }
+
+        function _calculatePositionRatio(address user) internal view returns (uint256) {
+            uint256 borrowedAmount = s_userBorrowed[user];
+            uint256 collateralValue = calculateCollateralValue(user);
+            if (borrowedAmount == 0) return type(uint256).max;
+            return (collateralValue * 1e18) / borrowedAmount;
+        }
+
+        function isLiquidatable(address user) public view returns (bool) {
+            uint256 positionRatio = _calculatePositionRatio(user);
+            return (positionRatio * 100) < COLLATERAL_RATIO * 1e18;
+        }
+
+        function _validatePosition(address user) internal view {
+            if (isLiquidatable(user)) revert Lending__UnsafePositionRatio();
+        }
+
+  # ============================================================
+  # CHECKPOINT 3: Borrowing and Repaying CORN
+  # ============================================================
+  - id: "borrowing"
+    title: "Borrowing and Repaying CORN"
+    description: "Implement borrowCorn and repayCorn, plus add position validation to withdrawCollateral"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Borrowing Against Collateral
+
+      With collateral deposited and helper methods in place, users can now borrow CORN. The contract holds a supply of CORN (pre-loaded during deployment) and lends it out.
+
+      ### borrowCorn
+
+      The flow:
+      1. Validate `borrowAmount > 0`
+      2. Add to `s_userBorrowed[msg.sender]`
+      3. Call `_validatePosition(msg.sender)` — this ensures the user maintains 120% collateralization AFTER the borrow. If not, the whole transaction reverts.
+      4. Transfer CORN from the contract to the user using `i_corn.transfer()`
+
+      **Why validate AFTER updating the mapping?** We update state first, then validate. If the position would be unsafe, `_validatePosition` reverts, rolling back the state change. This is cleaner than calculating the hypothetical position before updating.
+
+      ### repayCorn
+
+      The reverse of borrowing:
+      1. Validate `repayAmount > 0` and not more than borrowed
+      2. Subtract from `s_userBorrowed[msg.sender]`
+      3. Pull CORN back from the user using `i_corn.transferFrom()` (user must have approved the contract first)
+
+      ### Securing withdrawCollateral
+
+      Now that borrowing exists, you also need to add `_validatePosition` to `withdrawCollateral` — otherwise a borrower could withdraw all their collateral while still having debt! Add the check after updating `s_userCollateral`, but only if they have outstanding debt (`s_userBorrowed[msg.sender] > 0`).
+
+    questions:
+      - text: "Why do we call _validatePosition AFTER updating s_userBorrowed in borrowCorn, rather than calculating the new ratio beforehand?"
+        concepts:
+          [
+            "revert",
+            "roll back",
+            "undo",
+            "simpler",
+            "state revert",
+            "atomic",
+            "check after",
+            "if fails",
+          ]
+        hint: "What happens to state changes when a transaction reverts? Think about atomicity."
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Lending.sol`.
+
+        1. **`borrowCorn(uint256 borrowAmount)`**:
+           - Revert with `Lending__InvalidAmount()` if `borrowAmount == 0`
+           - Add to `s_userBorrowed[msg.sender]`
+           - Call `_validatePosition(msg.sender)` (reverts if position would be unsafe)
+           - Transfer CORN: `bool success = i_corn.transfer(msg.sender, borrowAmount)`
+           - Revert with `Lending__BorrowingFailed()` if transfer fails
+           - Emit `AssetBorrowed(msg.sender, borrowAmount, i_cornDEX.currentPrice())`
+
+        2. **`repayCorn(uint256 repayAmount)`**:
+           - Revert with `Lending__InvalidAmount()` if `repayAmount == 0` or `> s_userBorrowed[msg.sender]`
+           - Subtract from `s_userBorrowed[msg.sender]`
+           - `i_corn.transferFrom(msg.sender, address(this), repayAmount)`
+           - Revert with `Lending__RepayingFailed()` if transfer fails
+           - Emit `AssetRepaid(msg.sender, repayAmount, i_cornDEX.currentPrice())`
+
+        3. **Update `withdrawCollateral`**: After updating `s_userCollateral` but before the ETH transfer, add:
+           ```solidity
+           if (s_userBorrowed[msg.sender] > 0) {
+               _validatePosition(msg.sender);
+           }
+           ```
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Lending.sol"
+      test: "yarn test --grep 'Borrowing Operations|Repayment Operations|Collateral Operations'"
+      hints:
+        - "For `borrowCorn`: update mapping first, validate, then transfer. The order matters — `_validatePosition` checks the new state."
+        - |
+          For `repayCorn`, use `transferFrom` (not `transfer`) since the contract is pulling CORN from the user:
+          ```solidity
+          bool success = i_corn.transferFrom(msg.sender, address(this), repayAmount);
+          if (!success) revert Lending__RepayingFailed();
+          ```
+        - |
+          Full solutions:
+          ```solidity
+          function borrowCorn(uint256 borrowAmount) public {
+              if (borrowAmount == 0) revert Lending__InvalidAmount();
+              s_userBorrowed[msg.sender] += borrowAmount;
+              _validatePosition(msg.sender);
+              bool success = i_corn.transfer(msg.sender, borrowAmount);
+              if (!success) revert Lending__BorrowingFailed();
+              emit AssetBorrowed(msg.sender, borrowAmount, i_cornDEX.currentPrice());
+          }
+
+          function repayCorn(uint256 repayAmount) public {
+              if (repayAmount == 0 || repayAmount > s_userBorrowed[msg.sender]) revert Lending__InvalidAmount();
+              s_userBorrowed[msg.sender] -= repayAmount;
+              bool success = i_corn.transferFrom(msg.sender, address(this), repayAmount);
+              if (!success) revert Lending__RepayingFailed();
+              emit AssetRepaid(msg.sender, repayAmount, i_cornDEX.currentPrice());
+          }
+          ```
+      solution: |
+        function borrowCorn(uint256 borrowAmount) public {
+            if (borrowAmount == 0) revert Lending__InvalidAmount();
+            s_userBorrowed[msg.sender] += borrowAmount;
+            _validatePosition(msg.sender);
+            bool success = i_corn.transfer(msg.sender, borrowAmount);
+            if (!success) revert Lending__BorrowingFailed();
+            emit AssetBorrowed(msg.sender, borrowAmount, i_cornDEX.currentPrice());
+        }
+
+        function repayCorn(uint256 repayAmount) public {
+            if (repayAmount == 0 || repayAmount > s_userBorrowed[msg.sender]) revert Lending__InvalidAmount();
+            s_userBorrowed[msg.sender] -= repayAmount;
+            bool success = i_corn.transferFrom(msg.sender, address(this), repayAmount);
+            if (!success) revert Lending__RepayingFailed();
+            emit AssetRepaid(msg.sender, repayAmount, i_cornDEX.currentPrice());
+        }
+
+        // In withdrawCollateral, add after s_userCollateral update:
+        // if (s_userBorrowed[msg.sender] > 0) { _validatePosition(msg.sender); }
+
+  # ============================================================
+  # CHECKPOINT 4: Liquidation
+  # ============================================================
+  - id: "liquidation"
+    title: "Liquidation Mechanism"
+    description: "Implement the liquidate function that lets anyone close unsafe positions for a 10% reward"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Why Liquidation Matters
+
+      Without liquidation, a borrower whose collateral drops in value could simply walk away — keeping borrowed CORN while the protocol is left with insufficient collateral. Liquidation ensures the protocol stays solvent.
+
+      ### How It Works
+
+      When a position drops below 120% collateralization, **anyone** can liquidate it:
+
+      1. **Liquidator pays the borrower's CORN debt** back to the protocol
+      2. **Liquidator receives ETH collateral** worth the debt amount + 10% reward
+      3. **Borrower loses collateral** but keeps their borrowed CORN
+
+      ### The Math
+
+      The liquidator reward is `LIQUIDATOR_REWARD = 10` (10%). The collateral to give the liquidator:
+
+      ```solidity
+      // How much ETH is the debt worth?
+      collateralPurchased = (userDebt * userCollateral) / collateralValue;
+      // Add 10% reward
+      liquidatorReward = (collateralPurchased * LIQUIDATOR_REWARD) / 100;
+      amountForLiquidator = collateralPurchased + liquidatorReward;
+      // Never exceed the user's total collateral
+      amountForLiquidator = amountForLiquidator > userCollateral ? userCollateral : amountForLiquidator;
+      ```
+
+      ### Why 120% and Not 100%?
+
+      The 20% buffer exists to give liquidators room to profit. If liquidation only happened at 100%, there'd be no incentive to liquidate (no profit margin), and bad debt could accumulate.
+
+    questions:
+      - text: "Why does the borrower get to keep their borrowed CORN after liquidation? Isn't that unfair?"
+        concepts:
+          [
+            "liquidator",
+            "paid",
+            "repaid",
+            "debt covered",
+            "someone else",
+            "took over",
+            "penalty",
+            "fee",
+            "collateral",
+          ]
+        hint: "The liquidator pays back the debt on behalf of the borrower. So who actually 'returned' the CORN to the protocol?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Lending.sol`.
+
+        Implement `liquidate(address user)`:
+
+        1. Revert with `Lending__NotLiquidatable()` if `!isLiquidatable(user)`
+        2. Get `userDebt = s_userBorrowed[user]`
+        3. Revert with `Lending__InsufficientLiquidatorCorn()` if liquidator doesn't have enough CORN
+        4. Transfer CORN from liquidator: `i_corn.transferFrom(msg.sender, address(this), userDebt)`
+        5. Clear the borrower's debt: `s_userBorrowed[user] = 0`
+        6. Calculate the collateral to give the liquidator:
+           - `collateralPurchased = (userDebt * userCollateral) / collateralValue`
+           - Add 10% reward, cap at user's total collateral
+        7. Subtract from `s_userCollateral[user]`
+        8. Send ETH to liquidator with `call{value: amountForLiquidator}`
+        9. Emit `Liquidation(user, msg.sender, amountForLiquidator, userDebt, i_cornDEX.currentPrice())`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Lending.sol"
+      test: "yarn test --grep 'Liquidation'"
+      hints:
+        - "Check `isLiquidatable(user)` first. Then verify `i_corn.balanceOf(msg.sender) >= userDebt`. Use `transferFrom` to pull the CORN from the liquidator."
+        - |
+          The collateral math:
+          ```solidity
+          uint256 userCollateral = s_userCollateral[user];
+          uint256 collateralValue = calculateCollateralValue(user);
+          uint256 collateralPurchased = (userDebt * userCollateral) / collateralValue;
+          uint256 liquidatorReward = (collateralPurchased * LIQUIDATOR_REWARD) / 100;
+          uint256 amountForLiquidator = collateralPurchased + liquidatorReward;
+          amountForLiquidator = amountForLiquidator > userCollateral ? userCollateral : amountForLiquidator;
+          ```
+        - |
+          Full solution:
+          ```solidity
+          function liquidate(address user) public {
+              if (!isLiquidatable(user)) revert Lending__NotLiquidatable();
+              uint256 userDebt = s_userBorrowed[user];
+              if (i_corn.balanceOf(msg.sender) < userDebt) revert Lending__InsufficientLiquidatorCorn();
+              i_corn.transferFrom(msg.sender, address(this), userDebt);
+              s_userBorrowed[user] = 0;
+              uint256 userCollateral = s_userCollateral[user];
+              uint256 collateralValue = calculateCollateralValue(user);
+              uint256 collateralPurchased = (userDebt * userCollateral) / collateralValue;
+              uint256 liquidatorReward = (collateralPurchased * LIQUIDATOR_REWARD) / 100;
+              uint256 amountForLiquidator = collateralPurchased + liquidatorReward;
+              amountForLiquidator = amountForLiquidator > userCollateral ? userCollateral : amountForLiquidator;
+              s_userCollateral[user] = userCollateral - amountForLiquidator;
+              (bool success, ) = payable(msg.sender).call{value: amountForLiquidator}("");
+              if (!success) revert Lending__TransferFailed();
+              emit Liquidation(user, msg.sender, amountForLiquidator, userDebt, i_cornDEX.currentPrice());
+          }
+          ```
+      solution: |
+        function liquidate(address user) public {
+            if (!isLiquidatable(user)) revert Lending__NotLiquidatable();
+            uint256 userDebt = s_userBorrowed[user];
+            if (i_corn.balanceOf(msg.sender) < userDebt) revert Lending__InsufficientLiquidatorCorn();
+            i_corn.transferFrom(msg.sender, address(this), userDebt);
+            s_userBorrowed[user] = 0;
+            uint256 userCollateral = s_userCollateral[user];
+            uint256 collateralValue = calculateCollateralValue(user);
+            uint256 collateralPurchased = (userDebt * userCollateral) / collateralValue;
+            uint256 liquidatorReward = (collateralPurchased * LIQUIDATOR_REWARD) / 100;
+            uint256 amountForLiquidator = collateralPurchased + liquidatorReward;
+            amountForLiquidator = amountForLiquidator > userCollateral ? userCollateral : amountForLiquidator;
+            s_userCollateral[user] = userCollateral - amountForLiquidator;
+            (bool success, ) = payable(msg.sender).call{value: amountForLiquidator}("");
+            if (!success) revert Lending__TransferFailed();
+            emit Liquidation(user, msg.sender, amountForLiquidator, userDebt, i_cornDEX.currentPrice());
+        }
+
+completion_message: |
+  Congratulations — you've completed the Over-Collateralized Lending Challenge!
+
+  Your Lending contract now supports:
+  - **Collateral management** — deposit and withdraw ETH with safety checks
+  - **Position validation** — 120% collateralization ratio enforced at all times
+  - **Borrowing & repaying** — borrow CORN against collateral, repay to free it
+  - **Liquidation** — anyone can close unsafe positions for a 10% reward
+
+  Key concepts you learned:
+  - Over-collateralization and why on-chain lending requires it
+  - Precision math with `1e18` scaling to avoid integer truncation
+  - Position health monitoring with collateral ratios
+  - Liquidation incentives — the 20% buffer gives liquidators profit margin
+  - ERC-20 `transfer` vs `transferFrom` patterns
+  - Checks-effects-interactions pattern for safe state updates
+
+  Try running `yarn simulate` to watch bots use your lending protocol!
+
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/over-collateralized-lending):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
