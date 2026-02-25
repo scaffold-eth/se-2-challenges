@@ -1,0 +1,183 @@
+# CHALLENGE.yaml Example Template
+# Copy this file as CHALLENGE.yaml and customize for your challenge
+#
+# TWO CHECKPOINT TYPES:
+#
+# 1. CONCEPT CHECKPOINT (has `unlocks`):
+#    AI teaches → asks questions → auto-unlocks code by replacing TODO markers.
+#    The contract starts COMPLETE in the repo. The setup.template contains a
+#    TODO-marked version that gets applied when user runs /start.
+#    Example: Tokenization challenge
+#
+# 2. CODE-WRITING CHECKPOINT (has `task`):
+#    AI teaches → optional questions → presents coding task → user writes code →
+#    tests validate. The contract has a SKELETON with empty function bodies.
+#    No setup.template needed — the contract stays as-is.
+#    Example: Crowdfunding challenge
+#
+# A checkpoint can have `questions` + `task` (questions first, then coding).
+# Detection: presence of `task` → code-writing; presence of `unlocks` → concept.
+
+name: "Your Challenge Name"
+version: "1.0"
+description: "Brief description of what users will learn and build"
+difficulty: "beginner" # Metadata about the challenge's inherent complexity (beginner/intermediate/advanced)
+estimated_time: "30-45 minutes"
+
+# Setup template - OPTIONAL
+# Only needed for CONCEPT challenges where the complete contract gets replaced
+# with a TODO-marked version. Omit entirely for CODE-WRITING challenges where
+# the contract already has a skeleton with empty function bodies.
+setup:
+  description: "Transform the contract to TODO template for progressive learning"
+  file: "packages/hardhat/contracts/YourContract.sol"
+  template: |
+    // SPDX-License-Identifier: MIT
+    pragma solidity ^0.8.20;
+
+    // TODO[imports]: Imports will be added here
+    // Complete the "First Concept" checkpoint to unlock
+
+    contract YourContract
+        // TODO[inheritance]: Contract inheritance will be added here
+        // Complete the "Second Concept" checkpoint to unlock
+    {
+        // TODO[state]: State variables will be added here
+        // Complete the "Third Concept" checkpoint to unlock
+
+        // TODO[functions]: Functions will be added here
+        // Complete the remaining checkpoints to unlock
+    }
+
+welcome_message: |
+  Welcome to the [Challenge Name]!
+
+  [Brief exciting intro about what they'll learn]
+
+  **How this works:**
+  I'll teach you each concept, then ask you a question to check your understanding.
+  As you complete each checkpoint, I'll add the corresponding code to your contract!
+
+  Say "hint" anytime you're stuck. Your progress is saved, so you can take a break and use `/start` to resume later.
+
+  Let's get started!
+
+checkpoints:
+  # ============================================================
+  # CONCEPT CHECKPOINT EXAMPLE (AI auto-unlocks code)
+  # ============================================================
+  - id: "checkpoint-1"
+    title: "First Concept Title"
+    description: "Brief description of what this checkpoint covers"
+    deployAfterCheckpoint: true  # If true, AI suggests `yarn deploy` after this checkpoint so user can compile and see changes on the frontend
+
+    context: |
+      ## Concept Heading
+
+      [Teach the concept here. This is shown BEFORE any questions.]
+      [Reference specific parts of the README or contract code.]
+      [Include code examples, explanations, and real-world analogies.]
+
+      ## Key Points
+
+      - Point 1
+      - Point 2
+      - Point 3
+
+    questions:
+      - text: "Your question here? Make it specific and test understanding."
+        concepts: ["keyword1", "keyword2", "keyword3"]  # Words/phrases that indicate understanding
+        hint: "A helpful hint that guides without giving away the answer"
+
+      - text: "Second question for this checkpoint?"
+        concepts: ["concept1", "concept2"]
+        hint: "Another helpful hint"
+
+    # Code unlocked when this checkpoint is completed
+    unlocks:
+      file: "packages/hardhat/contracts/YourContract.sol"
+      todo: "imports"  # Matches // TODO[imports] marker
+      code: |
+        import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+        // ... other imports
+
+  # ============================================================
+  # CODE-WRITING CHECKPOINT EXAMPLE (user writes code, tests validate)
+  # ============================================================
+  - id: "checkpoint-code-writing"
+    title: "A Hands-On Coding Task"
+    description: "User implements the function themselves"
+    deployAfterCheckpoint: true  # Optional per-checkpoint; omit or set false to skip deploy suggestion
+
+    context: |
+      ## Teaching Content
+
+      [Teach the concept here - shown BEFORE the coding task.]
+      [Explain the Solidity patterns they'll need.]
+      [Include examples and analogies.]
+
+    # Optional: conceptual questions before the coding task
+    questions:
+      - text: "Question to check understanding before they code?"
+        concepts: ["keyword1", "keyword2"]
+        hint: "Helpful hint"
+
+    # Coding task - presence of this field makes it a code-writing checkpoint
+    task:
+      description: |
+        Implement the `myFunction()` in the contract.
+
+        You'll need to add:
+        - A `balances` mapping: `mapping(address => uint256) public balances;`
+        - A `MyEvent` event: `event MyEvent(address, uint256);`
+
+        Then fill in the function to:
+        - Update the balances mapping
+        - Emit the event
+      file: "packages/hardhat/contracts/YourContract.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      # Progressive hints: gentle → specific → solution
+      hints:
+        - "Think about msg.sender and msg.value - they give you the caller's address and the ETH sent"
+        - "For the mapping update: balances[msg.sender] += msg.value. Why += instead of =?"
+        - |
+          Here's the full solution:
+          ```solidity
+          mapping(address => uint256) public balances;
+          event MyEvent(address, uint256);
+
+          function myFunction() public payable {
+              balances[msg.sender] += msg.value;
+              emit MyEvent(msg.sender, msg.value);
+          }
+          ```
+      # Full solution code that /skip will apply
+      solution: |
+        // Add under State Variables:
+        mapping(address => uint256) public balances;
+
+        // Add under Events:
+        event MyEvent(address, uint256);
+
+        // myFunction() body:
+        balances[msg.sender] += msg.value;
+        emit MyEvent(msg.sender, msg.value);
+
+# Add more checkpoints as needed...
+
+completion_message: |
+  Congratulations! You've completed the [Challenge Name]!
+
+  Your contract is now complete! You can see all the code you unlocked by learning.
+
+  ## Next Steps
+
+  - Test your contracts with `yarn test`
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/{challenge-name}):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
+
+  Head to your next challenge at [SpeedRunEthereum.com](https://speedrunethereum.com)!
