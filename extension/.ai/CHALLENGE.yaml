@@ -1,0 +1,806 @@
+name: "MyUSD Stablecoin"
+version: "1.0"
+description: "Build the core engine for MyUSD, a crypto-backed stablecoin with collateralization, interest rates, and liquidation mechanics"
+difficulty: "advanced"
+estimated_time: "90-120 minutes"
+
+setup:
+  file: "packages/hardhat/contracts/MyUSDEngine.sol"
+
+welcome_message: |
+  Welcome to the MyUSD Stablecoin Challenge!
+
+  You'll build the **MyUSDEngine** — the core engine powering a crypto-backed stablecoin pegged to $1 USD. You'll implement:
+
+  1. **Collateral & minting** — deposit ETH, calculate value, mint MyUSD against it
+  2. **Interest system** — share-based debt tracking with exchange rates
+  3. **Borrow rate management** — set rates to influence supply/demand
+  4. **Repaying & withdrawing** — repay debt and reclaim collateral safely
+  5. **Liquidation** — enforce system stability by liquidating unsafe positions
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's build a stablecoin!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: Collateral, Interest System & Minting
+  # ============================================================
+  - id: "collateral-and-minting"
+    title: "Collateral, Interest System & Minting"
+    description: "Implement collateral deposits, share-based interest tracking, and MyUSD minting with position validation"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## The Foundation: Collateral, Interest & Minting
+
+      We'll implement all the core functions that make the system work. This is a big checkpoint — 8 functions — but they're all connected in a single flow: **deposit ETH → track interest → mint stablecoins safely**.
+
+      ### Part 1: Collateral (2 functions)
+
+      Users deposit ETH as collateral. `addCollateral()` is a `payable` function that records ETH in `s_userCollateral`. `calculateCollateralValue()` converts ETH to USD using the oracle:
+
+      ```solidity
+      (collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION
+      ```
+
+      We divide by `PRECISION` (1e18) because both the amount (in wei) and the price are scaled by 1e18 — multiplying gives 1e36, so we divide once to get back to 1e18.
+
+      ### Part 2: Interest System (3 functions)
+
+      Instead of updating every user's debt when interest accrues, we use a **share-based system** with two key variables:
+      - `debtExchangeRate` — how much MyUSD each debt share is worth
+      - `lastUpdateTime` — when the rate was last updated
+
+      **Example:** Bob mints 100 MyUSD → gets 100 shares. After a year at 10% interest, each share is worth 1.1 MyUSD, so Bob owes 110 MyUSD — but we only updated one variable, not Bob's balance.
+
+      If Alice then mints 100 MyUSD, she gets `100 / 1.1 = ~90.91` shares. She owes 100 MyUSD now but won't pay interest on the first year's debt.
+
+      Three functions work together:
+      - `_getCurrentExchangeRate()` — calculates the exchange rate if interest were accrued right now
+      - `_accrueInterest()` — persists the updated exchange rate and timestamp
+      - `_getMyUSDToShares()` — converts MyUSD amounts to share amounts
+
+      The interest formula: `interest = totalDebtValue * borrowRate * timeElapsed / (SECONDS_PER_YEAR * 10000)`. The rate is in basis points (500 = 5%).
+
+      ### Part 3: Minting & Position Health (4 functions)
+
+      - `getCurrentDebtValue()` — shares × exchange rate = actual MyUSD owed
+      - `calculatePositionRatio()` — collateral value / debt value (returns `type(uint256).max` if no debt)
+      - `_validatePosition()` — reverts if position ratio is below 150% (`COLLATERAL_RATIO`)
+      - `mintMyUSD()` — converts amount to shares, updates state, validates position, then mints tokens
+
+      The 150% ratio means for every $1 of debt, there must be $1.50 of collateral — a buffer against price drops.
+
+    questions:
+      - text: "Why use a share-based system instead of tracking each user's debt directly? What's the efficiency advantage?"
+        concepts:
+          [
+            "one variable",
+            "exchange rate",
+            "don't need to update every",
+            "gas",
+            "efficient",
+            "single update",
+            "scale",
+          ]
+        hint: "Think about what happens when interest accrues — how many storage updates would you need if tracking each user vs. updating one exchange rate?"
+
+      - text: "Why does the system require 150% collateralization rather than 100%? What problem does the extra 50% buffer solve?"
+        concepts:
+          [
+            "price drop",
+            "volatil",
+            "buffer",
+            "liquidat",
+            "time to react",
+            "safety margin",
+            "bad debt",
+          ]
+        hint: "ETH price can drop quickly. What happens if a position is exactly 100% collateralized and ETH drops 10%?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/MyUSDEngine.sol` and implement these 8 functions:
+
+        **Collateral (Checkpoint 2 in contract):**
+
+        1. **`addCollateral()`** (payable):
+           - Revert with `Engine__InvalidAmount()` if `msg.value == 0`
+           - Add `msg.value` to `s_userCollateral[msg.sender]`
+           - Emit `CollateralAdded(msg.sender, msg.value, i_oracle.getETHMyUSDPrice())`
+
+        2. **`calculateCollateralValue(address user)`**:
+           - Get user's collateral from `s_userCollateral[user]`
+           - Return `(collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION`
+
+        **Interest System (Checkpoint 3):**
+
+        3. **`_getCurrentExchangeRate()`**:
+           - If `totalDebtShares == 0`, return `debtExchangeRate`
+           - Calculate `timeElapsed = block.timestamp - lastUpdateTime`
+           - If no time passed or rate is 0, return `debtExchangeRate`
+           - Calculate: `totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION`
+           - Calculate: `interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000)`
+           - Return: `debtExchangeRate + (interest * PRECISION) / totalDebtShares`
+
+        4. **`_accrueInterest()`**:
+           - If `totalDebtShares == 0`, just update `lastUpdateTime` and return
+           - Set `debtExchangeRate = _getCurrentExchangeRate()`
+           - Set `lastUpdateTime = block.timestamp`
+
+        5. **`_getMyUSDToShares(uint256 amount)`**:
+           - Return `(amount * PRECISION) / _getCurrentExchangeRate()`
+
+        **Minting & Position Health (Checkpoint 4):**
+
+        6. **`getCurrentDebtValue(address user)`**:
+           - If user has 0 shares, return 0
+           - Return `(s_userDebtShares[user] * _getCurrentExchangeRate()) / PRECISION`
+
+        7. **`calculatePositionRatio(address user)`**:
+           - Get debt value; if 0, return `type(uint256).max`
+           - Return `(collateralValue * PRECISION) / debtValue`
+
+        8. **`_validatePosition(address user)`**:
+           - Get position ratio
+           - If `(positionRatio * 100) < COLLATERAL_RATIO * PRECISION`, revert with `Engine__UnsafePositionRatio()`
+
+        9. **`mintMyUSD(uint256 mintAmount)`**:
+           - Revert if `mintAmount == 0`
+           - Convert to shares with `_getMyUSDToShares`, add to user and total shares
+           - Call `_validatePosition(msg.sender)` — reverts if unsafe
+           - Call `i_myUSD.mintTo(msg.sender, mintAmount)`
+           - Emit `DebtSharesMinted(msg.sender, mintAmount, shares)`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/MyUSDEngine.sol"
+      test: "yarn test --grep 'Borrowing Operations'"
+      hints:
+        - "Start with addCollateral — it's just a validation, a mapping update, and an event emit."
+        - |
+          For `_getCurrentExchangeRate`, the key formula is:
+          ```solidity
+          uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
+          uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
+          return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
+          ```
+        - |
+          For `mintMyUSD`, the order matters: update state → validate → mint:
+          ```solidity
+          uint256 shares = _getMyUSDToShares(mintAmount);
+          s_userDebtShares[msg.sender] += shares;
+          totalDebtShares += shares;
+          _validatePosition(msg.sender);
+          i_myUSD.mintTo(msg.sender, mintAmount);
+          ```
+        - |
+          Full solutions for all 8 functions:
+          ```solidity
+          // addCollateral
+          function addCollateral() public payable {
+              if (msg.value == 0) revert Engine__InvalidAmount();
+              s_userCollateral[msg.sender] += msg.value;
+              emit CollateralAdded(msg.sender, msg.value, i_oracle.getETHMyUSDPrice());
+          }
+
+          // calculateCollateralValue
+          function calculateCollateralValue(address user) public view returns (uint256) {
+              uint256 collateralAmount = s_userCollateral[user];
+              return (collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION;
+          }
+
+          // _getCurrentExchangeRate
+          function _getCurrentExchangeRate() internal view returns (uint256) {
+              if (totalDebtShares == 0) return debtExchangeRate;
+              uint256 timeElapsed = block.timestamp - lastUpdateTime;
+              if (timeElapsed == 0 || borrowRate == 0) return debtExchangeRate;
+              uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
+              uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
+              return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
+          }
+
+          // _accrueInterest
+          function _accrueInterest() internal {
+              if (totalDebtShares == 0) { lastUpdateTime = block.timestamp; return; }
+              debtExchangeRate = _getCurrentExchangeRate();
+              lastUpdateTime = block.timestamp;
+          }
+
+          // _getMyUSDToShares
+          function _getMyUSDToShares(uint256 amount) internal view returns (uint256) {
+              uint256 currentExchangeRate = _getCurrentExchangeRate();
+              return (amount * PRECISION) / currentExchangeRate;
+          }
+
+          // getCurrentDebtValue
+          function getCurrentDebtValue(address user) public view returns (uint256) {
+              if (s_userDebtShares[user] == 0) return 0;
+              uint256 currentExchangeRate = _getCurrentExchangeRate();
+              return (s_userDebtShares[user] * currentExchangeRate) / PRECISION;
+          }
+
+          // calculatePositionRatio
+          function calculatePositionRatio(address user) public view returns (uint256) {
+              uint256 debtValue = getCurrentDebtValue(user);
+              if (debtValue == 0) return type(uint256).max;
+              uint256 collateralValue = calculateCollateralValue(user);
+              return (collateralValue * PRECISION) / debtValue;
+          }
+
+          // _validatePosition
+          function _validatePosition(address user) internal view {
+              uint256 positionRatio = calculatePositionRatio(user);
+              if ((positionRatio * 100) < COLLATERAL_RATIO * PRECISION) {
+                  revert Engine__UnsafePositionRatio();
+              }
+          }
+
+          // mintMyUSD
+          function mintMyUSD(uint256 mintAmount) public {
+              if (mintAmount == 0) revert Engine__InvalidAmount();
+              uint256 shares = _getMyUSDToShares(mintAmount);
+              s_userDebtShares[msg.sender] += shares;
+              totalDebtShares += shares;
+              _validatePosition(msg.sender);
+              i_myUSD.mintTo(msg.sender, mintAmount);
+              emit DebtSharesMinted(msg.sender, mintAmount, shares);
+          }
+          ```
+      solution: |
+        function addCollateral() public payable {
+            if (msg.value == 0) revert Engine__InvalidAmount();
+            s_userCollateral[msg.sender] += msg.value;
+            emit CollateralAdded(msg.sender, msg.value, i_oracle.getETHMyUSDPrice());
+        }
+
+        function calculateCollateralValue(address user) public view returns (uint256) {
+            uint256 collateralAmount = s_userCollateral[user];
+            return (collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION;
+        }
+
+        function _getCurrentExchangeRate() internal view returns (uint256) {
+            if (totalDebtShares == 0) return debtExchangeRate;
+            uint256 timeElapsed = block.timestamp - lastUpdateTime;
+            if (timeElapsed == 0 || borrowRate == 0) return debtExchangeRate;
+            uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
+            uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
+            return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
+        }
+
+        function _accrueInterest() internal {
+            if (totalDebtShares == 0) {
+                lastUpdateTime = block.timestamp;
+                return;
+            }
+            debtExchangeRate = _getCurrentExchangeRate();
+            lastUpdateTime = block.timestamp;
+        }
+
+        function _getMyUSDToShares(uint256 amount) internal view returns (uint256) {
+            uint256 currentExchangeRate = _getCurrentExchangeRate();
+            return (amount * PRECISION) / currentExchangeRate;
+        }
+
+        function getCurrentDebtValue(address user) public view returns (uint256) {
+            if (s_userDebtShares[user] == 0) return 0;
+            uint256 currentExchangeRate = _getCurrentExchangeRate();
+            return (s_userDebtShares[user] * currentExchangeRate) / PRECISION;
+        }
+
+        function calculatePositionRatio(address user) public view returns (uint256) {
+            uint256 debtValue = getCurrentDebtValue(user);
+            if (debtValue == 0) return type(uint256).max;
+            uint256 collateralValue = calculateCollateralValue(user);
+            return (collateralValue * PRECISION) / debtValue;
+        }
+
+        function _validatePosition(address user) internal view {
+            uint256 positionRatio = calculatePositionRatio(user);
+            if ((positionRatio * 100) < COLLATERAL_RATIO * PRECISION) {
+                revert Engine__UnsafePositionRatio();
+            }
+        }
+
+        function mintMyUSD(uint256 mintAmount) public {
+            if (mintAmount == 0) revert Engine__InvalidAmount();
+            uint256 shares = _getMyUSDToShares(mintAmount);
+            s_userDebtShares[msg.sender] += shares;
+            totalDebtShares += shares;
+            _validatePosition(msg.sender);
+            i_myUSD.mintTo(msg.sender, mintAmount);
+            emit DebtSharesMinted(msg.sender, mintAmount, shares);
+        }
+
+  # ============================================================
+  # CHECKPOINT 2: Borrow Rate Management
+  # ============================================================
+  - id: "borrow-rate"
+    title: "Borrow Rate Management"
+    description: "Implement setBorrowRate to allow rate changes with proper interest accrual"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Managing Borrow Rates
+
+      Interest rates are the primary tool for maintaining the stablecoin peg. The rate controller needs to change the borrow rate, but there's a crucial detail: **interest must be accrued before changing the rate**.
+
+      Why? If you change the rate without accruing first, the new rate would retroactively apply to the entire time since the last update. For example:
+      - Rate is 5%, last updated 6 months ago
+      - Someone changes rate to 20%
+      - Without accruing first: the system would calculate 6 months of interest at 20% instead of 5%!
+
+      By calling `_accrueInterest()` first, we "lock in" the old rate's interest for the elapsed period, then start fresh with the new rate.
+
+      The `setBorrowRate` function uses the `onlyRateController` modifier (already in the contract) to restrict access. Interestingly, anyone can call the `RateController.sol` contract's methods — this was intentional so users can change rates from the frontend without needing special authorization.
+
+    questions:
+      - text: "What would happen if you changed the borrow rate without first accruing interest? Why is the order important?"
+        concepts:
+          [
+            "retroactiv",
+            "old rate",
+            "wrong interest",
+            "lock in",
+            "elapsed time",
+            "previous period",
+          ]
+        hint: "Think about what _getCurrentExchangeRate calculates — it uses the current borrowRate and the full time since lastUpdateTime."
+
+    task:
+      description: |
+        Implement **`setBorrowRate(uint256 newRate)`**:
+
+        1. Call `_accrueInterest()` to lock in interest at the old rate
+        2. Set `borrowRate = newRate`
+        3. Emit `BorrowRateUpdated(newRate)`
+
+        The `onlyRateController` modifier is already on the function signature.
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/MyUSDEngine.sol"
+      test: "yarn test --grep 'Interest Accrual'"
+      hints:
+        - "It's just 3 lines: accrue interest, update the rate, emit the event."
+        - |
+          Full solution:
+          ```solidity
+          function setBorrowRate(uint256 newRate) external onlyRateController {
+              _accrueInterest();
+              borrowRate = newRate;
+              emit BorrowRateUpdated(newRate);
+          }
+          ```
+      solution: |
+        function setBorrowRate(uint256 newRate) external onlyRateController {
+            _accrueInterest();
+            borrowRate = newRate;
+            emit BorrowRateUpdated(newRate);
+        }
+
+  # ============================================================
+  # CHECKPOINT 3: Repaying Debt & Withdrawing Collateral
+  # ============================================================
+  - id: "repay-and-withdraw"
+    title: "Repaying Debt & Withdrawing Collateral"
+    description: "Implement repayUpTo and withdrawCollateral with proper safety checks"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Repaying Debt & Withdrawing Collateral
+
+      ### The Overpayment Problem
+
+      Why `repayUpTo` instead of a simple `repay(exactAmount)`? Because debt accrues interest continuously. By the time a user's transaction is mined, their exact debt has changed slightly. If they specify the exact amount, a tiny bit of debt remains unpaid.
+
+      `repayUpTo` solves this — users can specify an amount slightly over their debt, and the function caps repayment at the actual debt. This is a real UX consideration in DeFi protocols.
+
+      The function handles several cases:
+      - **Exact repayment** — amount matches debt
+      - **Overpayment** — capped at actual debt value
+      - **Partial repayment** — only repays specified amount
+      - **Insufficient balance/allowance** — reverts with appropriate errors
+
+      ### Safe Withdrawals
+
+      `withdrawCollateral` must ensure the user's position stays safe after withdrawal. The pattern:
+      1. Reduce collateral in storage
+      2. If user has debt, validate the position
+      3. If validation fails, the entire tx reverts (collateral reduction is undone)
+      4. If safe, transfer ETH
+
+      This "optimistic update with rollback" works because Solidity reverts ALL state changes in a failed transaction.
+
+    questions:
+      - text: "Why can't we just have a simple repay(exactAmount) function? What real-world problem does repayUpTo solve?"
+        concepts:
+          [
+            "interest",
+            "accru",
+            "time",
+            "mine",
+            "stale",
+            "continuous",
+            "by the time",
+            "small amount remain",
+          ]
+        hint: "Think about what happens between when a user submits a transaction and when it's actually executed on-chain. What's changing during that time?"
+
+    task:
+      description: |
+        Implement two functions:
+
+        1. **`repayUpTo(uint256 amount)`**:
+           - Convert amount to shares with `_getMyUSDToShares(amount)`
+           - If shares > user's debt shares, cap at user's actual debt:
+             - Set `amountInShares = s_userDebtShares[msg.sender]`
+             - Set `amount = getCurrentDebtValue(msg.sender)`
+           - Revert with `MyUSD__InsufficientBalance()` if `amount == 0` or user's MyUSD balance < amount
+           - Revert with `MyUSD__InsufficientAllowance()` if allowance < amount
+           - Subtract shares from `s_userDebtShares[msg.sender]` and `totalDebtShares`
+           - Call `i_myUSD.burnFrom(msg.sender, amount)`
+           - Emit `DebtSharesBurned(msg.sender, amount, amountInShares)`
+
+        2. **`withdrawCollateral(uint256 amount)`**:
+           - Revert with `Engine__InvalidAmount()` if amount is 0
+           - Revert with `Engine__InsufficientCollateral()` if user has less collateral
+           - Set `s_userCollateral[msg.sender]` to the new value (subtract amount)
+           - If user has debt shares > 0, call `_validatePosition(msg.sender)`
+           - Transfer ETH with `payable(msg.sender).transfer(amount)`
+           - Emit `CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice())`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/MyUSDEngine.sol"
+      test: "yarn test --grep 'Repayment Operations'"
+      hints:
+        - |
+          For `repayUpTo`, the key is handling overpayment:
+          ```solidity
+          uint256 amountInShares = _getMyUSDToShares(amount);
+          if (amountInShares > s_userDebtShares[msg.sender]) {
+              amountInShares = s_userDebtShares[msg.sender];
+              amount = getCurrentDebtValue(msg.sender);
+          }
+          ```
+        - |
+          For `withdrawCollateral`, update state before validating:
+          ```solidity
+          s_userCollateral[msg.sender] = s_userCollateral[msg.sender] - amount;
+          if (s_userDebtShares[msg.sender] > 0) {
+              _validatePosition(msg.sender);
+          }
+          payable(msg.sender).transfer(amount);
+          ```
+        - |
+          Full solutions:
+          ```solidity
+          function repayUpTo(uint256 amount) public {
+              uint256 amountInShares = _getMyUSDToShares(amount);
+              if (amountInShares > s_userDebtShares[msg.sender]) {
+                  amountInShares = s_userDebtShares[msg.sender];
+                  amount = getCurrentDebtValue(msg.sender);
+              }
+              if (amount == 0 || i_myUSD.balanceOf(msg.sender) < amount) {
+                  revert MyUSD__InsufficientBalance();
+              }
+              if (i_myUSD.allowance(msg.sender, address(this)) < amount) {
+                  revert MyUSD__InsufficientAllowance();
+              }
+              s_userDebtShares[msg.sender] -= amountInShares;
+              totalDebtShares -= amountInShares;
+              i_myUSD.burnFrom(msg.sender, amount);
+              emit DebtSharesBurned(msg.sender, amount, amountInShares);
+          }
+
+          function withdrawCollateral(uint256 amount) external {
+              if (amount == 0) revert Engine__InvalidAmount();
+              if (s_userCollateral[msg.sender] < amount) revert Engine__InsufficientCollateral();
+              uint256 newCollateral = s_userCollateral[msg.sender] - amount;
+              s_userCollateral[msg.sender] = newCollateral;
+              if (s_userDebtShares[msg.sender] > 0) {
+                  _validatePosition(msg.sender);
+              }
+              payable(msg.sender).transfer(amount);
+              emit CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice());
+          }
+          ```
+      solution: |
+        function repayUpTo(uint256 amount) public {
+            uint256 amountInShares = _getMyUSDToShares(amount);
+            if (amountInShares > s_userDebtShares[msg.sender]) {
+                amountInShares = s_userDebtShares[msg.sender];
+                amount = getCurrentDebtValue(msg.sender);
+            }
+            if (amount == 0 || i_myUSD.balanceOf(msg.sender) < amount) {
+                revert MyUSD__InsufficientBalance();
+            }
+            if (i_myUSD.allowance(msg.sender, address(this)) < amount) {
+                revert MyUSD__InsufficientAllowance();
+            }
+            s_userDebtShares[msg.sender] -= amountInShares;
+            totalDebtShares -= amountInShares;
+            i_myUSD.burnFrom(msg.sender, amount);
+            emit DebtSharesBurned(msg.sender, amount, amountInShares);
+        }
+
+        function withdrawCollateral(uint256 amount) external {
+            if (amount == 0) revert Engine__InvalidAmount();
+            if (s_userCollateral[msg.sender] < amount) revert Engine__InsufficientCollateral();
+            uint256 newCollateral = s_userCollateral[msg.sender] - amount;
+            s_userCollateral[msg.sender] = newCollateral;
+            if (s_userDebtShares[msg.sender] > 0) {
+                _validatePosition(msg.sender);
+            }
+            payable(msg.sender).transfer(amount);
+            emit CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice());
+        }
+
+  # ============================================================
+  # CHECKPOINT 4: Liquidation
+  # ============================================================
+  - id: "liquidation"
+    title: "Liquidation - Enforcing System Stability"
+    description: "Implement isLiquidatable and liquidate to protect the system from bad debt"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## Liquidation: The System's Safety Net
+
+      If ETH price drops or debt accrues too much interest, positions can fall below the 150% collateral ratio. **Liquidation** ensures bad debt never accumulates:
+
+      1. Anyone can check if a position is unsafe with `isLiquidatable()`
+      2. Anyone can call `liquidate()` on an unsafe position
+      3. The liquidator pays off the user's debt and receives their collateral **plus a 10% bonus** (`LIQUIDATOR_REWARD`)
+
+      This creates a market of liquidators who actively monitor the system, act quickly when positions become unsafe, and profit from their service — all while keeping the protocol healthy.
+
+      ### How liquidation works step by step:
+      1. Check the position is actually liquidatable
+      2. Verify the liquidator has enough MyUSD and has approved spending
+      3. Burn the liquidator's MyUSD to cover the debt
+      4. Clear the user's debt shares
+      5. Calculate collateral to cover debt + 10% reward
+      6. Cap at the user's total collateral (can't give away more than exists)
+      7. Transfer collateral to the liquidator
+
+      **Important:** The liquidated user still keeps the MyUSD they originally minted. The liquidator used their own MyUSD to pay off the debt.
+
+    questions:
+      - text: "After a liquidation, the original borrower still has the MyUSD they minted. Who actually 'paid' for the debt to be cleared?"
+        concepts:
+          [
+            "liquidator",
+            "their own",
+            "burn",
+            "collateral",
+            "reward",
+            "incentiv",
+          ]
+        hint: "The liquidator burned their own MyUSD to clear the debt. In return, they got the borrower's ETH collateral plus a bonus. The original borrower keeps their MyUSD but loses their collateral."
+
+    task:
+      description: |
+        Implement two functions:
+
+        1. **`isLiquidatable(address user)`**:
+           - Get the position ratio with `calculatePositionRatio(user)`
+           - Return `true` if `(positionRatio * 100) < COLLATERAL_RATIO * PRECISION`
+
+        2. **`liquidate(address user)`**:
+           - Revert with `Engine__NotLiquidatable()` if user is not liquidatable
+           - Get the user's debt value, collateral amount, and collateral value
+           - Revert with `MyUSD__InsufficientBalance()` if liquidator's MyUSD balance < debt
+           - Revert with `MyUSD__InsufficientAllowance()` if allowance < debt
+           - Burn debt amount from liquidator: `i_myUSD.burnFrom(msg.sender, userDebtValue)`
+           - Clear user's debt: subtract their shares from `totalDebtShares`, set their shares to 0
+           - Calculate collateral for liquidator:
+             - `collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue`
+             - `rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100`
+             - `amountForLiquidator = collateralToCoverDebt + rewardAmount`
+             - Cap: if `amountForLiquidator > userCollateral`, set to `userCollateral`
+           - Update user's collateral: `s_userCollateral[user] = userCollateral - amountForLiquidator`
+           - Transfer ETH: `(bool sent, ) = payable(msg.sender).call{value: amountForLiquidator}("")`
+           - Revert with `Engine__TransferFailed()` if not sent
+           - Emit `Liquidation(user, msg.sender, amountForLiquidator, userDebtValue, i_oracle.getETHMyUSDPrice())`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/MyUSDEngine.sol"
+      test: "yarn test --grep 'Liquidation'"
+      hints:
+        - |
+          `isLiquidatable` is the same check as `_validatePosition` but returns a bool instead of reverting:
+          ```solidity
+          uint256 positionRatio = calculatePositionRatio(user);
+          return (positionRatio * 100) < COLLATERAL_RATIO * PRECISION;
+          ```
+        - |
+          For the collateral calculation, think of it as: "how much ETH covers the debt, plus 10% bonus?"
+          ```solidity
+          uint256 collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue;
+          uint256 rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100;
+          uint256 amountForLiquidator = collateralToCoverDebt + rewardAmount;
+          if (amountForLiquidator > userCollateral) {
+              amountForLiquidator = userCollateral;
+          }
+          ```
+        - |
+          Full solutions:
+          ```solidity
+          function isLiquidatable(address user) public view returns (bool) {
+              uint256 positionRatio = calculatePositionRatio(user);
+              return (positionRatio * 100) < COLLATERAL_RATIO * PRECISION;
+          }
+
+          function liquidate(address user) external {
+              if (!isLiquidatable(user)) revert Engine__NotLiquidatable();
+
+              uint256 userDebtValue = getCurrentDebtValue(user);
+              uint256 userCollateral = s_userCollateral[user];
+              uint256 collateralValue = calculateCollateralValue(user);
+
+              if (i_myUSD.balanceOf(msg.sender) < userDebtValue) revert MyUSD__InsufficientBalance();
+              if (i_myUSD.allowance(msg.sender, address(this)) < userDebtValue) revert MyUSD__InsufficientAllowance();
+
+              i_myUSD.burnFrom(msg.sender, userDebtValue);
+              totalDebtShares -= s_userDebtShares[user];
+              s_userDebtShares[user] = 0;
+
+              uint256 collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue;
+              uint256 rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100;
+              uint256 amountForLiquidator = collateralToCoverDebt + rewardAmount;
+              if (amountForLiquidator > userCollateral) amountForLiquidator = userCollateral;
+
+              s_userCollateral[user] = userCollateral - amountForLiquidator;
+              (bool sent, ) = payable(msg.sender).call{value: amountForLiquidator}("");
+              if (!sent) revert Engine__TransferFailed();
+
+              emit Liquidation(user, msg.sender, amountForLiquidator, userDebtValue, i_oracle.getETHMyUSDPrice());
+          }
+          ```
+      solution: |
+        function isLiquidatable(address user) public view returns (bool) {
+            uint256 positionRatio = calculatePositionRatio(user);
+            return (positionRatio * 100) < COLLATERAL_RATIO * PRECISION;
+        }
+
+        function liquidate(address user) external {
+            if (!isLiquidatable(user)) {
+                revert Engine__NotLiquidatable();
+            }
+
+            uint256 userDebtValue = getCurrentDebtValue(user);
+            uint256 userCollateral = s_userCollateral[user];
+            uint256 collateralValue = calculateCollateralValue(user);
+
+            if (i_myUSD.balanceOf(msg.sender) < userDebtValue) {
+                revert MyUSD__InsufficientBalance();
+            }
+
+            if (i_myUSD.allowance(msg.sender, address(this)) < userDebtValue) {
+                revert MyUSD__InsufficientAllowance();
+            }
+
+            i_myUSD.burnFrom(msg.sender, userDebtValue);
+
+            totalDebtShares -= s_userDebtShares[user];
+            s_userDebtShares[user] = 0;
+
+            uint256 collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue;
+            uint256 rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100;
+            uint256 amountForLiquidator = collateralToCoverDebt + rewardAmount;
+
+            if (amountForLiquidator > userCollateral) {
+                amountForLiquidator = userCollateral;
+            }
+
+            s_userCollateral[user] = userCollateral - amountForLiquidator;
+
+            (bool sent, ) = payable(msg.sender).call{ value: amountForLiquidator }("");
+            if (!sent) revert Engine__TransferFailed();
+
+            emit Liquidation(user, msg.sender, amountForLiquidator, userDebtValue, i_oracle.getETHMyUSDPrice());
+        }
+
+  # ============================================================
+  # CHECKPOINT 5: Rate Validation - Savings Rate Constraint
+  # ============================================================
+  - id: "rate-validation"
+    title: "Rate Validation - The Savings Rate Constraint"
+    description: "Update setBorrowRate to enforce that borrow rate stays above the savings rate"
+    deployAfterCheckpoint: true
+
+    context: |
+      ## The Two Levers: Borrow Rate & Savings Rate
+
+      So far, borrowers create sell pressure when they swap MyUSD for ETH. The borrow rate alone can only **destroy demand** (defensive). But to truly maintain the peg, we also need to **create demand**.
+
+      That's where the **savings rate** comes in. Users can stake MyUSD in `MyUSDStaking.sol` to earn yield, making holding MyUSD attractive. This creates buy pressure — people buy MyUSD specifically to stake and earn interest.
+
+      ### The Critical Constraint
+
+      The borrow rate must **always be >= the savings rate**. Why? Because:
+      - All MyUSD in existence was borrowed (someone deposited ETH and minted it)
+      - Every MyUSD is paying the borrow rate to the protocol
+      - The protocol pays the savings rate to stakers
+      - If savings rate > borrow rate, the protocol pays out more than it earns — unsustainable!
+
+      ### The Two Levers for Peg Stability
+      - **MyUSD < $1**: Increase savings rate (attract buyers) or increase borrow rate (discourage minting)
+      - **MyUSD > $1**: Decrease savings rate or decrease borrow rate
+
+      You need to add one line to `setBorrowRate` to enforce this constraint.
+
+    questions:
+      - text: "Why must the borrow rate always be greater than or equal to the savings rate? What would happen if this constraint were violated?"
+        concepts:
+          [
+            "earn more than",
+            "pay out",
+            "unsustainable",
+            "insolven",
+            "borrower",
+            "staker",
+            "protocol",
+          ]
+        hint: "Think about where the yield for stakers comes from — it's the interest paid by borrowers. What happens if you promise stakers more than borrowers are paying?"
+
+    task:
+      description: |
+        Update **`setBorrowRate(uint256 newRate)`** to add a validation check.
+
+        Add this line **before** the existing code:
+        - If `newRate < i_staking.savingsRate()`, revert with `Engine__InvalidBorrowRate()`
+
+        The full function should now be:
+        1. Check `newRate >= i_staking.savingsRate()` (revert if not)
+        2. Call `_accrueInterest()`
+        3. Set `borrowRate = newRate`
+        4. Emit `BorrowRateUpdated(newRate)`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/MyUSDEngine.sol"
+      test: "yarn test --grep 'Borrow Rate Management'"
+      hints:
+        - "You just need to add one line at the top of setBorrowRate: `if (newRate < i_staking.savingsRate()) revert Engine__InvalidBorrowRate();`"
+        - |
+          Full updated function:
+          ```solidity
+          function setBorrowRate(uint256 newRate) external onlyRateController {
+              if (newRate < i_staking.savingsRate()) revert Engine__InvalidBorrowRate();
+              _accrueInterest();
+              borrowRate = newRate;
+              emit BorrowRateUpdated(newRate);
+          }
+          ```
+      solution: |
+        function setBorrowRate(uint256 newRate) external onlyRateController {
+            if (newRate < i_staking.savingsRate()) revert Engine__InvalidBorrowRate();
+            _accrueInterest();
+            borrowRate = newRate;
+            emit BorrowRateUpdated(newRate);
+        }
+
+completion_message: |
+  Congratulations! You've built the core engine for **MyUSD**, a crypto-backed stablecoin!
+
+  You implemented:
+  - **Collateral management** with oracle-based USD valuation
+  - **Share-based interest** tracking for gas-efficient debt accounting
+  - **Position health** monitoring with 150% collateralization enforcement
+  - **Borrow rate management** for peg maintenance
+  - **Debt repayment** with the overpayment UX pattern
+  - **Liquidation** mechanics to prevent bad debt
+  - **Rate validation** to keep the protocol sustainable
+
+  You've seen how stablecoins use **two levers** to maintain their peg:
+  - **Borrow rates** for demand destruction
+  - **Savings rates** for demand creation
+
+  The next steps in the README cover market simulation and the staking system.
+  Deploy to a testnet and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
