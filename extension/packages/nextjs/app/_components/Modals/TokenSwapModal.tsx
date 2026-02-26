@@ -2,7 +2,7 @@ import { useState } from "react";
 import TooltipInfo from "../TooltipInfo";
 import { Address, parseEther } from "viem";
 import { ArrowDownIcon, ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
-import { Balance, IntegerInput } from "~~/components/scaffold-eth";
+import { Balance, IntegerInput } from "@scaffold-ui/components";
 import { useDeployedContractInfo, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 

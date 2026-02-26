@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TooltipInfo from "./TooltipInfo";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
-import { Address as AddressBlock } from "~~/components/scaffold-eth";
+import { Address as AddressBlock } from "@scaffold-ui/components";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const StakerRow = ({ staker, connectedAddress }: { staker: string; connectedAddress: string }) => {
