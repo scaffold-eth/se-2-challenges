@@ -81,7 +81,7 @@ If you are using vscode you may want to install the [Noir Language Support](http
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.2 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
+npx create-eth@2.0.4 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
 cd challenge-zk-voting
 ```
 
@@ -1371,14 +1371,16 @@ const generateProof = async (
 ) => {
   /// Checkpoint 8 //////
   const nullifierHash = poseidon1([BigInt(_nullifier)]);
-  const calculatedTree = new LeanIMT((a: bigint, b: bigint) => poseidon2([a, b]));
-  const leaves = _leaves.map(event => {
+  const calculatedTree = new LeanIMT((a: bigint, b: bigint) =>
+    poseidon2([a, b]),
+  );
+  const leaves = _leaves.map((event) => {
     return event?.args.value;
   });
   const leavesReversed = leaves.reverse();
   calculatedTree.insertMany(leavesReversed as bigint[]);
   const calculatedProof = calculatedTree.generateProof(_index);
-  const sibs = calculatedProof.siblings.map(sib => {
+  const sibs = calculatedProof.siblings.map((sib) => {
     return sib.toString();
   });
 
@@ -1409,10 +1411,15 @@ const generateProof = async (
     console.log = originalLog;
     console.log("proof", proof);
     const proofHex = toHex(proof);
-    const inputsHex = publicInputs.map(x =>
-      typeof x === "string" ? (x as `0x${string}`) : toHex(x as Uint8Array, { size: 32 }),
+    const inputsHex = publicInputs.map((x) =>
+      typeof x === "string"
+        ? (x as `0x${string}`)
+        : toHex(x as Uint8Array, { size: 32 }),
     );
-    const result = encodeAbiParameters([{ type: "bytes" }, { type: "bytes32[]" }], [proofHex, inputsHex]);
+    const result = encodeAbiParameters(
+      [{ type: "bytes" }, { type: "bytes32[]" }],
+      [proofHex, inputsHex],
+    );
     console.log("result", result);
     return { proof, publicInputs };
   } catch (error) {
@@ -1539,7 +1546,11 @@ const sendVoteWithBurner = async ({
   const needed = parseEther("0.01");
   const bal = await publicClient.getBalance({ address: walletAddress });
   if (bal < needed) {
-    const testClient = createTestClient({ chain: hardhat, mode: "hardhat", transport: http("http://localhost:8545") });
+    const testClient = createTestClient({
+      chain: hardhat,
+      mode: "hardhat",
+      transport: http("http://localhost:8545"),
+    });
     await testClient.setBalance({ address: walletAddress, value: needed });
   }
 
@@ -1558,12 +1569,20 @@ const generateBurnerWallet = () => {
   /// Checkpoint 9 //////
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);
-  const wallet = { privateKey: privateKey as `0x${string}`, address: account.address as `0x${string}` };
+  const wallet = {
+    privateKey: privateKey as `0x${string}`,
+    address: account.address as `0x${string}`,
+  };
   setBurnerWallet(wallet);
 
   const effectiveContractAddress = contractAddress || contractInfo?.address;
   if (effectiveContractAddress && userAddress) {
-    saveBurnerWalletToLocalStorage(wallet.privateKey, wallet.address, effectiveContractAddress, userAddress);
+    saveBurnerWalletToLocalStorage(
+      wallet.privateKey,
+      wallet.address,
+      effectiveContractAddress,
+      userAddress,
+    );
   }
 
   return wallet;
