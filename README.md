@@ -6,11 +6,11 @@
 
 <details markdown='1'><summary>❓ Wondering how lending works onchain? Read the overview here.</summary>
 
-First, traditional lending usually involves one party (such as a bank) offering up money and another party agreeing to pay interest over-time in order to use that money. The only way this works is because the lending party has some way to hold the borrower accountable. This requires some way to identify the borrower and a legal structure that will help settle things if the borrower decides to stop making interest payments. In the onchain world we don't have a reliable identification system *(yet)* so all lending is "over-collateralized". **Borrowers must lock up collateral in order to take out a loan.** "Over-collateralized" means **you can never borrow more value than you have supplied.**
+First, traditional lending usually involves one party (such as a bank) offering up money and another party agreeing to pay interest over-time in order to use that money. The only way this works is because the lending party has some way to hold the borrower accountable. This requires some way to identify the borrower and a legal structure that will help settle things if the borrower decides to stop making interest payments. In the onchain world we don't have a reliable identification system _(yet)_ so all lending is "over-collateralized". **Borrowers must lock up collateral in order to take out a loan.** "Over-collateralized" means **you can never borrow more value than you have supplied.**
 
 🤔 I am sure you are wondering, "What is the benefit of a loan if you can't take out more than you put in?" Great question! This form of lending lacks the common use case seen in traditional lending where people may use the loan to buy a house they otherwise couldn't afford but here are a few primary use cases of permissionless lending in DeFi:
 
-- 💰 Maintaining Price Exposure ~ You may have real world bills due but you are *sure* that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the loan.
+- 💰 Maintaining Price Exposure ~ You may have real world bills due but you are _sure_ that ETH is going up in value from here and it would kill you to sell to pay your bills. You could get a loan against your ETH and pay your bills. You would still have ETH locked up to come back to and all you would have to do is pay back the loan.
 - 📈 Leverage ~ You could deposit ETH and borrow an asset but only use it to buy more ETH, increasing your exposure to the ETH price movements (to the upside 🎢 or the downside 🔻😰).
 - 💸 Tax Advantages ~ In many jurisdictions, money obtained from a loan is taxed differently than money obtained other ways. It might be advantageous to avoid outright selling of an asset and instead get a loan against it.
 
@@ -20,7 +20,7 @@ First, traditional lending usually involves one party (such as a bank) offering 
 
 ---
 
-💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value (relative to CORN) then the borrower's position may be liquidated by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. This incentive ensures that loans are *"guaranteed"* to be closed out before they are worth less than 100% of the collateral value, which keeps the lending protocol from taking on bad debt (i.e. people walking away with borrowed assets that are worth more than the underlying collateral left in the protocol).
+💬 The Lending contract accepts ETH deposits and allows depositor's to take out a loan in CORN 🌽. The contract tracks each depositor's address and only allows them to borrow as long as they maintain at least 120% of the loans value in ETH. If the collateral falls in value (relative to CORN) then the borrower's position may be liquidated by anyone who pays back the loan. The liquidator has an incentive to do this because they collect a 10% fee on top of the value of the loan. This incentive ensures that loans are _"guaranteed"_ to be closed out before they are worth less than 100% of the collateral value, which keeps the lending protocol from taking on bad debt (i.e. people walking away with borrowed assets that are worth more than the underlying collateral left in the protocol).
 
 🌟 The final deliverable is an app that allows anyone to take out a loan in CORN while making sure it is always backed by it's value in ETH.
 Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
@@ -40,7 +40,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.2 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
+npx create-eth@2.0.4 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
 cd challenge-over-collateralized-lending
 ```
 
@@ -82,6 +82,7 @@ yarn start
 ## Checkpoint 1: 💳🌽 Lending Contract
 
 A lending platform needs these three primary functions:
+
 1. Lending
 2. Borrowing
 3. Liquidation
@@ -89,6 +90,7 @@ A lending platform needs these three primary functions:
 For this challenge we will not focus on the Lending aspect as much as the other two. We will assume that people have already supplied the Lending contract with the borrowable CORN. In a real system the borrower would be charged interest on the loan so that the lenders have an incentive to deposit assets but here we will just be focusing on the borrow side of the market.
 
 🔍 Navigate to the `Debug Contracts` tab, you should see four smart contracts displayed called `Corn`, `CornDEX`, `Lending` and `MovePrice`. You don't need to worry about any of these except `Lending` but here is a quick description of each:
+
 - 🌽 Corn ~ This is the ERC20 token that can be borrowed
 - 🔄 CornDEX ~ This is the DEX contract that is used to swap between ETH and CORN but is also used as a makeshift price oracle
 - 💰 Lending ~ This is the contract that facilitates collateral depositing, loan creation and liquidation of loans in bad positions
@@ -114,13 +116,14 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 > 📈 The Lending contract naively uses the price returned by a CORN/ETH DEX contract. This makes it easy for you to change the price of CORN by "moving the market" with large swaps. Shout out to the [DEX challenge](https://github.com/scaffold-eth/se-2-challenges/blob/challenge-4-dex/README.md)! Using a DEX as the sole price oracle would never work in a production grade system but it will help to demonstrate the different market conditions that affect a lending protocol.
 
-👀 Let's take a look at the `addCollateral` function inside `Lending.sol`. 
+👀 Let's take a look at the `addCollateral` function inside `Lending.sol`.
 
 ⚠️ It should revert with `Lending_InvalidAmount()` if somebody calls it without value.
 
 📝 It needs to record any value that gets sent to it as being collateral posted by the sender into an existing mapping called `s_userCollateral`.
 
 📢 Let's also emit the `CollateralAdded` event with depositor address, amount they deposited and the `i_cornDEX.currentPrice()` which is the current value of ETH in CORN.
+
 > ⚠️ We are emitting the price returned by the DEX in every event solely for the front end to be able to visualize things properly.
 
 <details markdown='1'><summary>🔎 Hint</summary>
@@ -204,7 +207,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 <details markdown='1'><summary>🔎 Hint</summary>
 
-> 🧮 This method just needs to return the users collateral multiplied by the price of CORN (`i_cornDEX.currentPrice()`) *divided by 1e18* (since that is how many decimals CORN has).
+> 🧮 This method just needs to return the users collateral multiplied by the price of CORN (`i_cornDEX.currentPrice()`) _divided by 1e18_ (since that is how many decimals CORN has).
 
 <details markdown='1'><summary>Solution Code</summary>
 
@@ -220,7 +223,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 🔄 Let's turn our attention to the internal `_calculatePositionRatio` view function.
 
-📊 This function takes a user address and returns what we are calling the "position ratio". This is the percentage of collateral to borrowed assets with a caveat, it is returned as the percentage * 1e18. In other words, if the collateral ratio percent is 133 then the returned value would be 133000000000000000000. We do this to enable a higher amount of precision. Try to figure out the math on your own.
+📊 This function takes a user address and returns what we are calling the "position ratio". This is the percentage of collateral to borrowed assets with a caveat, it is returned as the percentage \* 1e18. In other words, if the collateral ratio percent is 133 then the returned value would be 133000000000000000000. We do this to enable a higher amount of precision. Try to figure out the math on your own.
 
 <details markdown='1'><summary>🔎 Hint</summary>
 
@@ -286,7 +289,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 > 💡 Since we added all those complex helper functions in the last step it may be helpful to import "hardhat/console.sol" and use console.logs whenever you get stuck and want to know what is happening as you execute each function.
 
-👀 Go to the `borrowCorn` function. 
+👀 Go to the `borrowCorn` function.
 
 ⚠️ It should revert with `Lending_InvalidAmount()` if somebody calls it without a `borrowAmount`.
 
@@ -295,7 +298,8 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 ✅ It should validate the user's position (`_validatePosition`) so that it reverts if they are attempting to borrow more than they are allowed.
 
 🪙 Then it should use the CORN token's `transferFrom` function to move the tokens to the user's address.
- > ⚠️ As we mentioned above, we are only focusing on the borrow side of the market. We are just "pretending" that people have deposited the CORN in the Lending contract with the intent to make a profit but we haven't provided any real incentives for them to do so.
+
+> ⚠️ As we mentioned above, we are only focusing on the borrow side of the market. We are just "pretending" that people have deposited the CORN in the Lending contract with the intent to make a profit but we haven't provided any real incentives for them to do so.
 
 📢 You should also emit the `AssetBorrowed` event.
 
@@ -367,6 +371,7 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 🧹 Clear the borrower's debt completely.
 
 🧮 Calculate the amount of collateral needed to cover the cost of the burned CORN and remove it from the borrower's collateral.
+
 > 💡 Keep in mind, It's not enough to simply have a liquidation mechanism. We need an incentive for people to trigger it! By providing a healthy cut of the funds and allowing liquidations when the collateral still has 20% over the actual value of the loan we are providing strong incentive-based guarantees that the protocol won't take on bad debt.
 
 > ⚠️ We have simplified things by not adding any APY incentives (and inversely borrowing fees). These are important incentives in real lending markets that help to keep the market balanced by encouraging people to supply collateral or as a borrower to repay a loan that is requiring a high APR because the collateral is not as safe or nearing the liquidation threshold. These fees are a great place to add logic that generates protocol revenue as well by taking some of the borrowing APR and letting it accrue to the protocol's token, passing the rest along to the supplier. These incentives, along with the liquidation system, help to make sure there is always more value in collateral than value being borrowed.
@@ -447,7 +452,7 @@ yarn simulate
 
 This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
 
->👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
+> 👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 
 ### ⚔️ Side Quest 1: Flash Loans
 
@@ -475,9 +480,10 @@ interface IFlashLoanRecipient {
 </details>
 
 📝 There isn't any existing `flashLoan` function in `Lending.sol` but that is where we need one. Go ahead and define one that is public. It should receive the following parameters:
+
 - 📋 `IFlashLoanRecipient _recipient` This is because the loan recipient must be a contract that adheres to the `IFlashLoanRecipient` interface -- Not your EOA. You will see why in a minute
 - 💰 `uint256 _amount` The amount of CORN to send to the recipient contract
-- 🔗 `address _extraParam` In a real flash loan function this would probably be a struct with several optional properties allowing people to pass along any data to the recipient contract. See Aave's implementation [here](https://github.com/aave-dao/aave-v3-origin/blob/083bd38a137b42b5df04e22ad4c9e72454365d0d/src/contracts/protocol/libraries/logic/FlashLoanLogic.sol#L184) 
+- 🔗 `address _extraParam` In a real flash loan function this would probably be a struct with several optional properties allowing people to pass along any data to the recipient contract. See Aave's implementation [here](https://github.com/aave-dao/aave-v3-origin/blob/083bd38a137b42b5df04e22ad4c9e72454365d0d/src/contracts/protocol/libraries/logic/FlashLoanLogic.sol#L184)
 
 🪙 The logic inside the method needs to `transfer` the amount of CORN that is given in the parameter to the recipient address - The IFlashLoanRecipient adhering contract.
 
@@ -509,7 +515,7 @@ interface IFlashLoanRecipient {
 
 📝 Create a new contract file and call it `FlashLoanLiquidator.sol`
 
-🧩 See if you can figure out the correct logic to liquidate a loan inside a function called `executeOperation`. It will need to utilize the DEX to swap ETH for CORN in order to repay the CORN loan after liquidating the position and receiving the ETH. Don't forget that you will need to `approve` the Lending contract to use *both* the CORN used in the liquidation and the CORN needed to repay the Flashloan.
+🧩 See if you can figure out the correct logic to liquidate a loan inside a function called `executeOperation`. It will need to utilize the DEX to swap ETH for CORN in order to repay the CORN loan after liquidating the position and receiving the ETH. Don't forget that you will need to `approve` the Lending contract to use _both_ the CORN used in the liquidation and the CORN needed to repay the Flashloan.
 After liquidating the loan and swapping the received ETH for the correct amount of CORN needed to repay, the contract should send any remaining ETH back to the original initiator of the `flashLoan` function.
 
 💰 Don't forget to let the contract `receive()` ether!
@@ -547,12 +553,12 @@ contract FlashLoanLiquidator {
     function executeOperation(uint256 amount, address initiator, address toLiquidate) public returns (bool) {
         // First liquidate to get the collateral tokens
         i_lending.liquidate(toLiquidate);
-        
+
         // Calculate required input amount of ETH to get exactly 'amount' of tokens
         uint256 ethReserves = address(i_cornDEX).balance;
         uint256 tokenReserves = i_corn.balanceOf(address(i_cornDEX));
         uint256 requiredETHInput = i_cornDEX.calculateXInput(amount, ethReserves, tokenReserves);
-        
+
         // Execute the swap so we have the exact amount to repay the flash loan
         i_cornDEX.swap{value: requiredETHInput}(requiredETHInput); // Swap ETH for tokens
 
@@ -573,20 +579,22 @@ contract FlashLoanLiquidator {
 </details>
 
 📋 Now you need to add your new contract to the deployment script. You can just add it beneath all the existing logic in `packages/hardhat/deploy/00_deploy_contracts.ts`.
+
 <details markdown='1'><summary>🚀 Deployment Code</summary>
 
 ```typescript
-const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployContracts: DeployFunction = async function (
+  hre: HardhatRuntimeEnvironment,
+) {
+  // All existing logic...
 
-    // All existing logic...
-
-    await deploy("FlashLoanLiquidator", {
-        from: deployer,
-        args: [lending.address, cornDEX.target, cornToken.target],
-        log: true,
-        autoMine: true,
-    });
-}
+  await deploy("FlashLoanLiquidator", {
+    from: deployer,
+    args: [lending.address, cornDEX.target, cornToken.target],
+    log: true,
+    autoMine: true,
+  });
+};
 ```
 
 </details>
@@ -597,11 +605,11 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
 🚀 Then go to the Debug Tab and trigger the `Lending.flashLoan` method with your `FlashLoanLiquidator` contract address as the `recipient`, the amount of CORN needed to liquidate as the `amount` and the borrower's address as the `extraParam`.
 
-🎉 Pretty cool, huh? You can liquidate any position without needing to have the CORN to pay back the loan! Not only does this mean you can liquidate without having CORN but it means you can liquidate *without enough value (ETH or CORN)* to cover the total amount of borrowed CORN.
+🎉 Pretty cool, huh? You can liquidate any position without needing to have the CORN to pay back the loan! Not only does this mean you can liquidate without having CORN but it means you can liquidate _without enough value (ETH or CORN)_ to cover the total amount of borrowed CORN.
 
 ### ⚔️ Side Quest 2: Maximum Leverage With An Iterative Borrow > Swap > Deposit Loop
 
-🤔 What if you think the price of CORN is going down relative to ETH (*Why in the world would you think that!?* 🤣). You could borrow CORN but then use the DEX to buy more ETH with your CORN. But wait! Now you have more ETH you could technically use it as collateral *again* and then you could borrow more CORN and swap to ETH and repeat that as many times as possible.
+🤔 What if you think the price of CORN is going down relative to ETH (_Why in the world would you think that!?_ 🤣). You could borrow CORN but then use the DEX to buy more ETH with your CORN. But wait! Now you have more ETH you could technically use it as collateral _again_ and then you could borrow more CORN and swap to ETH and repeat that as many times as possible.
 
 🔄 You can already do this manually but what if we created a contract with some methods that make it easy?
 
@@ -614,10 +622,10 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 ```solidity
     function getMaxBorrowAmount(uint256 ethCollateralAmount) public view returns (uint256) {
         if (ethCollateralAmount == 0) return 0;
-        
+
         // Calculate collateral value in CORN terms
         uint256 collateralValue = (ethCollateralAmount * i_cornDEX.currentPrice()) / 1e18;
-        
+
         // Calculate max borrow amount while maintaining the required collateral ratio
         return (collateralValue * 100) / COLLATERAL_RATIO;
     }
@@ -690,7 +698,7 @@ contract Leverage {
         i_corn.approve(address(i_cornDEX), type(uint256).max);
         i_corn.approve(address(i_lending), type(uint256).max);
     }
-    
+
     /**
      * @notice Claim ownership of the contract so that no one else can change your position or withdraw your funds
      */
@@ -758,7 +766,7 @@ contract Leverage {
             }
             uint256 maxBorrowAmount = i_lending.getMaxBorrowAmount(balance);
             i_lending.borrowCorn(maxBorrowAmount);
-            
+
             i_cornDEX.swap(maxBorrowAmount);
             loops++;
         }
@@ -800,20 +808,22 @@ contract Leverage {
 👨‍💼 The `Leverage` contract has a `claimOwnership` and `withdraw` function so that you can claim ownership of the contract before opening the position because the position is actually owned by this contract.
 
 📝 Lastly, add the deploy logic to the deployment script. Add it beneath all the existing logic in `packages/hardhat/deploy/00_deploy_contracts.ts`.
+
 <details markdown='1'><summary>🚀 Deployment Code</summary>
 
 ```typescript
-const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployContracts: DeployFunction = async function (
+  hre: HardhatRuntimeEnvironment,
+) {
+  // All existing logic...
 
-    // All existing logic...
-
-    await deploy("Leverage", {
-        from: deployer,
-        args: [lending.address, cornDEX.target, cornToken.target],
-        log: true,
-        autoMine: true,
-    });
-}
+  await deploy("Leverage", {
+    from: deployer,
+    args: [lending.address, cornDEX.target, cornToken.target],
+    log: true,
+    autoMine: true,
+  });
+};
 ```
 
 </details>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Address as AddressType, parseEther } from "viem";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
-import { Address, AddressInput, IntegerInput } from "~~/components/scaffold-eth";
+import { Address, AddressInput, IntegerInput } from "@scaffold-ui/components";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
