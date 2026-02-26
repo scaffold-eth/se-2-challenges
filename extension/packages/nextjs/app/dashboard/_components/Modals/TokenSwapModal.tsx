@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Address, parseEther } from "viem";
-import { ArrowDownIcon, ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
-import { Balance, IntegerInput } from "@scaffold-ui/components";
+import { useMemo, useState } from "react";
+import { Balance } from "@scaffold-ui/components";
+import { IntegerInput } from "@scaffold-ui/debug-contracts";
+import { ArrowDownIcon, ArrowsRightLeftIcon } from "@heroicons/react/24/outline";;
 import { useDeployedContractInfo, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
+import { Address, parseEther } from "viem";
 
 type TokenSwapModalProps = {
   tokenBalance: string;
@@ -119,7 +120,16 @@ export const TokenSwapModal = ({ tokenBalance, connectedAddress, ETHprice, modal
                   <span className="text-sm pl-3">
                     {tokenBalance} {tokenName}
                   </span>
-                  <Balance address={connectedAddress as Address} className="min-h-0 h-auto" />
+                  <Balance
+                    address={connectedAddress as Address}
+                    style={useMemo(
+                      () => ({
+                        minHeight: 0,
+                        height: "auto",
+                      }),
+                      [],
+                    )}
+                  />
                 </div>
               </div>
             </div>
