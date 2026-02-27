@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import TooltipInfo from "./TooltipInfo";
+import { IntegerInput } from "@scaffold-ui/debug-contracts";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldContract, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import TooltipInfo from "./TooltipInfo";
+import { IntegerInput } from "@scaffold-ui/debug-contracts";
 import { CheckIcon, PencilIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface RateInputProps {
