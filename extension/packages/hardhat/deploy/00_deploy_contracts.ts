@@ -106,16 +106,18 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
     const ethDEXAmount = hre.ethers.parseEther("10000000");
     const myUSDAmount = ethPrice * 10000000n;
 
+    const GAS_LIMIT = 500000;
+
     // Borrow stablecoins
-    await engine.addCollateral({ value: ethCollateralAmount });
-    await engine.mintMyUSD(myUSDAmount);
+    await engine.addCollateral({ value: ethCollateralAmount, gasLimit: GAS_LIMIT });
+    await engine.mintMyUSD(myUSDAmount, { gasLimit: GAS_LIMIT });
 
     const confirmedBalance = await stablecoin.balanceOf(deployer);
     // Don't add DEX liquidity if the deployer account doesn't have the stablecoins
     if (confirmedBalance == myUSDAmount) {
       // Approve DEX to use tokens and initialize DEX
-      await stablecoin.approve(DEX.target, myUSDAmount);
-      await DEX.init(myUSDAmount, { value: ethDEXAmount });
+      await stablecoin.approve(DEX.target, myUSDAmount, { gasLimit: GAS_LIMIT });
+      await DEX.init(myUSDAmount, { value: ethDEXAmount, gasLimit: GAS_LIMIT });
     }
 
     // Set the owner of the engine and staking contracts
