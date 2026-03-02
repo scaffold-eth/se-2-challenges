@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "../scaffold-eth";
+import { Address } from "@scaffold-ui/components";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export function OracleAddress() {
@@ -24,7 +24,8 @@ export function OracleAddress() {
       </div>
     );
 
-  const oracle = prediction?.[3] ?? "0x0000000000000000000000000000000000000000";
+  const oracle =
+    prediction?.[3] ?? "0x0000000000000000000000000000000000000000";
 
   return (
     <div className="card bg-base-100 w-full shadow-xl">

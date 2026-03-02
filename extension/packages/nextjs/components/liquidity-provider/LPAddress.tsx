@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "../scaffold-eth";
+import { Address } from "@scaffold-ui/components";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
