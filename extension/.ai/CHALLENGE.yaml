@@ -18,11 +18,31 @@ welcome_message: |
 
   Along the way you'll learn about ERC-20 tokens, payable functions, the approve/transferFrom pattern, and Ownable access control.
 
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
   - Say **"hint"** anytime you're stuck — hints get progressively more specific
   - Use **`/skip`** if you want me to write the code and explain it
+
+  > Re-run `yarn deploy --reset` whenever you want to redeploy with a fresh contract address.
 
   Your progress is saved automatically. Use `/start` to resume anytime.
 
@@ -93,6 +113,18 @@ checkpoints:
         ```
 
         This gives all the initial supply to the deployer, who will later transfer tokens to the Vendor contract.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. **Deploy script**: Open `packages/hardhat/deploy/01_deploy_vendor.ts`. Set `FRONTEND_ADDRESS` to your frontend wallet address and keep `SEND_TOKENS_TO_VENDOR = false` (we're not ready for that yet).
+        2. Run `yarn deploy --reset` to deploy your contracts.
+        3. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        4. Check `balanceOf()` on `YourToken` with your frontend address — you should see **1000** tokens.
+        5. Try calling `transfer()` to send some tokens to another address, then check that address's `balanceOf` too.
+
+        > **Tip:** Open an incognito window to get a fresh burner wallet address you can transfer to.
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/YourToken.sol"
@@ -217,9 +249,21 @@ checkpoints:
            - Transfer tokens to `msg.sender`
            - Emit `BuyTokens`
 
-        5. **Deploy script**: In `packages/hardhat/deploy/01_deploy_vendor.ts`, make sure `SEND_TOKENS_TO_VENDOR` is set to `true` (it should already be). Set `FRONTEND_ADDRESS` to the wallet address you use in the frontend.
+        5. **Deploy script**: In `packages/hardhat/deploy/01_deploy_vendor.ts`, set `SEND_TOKENS_TO_VENDOR` to `true`. This deploys the Vendor and seeds it with tokens instead of sending them to your frontend address.
 
         6. **Frontend**: Uncomment the **Vendor Balances** and **Buy Tokens** sections in `packages/nextjs/app/token-vendor/page.tsx`.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Open http://localhost:3000 — go to the **Token Vendor** page.
+        3. Check that the Vendor's token balance shows **1000** GLD.
+        4. Try buying **10** tokens for **0.1** ETH using the Buy Tokens UI.
+        5. You can also go to the **Debug Contracts** tab and verify the Vendor's `balanceOf` on `YourToken`.
+        6. Try transferring tokens to a different account.
+        7. Check the **Events** tab — you should see your `BuyTokens` event.
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Vendor.sol"
@@ -358,6 +402,16 @@ checkpoints:
            - Revert with `EthTransferFailed` if the transfer fails
 
         Note: save `address(this).balance` to a local variable before the call, since the balance changes after sending.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        3. Verify your frontend address is the `owner` of the Vendor (call `owner()` on the Vendor contract).
+        4. First buy some tokens so the Vendor accumulates ETH.
+        5. Then call `withdraw()` from the Debug Contracts tab — the Vendor's ETH should transfer to your address.
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Vendor.sol"
@@ -498,6 +552,16 @@ checkpoints:
            - Emit `SellTokens`
 
         After implementing, uncomment the **Sell Tokens** section in `packages/nextjs/app/token-vendor/page.tsx` and the **SellTokens Events** section in `packages/nextjs/app/events/page.tsx`.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. First test from the **Debug Contracts** tab: call `approve()` on `YourToken` (approve the Vendor address to spend your tokens), then call `sellTokens()` on the Vendor.
+        3. Now go to the **Token Vendor** page — use the Sell Tokens UI (approve first, then sell).
+        4. Verify you receive the correct amount of ETH for the tokens you sold.
+        5. Check the **Events** tab — you should see both `BuyTokens` and `SellTokens` events.
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Vendor.sol"
