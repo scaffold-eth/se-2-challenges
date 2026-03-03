@@ -33,11 +33,29 @@ welcome_message: |
 
   You're going to build an ERC-721 (NFT) smart contract from scratch. By the end, you'll have a contract that can mint unique collectible tokens with metadata stored on IPFS.
 
-  **How this works:**
-  I'll teach you each concept, then ask a question to check your understanding.
-  As you answer correctly, I'll add the corresponding code to your contract — building it up piece by piece!
+  **Before we start, open separate terminal windows** (not this one!) and run:
 
-  Say "hint" anytime you're stuck. Your progress is saved, so you can take a break and use `/start` to resume later.
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  **How this works:**
+  - I'll teach you each concept, then ask a question to check your understanding
+  - As you answer correctly, I'll add the corresponding code to your contract — building it up piece by piece
+  - Say **"hint"** anytime you're stuck
+  - Your progress is saved — use `/start` to resume anytime
 
   Let's get started!
 
@@ -292,22 +310,97 @@ checkpoints:
                 return super.supportsInterface(interfaceId);
             }
 
-completion_message: |
-  Congratulations! You've completed the Tokenization Challenge!
+  # ============================================================
+  # 5. Gas & Wallets
+  # ============================================================
+  - id: "gas-wallets"
+    title: "Gas & Wallets"
+    description: "Explore burner wallets and gas fees on your local blockchain"
 
-  Your NFT contract is now fully built! Here's what you learned:
+    context: |
+      ## Your Contract is Deployed!
+
+      Your NFT contract just got deployed to your local blockchain. Let's explore it through the frontend!
+
+      ## Gas Fees
+
+      Every transaction on Ethereum costs a small fee called **gas**. Gas pays validators for executing your transaction. Even on your local blockchain, transactions use gas — but the test ETH is free!
+
+      ## Burner Wallets
+
+      At first, **don't** connect MetaMask. If you already have it connected, click **Disconnect**.
+
+      🏗 Scaffold-ETH 2 uses **burner wallets** on localhost — disposable wallets that auto-sign transactions so you can keep building without confirmation popups. You'll see your burner wallet address in the top-right corner of the app.
+
+      ## Try It Out
+
+      1. Look at the top-right corner of http://localhost:3000 — that's your burner wallet address.
+      2. Open an **incognito window** and navigate to http://localhost:3000 — you'll see a completely different address! That's a new burner wallet.
+      3. Copy the incognito window address, then go back to your first window and use the **Faucet** button (bottom-left) to send some test ETH to that address.
+      4. When you close the incognito window, that wallet is gone forever — burner wallets are perfect for local development.
+
+    questions:
+      - text: "What is gas in Ethereum? Why do transactions need it?"
+        concepts: ["fee", "pay", "cost", "validator", "execute", "computation", "incentive", "resource"]
+        hint: "Think of gas as postage for the blockchain — it pays for the computational work needed to process your transaction."
+
+      - text: "Why are burner wallets useful for local development? What happens to them when you close the browser?"
+        concepts: ["disposable", "temporary", "auto-sign", "no confirmation", "gone", "destroyed", "convenient", "local", "development"]
+        hint: "Burner wallets save you from clicking 'confirm' on every transaction. What happens to a wallet that only exists in the browser's memory?"
+
+  # ============================================================
+  # 6. Minting & Exploring NFTs
+  # ============================================================
+  - id: "minting-exploring"
+    title: "Minting & Exploring NFTs"
+    description: "Mint NFTs, transfer them, and explore ownership through the frontend"
+
+    context: |
+      ## Minting Your First NFTs
+
+      In this challenge you'll mint collectible Buffalo, Zebra, and Rhino NFTs. Their metadata is stored on IPFS — a decentralized storage network.
+
+      ## Try It Out
+
+      1. Go to the **My NFTs** tab and click **MINT NFT** to mint your first ERC-721 token.
+      2. Mint a few more — you should see your NFTs appear with their images and names.
+      3. Open an **incognito window** to http://localhost:3000 to get a second burner wallet.
+      4. **Transfer an NFT**: Use the transfer UI to send a token to the incognito window address. Check that it appears there!
+      5. Try minting from the incognito window — can you mint with no funds? You might need to grab funds from the **Faucet** first to pay for gas.
+      6. Go to the **Debug Contracts** tab and explore `YourCollectible`:
+         - Call `ownerOf()` with a token ID to see who owns it
+         - Call `balanceOf()` with an address to see how many NFTs they hold
+         - Check `tokenURI()` to see the IPFS metadata link
+
+      ## Onchain Ownership
+
+      - **What is ownership?** Whoever `ownerOf(tokenId)` returns.
+      - **Who can transfer?** Only the owner or an approved operator.
+      - **What happens on transfer?** Ownership moves atomically to the new address and a `Transfer` event is emitted.
+      - **How do approvals work?** Use `approve()` for a single token or `setApprovalForAll()` for an operator across all your tokens.
+      - **How to count holdings?** `balanceOf(address)` shows how many unique tokens an address owns.
+
+    questions:
+      - text: "After minting an NFT, how can you verify on the Debug Contracts tab who owns a specific token?"
+        concepts: ["ownerOf", "token ID", "address", "debug", "query", "check"]
+        hint: "There's a function on the contract that takes a token ID and returns the owner's address."
+
+      - text: "Why do you need faucet funds (test ETH) to mint an NFT from a new address, even though minting itself doesn't cost any tokens?"
+        concepts: ["gas", "fee", "transaction", "ETH", "pay", "cost", "execute"]
+        hint: "Even if the mint function is free, every transaction on Ethereum requires something to be paid to the network."
+
+completion_message: |
+  Congratulations — you've completed the Tokenization Challenge!
+
+  Your NFT contract is fully built and you've minted your first NFTs! Here's what you learned:
   - **ERC-721 standard** and OpenZeppelin's building blocks
   - **State management** with token counters and constructors
   - **Minting** with `_safeMint` and IPFS metadata
   - **Solidity inheritance** and the diamond problem
+  - **Gas fees** and burner wallets for local development
+  - **Onchain ownership** — minting, transferring, and verifying NFTs through the frontend
 
   ## Next Steps
-
-  Follow the README to:
-  - Run `yarn chain` to start a local blockchain
-  - Run `yarn deploy` to deploy your contract
-  - Run `yarn start` to launch the frontend
-  - Mint some NFTs and see them in your wallet!
 
   To submit your challenge, complete the remaining checkpoints on the
   [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/tokenization):
