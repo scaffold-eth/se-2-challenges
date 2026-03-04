@@ -2,7 +2,7 @@ name: "ZK Voting"
 version: "1.0"
 description: "Build a private, Sybil-resistant voting system using zero-knowledge proofs, Merkle trees, and Noir circuits"
 difficulty: "advanced"
-estimated_time: "90-120 minutes"
+estimated_time: "120-180 minutes"
 
 setup:
   file: "packages/hardhat/contracts/Voting.sol"
@@ -14,20 +14,47 @@ welcome_message: |
 
   1. **Solidity** — voter registration with a Merkle tree + on-chain vote verification
   2. **Noir** — ZK circuits for commitment schemes and Merkle proof verification
-  3. **TypeScript** — frontend for proof generation and voting (covered in the README)
+  3. **TypeScript** — frontend for commitment creation, proof generation, and anonymous voting
 
-  In this guided flow, we'll focus on the **Solidity and Noir** parts:
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  Take a moment to explore the frontend:
+  - Head to the **Voting** page to see the UI you'll bring to life
+  - Check the **Debug Contracts** tab — you should see the **Voting** contract
+  - Open `packages/hardhat/contracts/Voting.sol` and review the placeholder functions
+
+  In this guided flow, we'll build:
 
   1. **Registration** — add voters to an on-chain Merkle tree
   2. **Commitment circuit** — write a ZK circuit proving you know a secret
   3. **Merkle root circuit** — extend the circuit to prove tree membership
-  4. **Voting** — verify ZK proofs on-chain and cast anonymous votes
+  4. **Verifier generation** — compile your circuit into a Solidity verifier
+  5. **Voting** — verify ZK proofs on-chain and cast anonymous votes
+  6. **Frontend** — create commitments, generate proofs, and vote from a burner wallet
 
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
   - Say **"hint"** anytime you're stuck — hints get progressively more specific
   - Use **`/skip`** if you want me to write the code and explain it
+
+  > Re-run `yarn deploy --reset` whenever you want to redeploy with a fresh contract address.
 
   Your progress is saved automatically. Use `/start` to resume anytime.
 
@@ -45,7 +72,7 @@ checkpoints:
     context: |
       ## Voter Registration with a Merkle Tree
 
-      Our voting system has three phases: **registration → proof generation → voting**. We start with registration.
+      Our voting system has three phases: **registration -> proof generation -> voting**. We start with registration.
 
       ### How it works
 
@@ -127,13 +154,28 @@ checkpoints:
         - In `getVotingData()`: uncomment the 3 lines below `/// Checkpoint 2 //////`
         - In `getVoterData()`: uncomment the line below `/// Checkpoint 2 //////`
 
+        **4. Update the deploy script:**
+        Open `packages/hardhat/deploy/00_deploy_your_voting_contract.ts`:
+        - Set your frontend address as `ownerAddress` (line 24)
+        - Uncomment deployment of both `PoseidonT3` and `LeanIMT` (lines 36-49)
+        - Replace the placeholder `leanIMTAddress` with `leanIMT.address` at line 62
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        3. You should see the **Voting** contract with the new `register` function.
+        4. Check `getVotingData()` — you should see Merkle tree data (size, depth, root).
+
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Voting.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
         - "The two guard checks use existing state: `s_voters` (allowlist) and the new `s_hasRegistered` mapping."
         - |
-          The key is the order: validate → mark as used → insert into tree → emit event:
+          The key is the order: validate -> mark as used -> insert into tree -> emit event:
           ```solidity
           s_commitments[_commitment] = true;
           s_hasRegistered[msg.sender] = true;
@@ -163,6 +205,8 @@ checkpoints:
           }
           ```
           Also uncomment the lines in `getVotingData()` and `getVoterData()`.
+
+          For the deploy script: set your frontend address as `ownerAddress`, uncomment the `PoseidonT3` and `LeanIMT` deployments, and replace the placeholder `leanIMTAddress` with `leanIMT.address`.
       solution: |
         // State variables:
         mapping(address => bool) private s_hasRegistered;
@@ -276,6 +320,8 @@ checkpoints:
 
         The commitment will be used in the next checkpoint.
 
+        > We won't run any code yet — that comes after the next checkpoint.
+
         Say **"check"** when you're ready!
       file: "packages/circuits/src/main.nr"
       test: "cd extension/packages/circuits && nargo check 2>&1 | grep -v warning && echo 'Circuit check passed!'"
@@ -330,11 +376,11 @@ checkpoints:
       At `////// Checkpoint 4 //////`:
 
       1. **Count non-zero siblings** — not all 16 slots are used
-      2. **Assert depth ≤ 16** — safety bound
+      2. **Assert depth <= 16** — safety bound
       3. **Convert index to bits** — `index.to_le_bits()` gives 16 little-endian bits that tell left vs. right at each tree level
       4. **Compute root** — use `binary_merkle_root(hash_2, commitment, siblings_num, index_bits, siblings)`
       5. **Assert computed root == public root**
-      6. **Bind the vote** — cast to Field and assert `x² = x` (prevents compiler warning, ensures 0 or 1)
+      6. **Bind the vote** — cast to Field and assert `x * x = x` (prevents compiler warning, ensures 0 or 1)
 
     questions:
       - text: "Why must the leaf index be a private input? What would happen if it were public?"
@@ -393,6 +439,8 @@ checkpoints:
           let vote_field = vote as Field;
           assert((vote_field * vote_field) == vote_field);
           ```
+
+        > We won't run any code yet — that comes in the next checkpoint when we compile the circuit.
 
         Say **"check"** when you're ready!
       file: "packages/circuits/src/main.nr"
@@ -470,17 +518,101 @@ checkpoints:
         }
 
   # ============================================================
-  # CHECKPOINT 4: Enable Voting with ZK Proof Verification
+  # CHECKPOINT 4: Generate the Solidity Verifier Contract
+  # ============================================================
+  - id: "verifier-generation"
+    title: "Generate the Solidity Verifier Contract"
+    description: "Compile your Noir circuit and generate the Solidity verifier using Barretenberg"
+    deployAfterCheckpoint: false
+
+    context: |
+      ## From Circuit to On-Chain Verifier
+
+      Your Noir circuit is complete — now we need to turn it into something Ethereum can understand. This involves three steps:
+
+      1. **Compile** — `nargo compile` turns your Noir code into circuit bytecode (ACIR)
+      2. **Generate verification key** — `bb write_vk` creates a compact summary of your circuit's constraints
+      3. **Generate Solidity verifier** — `bb write_solidity_verifier` embeds the vk into a Solidity contract
+
+      ### What's a Verification Key?
+
+      The vk encodes your circuit's rules in a form the verifier can understand. It's generated **once per circuit** and reused for verifying all proofs. When the circuit changes, you must regenerate the vk.
+
+      ### The Generated Verifier
+
+      The output is a `Verifier.sol` contract with a `verify(bytes proof, bytes32[] publicInputs)` function. Check that `NUMBER_OF_PUBLIC_INPUTS` matches your circuit (4 public inputs: nullifier_hash, root, vote, depth).
+
+      > All `nargo` and `bb` commands must be run from the `packages/circuits` directory.
+
+    questions:
+      - text: "Why do we need to regenerate the verification key every time the circuit changes?"
+        concepts:
+          [
+            "constraints",
+            "rules",
+            "circuit",
+            "match",
+            "encode",
+            "summary",
+            "rebuild",
+          ]
+        hint: "The vk is a mathematical summary of the circuit's constraints. If the circuit changes, the constraints change, and the old vk no longer matches."
+
+    task:
+      description: |
+        Run these commands from the `packages/circuits` directory:
+
+        **1. Compile the circuit:**
+        ```
+        nargo compile
+        ```
+
+        **2. Generate the verification key:**
+        ```
+        bb write_vk --oracle_hash keccak -b ./target/circuits.json -o ./target/
+        ```
+
+        > Use `--oracle_hash keccak` so the hashing matches Ethereum's Keccak standard.
+
+        **3. Generate the Solidity verifier:**
+        ```
+        bb write_solidity_verifier -k ./target/vk -o ./target/Verifier.sol
+        ```
+
+        **4. Verify the output:**
+        Check `packages/circuits/target/Verifier.sol` — you should see a full Solidity contract with a `verify` function and `NUMBER_OF_PUBLIC_INPUTS` set to 4.
+
+        Say **"check"** when you're ready!
+      file: "packages/circuits/src/main.nr"
+      test: "test -s extension/packages/circuits/target/Verifier.sol && grep -q 'function verify' extension/packages/circuits/target/Verifier.sol && echo 'Verifier contract generated!'"
+      hints:
+        - "Make sure you `cd packages/circuits` first. All three commands must be run from that directory."
+        - |
+          Full commands in sequence:
+          ```sh
+          cd packages/circuits
+          nargo compile
+          bb write_vk --oracle_hash keccak -b ./target/circuits.json -o ./target/
+          bb write_solidity_verifier -k ./target/vk -o ./target/Verifier.sol
+          ```
+      solution: |
+        cd packages/circuits
+        nargo compile
+        bb write_vk --oracle_hash keccak -b ./target/circuits.json -o ./target/
+        bb write_solidity_verifier -k ./target/vk -o ./target/Verifier.sol
+
+  # ============================================================
+  # CHECKPOINT 5: Enable Voting with ZK Proof Verification
   # ============================================================
   - id: "vote"
     title: "Enable Voting — Verify ZK Proofs On-Chain"
-    description: "Implement the vote function with proof verification, nullifier tracking, and vote counting"
+    description: "Bring in the verifier contract and implement the vote function with proof verification, nullifier tracking, and vote counting"
     deployAfterCheckpoint: true
 
     context: |
       ## Bringing It All Together: On-Chain Voting
 
-      You've built the circuit and the registration system. Now we connect them by implementing the `vote` function in Solidity.
+      You've built the circuit and the registration system. Now we connect them by plugging in the verifier and implementing the `vote` function in Solidity.
 
       ### How voting works
 
@@ -501,11 +633,13 @@ checkpoints:
       ### Setup required
 
       Before implementing `vote`, you need to:
-      1. **Uncomment** the `IVerifier` import at the top of the file
-      2. **Add state variables** below `/// Checkpoint 6 //////`:
+      1. **Replace** the placeholder `Verifier.sol` in `packages/hardhat/contracts/` with the one generated in `packages/circuits/target/`
+      2. **Update the deploy script** to deploy the real verifier
+      3. **Uncomment** the `IVerifier` import at the top of Voting.sol
+      4. **Add state variables** below `/// Checkpoint 6 //////`:
          - `IVerifier public immutable i_verifier`
          - `mapping(bytes32 => bool) private s_nullifierHashes`
-      3. **Add to constructor**: `i_verifier = IVerifier(_verifier);`
+      5. **Add to constructor**: `i_verifier = IVerifier(_verifier);`
 
     questions:
       - text: "Why must root validation happen before proof verification? What attack does it prevent?"
@@ -534,25 +668,34 @@ checkpoints:
 
     task:
       description: |
-        Open `packages/hardhat/contracts/Voting.sol` and make these changes:
+        **1. Replace the Verifier contract:**
+        Copy the generated `Verifier.sol` from `packages/circuits/target/` to `packages/hardhat/contracts/Verifier.sol`, replacing the placeholder.
 
-        **1. Uncomment the import** at the top (line 7):
+        **2. Update the deploy script:**
+        Open `packages/hardhat/deploy/00_deploy_your_voting_contract.ts`:
+        - Uncomment the `HonkVerifier` deployment (lines 28-32)
+        - Comment out or remove the placeholder `verifierAddress` (line 27)
+        - Update `args` to use `verifier.address` instead of `verifierAddress` (line 55)
+
+        Now open `packages/hardhat/contracts/Voting.sol` and make these changes:
+
+        **3. Uncomment the import** at the top (line 7):
         ```solidity
         import {IVerifier} from "./Verifier.sol";
         ```
 
-        **2. Add state variables** below `/// Checkpoint 6 //////`:
+        **4. Add state variables** below `/// Checkpoint 6 //////`:
         ```solidity
         IVerifier public immutable i_verifier;
         mapping(bytes32 => bool) private s_nullifierHashes;
         ```
 
-        **3. Add to constructor** at `/// Checkpoint 6 //////`:
+        **5. Add to constructor** at `/// Checkpoint 6 //////`:
         ```solidity
         i_verifier = IVerifier(_verifier);
         ```
 
-        **4. Implement `vote(...)`:**
+        **6. Implement `vote(...)`:**
 
         a. **Validate root:**
            - If `_root == bytes32(0)`, revert with `Voting__EmptyTree()`
@@ -571,11 +714,20 @@ checkpoints:
            - If `_vote == bytes32(uint256(1))`, increment `s_yesVotes`, else increment `s_noVotes`
            - Emit `VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes)`
 
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        3. You should see the **Voting** contract with the new `vote` function.
+        4. Head to the **Voting** page — the full voting flow is now functional on the contract side!
+
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Voting.sol"
       test: "yarn test --grep 'Checkpoint6'"
       hints:
-        - "Don't forget the three setup steps: uncomment the import, add the two state variables, and initialize `i_verifier` in the constructor."
+        - "Don't forget the setup steps: replace Verifier.sol, update the deploy script, uncomment the import, add the two state variables, and initialize `i_verifier` in the constructor."
         - |
           The public inputs array must match the circuit's order exactly:
           ```solidity
@@ -620,8 +772,11 @@ checkpoints:
               emit VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes);
           }
           ```
-          Don't forget to also uncomment the import, add state variables, and initialize `i_verifier` in the constructor.
+          Don't forget to also replace Verifier.sol, update the deploy script, uncomment the import, add state variables, and initialize `i_verifier` in the constructor.
       solution: |
+        // Replace Verifier.sol with generated one from packages/circuits/target/
+        // Update deploy script: uncomment HonkVerifier deployment, use verifier.address in args
+
         // Uncomment import:
         import {IVerifier} from "./Verifier.sol";
 
@@ -666,14 +821,527 @@ checkpoints:
             emit VoteCast(_nullifierHash, msg.sender, _vote == bytes32(uint256(1)), block.timestamp, s_yesVotes, s_noVotes);
         }
 
-completion_message: |
-  Congratulations! You've built a **private, Sybil-resistant voting system**!
+  # ============================================================
+  # CHECKPOINT 6: Create Your Commitment — Frontend
+  # ============================================================
+  - id: "create-commitment"
+    title: "Create Your Commitment — Frontend Integration"
+    description: "Implement commitment generation in TypeScript using Poseidon hashing and Fr field elements"
+    deployAfterCheckpoint: false
 
-  You implemented:
+    context: |
+      ## From Contract to Frontend
+
+      You've built the smart contract and the ZK circuit. Now let's bring the **Register** button to life!
+
+      Before anyone can vote, they need a **commitment** — a hash of their private nullifier and secret. This is what gets stored in the Merkle tree during registration.
+
+      ### How it works in the frontend
+
+      1. Generate a random **nullifier** and **secret** using `Fr.random()` (BN254 field elements)
+      2. Hash them with **Poseidon** to create the **commitment**
+      3. Format everything as `bytes32` hex strings for Solidity
+      4. The commitment is sent on-chain, while nullifier and secret stay in localStorage
+
+      > `Fr` is the finite field type of BN254, ensuring all numbers stay within the valid scalar field used by ZK circuits.
+
+      > The **commitment** is public (on-chain), but your **nullifier** and **secret** are private — they're the keys to proving your right to vote later. If they leak, someone else could vote on your behalf!
+
+    questions:
+      - text: "Why do we use `Fr.random()` instead of `Math.random()` for generating the nullifier and secret?"
+        concepts:
+          [
+            "field",
+            "BN254",
+            "ZK",
+            "range",
+            "valid",
+            "finite",
+            "circuit",
+            "compatible",
+          ]
+        hint: "ZK circuits operate over a specific finite field (BN254). Values must be valid field elements — `Math.random()` could produce values outside this range."
+
+      - text: "Why is the order `[nullifier, secret]` important when computing the Poseidon hash?"
+        concepts:
+          [
+            "order",
+            "match",
+            "circuit",
+            "same",
+            "hash",
+            "different",
+            "commitment",
+          ]
+        hint: "The circuit hashes `[nullifier, secret]` in that order. If you swap them in the frontend, the commitment won't match what the circuit expects, and proof verification will fail."
+
+    task:
+      description: |
+        Open `packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx`.
+
+        **1. Uncomment the imports** at the top (lines 5-7):
+        ```ts
+        import { Fr } from "@aztec/bb.js";
+        import { toHex } from "viem";
+        import { poseidon2 } from "poseidon-lite";
+        ```
+
+        **2. Replace the placeholder in `generateCommitment()`** (lines 15-17):
+
+        - Generate random `nullifier` and `secret` using `Fr.random()`, cast to `BigInt`:
+          ```ts
+          const nullifier = BigInt(Fr.random().toString());
+          const secret = BigInt(Fr.random().toString());
+          ```
+        - Compute commitment with `poseidon2([nullifier, secret])`
+        - Convert all three values to hex with `toHex(value, { size: 32 })`
+        - Return `{ commitment, nullifier, secret }` as hex strings
+
+        ### Try it out
+
+        1. Open http://localhost:3000 — go to the **Voting** page.
+        2. Add your address to the **allowlist** (you're the owner).
+        3. Click **Register to vote** — your commitment gets generated and inserted into the Merkle tree.
+        4. You should see "Already registered for this vote" after registering.
+        5. Scroll to the bottom and click **Log Local Storage** to inspect your saved commitment data.
+
+        > Each time you restart your local chain with `yarn chain`, scroll to the bottom of the Voting page and hit **Clear Local Storage**.
+
+        Say **"check"** when you're ready!
+      file: "packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx"
+      test: "grep -q 'Fr.random' extension/packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx && grep -q 'poseidon2' extension/packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx && echo 'Commitment generation check passed!'"
+      hints:
+        - "Cast `Fr.random()` to BigInt: `const nullifier = BigInt(Fr.random().toString());`. Use `toHex(value, { size: 32 })` for the hex conversion."
+        - |
+          Full solution:
+          ```ts
+          const generateCommitment = async (): Promise<CommitmentData> => {
+            const nullifier = BigInt(Fr.random().toString());
+            const secret = BigInt(Fr.random().toString());
+            const commitment = poseidon2([nullifier, secret]);
+
+            const commitmentHex = toHex(commitment, { size: 32 });
+            const nullifierHex = toHex(nullifier, { size: 32 });
+            const secretHex = toHex(secret, { size: 32 });
+
+            return {
+              commitment: commitmentHex,
+              nullifier: nullifierHex,
+              secret: secretHex,
+            };
+          };
+          ```
+      solution: |
+        // Uncomment imports:
+        import { Fr } from "@aztec/bb.js";
+        import { toHex } from "viem";
+        import { poseidon2 } from "poseidon-lite";
+
+        // generateCommitment function:
+        const generateCommitment = async (): Promise<CommitmentData> => {
+          const nullifier = BigInt(Fr.random().toString());
+          const secret = BigInt(Fr.random().toString());
+          const commitment = poseidon2([nullifier, secret]);
+
+          const commitmentHex = toHex(commitment, { size: 32 });
+          const nullifierHex = toHex(nullifier, { size: 32 });
+          const secretHex = toHex(secret, { size: 32 });
+
+          return {
+            commitment: commitmentHex,
+            nullifier: nullifierHex,
+            secret: secretHex,
+          };
+        };
+
+  # ============================================================
+  # CHECKPOINT 7: Generate Your ZK Proof — Frontend
+  # ============================================================
+  - id: "generate-proof"
+    title: "Generate Your ZK Proof"
+    description: "Implement proof generation using Noir.js and UltraHonk in the frontend"
+    deployAfterCheckpoint: false
+
+    context: |
+      ## Creating the ZK Proof
+
+      You've registered and have your commitment in the Merkle tree. Now comes the magic: generating a **zero-knowledge proof** that says "I'm registered and I want to vote" — without revealing who you are.
+
+      ### Two proofs in one step
+
+      1. **Merkle inclusion proof** — rebuild the tree from events, then call `generateProof()` on it to get the siblings (path from your leaf to the root)
+      2. **ZK proof** — feed the siblings + your private inputs into the Noir circuit, then use UltraHonk to produce the cryptographic proof
+
+      ### The flow
+
+      1. Compute `nullifierHash` from your nullifier using `poseidon1`
+      2. Rebuild the LeanIMT from on-chain events (using `@zk-kit/lean-imt`)
+      3. Generate Merkle proof to get siblings, pad to 16
+      4. Prepare circuit inputs (must match circuit parameter order exactly)
+      5. Create witness with `Noir` and generate proof with `UltraHonkBackend`
+
+      > The **UltraHonk backend** takes your circuit's bytecode + witness to generate the proof. It produces the same format your Solidity verifier expects.
+
+    questions:
+      - text: "Why do we rebuild the Merkle tree from events in the frontend instead of reading it directly from the contract?"
+        concepts:
+          [
+            "siblings",
+            "path",
+            "nodes",
+            "not stored",
+            "events",
+            "reconstruct",
+            "tree",
+          ]
+        hint: "The contract only stores the frontier (a compact summary). To get the full sibling path needed for the proof, we must reconstruct the entire tree from the leaf insertion events."
+
+      - text: "Why must the circuit inputs be in the exact same order as declared in the Noir `main` function?"
+        concepts:
+          [
+            "order",
+            "position",
+            "match",
+            "witness",
+            "constraint",
+            "fail",
+            "parameter",
+          ]
+        hint: "The circuit maps inputs by position, not by name. If the order doesn't match, the wrong values go into the wrong constraints and the proof will fail."
+
+    task:
+      description: |
+        Open `packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx`.
+
+        **1. Uncomment the imports** at the top (lines 5-10):
+        ```ts
+        import { UltraHonkBackend } from "@aztec/bb.js";
+        // @ts-ignore
+        import { Noir } from "@noir-lang/noir_js";
+        import { LeanIMT } from "@zk-kit/lean-imt";
+        import { encodeAbiParameters, toHex } from "viem";
+        import { poseidon1, poseidon2 } from "poseidon-lite";
+        ```
+
+        **2. Replace the placeholder in `generateProof()`** (remove lines 29-33 with the `void` and dummy return):
+
+        a. **Compute nullifier hash:**
+           ```ts
+           const nullifierHash = poseidon1([BigInt(_nullifier)]);
+           ```
+
+        b. **Rebuild Merkle tree from events:**
+           ```ts
+           const calculatedTree = new LeanIMT((a: bigint, b: bigint) => poseidon2([a, b]));
+           const leaves = _leaves.map(event => event?.args.value);
+           const leavesReversed = leaves.reverse();
+           calculatedTree.insertMany(leavesReversed as bigint[]);
+           ```
+
+        c. **Generate Merkle proof and pad siblings to 16:**
+           ```ts
+           const calculatedProof = calculatedTree.generateProof(_index);
+           const sibs = calculatedProof.siblings.map(sib => sib.toString());
+           const lengthDiff = 16 - sibs.length;
+           for (let i = 0; i < lengthDiff; i++) { sibs.push("0"); }
+           ```
+
+        d. **Prepare circuit inputs** (must match circuit parameter order):
+           ```ts
+           const input = {
+             nullifier_hash: nullifierHash.toString(),
+             nullifier: BigInt(_nullifier).toString(),
+             secret: BigInt(_secret).toString(),
+             root: _root.toString(),
+             vote: _vote,
+             depth: _depth.toString(),
+             index: _index.toString(),
+             siblings: sibs,
+           };
+           ```
+
+        e. **Create witness and generate proof:**
+           ```ts
+           const noir = new Noir(_circuitData);
+           const { witness } = await noir.execute(input);
+           const honk = new UltraHonkBackend(_circuitData.bytecode, { threads: 1 });
+           const { proof, publicInputs } = await honk.generateProof(witness, { keccak: true });
+           return { proof, publicInputs };
+           ```
+
+        ### Try it out
+
+        1. Open http://localhost:3000 — go to the **Voting** page.
+        2. Make sure you've already registered (previous checkpoint).
+        3. Select your vote (**Yes** or **No**).
+        4. Click **Generate proof** — this may take a few seconds.
+        5. Once complete, the button should show **Proof already exists**.
+        6. Check the browser console or click **Log Local Storage** to inspect the proof data.
+
+        Say **"check"** when you're ready!
+      file: "packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx"
+      test: "grep -q 'new Noir' extension/packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx && grep -q 'UltraHonkBackend' extension/packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx && echo 'Proof generation check passed!'"
+      hints:
+        - 'Events are emitted newest-last. Reverse the leaves array before inserting into the tree: `leaves.reverse()`. Pad siblings to 16 with `"0"`.'
+        - |
+          Full solution for `generateProof`:
+          ```ts
+          const nullifierHash = poseidon1([BigInt(_nullifier)]);
+          const calculatedTree = new LeanIMT((a: bigint, b: bigint) => poseidon2([a, b]));
+          const leaves = _leaves.map(event => event?.args.value);
+          const leavesReversed = leaves.reverse();
+          calculatedTree.insertMany(leavesReversed as bigint[]);
+          const calculatedProof = calculatedTree.generateProof(_index);
+          const sibs = calculatedProof.siblings.map(sib => sib.toString());
+          const lengthDiff = 16 - sibs.length;
+          for (let i = 0; i < lengthDiff; i++) { sibs.push("0"); }
+          const input = {
+            nullifier_hash: nullifierHash.toString(),
+            nullifier: BigInt(_nullifier).toString(),
+            secret: BigInt(_secret).toString(),
+            root: _root.toString(),
+            vote: _vote,
+            depth: _depth.toString(),
+            index: _index.toString(),
+            siblings: sibs,
+          };
+          const noir = new Noir(_circuitData);
+          const { witness } = await noir.execute(input);
+          const honk = new UltraHonkBackend(_circuitData.bytecode, { threads: 1 });
+          const originalLog = console.log;
+          console.log = () => {};
+          const { proof, publicInputs } = await honk.generateProof(witness, { keccak: true });
+          console.log = originalLog;
+          return { proof, publicInputs };
+          ```
+      solution: |
+        // Uncomment imports:
+        import { UltraHonkBackend } from "@aztec/bb.js";
+        // @ts-ignore
+        import { Noir } from "@noir-lang/noir_js";
+        import { LeanIMT } from "@zk-kit/lean-imt";
+        import { encodeAbiParameters, toHex } from "viem";
+        import { poseidon1, poseidon2 } from "poseidon-lite";
+
+        // generateProof function body (inside try block):
+        const nullifierHash = poseidon1([BigInt(_nullifier)]);
+        const calculatedTree = new LeanIMT((a: bigint, b: bigint) => poseidon2([a, b]));
+        const leaves = _leaves.map(event => event?.args.value);
+        const leavesReversed = leaves.reverse();
+        calculatedTree.insertMany(leavesReversed as bigint[]);
+        const calculatedProof = calculatedTree.generateProof(_index);
+        const sibs = calculatedProof.siblings.map(sib => sib.toString());
+        const lengthDiff = 16 - sibs.length;
+        for (let i = 0; i < lengthDiff; i++) { sibs.push("0"); }
+        const input = {
+          nullifier_hash: nullifierHash.toString(),
+          nullifier: BigInt(_nullifier).toString(),
+          secret: BigInt(_secret).toString(),
+          root: _root.toString(),
+          vote: _vote,
+          depth: _depth.toString(),
+          index: _index.toString(),
+          siblings: sibs,
+        };
+        const noir = new Noir(_circuitData);
+        const { witness } = await noir.execute(input);
+        const honk = new UltraHonkBackend(_circuitData.bytecode, { threads: 1 });
+        const originalLog = console.log;
+        console.log = () => {};
+        const { proof, publicInputs } = await honk.generateProof(witness, { keccak: true });
+        console.log = originalLog;
+        return { proof, publicInputs };
+
+  # ============================================================
+  # CHECKPOINT 8: Vote with a Burner Wallet — Frontend
+  # ============================================================
+  - id: "burner-wallet-vote"
+    title: "Vote with a Burner Wallet"
+    description: "Create a burner wallet and submit your anonymous vote on-chain"
+    deployAfterCheckpoint: false
+
+    context: |
+      ## Breaking the Link: Anonymous Voting
+
+      You have your ZK proof — now it's time to actually **cast your vote**.
+
+      But here's the catch: if you use the **same address** you registered with, everyone can see on-chain which address voted and how. That would undo all the ZK privacy!
+
+      ### The solution: burner wallets
+
+      Send the vote from a **fresh, never-used address** with no connection to your registration. Only the proof ties you to the tree — and the proof reveals nothing about your identity.
+
+      ### Two functions to implement
+
+      1. **`generateBurnerWallet()`** — create a new wallet with `generatePrivateKey()` and `privateKeyToAccount()` from viem
+      2. **`sendVoteWithBurner()`** — fund the burner (Hardhat only), then call the `vote` function with your proof and public inputs
+
+      > On a local Hardhat network, we fund the burner using `setBalance`. On testnets, you'd use ERC-4337 Account Abstraction with a paymaster to cover gas — that's covered in the README's remaining checkpoints.
+
+    questions:
+      - text: "Why is a burner wallet essential for vote privacy? What information would be leaked if you voted from your registration address?"
+        concepts:
+          [
+            "link",
+            "address",
+            "identity",
+            "on-chain",
+            "visible",
+            "registration",
+            "anonymous",
+          ]
+        hint: "If you vote from the same address you registered with, anyone can see which registered voter cast which vote — completely breaking the privacy that ZK proofs provide."
+
+    task:
+      description: |
+        Open `packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx`.
+
+        **1. Uncomment the imports** (lines 19-20):
+        ```ts
+        import { parseEther, createTestClient } from "viem";
+        import { generatePrivateKey } from "viem/accounts";
+        ```
+
+        **2. Implement `generateBurnerWallet()`** (replace the placeholder at line 60):
+        - Generate a private key with `generatePrivateKey()`
+        - Create an account with `privateKeyToAccount(privateKey)`
+        - Build the wallet object: `{ privateKey: privateKey as \`0x${string}\`, address: account.address as \`0x${string}\` }`
+
+        **3. Implement `sendVoteWithBurner()`** (replace the placeholder at lines 39-47):
+
+        a. **Fund the burner** (local Hardhat only):
+           ```ts
+           const needed = parseEther("0.01");
+           const bal = await publicClient.getBalance({ address: walletAddress });
+           if (bal < needed) {
+             const testClient = createTestClient({
+               chain: hardhat, mode: "hardhat",
+               transport: http("http://localhost:8545"),
+             });
+             await testClient.setBalance({ address: walletAddress, value: needed });
+           }
+           ```
+
+        b. **Call the vote function** with proof and public inputs:
+           ```ts
+           const hash = await viemContract.write.vote([
+             uint8ArrayToHexString(proofData.proof),
+             proofData.publicInputs[0],
+             proofData.publicInputs[1],
+             proofData.publicInputs[2],
+             proofData.publicInputs[3],
+           ]);
+           const receipt = await publicClient.waitForTransactionReceipt({ hash });
+           return receipt.transactionHash;
+           ```
+
+        ### Try it out
+
+        1. Open http://localhost:3000 — go to the **Voting** page.
+        2. Make sure you've registered and generated a proof (previous checkpoints).
+        3. Click **Vote with burner wallet**.
+        4. A new burner wallet address should appear and your vote will be submitted.
+        5. Check the voting stats — your vote should be counted!
+
+        Say **"check"** when you're ready!
+      file: "packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx"
+      test: "grep -q 'generatePrivateKey' extension/packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx && grep -q 'viemContract.write.vote' extension/packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx && echo 'Burner wallet check passed!'"
+      hints:
+        - "`generatePrivateKey()` from `viem/accounts` creates a random private key. `privateKeyToAccount(pk)` derives the address from it."
+        - |
+          Full solution:
+          ```ts
+          const generateBurnerWallet = () => {
+            const privateKey = generatePrivateKey();
+            const account = privateKeyToAccount(privateKey);
+            const wallet = {
+              privateKey: privateKey as `0x${string}`,
+              address: account.address as `0x${string}`,
+            };
+            setBurnerWallet(wallet);
+            const effectiveContractAddress = contractAddress || contractInfo?.address;
+            if (effectiveContractAddress && userAddress) {
+              saveBurnerWalletToLocalStorage(wallet.privateKey, wallet.address, effectiveContractAddress, userAddress);
+            }
+            return wallet;
+          };
+
+          const sendVoteWithBurner = async ({ viemContract, publicClient, walletAddress, proofData }) => {
+            const needed = parseEther("0.01");
+            const bal = await publicClient.getBalance({ address: walletAddress });
+            if (bal < needed) {
+              const testClient = createTestClient({
+                chain: hardhat, mode: "hardhat",
+                transport: http("http://localhost:8545"),
+              });
+              await testClient.setBalance({ address: walletAddress, value: needed });
+            }
+            const hash = await viemContract.write.vote([
+              uint8ArrayToHexString(proofData.proof),
+              proofData.publicInputs[0],
+              proofData.publicInputs[1],
+              proofData.publicInputs[2],
+              proofData.publicInputs[3],
+            ]);
+            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+            return receipt.transactionHash;
+          };
+          ```
+      solution: |
+        // Uncomment imports:
+        import { parseEther, createTestClient } from "viem";
+        import { generatePrivateKey } from "viem/accounts";
+
+        // generateBurnerWallet:
+        const generateBurnerWallet = () => {
+          const privateKey = generatePrivateKey();
+          const account = privateKeyToAccount(privateKey);
+          const wallet = {
+            privateKey: privateKey as `0x${string}`,
+            address: account.address as `0x${string}`,
+          };
+          setBurnerWallet(wallet);
+          const effectiveContractAddress = contractAddress || contractInfo?.address;
+          if (effectiveContractAddress && userAddress) {
+            saveBurnerWalletToLocalStorage(wallet.privateKey, wallet.address, effectiveContractAddress, userAddress);
+          }
+          return wallet;
+        };
+
+        // sendVoteWithBurner:
+        const sendVoteWithBurner = async ({ viemContract, publicClient, walletAddress, proofData }) => {
+          const needed = parseEther("0.01");
+          const bal = await publicClient.getBalance({ address: walletAddress });
+          if (bal < needed) {
+            const testClient = createTestClient({
+              chain: hardhat, mode: "hardhat",
+              transport: http("http://localhost:8545"),
+            });
+            await testClient.setBalance({ address: walletAddress, value: needed });
+          }
+          const hash = await viemContract.write.vote([
+            uint8ArrayToHexString(proofData.proof),
+            proofData.publicInputs[0],
+            proofData.publicInputs[1],
+            proofData.publicInputs[2],
+            proofData.publicInputs[3],
+          ]);
+          const receipt = await publicClient.waitForTransactionReceipt({ hash });
+          return receipt.transactionHash;
+        };
+
+completion_message: |
+  Congratulations! You've built a complete **private, Sybil-resistant voting system**!
+
+  You implemented the full stack:
   - **Voter registration** with a Lean Incremental Merkle Tree
   - **A ZK commitment circuit** proving knowledge of a nullifier and secret
   - **Merkle proof verification** in a Noir circuit
+  - **Solidity verifier generation** from your circuit via Barretenberg
   - **On-chain vote verification** with proof checking, nullifier tracking, and vote counting
+  - **Frontend commitment creation** with Poseidon hashing
+  - **ZK proof generation** using Noir.js and UltraHonk
+  - **Anonymous voting** via burner wallets
 
   Your system ensures:
   - Voters prove eligibility via ZK proofs (no identity revealed)
@@ -681,5 +1349,13 @@ completion_message: |
   - Results are transparently tracked on-chain
   - No one can link a vote to the voter who cast it
 
-  The remaining README checkpoints cover **frontend integration** (proof generation, burner wallets, smart accounts) and deployment to Sepolia.
-  Deploy to a testnet and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
+  ## Next Steps
+
+  The remaining README checkpoints cover **Sepolia deployment** with Account Abstraction (ERC-4337):
+
+  1. Implement smart account voting in `VoteWithBurnerSepolia.tsx` (Checkpoint 10 in README)
+  2. Deploy contracts: `yarn deploy --network sepolia`
+  3. Copy circuit data: `cp packages/circuits/target/circuits.json packages/nextjs/public/circuits.json`
+  4. Ship frontend: `yarn vercel`
+  5. Verify contracts: `yarn verify --network sepolia`
+  6. Submit at [SpeedRunEthereum.com](https://speedrunethereum.com/challenge/zk-voting)!
