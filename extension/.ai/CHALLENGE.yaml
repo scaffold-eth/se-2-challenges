@@ -21,11 +21,35 @@ welcome_message: |
   6. **Trading** — buy/sell outcome tokens
   7. **Redemption** — winners cash out
 
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  Head to the **Debug Contracts** tab — you should find a smart contract named **PredictionMarket**. Since we haven't implemented any functions yet, they won't work, nor will you see all the necessary state variables.
+
+  Go to the **User** tab and check out the car race! The race is entirely separate and has no impact on the smart contract.
+
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
   - Say **"hint"** anytime you're stuck
   - Use **`/skip`** if you want me to write the code and explain it
+
+  > Re-run `yarn deploy --reset` whenever you want to redeploy with a fresh contract address.
 
   Your progress is saved automatically. Use `/start` to resume anytime.
 
@@ -234,6 +258,12 @@ checkpoints:
         5. **Uncomment** the code below `/// Checkpoint 3 ///` in `getPrediction()`
 
         Say **"check"** when you're ready!
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Open http://localhost:3000 — go to the **Debug Contracts** tab to inspect the initialized values.
+        3. The **Liquidity Provider** tab should now display the initial question, liquidity, probability, and relevant variables.
       file: "packages/hardhat/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint3'"
       hints:
@@ -448,6 +478,13 @@ checkpoints:
         5. **Uncomment** code below `/// Checkpoint 5 ///` in `getPrediction()`
 
         Say **"check"** when you're ready!
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Go to the **Oracle** tab and report the outcome (watch the race first!).
+        3. Make sure you're connected with the correct oracle address — check `00_deploy_your_contract.ts` to find out which one is being used.
+        4. Then go to the **Liquidity Provider** tab and try the **Resolve Market and Withdraw** function. Watch as tokens are burned and ETH flows back to the deployer.
       file: "packages/hardhat/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint5|Checkpoint6'"
       hints:
@@ -699,6 +736,12 @@ checkpoints:
         3. **Implement `sellTokensForEth`** with same modifiers
 
         Say **"check"** when you're ready!
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Go to the **User** tab to test buying and selling tokens and see how the probability changes.
+        3. Make sure you **use another account** (not the liquidity provider), otherwise you'll be restricted from trading.
       file: "packages/hardhat/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint8'"
       hints:
@@ -785,6 +828,13 @@ checkpoints:
         6. Emit `WinningTokensRedeemed`
 
         Say **"check"** when you're ready!
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Purchase some winning tokens on the **User** tab first.
+        3. Report the race via the **Oracle** tab.
+        4. Then redeem your tokens on the **User** tab.
       file: "packages/hardhat/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint9'"
       hints:
