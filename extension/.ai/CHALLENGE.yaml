@@ -16,6 +16,28 @@ welcome_message: |
   2. **Staking Oracle** — Decentralized with ERC-20 staking, slashing, and economic incentives
   3. **Optimistic Oracle** — Dispute-based system for any binary question, inspired by UMA Protocol
 
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  > `yarn deploy` will likely fail initially since the contracts aren't ready yet — that's expected!
+
+  > Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
+
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
@@ -119,6 +141,22 @@ checkpoints:
         4. **`getActiveOracleNodes()`** — Similar to `getPrice()` but collect oracle **addresses** instead of prices. Return an array of active oracle addresses.
 
         Say **"check"** when you're ready!
+
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset` to deploy your contracts
+        2. Open http://localhost:3000 — test the whitelist oracle
+        3. Try adding and removing oracles, and observe how the aggregated price changes
+        4. Change the price of individual SimpleOracle contracts and add new oracle nodes to see how the median price changes
+
+        > The `onlyOwner` modifiers are commented out so you have full control to experiment.
+
+        Run `yarn simulate:whitelist` to see a live simulation with automated bots acting as oracle providers:
+        ```
+        yarn simulate:whitelist
+        ```
       file: "packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol"
       test: "yarn test --grep 'Checkpoint1'"
       hints:
@@ -329,6 +367,31 @@ checkpoints:
         16. `_removeNode(address, uint256)` — swap-and-pop + mark inactive
 
         Say **"check"** when you're ready!
+
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset` to deploy your contracts
+        2. Open http://localhost:3000 — go to the **Staking** page
+        3. **Buy ORA**: Use the **Buy ORA** widget to swap **0.5 ETH → 100 ORA** (the ORA token mints directly when you buy)
+        4. **Register as a node**: Stake your ORA to become an oracle node
+        5. **Report a price**: Press the pencil icon to report a new price, enter your price, and confirm. Use the refresh icon to quickly re-report the same price in the next bucket
+        6. **Navigate buckets**: Use the arrows to browse past buckets
+        7. **Record median**: Press the **Record Bucket Median** button on past buckets to finalize them
+
+        > "Insufficient Stake" errors? Your staked balance has fallen below the minimum due to inactivity penalties. Buy more ORA and add stake.
+
+        Run `yarn simulate:staking` to watch a live simulation with multiple nodes:
+        ```
+        yarn simulate:staking
+        ```
+        Press the gear icon on simulation nodes to adjust price deviation and skip probability. Navigate to past buckets to see the "slash" button on deviated nodes.
+
+        To enable auto-slashing:
+        ```
+        AUTO_SLASH=true yarn simulate:staking
+        ```
       file: "packages/hardhat/contracts/01_Staking/StakingOracle.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
@@ -1059,6 +1122,24 @@ checkpoints:
            - If disputed: revert if no winner set (`AwaitingDecider`), return `resolvedOutcome`
 
         Say **"check"** when you're ready!
+
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset` to deploy your contracts
+        2. Open http://localhost:3000 — go to the **Optimistic** page
+        3. **Submit a new assertion**: Fill in the fields to create a new assertion with a reward
+        4. **Propose an outcome**: Use the UI to propose true/false for your assertion
+        5. **Dispute an outcome**: Try disputing a proposal using the dispute button
+        6. **Wait for settlement**: Watch the dispute window expire — undisputed proposals settle automatically. For disputes, the decider must choose the winner
+        7. **Check outcomes**: View the resolution and settlement status for each assertion in the table
+
+        Run `yarn simulate:optimistic` to see the full optimistic oracle lifecycle with automated bots:
+        ```
+        yarn simulate:optimistic
+        ```
+        Bots will create assertions, propose outcomes, and submit disputes. It's up to you to settle the disputes!
       file: "packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol"
       test: "yarn test --grep 'Checkpoint6'"
       hints:
