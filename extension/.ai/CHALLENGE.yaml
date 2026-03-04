@@ -18,11 +18,31 @@ welcome_message: |
   4. **Repaying & withdrawing** — repay debt and reclaim collateral safely
   5. **Liquidation** — enforce system stability by liquidating unsafe positions
 
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
   - Say **"hint"** anytime you're stuck — hints get progressively more specific
   - Use **`/skip`** if you want me to write the code and explain it
+
+  > Re-run `yarn deploy --reset` whenever you want to redeploy with a fresh contract address.
 
   Your progress is saved automatically. Use `/start` to resume anytime.
 
@@ -158,6 +178,16 @@ checkpoints:
            - Call `_validatePosition(msg.sender)` — reverts if unsafe
            - Call `i_myUSD.mintTo(msg.sender, mintAmount)`
            - Emit `DebtSharesMinted(msg.sender, mintAmount, shares)`
+
+        ### Try it out
+
+        After tests pass, redeploy and test on the frontend:
+
+        1. Run `yarn deploy --reset`
+        2. On the right side of the screen, hover the top icon to open the collateral menu — try depositing some ETH
+        3. Your address should appear in the left table
+        4. Hover the mint icon and try minting MyUSD against your collateral (up to 150% collateral ratio)
+        5. The frontend should show your MyUSD balance and position ratio
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/MyUSDEngine.sol"
@@ -363,6 +393,16 @@ checkpoints:
 
         The `onlyRateController` modifier is already on the function signature.
 
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset`
+        2. In **Rate Controls** on the frontend, click the edit icon next to the borrow rate
+        3. Set a new rate and confirm the transaction
+
+        > Fun fact: anyone can call `RateController.sol`'s methods — this was intentional so you can change rates from the frontend without special authorization.
+
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/MyUSDEngine.sol"
       test: "yarn test --grep 'Interest Accrual'"
@@ -454,6 +494,14 @@ checkpoints:
            - If user has debt shares > 0, call `_validatePosition(msg.sender)`
            - Transfer ETH with `payable(msg.sender).transfer(amount)`
            - Emit `CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice())`
+
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset`
+        2. Try the full workflow on the frontend: deposit collateral → mint MyUSD → repay debt → withdraw collateral
+        3. Try withdrawing too much collateral while having debt — it should fail (unsafe position)
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/MyUSDEngine.sol"
@@ -609,6 +657,21 @@ checkpoints:
            - Revert with `Engine__TransferFailed()` if not sent
            - Emit `Liquidation(user, msg.sender, amountForLiquidator, userDebtValue, i_oracle.getETHMyUSDPrice())`
 
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset`
+        2. Crank up the Borrow Rate to 1000% or higher (in **Rate Controls**)
+        3. Deposit collateral and mint the maximum MyUSD (close to 150% ratio)
+        4. Open a **private browser tab** to the same page — you'll get a new burner wallet
+        5. Give the second wallet ETH using the faucet button (top right)
+        6. Use the **swap** button (in the MyUSD Wallet section) to exchange ETH for enough MyUSD to cover the first account's debt (get more than what was minted — interest has accrued!)
+        7. Check if the first account is liquidatable — the **Liquidate** button should be enabled
+        8. Click it with your second account to liquidate the position
+
+        > Notice: the first account still has the MyUSD they originally minted. The liquidator paid the debt and claimed the collateral + bonus.
+
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/MyUSDEngine.sol"
       test: "yarn test --grep 'Liquidation'"
@@ -763,6 +826,14 @@ checkpoints:
         3. Set `borrowRate = newRate`
         4. Emit `BorrowRateUpdated(newRate)`
 
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset`
+        2. Try setting the borrow rate **below** the savings rate — it should fail
+        3. Set a valid borrow rate that's above the savings rate — it should succeed
+
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/MyUSDEngine.sol"
       test: "yarn test --grep 'Borrow Rate Management'"
@@ -802,5 +873,81 @@ completion_message: |
   - **Borrow rates** for demand destruction
   - **Savings rates** for demand creation
 
-  The next steps in the README cover market simulation and the staking system.
-  Deploy to a testnet and submit at [SpeedRunEthereum.com](https://speedrunethereum.com)!
+  ## Next: Market Simulation (Borrowers Only)
+
+  Now see your stablecoin in action! The `yarn simulate` script runs automated bots that simulate market participants. At first, these bots only want **leveraged ETH exposure** — they deposit collateral, mint MyUSD, and swap it for more ETH on the DEX. This creates pure sell pressure.
+
+  1. Make sure `yarn chain` is running
+  2. Run `yarn deploy --reset` (or set the borrow rate back to 0)
+  3. Run `yarn simulate`
+
+  Watch the **console** to see:
+  - Each bot's upper borrow rate limit preference
+  - Their activity (deposits, mints, swaps)
+
+  Watch the **frontend** to see:
+  - MyUSD losing its peg as bots dump it for ETH
+  - Total supply of MyUSD increasing
+
+  Now **raise the borrow rate to 30%** from the frontend (in Rate Controls).
+
+  The bots are forced to accept the high interest. What happens?
+  - Bots start exiting their positions (repaying debt)
+  - Total supply drops significantly
+  - The peg is restored
+
+  This shows the power of the borrow rate as **demand destruction** — but is our stablecoin doomed to either a tiny market cap or a broken peg? Not if we add the other lever...
+
+  ## Next: The Savings Rate — Creating Demand
+
+  So far borrowers create sell pressure when they swap MyUSD for ETH. The borrow rate can only **destroy demand** (defensive). To truly maintain the peg, we also need to **create demand**.
+
+  That's where the **savings rate** comes in. Users can stake MyUSD in `MyUSDStaking.sol` to earn yield, making holding MyUSD attractive. This creates buy pressure — people buy MyUSD specifically to stake and earn interest.
+
+  Here's how the system fits together:
+  - **`MyUSDStaking.sol`**: Users approve and stake MyUSD to earn the savings rate yield
+  - **`RateController.sol`**: Controls both `MyUSDEngine.setBorrowRate()` and `MyUSDStaking.setSavingsRate()` — you can set both from the frontend
+  - **The constraint you just built**: Borrow rate must always be >= savings rate, because all MyUSD in existence is paying the borrow rate, and stakers are paid the savings rate. If savings > borrow, the protocol pays out more than it earns
+
+  The two levers for peg stability:
+  - **MyUSD < $1**: Increase savings rate (attract buyers) or increase borrow rate (discourage minting)
+  - **MyUSD > $1**: Decrease savings rate or decrease borrow rate
+
+  On the frontend, you can see options to set both rates in **Rate Controls**. The `DEX.sol` provides the market where supply and demand play out — the price there reflects the balance of these forces.
+
+  ## Next: Finding Equilibrium
+
+  The `yarn simulate` bots also include **savers** — actors who watch the savings rate. If it's attractive enough, they buy MyUSD from the DEX and stake it in `MyUSDStaking.sol` to earn yield. This creates **buy pressure** to counterbalance the borrowers' sell pressure.
+
+  Now run the automated rate controller alongside the simulation:
+
+  1. Run `yarn simulate` (if not already running)
+  2. In another terminal, run `yarn interest-rate-controller`
+
+  This script automatically adjusts both borrow and savings rates to stabilize MyUSD near $1:
+  - **MyUSD < $1**: Increase savings rate (attract buyers) or increase borrow rate (discourage minting)
+  - **MyUSD > $1**: Decrease savings rate or decrease borrow rate
+
+  It starts in **TEMPERED** mode — raising the borrow rate until the peg stabilizes. Once stable, it switches to **GROWTH** mode — lowering the borrow rate and raising the savings rate to attract more users while maintaining the peg.
+
+  Watch the frontend:
+  - Click **Show Rates** on the price graph to see how rate changes affect the price historically
+  - The price should find equilibrium, oscillating near the peg
+  - You'll see both borrowers and savers active — the two sides of the market
+
+  Try experimenting: manually set extreme borrow/savings rates while `yarn simulate` runs. How does the MyUSD price react?
+
+  ### Key Takeaways
+
+  - **Demand Destruction**: High borrow rates make minting expensive, reducing supply and sell pressure
+  - **Demand Creation**: Attractive savings rates make holding MyUSD desirable, increasing buy pressure
+  - **Dynamic Equilibrium**: The "correct" rates aren't fixed — they depend on market conditions. The system constantly seeks balance by adjusting incentives
+  - **Market Unpredictability**: We simulated just two types of participants. A real market has thousands or millions, all reacting to different incentives in bull and bear markets
+
+  ## Next Steps
+
+  Run `yarn test` to verify all tests pass, then complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/stablecoins):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
