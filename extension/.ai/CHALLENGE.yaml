@@ -17,11 +17,31 @@ welcome_message: |
   3. **Borrowing & repaying** — borrow CORN against collateral, repay to free it up
   4. **Liquidation** — let anyone liquidate unsafe positions for a 10% reward
 
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
   - Say **"hint"** anytime you're stuck — hints get progressively more specific
   - Use **`/skip`** if you want me to write the code and explain it
+
+  > Re-run `yarn deploy --reset` whenever you want to redeploy with a fresh contract address.
 
   Your progress is saved automatically. Use `/start` to resume anytime.
 
@@ -98,6 +118,15 @@ checkpoints:
            - Send ETH back with `payable(msg.sender).call{value: amount}("")`
            - Revert with `Lending__TransferFailed()` if transfer fails
            - Emit `CollateralWithdrawn(msg.sender, amount, i_cornDEX.currentPrice())`
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to redeploy all contracts with correct constructor parameters.
+        2. Open http://localhost:3000 and try your methods from the frontend.
+        3. Don't forget to give yourself some ETH from the faucet!
+        4. Can you add collateral and withdraw collateral? Does the frontend update?
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Lending.sol"
@@ -345,6 +374,15 @@ checkpoints:
            }
            ```
 
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to redeploy your contracts.
+        2. Open http://localhost:3000 and try borrowing CORN against your collateral.
+        3. Try repaying some CORN and verify your position updates.
+        4. Try withdrawing collateral while you have a loan — does the position validation prevent unsafe withdrawals?
+
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Lending.sol"
       test: "yarn test --grep 'Borrowing Operations|Repayment Operations|Collateral Operations'"
@@ -470,6 +508,17 @@ checkpoints:
         8. Send ETH to liquidator with `call{value: amountForLiquidator}`
         9. Emit `Liquidation(user, msg.sender, amountForLiquidator, userDebt, i_cornDEX.currentPrice())`
 
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to redeploy your contracts.
+        2. Open http://localhost:3000 and create a debt position (add collateral, borrow CORN).
+        3. Open an incognito window to get a second wallet. Use the swap button in the CORN wallet to acquire some CORN with the second account.
+        4. Adjust the CORN price using the price controls until the first account's position becomes liquidatable.
+        5. Liquidate the borrower from the second account.
+        6. Notice how the borrower still has their borrowed CORN — the liquidator paid the debt back on their behalf.
+
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/Lending.sol"
       test: "yarn test --grep 'Liquidation'"
@@ -542,7 +591,7 @@ completion_message: |
   - ERC-20 `transfer` vs `transferFrom` patterns
   - Checks-effects-interactions pattern for safe state updates
 
-  Try running `yarn simulate` to watch bots use your lending protocol!
+  Run `yarn deploy --reset` and then try `yarn simulate` to watch bots use your lending protocol! Check out the frontend while the simulation runs.
 
   ## Next Steps
 
