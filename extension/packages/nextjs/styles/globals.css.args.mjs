@@ -57,4 +57,18 @@ export const postContent = `
 
 @theme inline {
   --font-space-grotesk: var(--font-space-grotesk);
+}
+
+:root {
+  --color-sui-primary: var(--color-primary);
+  --color-sui-primary-content: var(--color-primary-content);
+  --color-sui-base-content: var(--color-base-content);
+  --color-sui-input-border: var(--color-secondary);
+  --color-sui-input-background: var(--color-base-200);
+  --color-sui-accent: var(--color-accent);
+  --color-sui-input-text: color-mix(in oklab, var(--color-sui-base-content) 70%, transparent);
+  --color-sui-primary-subtle: var(--color-secondary);
+  --color-sui-primary-neutral: var(--color-base-200);
+  --color-sui-skeleton-base: var(--color-sui-primary-subtle);
+  --color-sui-skeleton-highlight: var(--color-sui-primary-neutral);
 }`;

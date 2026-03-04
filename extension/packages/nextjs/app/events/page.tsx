@@ -1,8 +1,8 @@
 "use client";
 
+import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Events: NextPage = () => {
@@ -59,10 +59,10 @@ const Events: NextPage = () => {
                       return (
                         <tr key={index}>
                           <td className="text-center">
-                            <Address address={event.args.swapper} />
+                            <Address address={event.args?.swapper} />
                           </td>
-                          <td>{parseFloat(formatEther(event.args.ethInput || 0n)).toFixed(4)}</td>
-                          <td>{parseFloat(formatEther(event.args.tokenOutput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.ethInput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.tokenOutput || 0n)).toFixed(4)}</td>
                         </tr>
                       );
                     })
@@ -103,10 +103,10 @@ const Events: NextPage = () => {
                       return (
                         <tr key={index}>
                           <td className="text-center">
-                            <Address address={event.args.swapper} />
+                            <Address address={event.args?.swapper} />
                           </td>
-                          <td>{parseFloat(formatEther(event.args.tokensInput || 0n)).toFixed(4)}</td>
-                          <td>{parseFloat(formatEther(event.args.ethOutput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.tokensInput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.ethOutput || 0n)).toFixed(4)}</td>
                         </tr>
                       );
                     })
@@ -148,11 +148,11 @@ const Events: NextPage = () => {
                       return (
                         <tr key={index}>
                           <td className="text-center">
-                            <Address address={event.args.liquidityProvider} />
+                            <Address address={event.args?.liquidityProvider} />
                           </td>
-                          <td>{parseFloat(formatEther(event.args.ethInput || 0n)).toFixed(4)}</td>
-                          <td>{parseFloat(formatEther(event.args.tokensInput || 0n)).toFixed(4)}</td>
-                          <td>{parseFloat(formatEther(event.args.liquidityMinted || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.ethInput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.tokensInput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.liquidityMinted || 0n)).toFixed(4)}</td>
                         </tr>
                       );
                     })
@@ -194,11 +194,11 @@ const Events: NextPage = () => {
                       return (
                         <tr key={index}>
                           <td className="text-center">
-                            <Address address={event.args.liquidityRemover} />
+                            <Address address={event.args?.liquidityRemover} />
                           </td>
-                          <td>{parseFloat(formatEther(event.args.ethOutput || 0n)).toFixed(4)}</td>
-                          <td>{parseFloat(formatEther(event.args.tokensOutput || 0n)).toFixed(4)}</td>
-                          <td>{parseFloat(formatEther(event.args.liquidityWithdrawn || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.ethOutput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.tokensOutput || 0n)).toFixed(4)}</td>
+                          <td>{parseFloat(formatEther(event.args?.liquidityWithdrawn || 0n)).toFixed(4)}</td>
                         </tr>
                       );
                     })

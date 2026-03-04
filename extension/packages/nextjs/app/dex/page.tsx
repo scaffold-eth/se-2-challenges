@@ -1,19 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Curve } from "./_components";
+import { Address, AddressInput, Balance, EtherInput } from "@scaffold-ui/components";
+import { IntegerInput } from "@scaffold-ui/debug-contracts";
+import { useWatchBalance } from "@scaffold-ui/hooks";
 import type { NextPage } from "next";
 import { Address as AddressType, formatEther, isAddress, parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { Address, AddressInput, Balance, EtherInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 
 // REGEX for number inputs (only allow numbers and a single decimal point)
 const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
 
 const Dex: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const curveWrapRef = useRef<HTMLDivElement>(null);
+  const [curveSize, setCurveSize] = useState(500);
   const [ethToTokenAmount, setEthToTokenAmount] = useState("");
   const [tokenToETHAmount, setTokenToETHAmount] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
@@ -21,6 +24,9 @@ const Dex: NextPage = () => {
   const [approveSpender, setApproveSpender] = useState("");
   const [approveAmount, setApproveAmount] = useState("");
   const [accountBalanceOf, setAccountBalanceOf] = useState("");
+  const [ethToTokenInputKey, setEthToTokenInputKey] = useState(0);
+  const [depositInputKey, setDepositInputKey] = useState(0);
+  const [withdrawInputKey, setWithdrawInputKey] = useState(0);
 
   const { data: DEXInfo } = useDeployedContractInfo({ contractName: "DEX" });
   const { data: BalloonsInfo } = useDeployedContractInfo({ contractName: "Balloons" });
@@ -37,6 +43,23 @@ const Dex: NextPage = () => {
       setIsLoading(false);
     }
   }, [DEXBalloonBalance]);
+
+  useEffect(() => {
+    const el = curveWrapRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+
+    const ro = new ResizeObserver(entries => {
+      const entry = entries[0];
+      const width = entry?.contentRect?.width ?? 0;
+      if (!Number.isFinite(width) || width <= 0) return;
+      // Keep the chart from causing horizontal overflow and scrollbars.
+      const next = Math.max(260, Math.min(500, Math.floor(width)));
+      setCurveSize(next);
+    });
+
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const { data: DEXtotalLiquidity } = useScaffoldReadContract({
     contractName: "DEX",
@@ -85,12 +108,12 @@ const Dex: NextPage = () => {
         <span className="block text-xl text-right mr-7">
           💦💦: {parseFloat(formatEther(userLiquidity || 0n)).toFixed(4)}
         </span>
-        <span className="block text-2xl mb-2">SpeedRunEthereum</span>
+        <span className="block text-2xl mb-2">Speedrun Ethereum</span>
         <span className="block text-4xl font-bold">Challenge: ⚖️ Build a DEX </span>
       </h1>
-      <div className="items-start pt-10 grid grid-cols-1 md:grid-cols-2 content-start">
-        <div className="px-5 py-5">
-          <div className="bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-8 m-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pt-10 content-start">
+        <div className="px-5 py-5 space-y-6 min-w-0">
+          <div className="bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-8">
             <div className="flex flex-col text-center">
               <span className="text-3xl font-semibold mb-2">DEX Contract</span>
               <span className="block text-2xl mb-2 mx-auto">
@@ -98,7 +121,11 @@ const Dex: NextPage = () => {
               </span>
               <span className="flex flex-row mx-auto mt-5">
                 {" "}
-                <Balance className="text-xl" address={DEXInfo?.address} /> ⚖️
+                <Balance
+                  style={{ fontSize: "var(--text-xl)", lineHeight: "var(--text-xl-line-height)" }}
+                  address={DEXInfo?.address}
+                />{" "}
+                ⚖️
                 {isLoading ? (
                   <span>Loading...</span>
                 ) : (
@@ -111,10 +138,11 @@ const Dex: NextPage = () => {
                 <span className="w-1/2">
                   ethToToken{" "}
                   <EtherInput
-                    value={ethToTokenAmount}
-                    onChange={value => {
+                    key={ethToTokenInputKey}
+                    defaultValue={ethToTokenAmount}
+                    onValueChange={({ valueInEth }) => {
                       setTokenToETHAmount("");
-                      setEthToTokenAmount(value);
+                      setEthToTokenAmount(valueInEth);
                     }}
                     name="ethToToken"
                   />
@@ -127,6 +155,9 @@ const Dex: NextPage = () => {
                         functionName: "ethToToken",
                         value: NUMBER_REGEX.test(ethToTokenAmount) ? parseEther(ethToTokenAmount) : 0n,
                       });
+                      setEthToTokenAmount("");
+                      setTokenToETHAmount("");
+                      setEthToTokenInputKey(k => k + 1);
                     } catch (err) {
                       console.error("Error calling ethToToken function", err);
                     }
@@ -157,6 +188,9 @@ const Dex: NextPage = () => {
                         // @ts-expect-error - Show error on frontend while sending, if user types invalid number
                         args: [NUMBER_REGEX.test(tokenToETHAmount) ? parseEther(tokenToETHAmount) : tokenToETHAmount],
                       });
+                      setEthToTokenAmount("");
+                      setTokenToETHAmount("");
+                      setEthToTokenInputKey(k => k + 1);
                     } catch (err) {
                       console.error("Error calling tokenToEth function", err);
                     }
@@ -172,7 +206,12 @@ const Dex: NextPage = () => {
             <div className="px-4 py-3">
               <div className="flex mb-4 justify-center items-center">
                 <span className="w-1/2">
-                  Deposit <EtherInput value={depositAmount} onChange={value => setDepositAmount(value)} />
+                  Deposit{" "}
+                  <EtherInput
+                    key={depositInputKey}
+                    defaultValue={depositAmount}
+                    onValueChange={({ valueInEth }) => setDepositAmount(valueInEth)}
+                  />
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
@@ -182,6 +221,8 @@ const Dex: NextPage = () => {
                         functionName: "deposit",
                         value: NUMBER_REGEX.test(depositAmount) ? parseEther(depositAmount) : 0n,
                       });
+                      setDepositAmount("");
+                      setDepositInputKey(k => k + 1);
                     } catch (err) {
                       console.error("Error calling deposit function", err);
                     }
@@ -193,7 +234,12 @@ const Dex: NextPage = () => {
 
               <div className="flex justify-center items-center">
                 <span className="w-1/2">
-                  Withdraw <EtherInput value={withdrawAmount} onChange={value => setWithdrawAmount(value)} />
+                  Withdraw{" "}
+                  <EtherInput
+                    key={withdrawInputKey}
+                    defaultValue={withdrawAmount}
+                    onValueChange={({ valueInEth }) => setWithdrawAmount(valueInEth)}
+                  />
                 </span>
                 <button
                   className="btn btn-primary h-[2.2rem] min-h-[2.2rem] mt-6 mx-5"
@@ -204,6 +250,8 @@ const Dex: NextPage = () => {
                         // @ts-expect-error - Show error on frontend while sending, if user types invalid number
                         args: [NUMBER_REGEX.test(withdrawAmount) ? parseEther(withdrawAmount) : withdrawAmount],
                       });
+                      setWithdrawAmount("");
+                      setWithdrawInputKey(k => k + 1);
                     } catch (err) {
                       console.error("Error calling withdraw function", err);
                     }
@@ -215,7 +263,7 @@ const Dex: NextPage = () => {
             </div>
           </div>
 
-          <div className="space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl py-5 p-8 m-8">
+          <div className="space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl py-5 p-8">
             <div className="flex flex-col text-center mt-2 mb-4 px-4">
               <span className="block text-3xl font-semibold mb-2">Balloons</span>
               <span className="mx-auto">
@@ -253,6 +301,8 @@ const Dex: NextPage = () => {
                           NUMBER_REGEX.test(approveAmount) ? parseEther(approveAmount) : approveAmount,
                         ],
                       });
+                      setApproveSpender("");
+                      setApproveAmount("");
                     } catch (err) {
                       console.error("Error calling approve function", err);
                     }
@@ -280,15 +330,17 @@ const Dex: NextPage = () => {
           </div>
         </div>
 
-        <div className="mx-auto p-8 m-8 md:sticky md:top-0">
-          <Curve
-            addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
-            addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
-            ethReserve={parseFloat(formatEther(contractETHBalance?.value || 0n))}
-            tokenReserve={parseFloat(formatEther(contractBalance || 0n))}
-            width={500}
-            height={500}
-          />
+        <div className="flex justify-center px-2 pb-10 lg:pt-5 lg:px-4 lg:sticky lg:top-24 min-w-0">
+          <div ref={curveWrapRef} className="flex justify-center w-full max-w-[520px] min-w-0">
+            <Curve
+              addingEth={ethToTokenAmount !== "" ? parseFloat(ethToTokenAmount.toString()) : 0}
+              addingToken={tokenToETHAmount !== "" ? parseFloat(tokenToETHAmount.toString()) : 0}
+              ethReserve={parseFloat(formatEther(contractETHBalance?.value || 0n))}
+              tokenReserve={parseFloat(formatEther(contractBalance || 0n))}
+              width={curveSize}
+              height={curveSize}
+            />
+          </div>
         </div>
       </div>
     </>
