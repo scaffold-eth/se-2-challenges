@@ -1,4 +1,5 @@
-# AGENTS.md
+// If this is passed it will override the full content of the AGENTS.md file
+export const fullContentOverride = `# AGENTS.md
 
 ## What is SpeedRunEthereum?
 
@@ -8,7 +9,7 @@
 
 ## Challenge Overview
 
-The learner builds an NFT minting and transferring dApp using an ERC-721 contract (`YourCollectible`). The goal is to understand onchain ownership, compile and deploy smart contracts with Hardhat, interact with them via a Next.js frontend, and finally deploy to a public testnet.
+The learner builds an NFT minting and transferring dApp using an ERC-721 contract (\`YourCollectible\`). The goal is to understand onchain ownership, compile and deploy smart contracts with Hardhat, interact with them via a Next.js frontend, and finally deploy to a public testnet.
 
 The final deliverable: an app that lets users mint and transfer NFTs. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
@@ -18,7 +19,7 @@ NFTs are **not** just profile-picture JPEGs. The ERC-721 standard is a building 
 
 Real-world examples of tokenization beyond images:
 
-- **ENS (Ethereum Name Service)** - Domain names as NFTs. `vitalik.eth` resolves wallet addresses, content hashes, and more. Visit [vitalik.eth.limo](https://vitalik.eth.limo) to see a contentHash record resolving to a personal webpage. ENS improves upon DNS by making names programmable and composable.
+- **ENS (Ethereum Name Service)** - Domain names as NFTs. \`vitalik.eth\` resolves wallet addresses, content hashes, and more. Visit [vitalik.eth.limo](https://vitalik.eth.limo) to see a contentHash record resolving to a personal webpage. ENS improves upon DNS by making names programmable and composable.
 - **Uniswap V3 LP Positions** - Each liquidity provider's position is a unique NFT tracking their share of a pool. Financial positions as composable tokens.
 - **Real-World Assets (RWAs)** - Stocks, bonds, gold, real estate can be tokenized. The token acts as a digital claim; for real-world effect, a legal framework must link onchain transfers to off-chain rights.
 - **Blockchain-native assets** - Art, game items, concert tickets designed for onchain verification. Here the token *is* the thing - globally transferable, permissionless, and composable across marketplaces, auctions, lending, and games.
@@ -29,9 +30,9 @@ Real-world examples of tokenization beyond images:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with `create-eth`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
 
-```
+\`\`\`
 packages/
   hardhat/           # Solidity contracts, deploy scripts, tests
     contracts/
@@ -56,11 +57,11 @@ packages/
       ipfs-fetch.ts          # IPFS upload/download helpers via API routes
       ipfs.ts
     app/api/ipfs/            # API routes for IPFS pinning
-```
+\`\`\`
 
 ## Common Commands
 
-```bash
+\`\`\`bash
 # Development workflow (run each in a separate terminal)
 yarn chain          # Start local Hardhat blockchain
 yarn deploy         # Deploy contracts to local network
@@ -86,71 +87,72 @@ yarn account        # View deployer account balances
 # Frontend deployment
 yarn vercel         # Deploy frontend to Vercel
 yarn vercel --prod  # Redeploy to production URL
-```
+\`\`\`
 
 ## Smart Contract: YourCollectible.sol
 
-ERC-721 contract with Enumerable + URIStorage extensions. Token name/symbol: "YourCollectible" / "YCB". Base URI: `https://ipfs.io/ipfs/`.
+ERC-721 contract with Enumerable + URIStorage extensions. Token name/symbol: "YourCollectible" / "YCB". Base URI: \`https://ipfs.io/ipfs/\`.
 
-- **Key function**: `mintItem(address to, string memory uri)` - mints with incrementing `tokenIdCounter`, sets token URI. No access control (anyone can mint).
-- **Ownership model**: Standard ERC-721 - `ownerOf`, `balanceOf`, `transferFrom`, `approve`, `setApprovalForAll`. Every transfer emits a `Transfer` event. Enumerable extension adds `tokenOfOwnerByIndex` for iterating an owner's tokens.
-- **Inheritance overrides**: `_update`, `_increaseBalance`, `tokenURI`, `supportsInterface` resolve multiple inheritance between the three ERC-721 extensions.
+- **Key function**: \`mintItem(address to, string memory uri)\` - mints with incrementing \`tokenIdCounter\`, sets token URI. No access control (anyone can mint).
+- **Ownership model**: Standard ERC-721 - \`ownerOf\`, \`balanceOf\`, \`transferFrom\`, \`approve\`, \`setApprovalForAll\`. Every transfer emits a \`Transfer\` event. Enumerable extension adds \`tokenOfOwnerByIndex\` for iterating an owner's tokens.
+- **Inheritance overrides**: \`_update\`, \`_increaseBalance\`, \`tokenURI\`, \`supportsInterface\` resolve multiple inheritance between the three ERC-721 extensions.
 
 ## Frontend Architecture
 
 ### Scaffold-ETH 2 Hooks
 
-Use the correct hook names: `useScaffoldReadContract`, `useScaffoldWriteContract`, `useScaffoldEventHistory`, `useScaffoldContract`. Do NOT use deprecated names (`useScaffoldContractRead`, `useScaffoldContractWrite`).
+Use the correct hook names: \`useScaffoldReadContract\`, \`useScaffoldWriteContract\`, \`useScaffoldEventHistory\`, \`useScaffoldContract\`. Do NOT use deprecated names (\`useScaffoldContractRead\`, \`useScaffoldContractWrite\`).
 
 ### Frontend Flows
 
-- **Minting**: Reads `tokenIdCounter` to pick metadata from `nftsMetadata` (cycles through 6 animals), uploads to IPFS via `/api/ipfs/add`, then calls `mintItem(address, ipfsPath)`.
-- **Transfers**: `NFTCard` has an `AddressInput` for the receiver, calls `transferFrom`. The Transfers page shows all `Transfer` events via `useScaffoldEventHistory`.
+- **Minting**: Reads \`tokenIdCounter\` to pick metadata from \`nftsMetadata\` (cycles through 6 animals), uploads to IPFS via \`/api/ipfs/add\`, then calls \`mintItem(address, ipfsPath)\`.
+- **Transfers**: \`NFTCard\` has an \`AddressInput\` for the receiver, calls \`transferFrom\`. The Transfers page shows all \`Transfer\` events via \`useScaffoldEventHistory\`.
 
 ### UI & Styling
 
-- Use `@scaffold-ui/components` for web3 UI (`Address`, `AddressInput`, `Balance`, `EtherInput`)
+- Use \`@scaffold-ui/components\` for web3 UI (\`Address\`, \`AddressInput\`, \`Balance\`, \`EtherInput\`)
 - Use **DaisyUI** classes for components (cards, buttons, badges, tables) with Tailwind CSS
 
 ## Architecture Notes
 
-- **Next.js App Router** (not Pages Router) - pages are at `app/<route>/page.tsx`
-- **Import alias**: use `~~` for nextjs package imports (e.g., `import { ... } from "~~/hooks/scaffold-eth"`)
-- After `yarn deploy`, contract ABIs auto-generate to `packages/nextjs/contracts/deployedContracts.ts`
-- IPFS operations go through Next.js API routes (`/api/ipfs/add`, `/api/ipfs/get-metadata`), not direct IPFS calls
-- Burner wallets are available on localhost only by default. For testnet, users connect MetaMask or enable burner wallets via `onlyLocalBurnerWallet: false` in `scaffold.config.ts`
+- **Next.js App Router** (not Pages Router) - pages are at \`app/<route>/page.tsx\`
+- **Import alias**: use \`~~\` for nextjs package imports (e.g., \`import { ... } from "~~/hooks/scaffold-eth"\`)
+- After \`yarn deploy\`, contract ABIs auto-generate to \`packages/nextjs/contracts/deployedContracts.ts\`
+- IPFS operations go through Next.js API routes (\`/api/ipfs/add\`, \`/api/ipfs/get-metadata\`), not direct IPFS calls
+- Burner wallets are available on localhost only by default. For testnet, users connect MetaMask or enable burner wallets via \`burnerWalletMode: "allNetworks"\` in \`scaffold.config.ts\`
 
 ## Testing
 
-The grading tests (`packages/hardhat/test/YourCollectible.ts`) verify:
+The grading tests (\`packages/hardhat/test/YourCollectible.ts\`) verify:
 1. Contract deploys successfully
-2. `mintItem()` can mint an NFT and increases the owner's balance
-3. `tokenOfOwnerByIndex()` tracks tokens correctly
+2. \`mintItem()\` can mint an NFT and increases the owner's balance
+3. \`tokenOfOwnerByIndex()\` tracks tokens correctly
 
-Run with `yarn test`. These same tests are used by the SpeedRunEthereum autograder.
+Run with \`yarn test\`. These same tests are used by the SpeedRunEthereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Set `defaultNetwork` to `sepolia` in `packages/hardhat/hardhat.config.ts` (or use `--network sepolia`)
-2. `yarn generate` to create deployer account
+1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
+2. \`yarn generate\` to create deployer account
 3. Fund deployer with testnet ETH from a faucet
-4. `yarn deploy` to deploy contracts
-5. Set `targetNetwork` to `chains.sepolia` in `packages/nextjs/scaffold.config.ts`
-6. `yarn vercel` to deploy frontend
-7. `yarn verify --network sepolia` to verify contract on Etherscan
+4. \`yarn deploy\` to deploy contracts
+5. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+6. \`yarn vercel\` to deploy frontend
+7. \`yarn verify --network sepolia\` to verify contract on Etherscan
 
 ## Code Style
 
 | Style | Category |
 |-------|----------|
-| `UpperCamelCase` | Components, types, interfaces, contracts |
-| `lowerCamelCase` | Variables, functions, parameters |
-| `CONSTANT_CASE` | Constants, enum values |
-| `snake_case` | Hardhat deploy files (e.g., `01_deploy_your_collectible.ts`) |
+| \`UpperCamelCase\` | Components, types, interfaces, contracts |
+| \`lowerCamelCase\` | Variables, functions, parameters |
+| \`CONSTANT_CASE\` | Constants, enum values |
+| \`snake_case\` | Hardhat deploy files (e.g., \`01_deploy_your_collectible.ts\`) |
 
 ## Key Warnings
 
-- Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
-- The `mintItem` function has no access control by design (anyone can mint)
-- NFT metadata cycles through 6 predefined items; `tokenIdCounter % nftsMetadata.length` determines which one
-- IPFS operations require the Next.js dev server running (`yarn start`)
+- Contract ABIs in \`deployedContracts.ts\` are auto-generated - do not edit manually
+- The \`mintItem\` function has no access control by design (anyone can mint)
+- NFT metadata cycles through 6 predefined items; \`tokenIdCounter % nftsMetadata.length\` determines which one
+- IPFS operations require the Next.js dev server running (\`yarn start\`)
+`;

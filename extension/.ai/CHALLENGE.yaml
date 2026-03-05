@@ -2,7 +2,7 @@ name: "Tokenization"
 version: "1.0"
 description: "Learn ERC-721 (NFT) basics by progressively building an NFT contract that mints, tracks, and stores metadata on IPFS"
 difficulty: "beginner"
-estimated_time: "30-45 minutes"
+estimated_time: "1 - 4 hours"
 
 setup:
   description: "Replace the complete contract with a TODO-marked template for progressive learning"
