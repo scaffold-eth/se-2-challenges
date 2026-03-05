@@ -240,7 +240,6 @@ checkpoints:
   - id: "overrides"
     title: "Inheritance & Overrides"
     description: "Understand why Solidity requires explicit overrides when inheriting from multiple contracts"
-    deployAfterCheckpoint: true
 
     context: |
       ## The Diamond Problem
