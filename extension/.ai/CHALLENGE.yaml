@@ -54,7 +54,6 @@ checkpoints:
   - id: "collateral"
     title: "Adding and Removing Collateral"
     description: "Implement addCollateral and withdrawCollateral functions"
-    deployAfterCheckpoint: true
 
     context: |
       ## How On-Chain Lending Works
@@ -305,7 +304,6 @@ checkpoints:
   - id: "borrowing"
     title: "Borrowing and Repaying CORN"
     description: "Implement borrowCorn and repayCorn, plus add position validation to withdrawCollateral"
-    deployAfterCheckpoint: true
 
     context: |
       ## Borrowing Against Collateral
@@ -441,7 +439,6 @@ checkpoints:
   - id: "liquidation"
     title: "Liquidation Mechanism"
     description: "Implement the liquidate function that lets anyone close unsafe positions for a 10% reward"
-    deployAfterCheckpoint: true
 
     context: |
       ## Why Liquidation Matters
