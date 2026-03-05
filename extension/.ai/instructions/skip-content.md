@@ -10,7 +10,7 @@ Use the **progress-tracker** agent to read `.challenge-ai/progress.json`.
 - If no progress exists, tell the user: "No progress found. Run `/start` first to begin the challenge!"
 
 ### Step 2: Read Challenge Configuration
-Read `.ai/CHALLENGE.yaml` and find the current checkpoint by its ID.
+Run `node .ai/scripts/read-challenge.js current` to get the current checkpoint data.
 
 - If the current checkpoint does NOT have a `task` field, tell the user:
   "This checkpoint doesn't have a coding task to skip. Say 'hint' if you need help with the current question."
@@ -50,7 +50,7 @@ Mark checkpoint "[checkpoint-id]" as completed with method "skipped". Set next c
 
 ### Step 7: Continue
 - If more checkpoints remain, present the next checkpoint's context (follow the teaching flow from `start-content.md`)
-- If all checkpoints are complete, show the `completion_message` from CHALLENGE.yaml
+- If all checkpoints are complete, run `node .ai/scripts/read-challenge.js completion` and show the message
 
 ## Important
 

@@ -1,7 +1,13 @@
 {
-    "scripts": {
-        "simulate:whitelist": "yarn workspace @se-2/hardhat simulate:whitelist",
-        "simulate:staking": "yarn workspace @se-2/hardhat simulate:staking",
-        "simulate:optimistic": "yarn workspace @se-2/hardhat simulate:optimistic"
-    }
+  "scripts": {
+    "simulate:whitelist": "yarn workspace @se-2/hardhat simulate:whitelist",
+    "simulate:staking": "yarn workspace @se-2/hardhat simulate:staking",
+    "simulate:optimistic": "yarn workspace @se-2/hardhat simulate:optimistic"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  }
 }
