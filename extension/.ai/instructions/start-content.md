@@ -207,14 +207,7 @@ Find and replace the TODO marker in the contract file (from `checkpoint.unlocks.
 Mark checkpoint "[checkpoint-id]" as completed with method "answered". Set next checkpoint "[next-id]" to in_progress.
 ```
 
-### Step 6: Suggest Deploying (Conditional)
-If the current checkpoint has `deployAfterCheckpoint: true` in CHALLENGE.yaml, suggest:
-```
-Want to see your progress? Run `yarn deploy` to compile your contract!
-```
-If not set or `false`, skip this step.
-
-### Step 7: Continue or Complete
+### Step 6: Continue or Complete
 - If more checkpoints remain, present the next checkpoint's context
 - If all checkpoints complete, show the completion_message
 
@@ -344,14 +337,7 @@ Nice use of [pattern/concept]! This is a common pattern in Solidity because [rea
 Mark checkpoint "[checkpoint-id]" as completed with method "coded". Set next checkpoint "[next-id]" to in_progress.
 ```
 
-### Step 4: Suggest Deploying (Conditional)
-If the current checkpoint has `deployAfterCheckpoint: true` in CHALLENGE.yaml, suggest:
-```
-Want to see it in action? Run `yarn deploy` and check the frontend!
-```
-If not set or `false`, skip this step.
-
-### Step 5: Continue or Complete
+### Step 4: Continue or Complete
 - If more checkpoints remain, present the next checkpoint's context
 - If all checkpoints complete, show the completion_message
 
