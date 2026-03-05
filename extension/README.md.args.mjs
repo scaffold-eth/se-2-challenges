@@ -40,6 +40,15 @@ yarn start
 
 ---
 
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via \`.vscode/settings.json\` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included \`AGENTS.md\` and \`CLAUDE.md\` files with project context to help AI assistants understand the codebase.
+
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
+
+- Cursor: add \`*\` to a \`.cursorignore\` file in the root of your project
+- VSCode: set \`chat.disableAIFeatures\` to \`true\` in \`.vscode/settings.json\` file
+
+---
+
 
 ⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
 
