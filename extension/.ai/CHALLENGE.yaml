@@ -54,7 +54,7 @@ checkpoints:
   - id: "contributing"
     title: "Contributing"
     description: "Add a balances mapping, a Contribution event, and implement the contribute() function"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## Mappings, Events, and Payable Functions
@@ -188,7 +188,7 @@ checkpoints:
   - id: "withdrawing"
     title: "Withdrawing Funds"
     description: "Add custom errors, an openToWithdraw flag, and implement withdraw() using the Checks-Effects-Interactions pattern"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## Custom Errors, Sending ETH, and Reentrancy Safety
@@ -351,7 +351,7 @@ checkpoints:
   - id: "state-machine"
     title: "State Machine / Timing"
     description: "Add deadline, threshold, TooEarly error, and implement execute() and timeLeft()"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## State Machines, Deadlines, and Thresholds
@@ -521,7 +521,7 @@ checkpoints:
   - id: "receive-function"
     title: "Receive Function / UX"
     description: "Implement receive() so direct ETH transfers are tracked as contributions"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## The receive() Special Function
