@@ -67,7 +67,6 @@ checkpoints:
   - id: "register"
     title: "Register with a Merkle Tree"
     description: "Implement the register function with state variables, allowlist checks, and Merkle tree insertion"
-    deployAfterCheckpoint: true
 
     context: |
       ## Voter Registration with a Merkle Tree
@@ -241,7 +240,6 @@ checkpoints:
   - id: "commitment-circuit"
     title: "Write Your First ZK Circuit — Commitment Scheme"
     description: "Write a Noir circuit that proves knowledge of a nullifier and secret without revealing them"
-    deployAfterCheckpoint: false
 
     context: |
       ## Your First ZK Circuit
@@ -347,7 +345,6 @@ checkpoints:
   - id: "merkle-circuit"
     title: "Implement Merkle Root Check in ZK Circuit"
     description: "Extend the Noir circuit to prove Merkle tree membership and bind the vote"
-    deployAfterCheckpoint: false
 
     context: |
       ## Proving Tree Membership
@@ -523,7 +520,6 @@ checkpoints:
   - id: "verifier-generation"
     title: "Generate the Solidity Verifier Contract"
     description: "Compile your Noir circuit and generate the Solidity verifier using Barretenberg"
-    deployAfterCheckpoint: false
 
     context: |
       ## From Circuit to On-Chain Verifier
@@ -607,7 +603,6 @@ checkpoints:
   - id: "vote"
     title: "Enable Voting — Verify ZK Proofs On-Chain"
     description: "Bring in the verifier contract and implement the vote function with proof verification, nullifier tracking, and vote counting"
-    deployAfterCheckpoint: true
 
     context: |
       ## Bringing It All Together: On-Chain Voting
@@ -827,7 +822,6 @@ checkpoints:
   - id: "create-commitment"
     title: "Create Your Commitment — Frontend Integration"
     description: "Implement commitment generation in TypeScript using Poseidon hashing and Fr field elements"
-    deployAfterCheckpoint: false
 
     context: |
       ## From Contract to Frontend
@@ -960,7 +954,6 @@ checkpoints:
   - id: "generate-proof"
     title: "Generate Your ZK Proof"
     description: "Implement proof generation using Noir.js and UltraHonk in the frontend"
-    deployAfterCheckpoint: false
 
     context: |
       ## Creating the ZK Proof
@@ -1158,7 +1151,6 @@ checkpoints:
   - id: "burner-wallet-vote"
     title: "Vote with a Burner Wallet"
     description: "Create a burner wallet and submit your anonymous vote on-chain"
-    deployAfterCheckpoint: false
 
     context: |
       ## Breaking the Link: Anonymous Voting
