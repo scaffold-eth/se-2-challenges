@@ -1,8 +1,8 @@
 name: "Dice Game"
 version: "1.0"
 description: "Exploit weak on-chain randomness by building a RiggedRoll contract that predicts DiceGame's block-hash-based random numbers"
-difficulty: "intermediate"
-estimated_time: "45-60 minutes"
+difficulty: "beginner"
+estimated_time: "2 - 6 hours"
 
 setup:
   file: "packages/hardhat/contracts/RiggedRoll.sol"
@@ -38,7 +38,6 @@ welcome_message: |
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
-  - After each checkpoint you'll interact with the frontend to see your code in action
   - Say **"hint"** anytime you're stuck — hints get progressively more specific
   - Use **`/skip`** if you want me to write the code and explain it
 
