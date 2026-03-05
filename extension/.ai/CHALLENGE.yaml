@@ -55,7 +55,6 @@ checkpoints:
   - id: "collateral-and-minting"
     title: "Collateral, Interest System & Minting"
     description: "Implement collateral deposits, share-based interest tracking, and MyUSD minting with position validation"
-    deployAfterCheckpoint: true
 
     context: |
       ## The Foundation: Collateral, Interest & Minting
@@ -354,7 +353,6 @@ checkpoints:
   - id: "borrow-rate"
     title: "Borrow Rate Management"
     description: "Implement setBorrowRate to allow rate changes with proper interest accrual"
-    deployAfterCheckpoint: true
 
     context: |
       ## Managing Borrow Rates
@@ -430,7 +428,6 @@ checkpoints:
   - id: "repay-and-withdraw"
     title: "Repaying Debt & Withdrawing Collateral"
     description: "Implement repayUpTo and withdrawCollateral with proper safety checks"
-    deployAfterCheckpoint: true
 
     context: |
       ## Repaying Debt & Withdrawing Collateral
@@ -595,7 +592,6 @@ checkpoints:
   - id: "liquidation"
     title: "Liquidation - Enforcing System Stability"
     description: "Implement isLiquidatable and liquidate to protect the system from bad debt"
-    deployAfterCheckpoint: true
 
     context: |
       ## Liquidation: The System's Safety Net
@@ -776,7 +772,6 @@ checkpoints:
   - id: "rate-validation"
     title: "Rate Validation - The Savings Rate Constraint"
     description: "Update setBorrowRate to enforce that borrow rate stays above the savings rate"
-    deployAfterCheckpoint: true
 
     context: |
       ## The Two Levers: Borrow Rate & Savings Rate
