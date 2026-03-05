@@ -1,8 +1,8 @@
 name: "Crowdfunding App"
 version: "1.0"
 description: "Build a decentralized crowdfunding contract where users pool ETH, enforce a deadline/threshold, and either fund a recipient or refund contributors."
-difficulty: "intermediate"
-estimated_time: "60-90 minutes"
+difficulty: "beginner"
+estimated_time: "3 - 8 hours"
 
 # CODE-WRITING challenge — the contract already has a skeleton with empty function bodies.
 # No setup.template needed.
@@ -37,7 +37,6 @@ welcome_message: |
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
-  - After each checkpoint you'll interact with the frontend to see your code in action
   - Say **"hint"** anytime you're stuck — hints get progressively more specific
   - Use **`/skip`** if you want me to write the code and explain it
 
