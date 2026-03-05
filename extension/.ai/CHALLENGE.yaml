@@ -185,7 +185,6 @@ checkpoints:
   - id: "mint-tokens"
     title: "Mint Outcome Tokens"
     description: "Deploy Yes/No ERC20 tokens and lock initial amounts to set starting probability"
-    deployAfterCheckpoint: true
 
     context: |
       ## Token Minting & Probability
@@ -306,7 +305,6 @@ checkpoints:
   - id: "liquidity"
     title: "Add and Remove Liquidity"
     description: "Let the LP inject or withdraw ETH while minting/burning proportional tokens"
-    deployAfterCheckpoint: true
 
     context: |
       ## Liquidity Management
@@ -407,7 +405,6 @@ checkpoints:
   - id: "oracle-resolution"
     title: "Oracle Report & Market Resolution"
     description: "Implement oracle reporting, market resolution, and the predictionNotReported/predictionReported modifiers"
-    deployAfterCheckpoint: true
 
     context: |
       ## Oracle & Resolution
@@ -682,7 +679,6 @@ checkpoints:
   - id: "trading"
     title: "Buy and Sell Tokens"
     description: "Implement buyTokensWithETH and sellTokensForEth with modifiers"
-    deployAfterCheckpoint: true
 
     context: |
       ## Trading
@@ -784,7 +780,6 @@ checkpoints:
   - id: "redeem"
     title: "Redeem Winning Tokens"
     description: "Let winners cash out their tokens for ETH"
-    deployAfterCheckpoint: true
 
     context: |
       ## Token Redemption
