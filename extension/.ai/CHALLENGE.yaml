@@ -55,7 +55,6 @@ checkpoints:
   - id: "whitelist-oracle"
     title: "Whitelist Oracle"
     description: "Build a centralized oracle that aggregates prices from multiple whitelisted sources using median calculation"
-    deployAfterCheckpoint: true
 
     context: |
       ## What is an Oracle?
@@ -279,7 +278,6 @@ checkpoints:
   - id: "staking-oracle"
     title: "Staking Oracle"
     description: "Build a decentralized oracle with ERC-20 staking, bucket-based reporting, slashing, and economic incentives"
-    deployAfterCheckpoint: true
 
     context: |
       ## Staking Oracle Architecture
@@ -687,7 +685,6 @@ checkpoints:
   - id: "optimistic-core"
     title: "Optimistic Oracle — Core Functions"
     description: "Implement assertEvent, proposeOutcome, and disputeOutcome"
-    deployAfterCheckpoint: true
 
     context: |
       ## Building the Core
@@ -885,7 +882,6 @@ checkpoints:
   - id: "optimistic-rewards"
     title: "Optimistic Oracle — Reward Claims"
     description: "Implement reward claiming, refunds, and dispute settlement"
-    deployAfterCheckpoint: true
 
     context: |
       ## Reward Distribution
@@ -1053,7 +1049,6 @@ checkpoints:
   - id: "optimistic-state"
     title: "Optimistic Oracle — State Management"
     description: "Implement getState and getResolution for querying assertion lifecycle"
-    deployAfterCheckpoint: true
 
     context: |
       ## State Machine
