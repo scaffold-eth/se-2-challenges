@@ -1,8 +1,8 @@
 name: "Token Vendor"
 version: "1.0"
 description: "Build an ERC-20 token and an unstoppable vending machine that buys and sells it — learn the approve/transferFrom pattern, Ownable access control, and payable functions"
-difficulty: "intermediate"
-estimated_time: "60-90 minutes"
+difficulty: "beginner"
+estimated_time: "3 - 8 hours"
 
 # CODE-WRITING challenge — both contracts have skeletons with empty function bodies.
 # No setup.template needed.
