@@ -55,7 +55,7 @@ checkpoints:
   - id: "erc20-token"
     title: "ERC-20 Token"
     description: "Create your own ERC-20 token by minting supply in the constructor"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## What is ERC-20?
@@ -152,7 +152,7 @@ checkpoints:
   - id: "buy-tokens"
     title: "Vendor Buy Tokens"
     description: "Add a price constant, events, input validation, and implement buyTokens()"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## The Vendor Contract
@@ -324,7 +324,7 @@ checkpoints:
   - id: "ownable-withdraw"
     title: "Ownable & Withdraw"
     description: "Implement withdraw() so only the owner can extract accumulated ETH"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## Access Control with Ownable
@@ -452,7 +452,7 @@ checkpoints:
   - id: "sell-tokens"
     title: "Vendor Buyback"
     description: "Implement sellTokens() using the ERC-20 approve/transferFrom pattern"
-    deployAfterCheckpoint: true
+
 
     context: |
       ## The Approve/TransferFrom Pattern
