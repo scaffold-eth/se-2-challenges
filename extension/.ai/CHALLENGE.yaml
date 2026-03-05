@@ -55,7 +55,6 @@ checkpoints:
   - id: "receive-eth"
     title: "Receiving ETH"
     description: "Add a receive() function so the contract can accept ETH transfers"
-    deployAfterCheckpoint: true
 
     context: |
       ## How Contracts Receive ETH
@@ -157,7 +156,6 @@ checkpoints:
   - id: "rigged-roll"
     title: "Predicting Randomness"
     description: "Implement riggedRoll() to predict the dice outcome and only roll when guaranteed to win"
-    deployAfterCheckpoint: true
 
     context: |
       ## The Vulnerability: Predictable "Randomness"
@@ -331,7 +329,6 @@ checkpoints:
   - id: "withdraw"
     title: "Withdrawing Funds"
     description: "Implement withdraw() with onlyOwner access control to extract winnings"
-    deployAfterCheckpoint: true
 
     context: |
       ## Access Control with Ownable
