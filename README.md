@@ -59,7 +59,6 @@ npx create-eth@2.0.6 -e challenge-tokenization challenge-tokenization
 cd challenge-tokenization
 ```
 
-
 ## 🤖 AI-Guided Learning Mode (Optional)
 
 Want an interactive tutor that teaches you the concepts as you go? This challenge supports **AI-guided learning mode**!
@@ -101,6 +100,14 @@ yarn start
 
 ---
 
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via `.vscode/settings.json` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included `AGENTS.md` and `CLAUDE.md` files with project context to help AI assistants understand the codebase.
+
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
+
+- Cursor: add `*` to a `.cursorignore` file in the root of your project
+- VSCode: set `chat.disableAIFeatures` to `true` in `.vscode/settings.json` file
+
+---
 
 ## Checkpoint 1: ⛽️ Gas & Wallets 👛
 
