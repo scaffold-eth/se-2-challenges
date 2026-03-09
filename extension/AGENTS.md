@@ -24,7 +24,7 @@ Real-world examples of the concepts in this challenge:
 - **Ethena / USDe** -- A newer stablecoin that uses delta-neutral hedging instead of over-collateralization, showing that there are multiple architectural approaches to maintaining a peg.
 - **MakerDAO's DSR (DAI Savings Rate)** -- Exactly the pattern implemented in this challenge's `MyUSDStaking` contract. The savings rate creates buy pressure for the stablecoin, while the borrow rate creates sell pressure resistance. Together they form a monetary policy toolkit for peg maintenance.
 
-**Key insight**: A crypto-backed stablecoin's peg is maintained through economic incentives, not by fiat. The borrow rate makes minting expensive (reducing supply when price is low), while the savings rate makes holding attractive (increasing demand when price is low). Liquidation ensures the system always remains solvent. This challenge teaches you to build all three mechanisms.
+**Key insight**: A crypto-backed stablecoin's peg is maintained through economic incentives. The borrow rate makes having a debt position expensive (which encourages people to repay their debt - reducing the supply) while the savings rate makes holding attractive (reducing sell pressure). Liquidation ensures the system always remains solvent. This challenge teaches you to build all three mechanisms.
 
 ## Project Structure
 
