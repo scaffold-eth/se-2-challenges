@@ -507,6 +507,5 @@ Run with `yarn test`. These same tests are used by the SpeedRunEthereum autograd
 - **Slashing constraints**: Nodes can only be slashed for past (finalized) buckets, not the current one. Double-slashing for the same offense is prevented via `slashedOffenses` mapping
 - **Effective stake**: Calculated as `stakedAmount - (missedBuckets * INACTIVITY_PENALTY)`. A node with zero effective stake should be removable
 - **Waiting period**: Nodes must wait `WAITING_PERIOD` buckets after their last report before exiting
-- **Report chaining**: A node must have its previous bucket's median recorded before reporting in a new bucket, creating a chain of finalized buckets
 - The deploy scripts use nonce prediction -- if you add or remove deployments, predicted addresses will be wrong
 - Simulation bot scripts require contracts to be deployed first (`yarn chain` + `yarn deploy`)

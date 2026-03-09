@@ -110,8 +110,6 @@ contract StakingOracle {
     /**
      * @notice Updates the price reported by an oracle node (only registered nodes)
      * @dev Updates the node's lastReportedBucket and price in that bucket. Requires sufficient stake.
-     *      Enforces that previous report's bucket must have its median recorded before allowing new report.
-     *      This creates a chain of finalized buckets, ensuring all past reports are accountable.
      * @param price The new price value to report
      */
     function reportPrice(uint256 price) public onlyNode {}
