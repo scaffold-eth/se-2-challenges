@@ -70,7 +70,7 @@ nargo --version
 
 Install with:
 
-```bash
+```sh
 # Mac (Apple Silicon):
 mkdir -p ~/.bb && curl -L https://github.com/AztecProtocol/aztec-packages/releases/download/v0.82.2/barretenberg-arm64-darwin.tar.gz | tar -xzC ~/.bb
 # Mac (Intel):
