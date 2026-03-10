@@ -34,7 +34,7 @@ welcome_message: |
 
   > These commands run continuously, so each needs its own terminal window.
 
-  > `yarn deploy` will likely fail initially since the contracts aren't ready yet — that's expected!
+  `yarn deploy` will likely fail initially since the contracts aren't ready yet — that's expected!
 
   > Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
 
