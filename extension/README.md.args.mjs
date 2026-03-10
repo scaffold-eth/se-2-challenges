@@ -73,8 +73,15 @@ nargo --version
 Install with:
 
 \`\`\`javascript
-curl -L https://raw.githubusercontent.com/AztecProtocol/aztec-packages/refs/heads/next/barretenberg/bbup/install | bash
-bbup -v 0.82.2
+# Mac (Apple Silicon):
+mkdir -p ~/.bb && curl -L https://github.com/AztecProtocol/aztec-packages/releases/download/v0.82.2/barretenberg-arm64-darwin.tar.gz | tar -xzC ~/.bb
+# Mac (Intel):
+# mkdir -p ~/.bb && curl -L https://github.com/AztecProtocol/aztec-packages/releases/download/v0.82.2/barretenberg-amd64-darwin.tar.gz | tar -xzC ~/.bb
+# Linux (x86_64):
+# mkdir -p ~/.bb && curl -L https://github.com/AztecProtocol/aztec-packages/releases/download/v0.82.2/barretenberg-amd64-linux.tar.gz | tar -xzC ~/.bb
+
+# Add to PATH (add this to your ~/.zshrc or ~/.bashrc to make it permanent)
+export PATH="$HOME/.bb:$PATH"
 bb --version
 \`\`\`
 
