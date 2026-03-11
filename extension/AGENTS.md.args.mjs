@@ -510,4 +510,21 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 - **Waiting period**: Nodes must wait \`WAITING_PERIOD\` buckets after their last report before exiting
 - The deploy scripts use nonce prediction -- if you add or remove deployments, predicted addresses will be wrong
 - Simulation bot scripts require contracts to be deployed first (\`yarn chain\` + \`yarn deploy\`)
+
+# Speedrun Ethereum AI-Guided mode
+
+This project has an interactive AI learning mode for blockchain development.
+
+## Quick Start
+Run \`/start\` to begin. The AI will guide you through building a smart contract interactively.
+
+## Commands
+- \`/start\` — Begin or resume the challenge
+- \`/skip\` — Skip current coding task (AI writes + explains solution)
+- \`hint\` — Get help anytime
+- \`check\` — Validate your code (code-writing challenges)
+
+## Key Files
+- \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
+- \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
