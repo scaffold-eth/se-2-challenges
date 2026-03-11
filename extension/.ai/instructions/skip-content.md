@@ -1,4 +1,4 @@
-# SpeedRunEthereum Challenge - Skip Current Task
+# Speedrun Ethereum Challenge - Skip Current Task
 
 Skip the current code-writing checkpoint by applying the solution automatically.
 
