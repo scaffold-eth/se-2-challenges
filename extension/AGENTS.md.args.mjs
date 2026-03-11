@@ -262,4 +262,21 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 - \`i_<variableName>\` indicates immutable; \`s_<variableName>\` indicates mutable state
 - Implement functions incrementally, checkpoint by checkpoint, each builds on the previous
 - Before deploying to testnet, reduce the initial ETH amount in the deploy script to match your budget
+
+# Speedrun Ethereum AI-Guided mode
+
+This project has an interactive AI learning mode for blockchain development.
+
+## Quick Start
+Run \`/start\` to begin. The AI will guide you through building a smart contract interactively.
+
+## Commands
+- \`/start\` — Begin or resume the challenge
+- \`/skip\` — Skip current coding task (AI writes + explains solution)
+- \`hint\` — Get help anytime
+- \`check\` — Validate your code (code-writing challenges)
+
+## Key Files
+- \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
+- \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
