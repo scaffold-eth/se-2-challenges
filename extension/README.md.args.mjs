@@ -83,7 +83,7 @@ If you are using vscode you may want to install the [Noir Language Support](http
 Then download the challenge to your computer and install dependencies by running:
 
 \`\`\`javascript
-npx create-eth@2.0.4 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
+npx create-eth@2.0.10 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
 cd challenge-zk-voting
 \`\`\`
 

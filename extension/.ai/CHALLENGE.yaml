@@ -2,7 +2,7 @@ name: "ZK Voting"
 version: "1.0"
 description: "Build a private, Sybil-resistant voting system using zero-knowledge proofs, Merkle trees, and Noir circuits"
 difficulty: "advanced"
-estimated_time: "120-180 minutes"
+estimated_time: "6 - 16 hours"
 
 setup:
   file: "packages/hardhat/contracts/Voting.sol"
