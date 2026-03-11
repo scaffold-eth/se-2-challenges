@@ -224,4 +224,21 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 - Use \`transfer\` for \`buyTokens\` (Vendor sends its own tokens) but \`transferFrom\` for \`sellTokens\` (Vendor pulls user's tokens)
 - The \`SEND_TOKENS_TO_VENDOR\` toggle in the deploy script must be \`true\` for Checkpoints 2–4
 - Prefer \`call\` over \`transfer\` for sending ETH (avoids gas limit issues)
+
+# Speedrun Ethereum AI-Guided mode
+
+This project has an interactive AI learning mode for blockchain development.
+
+## Quick Start
+Run \`/start\` to begin. The AI will guide you through building a smart contract interactively.
+
+## Commands
+- \`/start\` — Begin or resume the challenge
+- \`/skip\` — Skip current coding task (AI writes + explains solution)
+- \`hint\` — Get help anytime
+- \`check\` — Validate your code (code-writing challenges)
+
+## Key Files
+- \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
+- \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
