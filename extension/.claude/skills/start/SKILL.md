@@ -1,9 +1,9 @@
 ---
 name: start
-description: Start the SpeedRunEthereum challenge. Sets up your contract for progressive learning and guides you through blockchain concepts interactively. Your progress is saved, so you can resume anytime.
+description: Start the Speedrun Ethereum challenge. Sets up your contract for progressive learning and guides you through blockchain concepts interactively. Your progress is saved, so you can resume anytime.
 ---
 
-# SpeedRunEthereum Challenge - Start
+# Speedrun Ethereum Challenge - Start
 
 Read and follow the detailed instructions in `.ai/instructions/start-content.md` to guide the user through this challenge.
 
