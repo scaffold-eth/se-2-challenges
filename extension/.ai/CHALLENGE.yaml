@@ -2,7 +2,7 @@ name: "Prediction Markets"
 version: "1.0"
 description: "Build a binary prediction market with ERC20 outcome tokens, AMM pricing, oracle reporting, and token redemption"
 difficulty: "advanced"
-estimated_time: "2-3 hours"
+estimated_time: "4 - 12 hours"
 
 setup:
   file: "packages/hardhat/contracts/PredictionMarket.sol"
