@@ -1,4 +1,4 @@
-# SpeedRunEthereum Challenge - Start
+# Speedrun Ethereum Challenge - Start
 
 Read and follow the detailed instructions in `.ai/instructions/start-content.md` to guide the user through this challenge.
 
