@@ -1,11 +1,11 @@
 // If this is passed it will override the full content of the AGENTS.md file
 export const fullContentOverride = `# AGENTS.md
 
-## What is SpeedRunEthereum?
+## What is Speedrun Ethereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[Speedrun Ethereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
-**This extension is one of the SpeedRunEthereum challenges.** It covers **Oracles**.
+**This extension is one of the Speedrun Ethereum challenges.** It covers **Oracles**.
 
 ## Challenge Overview
 
@@ -475,7 +475,7 @@ The grading tests cover the following areas:
 - **Checkpoint 2 (StakingOracle.ts)** -- ~40+ tests: node registration with validation, price reporting with bucket tracking, reward claiming, effective stake with inactivity penalties, bucket finalization (median recording), slashing mechanism (deviation detection >10%, reward distribution, node removal at zero stake, double-slash prevention, only past buckets), node exit with waiting period, outlier detection
 - **Checkpoints 4-6 (OptimisticOracle.ts)** -- ~50+ tests: deployment and constants, event assertion with validation, outcome proposal with bonding, outcome dispute, time window validation, undisputed/disputed reward claiming, refund claiming, dispute settlement by decider, state transitions, resolution queries
 
-Run with \`yarn test\`. These same tests are used by the SpeedRunEthereum autograder.
+Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
