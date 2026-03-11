@@ -91,6 +91,12 @@ cd packages/circuits
 nargo compile       # Compile Noir circuit
 nargo test          # Run circuit tests
 
+# Verifier generation (run after circuit changes to regenerate HonkVerifier contract)
+cd packages/circuits
+nargo compile
+bb write_vk --oracle_hash keccak -b ./target/circuits.json -o ./target/
+bb write_solidity_verifier -k ./target/vk -o ./target/Verifier.sol
+
 # Code quality
 yarn lint           # Lint both packages
 yarn format         # Format both packages
