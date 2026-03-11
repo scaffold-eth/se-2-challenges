@@ -8,7 +8,7 @@ const spaceGrotesk = Space_Grotesk({
 `;
 
 export const metadataOverrides = {
-  title: "Over-collateralized Lending | SpeedRunEthereum",
+  title: "Over-collateralized Lending | Speedrun Ethereum",
   description: "Built with 🏗 Scaffold-ETH 2",
 };
 
