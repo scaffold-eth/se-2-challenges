@@ -345,4 +345,21 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 - **getVoterData uncomment**: After implementing Checkpoint 2, uncomment the \`s_hasRegistered[_voter]\` line in \`getVoterData()\`
 - \`proofStorage.ts\` scopes all localStorage by contract address + user address -- ensure correct scoping when testing
 - The deploy script uses nonce-based deployment -- if you add or remove deployments, ensure library linking is correct
+
+# Speedrun Ethereum AI-Guided mode
+
+This project has an interactive AI learning mode for blockchain development.
+
+## Quick Start
+Run \`/start\` to begin. The AI will guide you through building a smart contract interactively.
+
+## Commands
+- \`/start\` — Begin or resume the challenge
+- \`/skip\` — Skip current coding task (AI writes + explains solution)
+- \`hint\` — Get help anytime
+- \`check\` — Validate your code (code-writing challenges)
+
+## Key Files
+- \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
+- \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
