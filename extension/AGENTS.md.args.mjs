@@ -197,4 +197,21 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 - Use \`address(diceGame)\` (not \`address(this)\` or \`msg.sender\`) when replicating the hash, DiceGame uses \`msg.sender\` which will be the RiggedRoll contract's address
 - The \`01_deploy_rigged_roll.ts\` deploy script lines must be uncommented before deploying
 - On-chain pseudo-randomness is **not** secure, this challenge demonstrates the vulnerability
+
+# Speedrun Ethereum AI-Guided mode
+
+This project has an interactive AI learning mode for blockchain development.
+
+## Quick Start
+Run \`/start\` to begin. The AI will guide you through building a smart contract interactively.
+
+## Commands
+- \`/start\` — Begin or resume the challenge
+- \`/skip\` — Skip current coding task (AI writes + explains solution)
+- \`hint\` — Get help anytime
+- \`check\` — Validate your code (code-writing challenges)
+
+## Key Files
+- \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
+- \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
