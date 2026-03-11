@@ -203,4 +203,21 @@ Tests use \`evm_increaseTime\` and \`evm_mine\` to simulate time passing. Run \`
 - \`yarn deploy --reset\` resets the deadline; regular \`yarn deploy\` only redeploys if contract changed
 - If using named event params, update \`contributions/page.tsx\` to match
 - Solidity version must stay \`0.8.20\`, do not change it
+
+# Speedrun Ethereum AI-Guided mode
+
+This project has an interactive AI learning mode for blockchain development.
+
+## Quick Start
+Run \`/start\` to begin. The AI will guide you through building a smart contract interactively.
+
+## Commands
+- \`/start\` — Begin or resume the challenge
+- \`/skip\` — Skip current coding task (AI writes + explains solution)
+- \`hint\` — Get help anytime
+- \`check\` — Validate your code (code-writing challenges)
+
+## Key Files
+- \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
+- \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
