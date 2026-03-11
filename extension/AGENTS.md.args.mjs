@@ -244,4 +244,21 @@ Build a \`Leverage\` contract with iterative borrow-swap-deposit loops to maximi
 - Corn ownership must be transferred to the Lending contract in the deploy script
 - Always approve the Lending contract before calling \`repayCorn\` (ERC-20 \`transferFrom\` pattern)
 - Use \`yarn deploy --reset\` (not just \`yarn deploy\`) to get fresh contracts with correct constructor params
+
+# Speedrun Ethereum AI-Guided mode
+
+This project has an interactive AI learning mode for blockchain development.
+
+## Quick Start
+Run \`/start\` to begin. The AI will guide you through building a smart contract interactively.
+
+## Commands
+- \`/start\` — Begin or resume the challenge
+- \`/skip\` — Skip current coding task (AI writes + explains solution)
+- \`hint\` — Get help anytime
+- \`check\` — Validate your code (code-writing challenges)
+
+## Key Files
+- \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
+- \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
