@@ -2,7 +2,7 @@ name: "MyUSD Stablecoin"
 version: "1.0"
 description: "Build the core engine for MyUSD, a crypto-backed stablecoin with collateralization, interest rates, and liquidation mechanics"
 difficulty: "advanced"
-estimated_time: "90-120 minutes"
+estimated_time: "4 - 12 hours"
 
 setup:
   file: "packages/hardhat/contracts/MyUSDEngine.sol"

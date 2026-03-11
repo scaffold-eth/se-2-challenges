@@ -47,7 +47,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.4 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins
+npx create-eth@2.0.10 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins
 cd challenge-stablecoins
 ```
 
@@ -1100,7 +1100,7 @@ Well done on building a stablecoin engine! Now, let's get it on a public testnet
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
