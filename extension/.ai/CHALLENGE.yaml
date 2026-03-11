@@ -595,7 +595,7 @@ completion_message: |
   ## Next Steps
 
   Run `yarn test` to verify all tests pass, then complete the remaining checkpoints on the
-  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/crowdfunding):
+  [Speedrun Ethereum challenge page](https://speedrunethereum.com/challenge/crowdfunding):
   - Deploy your contract
   - Ship your frontend
   - Verify your contract
