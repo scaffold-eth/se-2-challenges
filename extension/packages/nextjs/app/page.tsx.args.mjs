@@ -22,7 +22,7 @@ export const description = `
             🌟 The final deliverable is an app that allows anyone to take out a loan in CORN while making sure it is always backed by it&apos;s value in ETH.
             Deploy your contracts to a testnet then build and upload your app to a public web server. Submit the url on{" "}
             <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-              Speedrun Ethereum.com
+              SpeedRunEthereum.com
             </a>{" "}
             !
           </p>
