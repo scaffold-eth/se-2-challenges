@@ -1,8 +1,8 @@
 name: "Oracles"
 version: "1.0"
 description: "Build three oracle architectures — Whitelist, Staking, and Optimistic — to understand how real-world data gets on-chain securely"
-difficulty: "advanced"
-estimated_time: "3-4 hours"
+difficulty: "intermediate"
+estimated_time: "4 - 12 hours"
 
 setup:
   file: "packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol"
