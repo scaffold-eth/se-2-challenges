@@ -2,7 +2,7 @@ name: "Over-Collateralized Lending"
 version: "1.0"
 description: "Build a lending platform where users deposit ETH collateral and borrow CORN tokens, with position validation and liquidation mechanics"
 difficulty: "intermediate"
-estimated_time: "60-90 minutes"
+estimated_time: "4 - 10 hours"
 
 setup:
   file: "packages/hardhat/contracts/Lending.sol"
