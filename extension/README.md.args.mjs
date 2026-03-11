@@ -213,7 +213,7 @@ Think of this step as bootstrapping your protocol’s brain 🧠
 
 When you deploy the market, you’ll provide:
 
-- **💧 \`_liquidity_provider\`** - the owner address which will be passed directly into Ownable
+- **💧 \`_liquidityProvider\`** - the owner address which will be passed directly into Ownable
 
 - **🧙 \`_oracle\`** – the address that will later report the outcome
 

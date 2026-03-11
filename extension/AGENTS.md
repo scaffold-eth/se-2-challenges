@@ -100,7 +100,7 @@ The main contract implementing an AMM prediction market.
 
 | Parameter | Purpose |
 |-----------|---------|
-| `_liquidity_provider` | Owner address (passed into `Ownable`) |
+| `_liquidityProvider` | Owner address (passed into `Ownable`) |
 | `_oracle` | Address authorized to report the outcome |
 | `_question` | The prediction question (e.g., "Will the green car win?") |
 | `_initialTokenValue` | ETH value a winning token pays out (e.g., 0.01 ETH) |
@@ -153,7 +153,7 @@ price = initialTokenValue * probabilityAvg * tradingAmount
 
 - `predictionNotReported` - prevents actions after outcome is reported (used on buy/sell/addLiquidity/removeLiquidity)
 - `predictionReported` - requires outcome to be reported (used on resolve/redeem)
-- `notOwner` - prevents LP from buying/selling tokens
+- `notOwner` - prevents LP from buying/selling/redeeming tokens
 - `amountGreaterThanZero` - validates non-zero amounts
 
 ### PredictionMarketToken.sol (Provided, DO NOT EDIT)
@@ -191,8 +191,8 @@ Use the correct hook names:
 
 ### Race Visualization
 
-- Race animation with green and red cars representing YES/NO outcome probabilities
-- Car positions update in real-time based on market state
+- Standalone race animation with green and red cars (random speeds, not connected to market state)
+- The race is purely visual entertainment and has no impact on the smart contract
 
 ### UI Components
 
