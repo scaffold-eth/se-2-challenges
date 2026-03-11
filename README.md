@@ -116,12 +116,12 @@ yarn start
 
 ---
 
-⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via `.vscode/settings.json` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included `AGENTS.md` and `CLAUDE.md` files with project context to help AI assistants understand the codebase.
 
-🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
 
-- Cursor: remove `*` from `.cursorignore` file
-- VSCode: set `chat.disableAIFeatures` to `false` in `.vscode/settings.json` file
+- Cursor: add `*` to a `.cursorignore` file in the root of your project
+- VSCode: set `chat.disableAIFeatures` to `true` in `.vscode/settings.json` file
 
 ---
 
@@ -1378,14 +1378,16 @@ const generateProof = async (
 ) => {
   /// Checkpoint 8 //////
   const nullifierHash = poseidon1([BigInt(_nullifier)]);
-  const calculatedTree = new LeanIMT((a: bigint, b: bigint) => poseidon2([a, b]));
-  const leaves = _leaves.map(event => {
+  const calculatedTree = new LeanIMT((a: bigint, b: bigint) =>
+    poseidon2([a, b]),
+  );
+  const leaves = _leaves.map((event) => {
     return event?.args.value;
   });
   const leavesReversed = leaves.reverse();
   calculatedTree.insertMany(leavesReversed as bigint[]);
   const calculatedProof = calculatedTree.generateProof(_index);
-  const sibs = calculatedProof.siblings.map(sib => {
+  const sibs = calculatedProof.siblings.map((sib) => {
     return sib.toString();
   });
 
@@ -1416,10 +1418,15 @@ const generateProof = async (
     console.log = originalLog;
     console.log("proof", proof);
     const proofHex = toHex(proof);
-    const inputsHex = publicInputs.map(x =>
-      typeof x === "string" ? (x as `0x${string}`) : toHex(x as Uint8Array, { size: 32 }),
+    const inputsHex = publicInputs.map((x) =>
+      typeof x === "string"
+        ? (x as `0x${string}`)
+        : toHex(x as Uint8Array, { size: 32 }),
     );
-    const result = encodeAbiParameters([{ type: "bytes" }, { type: "bytes32[]" }], [proofHex, inputsHex]);
+    const result = encodeAbiParameters(
+      [{ type: "bytes" }, { type: "bytes32[]" }],
+      [proofHex, inputsHex],
+    );
     console.log("result", result);
     return { proof, publicInputs };
   } catch (error) {
@@ -1546,7 +1553,11 @@ const sendVoteWithBurner = async ({
   const needed = parseEther("0.01");
   const bal = await publicClient.getBalance({ address: walletAddress });
   if (bal < needed) {
-    const testClient = createTestClient({ chain: hardhat, mode: "hardhat", transport: http("http://localhost:8545") });
+    const testClient = createTestClient({
+      chain: hardhat,
+      mode: "hardhat",
+      transport: http("http://localhost:8545"),
+    });
     await testClient.setBalance({ address: walletAddress, value: needed });
   }
 
@@ -1565,12 +1576,20 @@ const generateBurnerWallet = () => {
   /// Checkpoint 9 //////
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);
-  const wallet = { privateKey: privateKey as `0x${string}`, address: account.address as `0x${string}` };
+  const wallet = {
+    privateKey: privateKey as `0x${string}`,
+    address: account.address as `0x${string}`,
+  };
   setBurnerWallet(wallet);
 
   const effectiveContractAddress = contractAddress || contractInfo?.address;
   if (effectiveContractAddress && userAddress) {
-    saveBurnerWalletToLocalStorage(wallet.privateKey, wallet.address, effectiveContractAddress, userAddress);
+    saveBurnerWalletToLocalStorage(
+      wallet.privateKey,
+      wallet.address,
+      effectiveContractAddress,
+      userAddress,
+    );
   }
 
   return wallet;
