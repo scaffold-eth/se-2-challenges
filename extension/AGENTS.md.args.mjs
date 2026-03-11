@@ -1,11 +1,11 @@
 // If this is passed it will override the full content of the AGENTS.md file
 export const fullContentOverride = `# AGENTS.md
 
-## What is SpeedRunEthereum?
+## What is Speedrun Ethereum?
 
-[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+[Speedrun Ethereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
-**This extension is one of the SpeedRunEthereum challenges.** It covers **ZK Voting**.
+**This extension is one of the Speedrun Ethereum challenges.** It covers **ZK Voting**.
 
 ## Challenge Overview
 
@@ -304,7 +304,7 @@ The grading tests (\`packages/hardhat/test/Voting.ts\`) cover the following area
 
 Tests use \`VerifierMock\` with configurable verification behavior. The mock's \`setExpectedInputs(nullifier, root, vote, depth)\` validates the exact public inputs array passed to \`verify()\`.
 
-Run with \`yarn test\`. These same tests are used by the SpeedRunEthereum autograder.
+Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 

@@ -43,4 +43,4 @@ export const description = `
   </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum ZK Voting";
+export const externalExtensionName = "Speedrun Ethereum ZK Voting";
