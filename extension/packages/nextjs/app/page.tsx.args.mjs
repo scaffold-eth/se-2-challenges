@@ -28,7 +28,7 @@ export const description = `
             🌟 The final deliverable is an app that lets users purchase and transfer NFTs. Deploy your contracts to a
             testnet then build and upload your app to a public web server. Submit the url on{" "}
             <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-              Speedrun Ethereum.com
+              SpeedRunEthereum.com
             </a>{" "}
             !
           </p>
@@ -38,4 +38,4 @@ export const description = `
   </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Challenge: Tokenization";
+export const externalExtensionName = "Speedrun Ethereum Challenge: Tokenization";
