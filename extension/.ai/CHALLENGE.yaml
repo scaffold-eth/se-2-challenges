@@ -104,19 +104,19 @@ checkpoints:
       - `_percentageToLock` must be > 0 and < 100
 
     questions:
-      - text: "Why must the initial probability be strictly between 0% and 100%? What would happen at the extremes?"
+      - text: "Why do we require msg.value > 0 when deploying the market? What would happen if the LP provided no initial ETH?"
         concepts:
           [
-            "certain",
-            "no point",
-            "already decided",
-            "no trading",
-            "meaningless",
-            "one side",
-            "100%",
-            "0%",
+            "liquidity",
+            "no tokens",
+            "can't trade",
+            "backing",
+            "collateral",
+            "mint",
+            "nothing to buy",
+            "empty",
           ]
-        hint: "If the probability is 100%, what's the point of betting? One outcome is already guaranteed."
+        hint: "Token supply is calculated from msg.value. If it's zero, how many tokens would be minted?"
 
     task:
       description: |
@@ -220,19 +220,19 @@ checkpoints:
       After implementing, uncomment the code below `/// Checkpoint 3 ///` in `getPrediction()`.
 
     questions:
-      - text: "Why do we lock tokens to the owner instead of just setting a probability variable? What advantage does this approach have?"
+      - text: "Without locking any tokens, what would happen to the probability when the very first user buys?"
         concepts:
           [
-            "consistent",
-            "same formula",
-            "pricing",
-            "reserve",
-            "traded",
-            "AMM",
-            "natural",
-            "reflects",
+            "100%",
+            "jump",
+            "extreme",
+            "stability",
+            "single buy",
+            "no depth",
+            "spike",
+            "first trade",
           ]
-        hint: "The pricing engine calculates probability from tokens sold/locked. If we just stored a number, the pricing would be inconsistent with the actual token distribution."
+        hint: "Think about the probability formula: tokens sold / total sold. If nothing is sold yet, one small buy dominates completely."
 
     task:
       description: |
@@ -431,18 +431,19 @@ checkpoints:
       After implementing report, uncomment code below `/// Checkpoint 5 ///` in `getPrediction()`.
 
     questions:
-      - text: "Why do we need the predictionNotReported modifier on addLiquidity and removeLiquidity? What could go wrong without it?"
+      - text: "The report function can only be called once. Why is it important that the oracle cannot change or re-report the outcome?"
         concepts:
           [
-            "manipulat",
-            "after result",
-            "known outcome",
-            "unfair",
-            "game",
-            "change liquidity",
-            "cheat",
+            "once",
+            "final",
+            "immutable",
+            "trust",
+            "settled",
+            "can't change",
+            "already redeemed",
+            "irreversible",
           ]
-        hint: "If the outcome is known, could the LP add/remove liquidity to their advantage before users redeem?"
+        hint: "After reporting, users start redeeming tokens for ETH. What would happen if the winning outcome could be changed after some users already cashed out?"
 
     task:
       description: |
@@ -582,19 +583,19 @@ checkpoints:
       `getBuyPriceInEth` and `getSellPriceInEth` are thin wrappers calling `_calculatePriceInEth` with a `_isSelling` flag.
 
     questions:
-      - text: "Why do we average the probability before and after the trade instead of just using the current probability?"
+      - text: "When buying tokens, the reserve decreases. How does that affect the probability calculation for that outcome?"
         concepts:
           [
-            "fair",
-            "gradual",
-            "average",
-            "slippage",
-            "large trade",
-            "integral",
-            "approximat",
-            "impact",
+            "sold",
+            "increase",
+            "goes up",
+            "fewer in reserve",
+            "more sold",
+            "higher",
+            "demand",
+            "probability rises",
           ]
-        hint: "A large buy dramatically shifts probability. If we only used the starting probability, the buyer wouldn't pay for the price impact they cause."
+        hint: "Look at the formula: probability = tokens sold / total sold. If the reserve decreases, tokens sold increases — what happens to the ratio?"
 
     task:
       description: |
@@ -704,18 +705,19 @@ checkpoints:
       - Emit `TokensSold`
 
     questions:
-      - text: "Why can't the market owner buy or sell tokens? What unfair advantage would they have?"
+      - text: "In buyTokensWithETH, why do we require msg.value to exactly equal ethNeeded instead of just checking msg.value >= ethNeeded?"
         concepts:
           [
-            "insider",
-            "manipulat",
-            "liquidity",
-            "both sides",
-            "conflict",
-            "oracle",
-            "know outcome",
+            "exact",
+            "overpay",
+            "no refund",
+            "stuck",
+            "lost ETH",
+            "precise",
+            "no change",
+            "trapped",
           ]
-        hint: "The owner often also controls the oracle. If they could trade, they could bet on the outcome they're going to report."
+        hint: "If a user sends more ETH than needed, what happens to the extra? The contract doesn't send change back."
 
     task:
       description: |
@@ -798,18 +800,19 @@ checkpoints:
       The `notOwner` modifier prevents the LP from redeeming (they use `resolveMarketAndWithdraw` instead).
 
     questions:
-      - text: "Why do we burn the winning tokens during redemption rather than just transferring them back to the contract?"
+      - text: "In the redemption flow, why do we subtract from s_ethCollateral? What does s_ethCollateral represent in the market?"
         concepts:
           [
-            "supply",
-            "prevent reuse",
-            "double",
-            "permanent",
-            "destroy",
-            "can't redeem twice",
-            "deflat",
+            "backing",
+            "reserve",
+            "total ETH",
+            "collateral",
+            "tokens outstanding",
+            "owed",
+            "track",
+            "balance",
           ]
-        hint: "If tokens were returned to the contract instead of burned, could they somehow be redeemed again?"
+        hint: "s_ethCollateral tracks how much ETH backs the outstanding tokens. When tokens are redeemed, that ETH is no longer needed — what happens if we don't update it?"
 
     task:
       description: |
