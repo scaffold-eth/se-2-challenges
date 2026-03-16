@@ -65,8 +65,14 @@ Display the welcome_message from CHALLENGE.yaml, then explain:
 - That their progress is saved, so they can take a break and use `/start` to resume later
 - For code-writing challenges: they can say "check" when they've written their code, or `/skip` to see the solution
 
+**IMPORTANT: After displaying the welcome message, STOP and wait for the user to say "ready" before proceeding to the first checkpoint.** This gives them time to start `yarn chain`, `yarn deploy`, and `yarn start` in separate terminals. End this message with:
+```
+When you've got your terminals running, say **"ready"** and we'll dive in!
+```
+
 ### Step 5: Begin First Checkpoint
-Start with the first checkpoint. Detect its type and follow the appropriate flow below.
+Only after the user says "ready" (or similar), start with the first checkpoint. Detect its type and follow the appropriate flow below.
+
 
 ---
 
