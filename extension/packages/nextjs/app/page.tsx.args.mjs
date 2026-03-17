@@ -32,4 +32,4 @@ export const description = `
   </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Over-collateralized Lending";
+export const externalExtensionName = "Speedrun Ethereum Over-collateralized Lending";

@@ -57,23 +57,24 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
   // Only set up contract state on local network
   if (hre.network.name == "localhost") {
+    const GAS_LIMIT = 500_000n;
     // Give ETH and CORN to the move price contract
     await hre.ethers.provider.send("hardhat_setBalance", [
       movePrice.address,
       `0x${hre.ethers.parseEther("10000000000000000000000").toString(16)}`,
     ]);
-    await cornToken.mintTo(movePrice.address, hre.ethers.parseEther("10000000000000000000000"));
+    await cornToken.mintTo(movePrice.address, hre.ethers.parseEther("10000000000000000000000"), { gasLimit: GAS_LIMIT });
     // Lenders deposit CORN to the lending contract
-    await cornToken.mintTo(lending.address, hre.ethers.parseEther("10000000000000000000000"));
+    await cornToken.mintTo(lending.address, hre.ethers.parseEther("10000000000000000000000"), { gasLimit: GAS_LIMIT });
     // Give CORN and ETH to the deployer
-    await cornToken.mintTo(deployer, hre.ethers.parseEther("1000000000000"));
+    await cornToken.mintTo(deployer, hre.ethers.parseEther("1000000000000"), { gasLimit: GAS_LIMIT });
     await hre.ethers.provider.send("hardhat_setBalance", [
       deployer,
       `0x${hre.ethers.parseEther("100000000000").toString(16)}`,
     ]);
 
-    await cornToken.approve(cornDEX.target, hre.ethers.parseEther("1000000000"));
-    await cornDEX.init(hre.ethers.parseEther("1000000000"), { value: hre.ethers.parseEther("1000000") });
+    await cornToken.approve(cornDEX.target, hre.ethers.parseEther("1000000000"), { gasLimit: GAS_LIMIT });
+    await cornDEX.init(hre.ethers.parseEther("1000000000"), { value: hre.ethers.parseEther("1000000"), gasLimit: GAS_LIMIT });
   }
 };
 

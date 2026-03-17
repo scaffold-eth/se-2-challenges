@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import RatioChange from "./RatioChange";
 import TooltipInfo from "./TooltipInfo";
+import { IntegerInput } from "@scaffold-ui/debug-contracts";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { IntegerInput } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
