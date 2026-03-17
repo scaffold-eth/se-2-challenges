@@ -1,19 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { EtherInput } from "../scaffold-eth";
+import { EtherInput } from "@scaffold-ui/components";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import {
+  useScaffoldReadContract,
+  useScaffoldWriteContract,
+} from "~~/hooks/scaffold-eth";
 
 export function AddRemoveLiquidity() {
-  const [inputBuyAmount, setInputBuyAmount] = useState<number>(0);
-  const [inputSellAmount, setInputSellAmount] = useState<number>(0);
+  const [inputBuyAmount, setInputBuyAmount] = useState<string>("");
+  const [inputSellAmount, setInputSellAmount] = useState<string>("");
   const { address } = useAccount();
 
-  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract({
-    contractName: "PredictionMarket",
-  });
+  const { writeContractAsync: writeYourContractAsync } =
+    useScaffoldWriteContract({
+      contractName: "PredictionMarket",
+    });
 
   const { data: prediction } = useScaffoldReadContract({
     contractName: "PredictionMarket",
@@ -45,7 +49,9 @@ export function AddRemoveLiquidity() {
       <div className="card-body">
         {!isLiquidityProvider ? (
           <div className="max-w-6xl mx-auto">
-            <h2 className="card-title text-center">❗️ Only the liquidity provider can add or remove liquidity</h2>
+            <h2 className="card-title text-center">
+              ❗️ Only the liquidity provider can add or remove liquidity
+            </h2>
           </div>
         ) : (
           <>
@@ -57,16 +63,23 @@ export function AddRemoveLiquidity() {
                   <h3 className="font-semibold">Add Liquidity</h3>
                   <div className="space-y-2">
                     <EtherInput
-                      value={inputBuyAmount.toString()}
+                      defaultValue={inputBuyAmount}
                       placeholder="Amount to buy"
-                      onChange={e => setInputBuyAmount(Number(e))}
+                      onValueChange={({ valueInEth }) =>
+                        setInputBuyAmount(valueInEth)
+                      }
                       disabled={!isLiquidityProvider || isReported}
                     />
-                    {inputBuyAmount > 0 && (
+                    {Number(inputBuyAmount) > 0 && (
                       <p className="text-sm">
                         Adding Ξ {inputBuyAmount} and{" "}
-                        {((inputBuyAmount / Number(tokenValue)) * 10 ** 18).toFixed(4).replace(/\.?0+$/, "")} Yes and No
-                        tokens
+                        {(
+                          (Number(inputBuyAmount) / Number(tokenValue)) *
+                          10 ** 18
+                        )
+                          .toFixed(4)
+                          .replace(/\.?0+$/, "")}{" "}
+                        Yes and No tokens
                       </p>
                     )}
                     <button
@@ -76,7 +89,7 @@ export function AddRemoveLiquidity() {
                         try {
                           await writeYourContractAsync({
                             functionName: "addLiquidity",
-                            value: parseEther(inputBuyAmount.toString()),
+                            value: parseEther(inputBuyAmount),
                           });
                         } catch (e) {
                           console.error("Error buying tokens:", e);
@@ -94,18 +107,23 @@ export function AddRemoveLiquidity() {
                   <h3 className="font-semibold">Remove Liquidity</h3>
                   <div className="space-y-2">
                     <EtherInput
-                      value={inputSellAmount.toString()}
+                      defaultValue={inputSellAmount}
                       placeholder="Amount to sell"
-                      onChange={e => {
-                        setInputSellAmount(Number(e));
-                      }}
+                      onValueChange={({ valueInEth }) =>
+                        setInputSellAmount(valueInEth)
+                      }
                       disabled={!isLiquidityProvider || isReported}
                     />
-                    {inputSellAmount > 0 && (
+                    {Number(inputSellAmount) > 0 && (
                       <p className="text-sm">
                         Removing Ξ {inputSellAmount} and{" "}
-                        {((inputSellAmount / Number(tokenValue)) * 10 ** 18).toFixed(4).replace(/\.?0+$/, "")} Yes and
-                        No token
+                        {(
+                          (Number(inputSellAmount) / Number(tokenValue)) *
+                          10 ** 18
+                        )
+                          .toFixed(4)
+                          .replace(/\.?0+$/, "")}{" "}
+                        Yes and No token
                       </p>
                     )}
                     <button
@@ -113,11 +131,9 @@ export function AddRemoveLiquidity() {
                       className="btn btn-sm w-full btn-primary"
                       onClick={async () => {
                         try {
-                          // Convert string to number first to handle decimals
-                          const amount = Number(inputSellAmount);
                           await writeYourContractAsync({
                             functionName: "removeLiquidity",
-                            args: [parseEther(amount.toString())],
+                            args: [parseEther(inputSellAmount)],
                           });
                         } catch (e) {
                           console.error("Error removing liquidity:", e);

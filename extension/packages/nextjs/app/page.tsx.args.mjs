@@ -36,4 +36,4 @@ export const description = `
   </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Prediction Markets";
+export const externalExtensionName = "Speedrun Ethereum Prediction Markets";
