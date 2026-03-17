@@ -6,8 +6,10 @@ import { formatEther } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { useAnimationConfig, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useAnimationConfig } from "~~/hooks/scaffold-eth/useAnimationConfig";
 import { tokenName } from "~~/utils/constant";
+;
 
 const TokenActions = () => {
   const { address, chain: ConnectedChain } = useAccount();

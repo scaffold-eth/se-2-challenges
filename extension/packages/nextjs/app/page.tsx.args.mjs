@@ -32,4 +32,4 @@ export const description = `
   </div>
 `;
 
-export const externalExtensionName = "SpeedRunEthereum Stablecoins";
+export const externalExtensionName = "Speedrun Ethereum Stablecoins";

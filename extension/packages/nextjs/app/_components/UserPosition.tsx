@@ -1,6 +1,6 @@
 import React from "react";
 import { formatEther, parseEther } from "viem";
-import { Address as AddressBlock } from "~~/components/scaffold-eth";
+import { Address as AddressBlock } from "@scaffold-ui/components";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { collateralRatio, tokenName } from "~~/utils/constant";
 import { calculatePositionRatio, formatDisplayValue, getRatioColorClass } from "~~/utils/helpers";

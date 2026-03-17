@@ -1,8 +1,9 @@
 import { useState } from "react";
 import TooltipInfo from "../TooltipInfo";
+import { Address, AddressInput } from "@scaffold-ui/components";
+import { IntegerInput } from "@scaffold-ui/debug-contracts";
 import { Address as AddressType, parseEther } from "viem";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
-import { Address, AddressInput, IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
