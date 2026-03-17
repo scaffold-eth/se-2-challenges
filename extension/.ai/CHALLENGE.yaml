@@ -1,0 +1,643 @@
+name: "Token Vendor"
+version: "1.0"
+description: "Build an ERC-20 token and an unstoppable vending machine that buys and sells it — learn the approve/transferFrom pattern, Ownable access control, and payable functions"
+difficulty: "beginner"
+estimated_time: "3 - 8 hours"
+
+# CODE-WRITING challenge — both contracts have skeletons with empty function bodies.
+# No setup.template needed.
+setup:
+  file: "packages/hardhat/contracts/Vendor.sol"
+
+welcome_message: |
+  Welcome to the Token Vendor Challenge!
+
+  You'll build two smart contracts:
+  1. **YourToken** — an ERC-20 token that mints 1000 tokens
+  2. **Vendor** — a vending machine that buys and sells your token for ETH
+
+  Along the way you'll learn about ERC-20 tokens, payable functions, the approve/transferFrom pattern, and Ownable access control.
+
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  > Re-run `yarn deploy --reset` whenever you want to redeploy with a fresh contract address.
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's get started!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: ERC-20 Token Creation
+  # ============================================================
+  - id: "erc20-token"
+    title: "ERC-20 Token"
+    description: "Create your own ERC-20 token by minting supply in the constructor"
+
+
+    context: |
+      ## What is ERC-20?
+
+      ERC-20 is the standard for **fungible tokens** on Ethereum. "Fungible" means every token is identical and interchangeable — like dollar bills. Any 1 GLD token is worth the same as any other 1 GLD token.
+
+      The ERC-20 standard defines functions that every token must implement:
+      - `transfer(to, amount)` — send tokens to someone
+      - `balanceOf(address)` — check how many tokens an address holds
+      - `approve(spender, amount)` — allow another address to spend your tokens
+      - `transferFrom(from, to, amount)` — spend tokens you've been approved to use
+      - `totalSupply()` — the total number of tokens in existence
+
+      ## OpenZeppelin's ERC20
+
+      Rather than writing all this from scratch, we import OpenZeppelin's battle-tested `ERC20` contract. Our `YourToken` inherits from it:
+
+      ```solidity
+      contract YourToken is ERC20 { ... }
+      ```
+
+      The constructor `ERC20("Gold", "GLD")` sets the token name and symbol — like how ETH has the symbol "ETH".
+
+      ## Minting with `_mint()`
+
+      `_mint(to, amount)` is an internal function from OpenZeppelin that creates new tokens out of thin air and assigns them to an address. It's the only way to create supply — and it's typically called in the constructor so the initial supply is fixed at deployment.
+
+      **Token Decimals:** ERC-20 tokens have 18 decimal places by default (like ETH has 18 decimals / wei). So to mint 1000 human-readable tokens, you mint `1000 * 10 ** 18` — that's 1000 followed by 18 zeros in the smallest unit.
+
+      `msg.sender` in the constructor is the **deployer** — the address that deployed the contract.
+
+    questions:
+      - text: "Why do we multiply by `10 ** 18` when minting 1000 tokens? What would happen if we just minted `1000` without the multiplier?"
+        concepts:
+          [
+            "decimal",
+            "wei",
+            "smallest unit",
+            "18",
+            "precision",
+            "fraction",
+            "tiny",
+            "indivisible",
+          ]
+        hint: "ERC-20 tokens work like ETH — 1 ETH = 10^18 wei. Without the multiplier, you'd have a tiny fraction of a token."
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/YourToken.sol`.
+
+        The constructor body is currently empty. Add a `_mint()` call to mint **1000 tokens** (with 18 decimals) to `msg.sender`:
+
+        ```solidity
+        _mint(msg.sender, 1000 * 10 ** 18);
+        ```
+
+        This gives all the initial supply to the deployer, who will later transfer tokens to the Vendor contract.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. **Deploy script**: Open `packages/hardhat/deploy/01_deploy_vendor.ts`. Set `FRONTEND_ADDRESS` to your frontend wallet address and keep `SEND_TOKENS_TO_VENDOR = false` (we're not ready for that yet).
+        2. Run `yarn deploy --reset` to deploy your contracts.
+        3. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        4. Check `balanceOf()` on `YourToken` with your frontend address — you should see **1000** tokens.
+        5. Try calling `transfer()` to send some tokens to another address, then check that address's `balanceOf` too.
+
+        > **Tip:** Open an incognito window to get a fresh burner wallet address you can transfer to.
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/YourToken.sol"
+      test: "yarn test --grep 'Checkpoint1'"
+      hints:
+        - "Add a single line inside the constructor body: `_mint(msg.sender, 1000 * 10 ** 18);`"
+        - |
+          ```solidity
+          _mint(msg.sender, 1000 * 10 ** 18);
+          ```
+        - |
+          Full constructor:
+          ```solidity
+          constructor() ERC20("Gold", "GLD") {
+              _mint(msg.sender, 1000 * 10 ** 18);
+          }
+          ```
+      solution: |
+        // In the constructor, add:
+        _mint(msg.sender, 1000 * 10 ** 18);
+
+  # ============================================================
+  # CHECKPOINT 2: Vendor Buy Tokens
+  # ============================================================
+  - id: "buy-tokens"
+    title: "Vendor Buy Tokens"
+    description: "Add a price constant, events, input validation, and implement buyTokens()"
+
+
+    context: |
+      ## The Vendor Contract
+
+      The Vendor is like a vending machine: users insert ETH and get tokens back. Open `packages/hardhat/contracts/Vendor.sol` — you'll see a skeleton with organized sections (Errors, State Variables, Events, Functions) and empty function bodies.
+
+      ### Price Variable
+
+      ```solidity
+      uint256 public constant tokensPerEth = 100;
+      ```
+
+      This means 1 ETH = 100 tokens. Using `constant` saves gas since the value is inlined at compile time.
+
+      ### Payable Functions & msg.value
+
+      A function marked `payable` can receive ETH. Inside the function:
+      - **`msg.value`** — the amount of ETH sent (in wei)
+      - **`msg.sender`** — the address that called the function
+
+      To calculate tokens: `uint256 amountOfTokens = msg.value * tokensPerEth`. Since `msg.value` is in wei (10^18 per ETH) and tokens also have 18 decimals, the math works out perfectly.
+
+      ### Custom Errors for Validation
+
+      Modern Solidity uses custom errors instead of `require(cond, "message")` — they're cheaper on gas:
+
+      ```solidity
+      error InvalidEthAmount();
+      error InsufficientVendorTokenBalance(uint256 vendorBalance, uint256 requestedAmount);
+
+      if (msg.value == 0) revert InvalidEthAmount();
+      ```
+
+      `InsufficientVendorTokenBalance` is used when the Vendor doesn't have enough tokens to fulfill a purchase.
+
+      ### Events
+
+      Events log important actions on-chain for frontends and indexers:
+
+      ```solidity
+      event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
+      ```
+
+      ### Token Transfer
+
+      The Vendor holds a balance of YourToken (transferred during deployment). When someone buys, the Vendor sends tokens from its own balance using `yourToken.transfer(msg.sender, amountOfTokens)`.
+
+      ## Deploy Script
+
+      The deploy script at `packages/hardhat/deploy/01_deploy_vendor.ts` uses a `SEND_TOKENS_TO_VENDOR` toggle. It should already be set to `true` — this deploys the Vendor, transfers 1000 tokens to it, and transfers ownership to your frontend address. You must set `FRONTEND_ADDRESS` to the wallet address you use in the frontend, so that ownership is transferred correctly (otherwise it stays with the Hardhat deployer, which is different from your burner wallet).
+
+      ## Frontend
+
+      After deploying, uncomment the **Vendor Balances** and **Buy Tokens** sections in `packages/nextjs/app/token-vendor/page.tsx` to display the Vendor's ETH/token balances and enable buying tokens from the UI.
+
+    questions:
+      - text: "Why don't we need to worry about decimal conversion when calculating `msg.value * tokensPerEth`? Why does the math just work?"
+        concepts:
+          [
+            "wei",
+            "18 decimals",
+            "both",
+            "same",
+            "cancel",
+            "match",
+            "smallest unit",
+          ]
+        hint: "Both ETH (msg.value in wei) and ERC-20 tokens use 18 decimal places. What happens when you multiply wei by a whole number?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Vendor.sol`.
+
+        1. **Add custom errors** under the *Errors* section:
+           ```solidity
+           error InvalidEthAmount();
+           error InsufficientVendorTokenBalance(uint256 vendorBalance, uint256 requestedAmount);
+           ```
+
+        2. **Add the price constant** under *State Variables*:
+           ```solidity
+           uint256 public constant tokensPerEth = 100;
+           ```
+
+        3. **Add the BuyTokens event** under *Events*:
+           ```solidity
+           event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
+           ```
+
+        4. **Fill in `buyTokens()`**:
+           - Revert with `InvalidEthAmount` if `msg.value` is 0
+           - Calculate tokens: `msg.value * tokensPerEth`
+           - Check the Vendor has enough tokens, revert with `InsufficientVendorTokenBalance` if not
+           - Transfer tokens to `msg.sender`
+           - Emit `BuyTokens`
+
+        5. **Deploy script**: In `packages/hardhat/deploy/01_deploy_vendor.ts`, set `SEND_TOKENS_TO_VENDOR` to `true`. This deploys the Vendor and seeds it with tokens instead of sending them to your frontend address.
+
+        6. **Frontend**: Uncomment the **Vendor Balances** and **Buy Tokens** sections in `packages/nextjs/app/token-vendor/page.tsx`.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Open http://localhost:3000 — go to the **Token Vendor** page.
+        3. Check that the Vendor's token balance shows **1000** GLD.
+        4. Try buying **10** tokens for **0.1** ETH using the Buy Tokens UI.
+        5. You can also go to the **Debug Contracts** tab and verify the Vendor's `balanceOf` on `YourToken`.
+        6. Try transferring tokens to a different account.
+        7. Check the **Events** tab — you should see your `BuyTokens` event.
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Vendor.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      hints:
+        - "Start with input validation: `if (msg.value == 0) revert InvalidEthAmount();`. Then calculate, check balance, transfer, emit."
+        - |
+          Check vendor balance with:
+          ```solidity
+          uint256 vendorBalance = yourToken.balanceOf(address(this));
+          if (vendorBalance < amountOfTokens) revert InsufficientVendorTokenBalance(vendorBalance, amountOfTokens);
+          ```
+        - |
+          Full solution:
+          ```solidity
+          // Errors section:
+          error InvalidEthAmount();
+          error InsufficientVendorTokenBalance(uint256 vendorBalance, uint256 requestedAmount);
+
+          // State Variables section:
+          uint256 public constant tokensPerEth = 100;
+
+          // Events section:
+          event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
+
+          // buyTokens() body:
+          function buyTokens() external payable {
+              if (msg.value == 0) revert InvalidEthAmount();
+              uint256 amountOfTokens = msg.value * tokensPerEth;
+              uint256 vendorBalance = yourToken.balanceOf(address(this));
+              if (vendorBalance < amountOfTokens) revert InsufficientVendorTokenBalance(vendorBalance, amountOfTokens);
+              yourToken.transfer(msg.sender, amountOfTokens);
+              emit BuyTokens(msg.sender, msg.value, amountOfTokens);
+          }
+          ```
+      solution: |
+        // Errors section — replace placeholder:
+        error InvalidEthAmount();
+        error InsufficientVendorTokenBalance(uint256 vendorBalance, uint256 requestedAmount);
+
+        // State Variables — add:
+        uint256 public constant tokensPerEth = 100;
+
+        // Events section — replace placeholder:
+        event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
+
+        // buyTokens() body:
+        if (msg.value == 0) revert InvalidEthAmount();
+        uint256 amountOfTokens = msg.value * tokensPerEth;
+        uint256 vendorBalance = yourToken.balanceOf(address(this));
+        if (vendorBalance < amountOfTokens) revert InsufficientVendorTokenBalance(vendorBalance, amountOfTokens);
+        yourToken.transfer(msg.sender, amountOfTokens);
+        emit BuyTokens(msg.sender, msg.value, amountOfTokens);
+
+  # ============================================================
+  # CHECKPOINT 3: Ownable & Withdraw
+  # ============================================================
+  - id: "ownable-withdraw"
+    title: "Ownable & Withdraw"
+    description: "Implement withdraw() so only the owner can extract accumulated ETH"
+
+
+    context: |
+      ## Access Control with Ownable
+
+      When users buy tokens, ETH accumulates in the Vendor contract. But who should be able to withdraw that ETH? Without access control, **anyone** could drain the contract!
+
+      Look at the contract skeleton — `Ownable` is already imported and inherited:
+
+      ```solidity
+      import "@openzeppelin/contracts/access/Ownable.sol";
+
+      contract Vendor is Ownable {
+          constructor(address tokenAddress) Ownable(msg.sender) { ... }
+      ```
+
+      OpenZeppelin's `Ownable` gives us:
+      - `owner()` — returns the current owner address
+      - `onlyOwner` modifier — restricts a function to just the owner (already on `withdraw()`)
+      - `transferOwnership(newOwner)` — can change who the owner is
+
+      The `withdraw()` function already has `onlyOwner` in the skeleton, so non-owners will automatically be rejected.
+
+      ## Sending ETH with `call`
+
+      To send ETH from the contract to the owner:
+
+      ```solidity
+      (bool success, ) = owner().call{value: address(this).balance}("");
+      ```
+
+      - `owner()` — the current owner address (from Ownable)
+      - `address(this).balance` — all ETH held by this contract
+      - `{value: ...}` — attaches ETH to the call
+      - The `(bool success, )` pattern catches failures
+
+      ### Custom Error for Failed Transfers
+
+      Instead of `require(success, "msg")`, use a custom error with useful data:
+
+      ```solidity
+      error EthTransferFailed(address to, uint256 amount);
+      if (!success) revert EthTransferFailed(owner(), address(this).balance);
+      ```
+
+      ### Why `call` over `transfer`?
+
+      The older `transfer()` method forwards only 2300 gas, which can break smart-contract wallets that need more gas in their receive function. `call` forwards all available gas and is the recommended pattern.
+
+    questions:
+      - text: "Why do we need to restrict who can call `withdraw()`? What would happen without access control?"
+        concepts:
+          [
+            "anyone",
+            "drain",
+            "steal",
+            "take",
+            "permission",
+            "restrict",
+            "only owner",
+            "unauthorized",
+          ]
+        hint: "Without restrictions, any address could call the function. What would they do with all that ETH?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Vendor.sol`.
+
+        1. **Add a custom error** under *Errors*:
+           ```solidity
+           error EthTransferFailed(address to, uint256 amount);
+           ```
+
+        2. **Fill in `withdraw()`** (it already has `onlyOwner`):
+           - Send all ETH to `owner()` using `call`
+           - Revert with `EthTransferFailed` if the transfer fails
+
+        Note: save `address(this).balance` to a local variable before the call, since the balance changes after sending.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        3. Verify your frontend address is the `owner` of the Vendor (call `owner()` on the Vendor contract).
+        4. First buy some tokens so the Vendor accumulates ETH.
+        5. Then call `withdraw()` from the Debug Contracts tab — the Vendor's ETH should transfer to your address.
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Vendor.sol"
+      test: "yarn test --grep 'Checkpoint3'"
+      hints:
+        - "Use `owner()` as the recipient, `address(this).balance` as the amount. Save the balance before sending so the error has the right value."
+        - |
+          ```solidity
+          uint256 ownerAmount = address(this).balance;
+          (bool success, ) = owner().call{value: ownerAmount}("");
+          if (!success) revert EthTransferFailed(owner(), ownerAmount);
+          ```
+        - |
+          Full solution:
+          ```solidity
+          // Errors section — add:
+          error EthTransferFailed(address to, uint256 amount);
+
+          // withdraw() body:
+          function withdraw() external onlyOwner {
+              uint256 ownerAmount = address(this).balance;
+              (bool success, ) = owner().call{value: ownerAmount}("");
+              if (!success) revert EthTransferFailed(owner(), ownerAmount);
+          }
+          ```
+      solution: |
+        // Errors — add:
+        error EthTransferFailed(address to, uint256 amount);
+
+        // withdraw() body:
+        uint256 ownerAmount = address(this).balance;
+        (bool success, ) = owner().call{value: ownerAmount}("");
+        if (!success) revert EthTransferFailed(owner(), ownerAmount);
+
+  # ============================================================
+  # CHECKPOINT 4: Vendor Buyback (Sell Tokens)
+  # ============================================================
+  - id: "sell-tokens"
+    title: "Vendor Buyback"
+    description: "Implement sellTokens() using the ERC-20 approve/transferFrom pattern"
+
+
+    context: |
+      ## The Approve/TransferFrom Pattern
+
+      This is the trickiest part of the challenge — and one of the most important patterns in DeFi.
+
+      **The problem:** A user wants to sell tokens back to the Vendor for ETH. But the Vendor can't just take tokens from the user's wallet — that would be a security nightmare!
+
+      **The solution:** A two-step process:
+
+      ### Step 1: Approve
+
+      The user calls `approve()` on YourToken, giving the Vendor permission to move a specific amount:
+
+      ```solidity
+      yourToken.approve(vendorAddress, amount);
+      ```
+
+      This says: "I authorize the Vendor to take up to `amount` tokens from my wallet."
+
+      ### Step 2: TransferFrom
+
+      Then the user calls `sellTokens()` on the Vendor, which uses `transferFrom()` to pull tokens:
+
+      ```solidity
+      yourToken.transferFrom(msg.sender, address(this), amount);
+      ```
+
+      - `msg.sender` — take tokens FROM the seller
+      - `address(this)` — send them TO the Vendor contract
+      - `amount` — how many tokens to transfer
+
+      `transferFrom` will **revert** if the user hasn't approved enough tokens.
+
+      ### Calculating ETH to Return
+
+      The math is the reverse of buying:
+      ```solidity
+      uint256 amountOfETH = amount / tokensPerEth;
+      ```
+      If 100 tokens = 1 ETH, then selling 100 tokens gives back 1 ETH.
+
+      ### Input Validation
+
+      Like `buyTokens()`, validate inputs with custom errors:
+      - `InvalidTokenAmount` — if the user tries to sell 0 tokens
+      - `InsufficientVendorEthBalance` — if the Vendor doesn't have enough ETH to pay the seller
+
+      ### SellTokens Event
+
+      Mirror the buy event so the frontend can track sells:
+      ```solidity
+      event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
+      ```
+
+      ### Why Two Transactions?
+
+      This pattern exists because smart contracts can't initiate actions — they can only respond to transactions. The user must first tell the token "the Vendor is allowed" and then tell the Vendor "go ahead and take my tokens." This approve/transferFrom pattern is used everywhere in DeFi: Uniswap, Aave, Compound.
+
+    questions:
+      - text: "Why can't the Vendor just call `yourToken.transfer()` to take tokens from the user? Why is the two-step approve/transferFrom needed?"
+        concepts:
+          [
+            "permission",
+            "authorize",
+            "approve",
+            "security",
+            "can't take",
+            "user must allow",
+            "separate contract",
+            "consent",
+          ]
+        hint: "What if any contract could just take tokens from your wallet without asking? The approve step is the user giving explicit consent."
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/Vendor.sol`.
+
+        1. **Add custom errors** under *Errors*:
+           ```solidity
+           error InvalidTokenAmount();
+           error InsufficientVendorEthBalance(uint256 vendorBalance, uint256 requestedAmount);
+           ```
+
+        2. **Add the SellTokens event** under *Events*:
+           ```solidity
+           event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
+           ```
+
+        3. **Fill in `sellTokens(uint256 amount)`**:
+           - Revert with `InvalidTokenAmount` if `amount` is 0
+           - Calculate ETH to return: `amount / tokensPerEth`
+           - Check the Vendor has enough ETH, revert with `InsufficientVendorEthBalance` if not
+           - Transfer tokens from the seller to the Vendor using `transferFrom`
+           - Send ETH to the seller using `call`
+           - Revert with `EthTransferFailed` if the ETH send fails
+           - Emit `SellTokens`
+
+        After implementing, uncomment the **Sell Tokens** section in `packages/nextjs/app/token-vendor/page.tsx` and the **SellTokens Events** section in `packages/nextjs/app/events/page.tsx`.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to deploy your updated contracts.
+        2. First test from the **Debug Contracts** tab: call `approve()` on `YourToken` (approve the Vendor address to spend your tokens), then call `sellTokens()` on the Vendor.
+        3. Now go to the **Token Vendor** page — use the Sell Tokens UI (approve first, then sell).
+        4. Verify you receive the correct amount of ETH for the tokens you sold.
+        5. Check the **Events** tab — you should see both `BuyTokens` and `SellTokens` events.
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/Vendor.sol"
+      test: "yarn test --grep 'Checkpoint4'"
+      hints:
+        - "Validate first (`amount == 0`), then calculate ETH, check vendor ETH balance, transferFrom tokens, send ETH, emit event."
+        - |
+          ```solidity
+          if (amount == 0) revert InvalidTokenAmount();
+          uint256 amountOfETH = amount / tokensPerEth;
+          if (address(this).balance < amountOfETH) revert InsufficientVendorEthBalance(address(this).balance, amountOfETH);
+          yourToken.transferFrom(msg.sender, address(this), amount);
+          (bool success, ) = msg.sender.call{value: amountOfETH}("");
+          if (!success) revert EthTransferFailed(msg.sender, amountOfETH);
+          emit SellTokens(msg.sender, amount, amountOfETH);
+          ```
+        - |
+          Full solution:
+          ```solidity
+          // Errors section — add:
+          error InvalidTokenAmount();
+          error InsufficientVendorEthBalance(uint256 vendorBalance, uint256 requestedAmount);
+
+          // Events section — add:
+          event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
+
+          // sellTokens() body:
+          function sellTokens(uint256 amount) external {
+              if (amount == 0) revert InvalidTokenAmount();
+              uint256 amountOfETH = amount / tokensPerEth;
+              if (address(this).balance < amountOfETH) revert InsufficientVendorEthBalance(address(this).balance, amountOfETH);
+              yourToken.transferFrom(msg.sender, address(this), amount);
+              (bool success, ) = msg.sender.call{value: amountOfETH}("");
+              if (!success) revert EthTransferFailed(msg.sender, amountOfETH);
+              emit SellTokens(msg.sender, amount, amountOfETH);
+          }
+          ```
+      solution: |
+        // Errors — add:
+        error InvalidTokenAmount();
+        error InsufficientVendorEthBalance(uint256 vendorBalance, uint256 requestedAmount);
+
+        // Events — add:
+        event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
+
+        // sellTokens() body:
+        if (amount == 0) revert InvalidTokenAmount();
+        uint256 amountOfETH = amount / tokensPerEth;
+        if (address(this).balance < amountOfETH) revert InsufficientVendorEthBalance(address(this).balance, amountOfETH);
+        yourToken.transferFrom(msg.sender, address(this), amount);
+        (bool success, ) = msg.sender.call{value: amountOfETH}("");
+        if (!success) revert EthTransferFailed(msg.sender, amountOfETH);
+        emit SellTokens(msg.sender, amount, amountOfETH);
+
+completion_message: |
+  Congratulations — you've completed the Token Vendor Challenge!
+
+  Your contracts now have:
+  - **ERC-20 token** with fixed supply minted to the deployer
+  - **Buy functionality** via a payable `buyTokens()` function with input validation
+  - **Access control** with Ownable and a secure `withdraw()`
+  - **Sell functionality** using the approve/transferFrom pattern
+
+  Key concepts you learned:
+  - ERC-20 token standard and `_mint()`
+  - Payable functions and `msg.value`
+  - Custom errors for gas-efficient reverts
+  - Token transfers between contracts
+  - The approve/transferFrom pattern (used everywhere in DeFi!)
+  - Ownable access control
+  - Sending ETH safely with `call`
+
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [Speedrun Ethereum challenge page](https://speedrunethereum.com/challenge/token-vendor):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
