@@ -9,7 +9,7 @@ import { EntryPointVersion, entryPoint07Address } from "viem/account-abstraction
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import { useAccount } from "wagmi";
-import { Address } from "~~/components/scaffold-eth";
+import { Address } from "@scaffold-ui/components";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useChallengeState } from "~~/services/store/challengeStore";
 import {

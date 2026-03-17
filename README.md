@@ -88,7 +88,7 @@ If you are using vscode you may want to install the [Noir Language Support](http
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.2 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
+npx create-eth@2.0.10 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
 cd challenge-zk-voting
 ```
 
@@ -1807,7 +1807,7 @@ Great work! Now head to the **next checkpoint** where we’ll deploy everything 
 ### Configuration of Third-Party Services for Production-Grade Apps
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as **Alchemy** and **Etherscan**.
-This makes it easy to start building and complete your **SpeedRunEthereum** without additional setup.
+This makes it easy to start building and complete your **Speedrun Ethereum** without additional setup.
 
 For **production-grade apps**, you should generate your own API keys to avoid hitting rate limits and and to ensure integrations like Pimlico work properly.
 

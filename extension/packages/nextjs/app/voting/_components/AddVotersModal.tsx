@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import { PlusIcon, TrashIcon, UserPlusIcon } from "@heroicons/react/24/outline";
-import { AddressInput } from "~~/components/scaffold-eth";
+import { AddressInput } from "@scaffold-ui/components";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type VoterEntry = {
