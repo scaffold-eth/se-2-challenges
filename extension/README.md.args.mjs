@@ -40,12 +40,6 @@ yarn start
 
 ---
 
-
-⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
-
----
-
-
 ⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via \`.vscode/settings.json\` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included \`AGENTS.md\` and \`CLAUDE.md\` files with project context to help AI assistants understand the codebase.
 
 🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
@@ -54,6 +48,28 @@ yarn start
 - VSCode: set \`chat.disableAIFeatures\` to \`true\` in \`.vscode/settings.json\` file
 
 ---
+
+
+⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
+
+---
+
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the \`/start\` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **\`/skip\`** if you want the AI to show you the solution
+6. Your progress is saved — use \`/start\` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
+## Standard Learning Mode
 
 ## 🧑‍🚀 Your Mission
 
@@ -469,7 +485,7 @@ function execute() public notCompleted {
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\`. You can enable them on every chain by setting \`onlyLocalBurnerWallet: false\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`).
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\`. You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`).
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 

@@ -21,7 +21,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.4 -e challenge-crowdfunding challenge-crowdfunding
+npx create-eth@2.0.10 -e challenge-crowdfunding challenge-crowdfunding
 cd challenge-crowdfunding
 ```
 
@@ -53,12 +53,6 @@ yarn start
 
 ---
 
-
-⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
-
----
-
-
 ⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via `.vscode/settings.json` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included `AGENTS.md` and `CLAUDE.md` files with project context to help AI assistants understand the codebase.
 
 🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
@@ -68,16 +62,38 @@ yarn start
 
 ---
 
+⚗️ At this point you will need to know basic Solidity syntax. If not, you can pick it up quickly by tinkering with concepts from [📑 Solidity By Example](https://solidity-by-example.org/) using [🏗️ Scaffold-ETH-2](https://scaffoldeth.io). (In particular: global units, primitive data types, mappings, sending ether, and payable functions.)
+
+---
+
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the \`/start\` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **\`/skip\`** if you want the AI to show you the solution
+6. Your progress is saved — use \`/start\` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
+## Standard Learning Mode
+
 ## 🧑‍🚀 Your Mission
 
 🏦 Build a `CrowdFund.sol` contract that collects **ETH** from numerous addresses using a payable `contribute()` function and keeps track of `balances`. After some `deadline` if it has at least some `threshold` of ETH, it sends it to a `FundingRecipient` contract (This is a stand-in for any potential use case a group of people would want to fund together). It then triggers the `complete()` action, sending the full balance. If not enough **ETH** is collected, allow users to `withdraw()`.
 
-🔢 Each step is laid out in the following checkpoints. Try to complete them without hints but if you are struggling then you can get clearer context by pressing the  "🔎 Hint" in each checkpoint.
+🔢 Each step is laid out in the following checkpoints. Try to complete them without hints but if you are struggling then you can get clearer context by pressing the "🔎 Hint" in each checkpoint.
 
 👀 Also, you should try to keep your contract organized by the standard you will see in the contract. Keeping errors, events, functions, etc. sorted under their own sections helps to maintain contract readability.
+
 ## Checkpoint 1: 🤝 Contributing 💵
 
->Let's start by implementing a state variable that we will need in the function logic.
+> Let's start by implementing a state variable that we will need in the function logic.
 
 ⚖️ You'll need to track individual `balances` using a mapping. This way we will know who gave what in the event that the funding effort fails to raise enough and everyone needs to be refunded. Add it under the existing fundingRecipient variable.
 
@@ -85,7 +101,7 @@ yarn start
 mapping(address => uint256) public balances;
 ```
 
-> Next let's add an event. Events are useful for outside services that are watching the chain  for certain things to occur. In our case, the front end is going to use this event to know when a contribution takes place.
+> Next let's add an event. Events are useful for outside services that are watching the chain for certain things to occur. In our case, the front end is going to use this event to know when a contribution takes place.
 
 📣 Add an event to the contract called `Contribution` that receives the address of the contributor and the amount they contributed.
 
@@ -93,15 +109,16 @@ mapping(address => uint256) public balances;
 event Contribution(address, uint256);
 ```
 
- >📝 Note: If you use named arguments in your event (e.g. `event Contribution(address indexed contributor, uint256 amount)`), you'll need to update `/packages/nextjs/app/contributions/page.tsx` to reference event parameters by their names instead of numeric indices.
+> 📝 Note: If you use named arguments in your event (e.g. `event Contribution(address indexed contributor, uint256 amount)`), you'll need to update `/packages/nextjs/app/contributions/page.tsx` to reference event parameters by their names instead of numeric indices.
 
 ### Implementing the `contribute()` function
 
 > 👩‍💻 Now focus on writing your `contribute()` function. The payable method already exists but is empty. Go fill it with logic!
 
 The goal of this function is to allow anyone to contribute to the pool of funds. To do this effectively it will need to do the following:
+
 - Update the `balances` mapping
-- Emit the `Contribute` event 
+- Emit the `Contribute` event
 
 <details markdown='1'>
 <summary>🔎 Hint</summary>
@@ -109,7 +126,7 @@ The goal of this function is to allow anyone to contribute to the pool of funds.
 You can set mappings like you would access a Javascript array.
 For a mapping like this `mapping(address => uint256) public map` and `address addr = 0x1234...5678` you would access is like this: `map[addr]`.
 
-You need to use the address for the sender of the transaction and you will need to know how much value was sent. Is there an easy way to access these details about the transaction `msg`? 🤔 
+You need to use the address for the sender of the transaction and you will need to know how much value was sent. Is there an easy way to access these details about the transaction `msg`? 🤔
 
 Go check https://solidity-by-example.org/ if you need help on the syntax.
 
@@ -165,7 +182,7 @@ yarn test --grep "Checkpoint1"
 
 > Let's implement the `withdraw` function. First lets set up an important state variable and some errors we may need.
 
- 🔘 / ⚪ Create a bool to track whether the contract is `openToWithdraw` in the case that the funding fails to fill enough before the deadline and everyone needs to be refunded.
+🔘 / ⚪ Create a bool to track whether the contract is `openToWithdraw` in the case that the funding fails to fill enough before the deadline and everyone needs to be refunded.
 
 ```solidity
 bool public openToWithdraw; // Solidity variables default to an empty/false state
@@ -178,7 +195,7 @@ error NotOpenToWithdraw();
 error WithdrawTransferFailed(address to, uint256 amount);
 ```
 
-> ❓Did you know that custom errors are more gas efficient than using revert string errors?  
+> ❓Did you know that custom errors are more gas efficient than using revert string errors?
 >
 > ❌ `require(condition, "Condition Not Met")`
 >
@@ -186,9 +203,10 @@ error WithdrawTransferFailed(address to, uint256 amount);
 
 ### Implementing the `withdraw()` function
 
-> 🛠️ Now you can implement the logic inside the  `withdraw` function.
+> 🛠️ Now you can implement the logic inside the `withdraw` function.
 
 This function will need to do the following:
+
 - Check that `openToWithdraw` is true. Throw `NotOpenToWithdraw` if not.
 - Send the correct amount to the user who is withdrawing. Throw `WithdrawTransferFailed` if it does not succeed.
 
@@ -205,10 +223,10 @@ The important thing is that you only send the correct amount to the user AND the
 ```solidity
 function withdraw() public {
 	if (!openToWithdraw) revert NotOpenToWithdraw();
-	
+
 	uint256 balance = balances[msg.sender];
 	balances[msg.sender] = 0;
-	
+
 	(bool success,) = msg.sender.call{value: balance}("");
 	if (!success) revert WithdrawTransferFailed(msg.sender, balance);
 }
@@ -221,9 +239,9 @@ function withdraw() public {
 
 ⚙️ Go switch `openToWithdraw` to be true by default so we can test the function through the front end: `bool public openToWithdraw = true;`
 
-👩‍💻 Now redeploy (`yarn deploy`) and go test your function using the `Crowdfund` or `Debug Contracts` tabs in the front end. You should be able to contribute and then withdraw the ether. 
+👩‍💻 Now redeploy (`yarn deploy`) and go test your function using the `Crowdfund` or `Debug Contracts` tabs in the front end. You should be able to contribute and then withdraw the ether.
 
->‼️ Once you are content that it works as expected make sure you switch `openToWithdraw` back to false.
+> ‼️ Once you are content that it works as expected make sure you switch `openToWithdraw` back to false.
 
 ---
 
@@ -231,7 +249,8 @@ function withdraw() public {
 
 - [ ] Can you withdraw your ether after contributing?
 - [ ] What happens if you try to withdraw again after you have already withdrawn? Does this always fail?
-- [ ] What about with multiple users? 
+- [ ] What about with multiple users?
+
 ### Testing your progress
 
 🔍 Run the following command to check if you implemented the function correctly.
@@ -270,9 +289,10 @@ error TooEarly(uint256 deadline, uint256 currentTimestamp);
 
 ### Implementing the `execute()` function
 
->🧠 Smart contracts can't execute automatically, you always need to have a transaction execute to change state. Because of this, you will need to have an `execute()` function that _anyone_ can call, just once, after the `deadline` has expired.
+> 🧠 Smart contracts can't execute automatically, you always need to have a transaction execute to change state. Because of this, you will need to have an `execute()` function that _anyone_ can call, just once, after the `deadline` has expired.
 
 👩‍💻 Write your `execute()` function. It will need to do the following:
+
 - Make sure it can only be executed when the deadline has passed. If not then throw `TooEarly`
 - If the threshold is met then trigger the `fundingRecipient.complete` method while sending the locked funds
 - Otherwise set `openToWithdraw` to true so that people can get their funds back
@@ -293,7 +313,7 @@ If the balance is less than the `threshold`, you want to set the `openForWithdra
 ```solidity
 function execute() public {
 	if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);
-	
+
 	if (address(this).balance >= threshold) {
 		fundingRecipient.complete{value: address(this).balance}();
 	} else {
@@ -347,6 +367,7 @@ function timeLeft() public view returns (uint256) {
 - [ ] Can you see `timeLeft` counting down in the `Crowdfund` tab?
 - [ ] If enough ETH is contributed by the deadline, does your `execute()` function correctly call `complete()` and contribute the ETH?
 - [ ] If the threshold isn't met by the deadline, are you able to `withdraw()` your funds?
+
 ### Testing your progress
 
 🔍 Run the following command to check if you implemented the functions correctly.
@@ -363,7 +384,7 @@ yarn test --grep "Checkpoint3"
 
 🎀 To improve the user experience, set your contract up so it accepts ETH sent to it and calls `contribute()`. You will use a special `receive()` function that is called by default when people send funds to a contract.
 
-> Use the [receive()](https://docs.soliditylang.org/en/v0.8.9/contracts.html?highlight=receive#receive-ether-function) function in solidity to "catch" ETH sent to the contract *without a specific method indicated* and call `contribute()` to update `balances`.
+> Use the [receive()](https://docs.soliditylang.org/en/v0.8.9/contracts.html?highlight=receive#receive-ether-function) function in solidity to "catch" ETH sent to the contract _without a specific method indicated_ and call `contribute()` to update `balances`.
 
 <details markdown='1'>
 <summary>🔎 Hint</summary>
@@ -419,7 +440,7 @@ error AlreadyCompleted(); // Or whatever name you want
 
 // Modifiers
 modifier notCompleted() {
-	if (fundingRecipient.completed()) revert AlreadyCompleted(); 
+	if (fundingRecipient.completed()) revert AlreadyCompleted();
 	_;
 }
 
@@ -482,7 +503,7 @@ function execute() public notCompleted {
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat`. You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`).
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat`. You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`).
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -507,7 +528,6 @@ Run the `yarn verify --network your_network` command to verify your contracts on
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to [SpeedrunEthereum.com](https://speedrunethereum.com).
 
 ---
-
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 

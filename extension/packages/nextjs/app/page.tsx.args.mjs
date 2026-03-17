@@ -37,4 +37,4 @@ export const description = `
     </div>
 `;
 
-export const externalExtensionName = "SpeedrunEthereum Challenge: Crowdfunding App";
+export const externalExtensionName = "Speedrun Ethereum Challenge: Crowdfunding App";
