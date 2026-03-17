@@ -55,9 +55,26 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@1.0.5 -e challenge-tokenization challenge-tokenization
+npx create-eth@2.0.10 -e challenge-tokenization challenge-tokenization
 cd challenge-tokenization
 ```
+
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts as you go? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the `/start` command
+3. The AI teaches each concept, then asks questions to check your understanding
+4. Answer correctly and the AI adds the corresponding code to your contract — building it up piece by piece
+5. Say **"hint"** anytime you're stuck, or **`/skip`** to move forward
+6. Your progress is saved — use `/start` to resume anytime
+
+The AI won't just hand you the code — it teaches first, then checks your understanding through questions. As you demonstrate each concept, the contract assembles itself!
+
+---
+
+## Standard Learning mode
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -195,7 +212,7 @@ yarn start
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/f582d311-9b57-4503-8143-bac60346ea33)
 
@@ -220,7 +237,7 @@ yarn test
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
-This is great to complete your **SpeedRunEthereum**.
+This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 

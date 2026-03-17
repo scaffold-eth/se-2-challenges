@@ -1,0 +1,408 @@
+name: "Tokenization"
+version: "1.0"
+description: "Learn ERC-721 (NFT) basics by progressively building an NFT contract that mints, tracks, and stores metadata on IPFS"
+difficulty: "beginner"
+estimated_time: "1 - 4 hours"
+
+setup:
+  description: "Replace the complete contract with a TODO-marked template for progressive learning"
+  file: "packages/hardhat/contracts/YourCollectible.sol"
+  template: |
+    // SPDX-License-Identifier: MIT
+    pragma solidity ^0.8.20;
+
+    // TODO[imports]: OpenZeppelin imports will be added here
+    // Complete the "ERC-721 & Imports" checkpoint to unlock
+
+    contract YourCollectible
+        // TODO[inheritance]: Contract inheritance will be added here
+        // Complete the "ERC-721 & Imports" checkpoint to unlock
+    {
+        // TODO[state]: State variables, constructor, and base URI will be added here
+        // Complete the "Token State & Constructor" checkpoint to unlock
+
+        // TODO[mint]: The minting function will be added here
+        // Complete the "Minting NFTs" checkpoint to unlock
+
+        // TODO[overrides]: Override functions will be added here
+        // Complete the "Inheritance & Overrides" checkpoint to unlock
+    }
+
+welcome_message: |
+  Welcome to the Tokenization Challenge!
+
+  You're going to build an ERC-721 (NFT) smart contract from scratch. By the end, you'll have a contract that can mint unique collectible tokens with metadata stored on IPFS.
+
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  **How this works:**
+  - I'll teach you each concept, then ask a question to check your understanding
+  - As you answer correctly, I'll add the corresponding code to your contract — building it up piece by piece
+  - Say **"hint"** anytime you're stuck
+  - Your progress is saved — use `/start` to resume anytime
+
+  Let's get started!
+
+checkpoints:
+  # ============================================================
+  # 1. ERC-721 & Imports
+  # ============================================================
+  - id: "erc721-imports"
+    title: "ERC-721 & Imports"
+    description: "Understand what ERC-721 is and what OpenZeppelin contracts we need"
+
+    context: |
+      ## What is ERC-721?
+
+      ERC-721 is the standard for **non-fungible tokens (NFTs)** on Ethereum. "Non-fungible" means each token is unique — unlike ETH or ERC-20 tokens where every unit is identical.
+
+      Think of it like this: a $10 bill is fungible (any $10 bill works the same), but a painting is non-fungible (each one is unique and has a different value).
+
+      ERC-721 defines a standard interface so wallets, marketplaces, and other contracts all know how to interact with any NFT. The key functions include:
+      - `ownerOf(tokenId)` — who owns this specific token?
+      - `transferFrom(from, to, tokenId)` — send a token to someone
+      - `balanceOf(owner)` — how many tokens does this address own?
+
+      ## OpenZeppelin
+
+      Rather than writing all this from scratch, we use **OpenZeppelin** — a battle-tested library of smart contract building blocks. Our contract imports four contracts from OpenZeppelin:
+
+      - **ERC721** — the core NFT standard (minting, transferring, ownership)
+      - **ERC721Enumerable** — adds the ability to list all tokens and query tokens by owner index (e.g. "what's the 3rd NFT this address owns?")
+      - **ERC721URIStorage** — lets each token store its own metadata URI (pointing to a JSON file describing the NFT)
+      - **Ownable** — simple access control giving special permissions to one "owner" address
+
+      ## Solidity Inheritance
+
+      In Solidity, `contract YourCollectible is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable` means our contract **inherits** from all four. It gets all their functions and state automatically. It's like saying "YourCollectible IS an ERC721, and it IS Enumerable, and it HAS URI storage, and it IS Ownable".
+
+    questions:
+      - text: "What does 'non-fungible' mean in the context of tokens? How is an NFT different from a regular (fungible) token like ETH?"
+        concepts: ["unique", "not interchangeable", "each one different", "one of a kind", "specific", "individual"]
+        hint: "Think about the difference between dollar bills (any $10 works the same) and paintings (each is one-of-a-kind)"
+
+      - text: "Why do we import ERC721Enumerable in addition to the base ERC721? What ability does it add?"
+        concepts: ["list", "enumerate", "index", "query", "iterate", "track", "all tokens", "by owner"]
+        hint: "Think about what happens if you want to show a user all the NFTs they own — how would you find them without enumeration?"
+
+    unlocks:
+      file: "packages/hardhat/contracts/YourCollectible.sol"
+      todo: "imports"
+      code: |
+        import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+        import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+        import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+        import "@openzeppelin/contracts/access/Ownable.sol";
+
+    unlocks_extra:
+      - file: "packages/hardhat/contracts/YourCollectible.sol"
+        todo: "inheritance"
+        code: "is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable"
+
+  # ============================================================
+  # 2. Token State & Constructor
+  # ============================================================
+  - id: "state-constructor"
+    title: "Token State & Constructor"
+    description: "Set up the token counter, constructor, and base URI"
+
+    context: |
+      ## State Variables
+
+      Our contract needs one state variable:
+
+      ```solidity
+      uint256 public tokenIdCounter;
+      ```
+
+      This counter tracks how many tokens have been minted. Each new token gets `tokenIdCounter + 1` as its ID, ensuring every NFT has a unique identifier. It starts at 0 (Solidity's default for uint256).
+
+      ## The Constructor
+
+      The constructor runs **once** when the contract is deployed:
+
+      ```solidity
+      constructor() ERC721("YourCollectible", "YCB") Ownable(msg.sender) {}
+      ```
+
+      Breaking this down:
+      - `ERC721("YourCollectible", "YCB")` — sets the collection name and symbol (like how ETH has the symbol "ETH")
+      - `Ownable(msg.sender)` — makes the deployer the contract owner
+      - The body is empty `{}` — no additional setup needed
+
+      ## Base URI
+
+      ```solidity
+      function _baseURI() internal pure override returns (string memory) {
+          return "https://ipfs.io/ipfs/";
+      }
+      ```
+
+      This overrides ERC721's `_baseURI()` to prefix all token URIs with the IPFS gateway URL. When you set a token's URI to a CID (Content Identifier) hash like `QmfVMA...`, the full URI becomes `https://ipfs.io/ipfs/QmfVMA...` — pointing to the token's metadata JSON on IPFS.
+
+      **IPFS** (InterPlanetary File System) is a decentralized storage network. Unlike a regular server that could go down, IPFS content is addressed by its hash — if the content changes, the hash changes. This makes it a great fit for NFT metadata.
+
+    questions:
+      - text: "Why do we use a counter (`tokenIdCounter`) for token IDs instead of, say, letting the caller pick any ID they want?"
+        concepts: ["unique", "sequential", "no collision", "no duplicate", "increment", "guarantee", "auto"]
+        hint: "What could go wrong if two people tried to mint a token with the same ID?"
+
+      - text: "What does `Ownable(msg.sender)` do in the constructor? What is `msg.sender` at deployment time?"
+        concepts: ["deployer", "owner", "whoever deploys", "access control", "permission", "admin"]
+        hint: "msg.sender is a built-in Solidity variable — who is 'sending' the deployment transaction?"
+
+    unlocks:
+      file: "packages/hardhat/contracts/YourCollectible.sol"
+      todo: "state"
+      code: |
+        uint256 public tokenIdCounter;
+
+            constructor() ERC721("YourCollectible", "YCB") Ownable(msg.sender) {}
+
+            function _baseURI() internal pure override returns (string memory) {
+                return "https://ipfs.io/ipfs/";
+            }
+
+  # ============================================================
+  # 3. Minting NFTs
+  # ============================================================
+  - id: "minting"
+    title: "Minting NFTs"
+    description: "Build the function that creates new NFTs"
+
+    context: |
+      ## The mintItem Function
+
+      Minting is how new NFTs are born. Here's our minting function:
+
+      ```solidity
+      function mintItem(address to, string memory uri) public returns (uint256) {
+          tokenIdCounter++;
+          uint256 tokenId = tokenIdCounter;
+          _safeMint(to, tokenId);
+          _setTokenURI(tokenId, uri);
+          return tokenId;
+      }
+      ```
+
+      Let's break it down step by step:
+
+      1. **`tokenIdCounter++`** — increment the counter first, so IDs start at 1 (not 0)
+      2. **`uint256 tokenId = tokenIdCounter`** — save the new ID to a local variable
+      3. **`_safeMint(to, tokenId)`** — this OpenZeppelin function creates the token and assigns it to the `to` address. The "safe" part means it checks if `to` is a smart contract, and if so, verifies that contract can handle ERC-721 tokens (preventing tokens from getting stuck forever in contracts that don't support them)
+      4. **`_setTokenURI(tokenId, uri)`** — stores the metadata URI for this token (comes from ERC721URIStorage). The `uri` parameter is an IPFS CID pointing to a JSON file with the NFT's name, description, image, etc.
+      5. **`return tokenId`** — returns the new token's ID so the caller knows which token was created
+
+      ## Why `_safeMint` instead of `_mint`?
+
+      If you send an NFT to a contract address that doesn't know how to handle ERC-721 tokens, that NFT is **permanently locked** — nobody can ever get it back. `_safeMint` prevents this by calling `onERC721Received` on the recipient contract. If the contract doesn't implement this callback, the transaction reverts.
+
+    questions:
+      - text: "Why does the function use `_safeMint` instead of `_mint`? What problem does this prevent?"
+        concepts: ["safe", "contract", "stuck", "locked", "lost", "check", "receiver", "handle", "onERC721Received"]
+        hint: "Think about what happens if you send an NFT to a smart contract that has no idea what an NFT is"
+
+      - text: "Why do we increment tokenIdCounter BEFORE using it (so IDs start at 1 rather than 0)? Can you think of a practical reason?"
+        concepts: ["zero", "default", "uninitialized", "doesn't exist", "check", "nonexistent", "no token 0"]
+        hint: "In Solidity, what value does an uninitialized uint256 have? What if you want to check whether something 'exists'?"
+
+    unlocks:
+      file: "packages/hardhat/contracts/YourCollectible.sol"
+      todo: "mint"
+      code: |
+        function mintItem(address to, string memory uri) public returns (uint256) {
+                tokenIdCounter++;
+                uint256 tokenId = tokenIdCounter;
+                _safeMint(to, tokenId);
+                _setTokenURI(tokenId, uri);
+                return tokenId;
+            }
+
+  # ============================================================
+  # 4. Inheritance & Overrides
+  # ============================================================
+  - id: "overrides"
+    title: "Inheritance & Overrides"
+    description: "Understand why Solidity requires explicit overrides when inheriting from multiple contracts"
+
+    context: |
+      ## The Diamond Problem
+
+      Our contract inherits from ERC721, ERC721Enumerable, and ERC721URIStorage — and some of these define the **same function**. This is called the "diamond problem" in programming: if two parent classes have the same method, which one does the child use?
+
+      Solidity solves this by requiring you to **explicitly override** any function that exists in multiple parents. You must list all the parents that define it:
+
+      ```solidity
+      function _update(address to, uint256 tokenId, address auth)
+          internal override(ERC721, ERC721Enumerable) returns (address)
+      {
+          return super._update(to, tokenId, auth);
+      }
+      ```
+
+      The `override(ERC721, ERC721Enumerable)` tells the compiler "I know both parents have this function, and I'm intentionally resolving the conflict."
+
+      ## The `super` Keyword
+
+      `super._update(...)` calls the parent implementation using Solidity's **C3 linearization** — a deterministic ordering of parent contracts. This ensures each parent's logic runs in the right order. For `_update`, ERC721Enumerable needs to update its token-tracking data structures, then ERC721 handles the actual ownership transfer.
+
+      ## The Four Overrides
+
+      Our contract needs four overrides:
+      - **`_update`** — called on every transfer/mint/burn (ERC721 + ERC721Enumerable both define it)
+      - **`_increaseBalance`** — updates balance tracking (ERC721 + ERC721Enumerable)
+      - **`tokenURI`** — returns the metadata URI (ERC721 + ERC721URIStorage)
+      - **`supportsInterface`** — ERC-165 introspection, lets other contracts ask "do you support ERC-721?" (all three ERC721 variants define it)
+
+      These are mostly boilerplate — the pattern is always `return super.functionName(args)` — but they're required for the contract to compile.
+
+    questions:
+      - text: "Why does Solidity require you to explicitly write override functions when multiple parent contracts define the same function?"
+        concepts: ["ambiguity", "conflict", "which one", "diamond", "multiple", "explicit", "resolve", "compiler"]
+        hint: "If ERC721 and ERC721Enumerable both have `_update`, how does the compiler know which one to use without you being explicit?"
+
+      - text: "What does `supportsInterface` do? Why is it useful for other contracts or applications interacting with your NFT?"
+        concepts: ["ERC-165", "check", "detect", "query", "support", "discover", "interface", "capability", "standard"]
+        hint: "Imagine a marketplace contract that wants to list your NFT — how does it know your contract actually follows the ERC-721 standard?"
+
+    unlocks:
+      file: "packages/hardhat/contracts/YourCollectible.sol"
+      todo: "overrides"
+      code: |
+        // Override functions from OpenZeppelin ERC721, ERC721Enumerable and ERC721URIStorage
+
+            function _update(
+                address to,
+                uint256 tokenId,
+                address auth
+            ) internal override(ERC721, ERC721Enumerable) returns (address) {
+                return super._update(to, tokenId, auth);
+            }
+
+            function _increaseBalance(address account, uint128 value) internal override(ERC721, ERC721Enumerable) {
+                super._increaseBalance(account, value);
+            }
+
+            function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+                return super.tokenURI(tokenId);
+            }
+
+            function supportsInterface(
+                bytes4 interfaceId
+            ) public view override(ERC721, ERC721Enumerable, ERC721URIStorage) returns (bool) {
+                return super.supportsInterface(interfaceId);
+            }
+
+  # ============================================================
+  # 5. Gas & Wallets
+  # ============================================================
+  - id: "gas-wallets"
+    title: "Gas & Wallets"
+    description: "Explore burner wallets and gas fees on your local blockchain"
+
+    context: |
+      ## Your Contract is Deployed!
+
+      Your NFT contract just got deployed to your local blockchain. Let's explore it through the frontend!
+
+      ## Gas Fees
+
+      Every transaction on Ethereum costs a small fee called **gas**. Gas pays validators for executing your transaction. Even on your local blockchain, transactions use gas — but the test ETH is free!
+
+      ## Burner Wallets
+
+      At first, **don't** connect MetaMask. If you already have it connected, click **Disconnect**.
+
+      🏗 Scaffold-ETH 2 uses **burner wallets** on localhost — disposable wallets that auto-sign transactions so you can keep building without confirmation popups. You'll see your burner wallet address in the top-right corner of the app.
+
+      ## Try It Out
+
+      1. Look at the top-right corner of http://localhost:3000 — that's your burner wallet address.
+      2. Open an **incognito window** and navigate to http://localhost:3000 — you'll see a completely different address! That's a new burner wallet.
+      3. Copy the incognito window address, then go back to your first window and use the **Faucet** button (bottom-left) to send some test ETH to that address.
+      4. When you close the incognito window, that wallet is gone forever — burner wallets are perfect for local development.
+
+    questions:
+      - text: "What is gas in Ethereum? Why do transactions need it?"
+        concepts: ["fee", "pay", "cost", "validator", "execute", "computation", "incentive", "resource"]
+        hint: "Think of gas as postage for the blockchain — it pays for the computational work needed to process your transaction."
+
+      - text: "Why are burner wallets useful for local development? What happens to them when you close the browser?"
+        concepts: ["disposable", "temporary", "auto-sign", "no confirmation", "gone", "destroyed", "convenient", "local", "development"]
+        hint: "Burner wallets save you from clicking 'confirm' on every transaction. What happens to a wallet that only exists in the browser's memory?"
+
+  # ============================================================
+  # 6. Minting & Exploring NFTs
+  # ============================================================
+  - id: "minting-exploring"
+    title: "Minting & Exploring NFTs"
+    description: "Mint NFTs, transfer them, and explore ownership through the frontend"
+
+    context: |
+      ## Minting Your First NFTs
+
+      In this challenge you'll mint collectible Buffalo, Zebra, and Rhino NFTs. Their metadata is stored on IPFS — a decentralized storage network.
+
+      ## Try It Out
+
+      1. Go to the **My NFTs** tab and click **MINT NFT** to mint your first ERC-721 token.
+      2. Mint a few more — you should see your NFTs appear with their images and names.
+      3. Open an **incognito window** to http://localhost:3000 to get a second burner wallet.
+      4. **Transfer an NFT**: Use the transfer UI to send a token to the incognito window address. Check that it appears there!
+      5. Try minting from the incognito window — can you mint with no funds? You might need to grab funds from the **Faucet** first to pay for gas.
+      6. Go to the **Debug Contracts** tab and explore `YourCollectible`:
+         - Call `ownerOf()` with a token ID to see who owns it
+         - Call `balanceOf()` with an address to see how many NFTs they hold
+         - Check `tokenURI()` to see the IPFS metadata link
+
+      ## Onchain Ownership
+
+      - **What is ownership?** Whoever `ownerOf(tokenId)` returns.
+      - **Who can transfer?** Only the owner or an approved operator.
+      - **What happens on transfer?** Ownership moves atomically to the new address and a `Transfer` event is emitted.
+      - **How do approvals work?** Use `approve()` for a single token or `setApprovalForAll()` for an operator across all your tokens.
+      - **How to count holdings?** `balanceOf(address)` shows how many unique tokens an address owns.
+
+    questions:
+      - text: "After minting an NFT, how can you verify on the Debug Contracts tab who owns a specific token?"
+        concepts: ["ownerOf", "token ID", "address", "debug", "query", "check"]
+        hint: "There's a function on the contract that takes a token ID and returns the owner's address."
+
+      - text: "Why do you need faucet funds (test ETH) to mint an NFT from a new address, even though minting itself doesn't cost any tokens?"
+        concepts: ["gas", "fee", "transaction", "ETH", "pay", "cost", "execute"]
+        hint: "Even if the mint function is free, every transaction on Ethereum requires something to be paid to the network."
+
+completion_message: |
+  Congratulations — you've completed the Tokenization Challenge!
+
+  Your NFT contract is fully built and you've minted your first NFTs! Here's what you learned:
+  - **ERC-721 standard** and OpenZeppelin's building blocks
+  - **State management** with token counters and constructors
+  - **Minting** with `_safeMint` and IPFS metadata
+  - **Solidity inheritance** and the diamond problem
+  - **Gas fees** and burner wallets for local development
+  - **Onchain ownership** — minting, transferring, and verifying NFTs through the frontend
+
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [Speedrun Ethereum challenge page](https://speedrunethereum.com/challenge/tokenization):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract

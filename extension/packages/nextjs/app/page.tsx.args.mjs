@@ -38,5 +38,4 @@ export const description = `
   </div>
 `;
 
-export const externalExtensionName =
-  "SpeedRunEthereum Challenge: Tokenization";
+export const externalExtensionName = "Speedrun Ethereum Challenge: Tokenization";
