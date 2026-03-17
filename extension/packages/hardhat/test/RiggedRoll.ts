@@ -60,7 +60,7 @@ describe("🚩 Challenge: 🎲 Dice Game", function () {
 
       const bigInt = BigInt(hash);
       expectedRoll = bigInt % 16n;
-      if (expectedRoll < 5n == getRollLessThanFive) {
+      if (expectedRoll <= 5n == getRollLessThanFive) {
         break;
       }
 
@@ -69,6 +69,21 @@ describe("🚩 Challenge: 🎲 Dice Game", function () {
     }
     return expectedRoll;
   }
+
+  describe("Checkpoint1: Receiving ETH", function () {
+    beforeEach(async function () {
+      await deployContracts();
+    });
+
+    it("Checkpoint1: Should accept ETH transfers", async function () {
+      console.log("\t", "💸 Funding RiggedRoll contract");
+      await fundRiggedContract();
+      const riggedRollAddress = await riggedRoll.getAddress();
+      const balance = await provider.getBalance(riggedRollAddress);
+      console.log("\t", "💲 RiggedRoll balance: ", ethers.formatEther(balance));
+      expect(balance).to.gte(rollAmount);
+    });
+  });
 
   describe("Checkpoint2: 🔑 Rigged Contract", function () {
     beforeEach(async function () {
