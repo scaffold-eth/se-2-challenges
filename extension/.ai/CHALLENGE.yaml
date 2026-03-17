@@ -1,0 +1,1230 @@
+name: "Oracles"
+version: "1.0"
+description: "Build three oracle architectures — Whitelist, Staking, and Optimistic — to understand how real-world data gets on-chain securely"
+difficulty: "intermediate"
+estimated_time: "4 - 12 hours"
+
+setup:
+  file: "packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol"
+
+welcome_message: |
+  Welcome to the Oracle Challenge!
+
+  You'll build **three oracle systems** from scratch, each representing a fundamentally different approach to bringing off-chain data on-chain:
+
+  1. **Whitelist Oracle** — Simple, centralized price aggregation with median calculation
+  2. **Staking Oracle** — Decentralized with ERC-20 staking, slashing, and economic incentives
+  3. **Optimistic Oracle** — Dispute-based system for any binary question, inspired by UMA Protocol
+
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
+  `yarn deploy` will likely fail initially since the contracts aren't ready yet — that's expected!
+
+  > Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
+
+  **How this works:**
+  - I'll teach you a concept, then give you a coding task
+  - You write the code in your editor, then say **"check"** and I'll run the tests
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
+  - Use **`/skip`** if you want me to write the code and explain it
+
+  Your progress is saved automatically. Use `/start` to resume anytime.
+
+  Let's build some oracles!
+
+checkpoints:
+  # ============================================================
+  # CHECKPOINT 1: Whitelist Oracle
+  # ============================================================
+  - id: "whitelist-oracle"
+    title: "Whitelist Oracle"
+    description: "Build a centralized oracle that aggregates prices from multiple whitelisted sources using median calculation"
+
+    context: |
+      ## What is an Oracle?
+
+      Oracles are bridges between blockchains and the external world. Smart contracts can only access data on-chain, but most real-world data (prices, weather, sports scores) exists off-chain. Oracles solve this by bringing external data on-chain.
+
+      ## Whitelist Oracle Architecture
+
+      The simplest oracle design uses a **centralized authority** to control which data sources can provide information. Our system has two layers:
+
+      ### SimpleOracle — The Building Block
+
+      Each `SimpleOracle` is a basic contract where an owner can set a price:
+
+      ```solidity
+      function setPrice(uint256 _newPrice) public onlyOwner { ... }
+      function getPrice() public view returns (uint256 price, uint256 timestamp) { ... }
+      ```
+
+      ### WhitelistOracle — The Aggregator
+
+      The `WhitelistOracle` **creates and manages multiple SimpleOracle contracts**:
+
+      ```solidity
+      SimpleOracle[] public oracles;  // Array of SimpleOracle instances
+      ```
+
+      It aggregates their prices using **median calculation** — which resists outliers. If 3 oracles report [98, 100, 102], the median is 100.
+
+      ### Key Patterns You'll Use
+
+      **Factory Pattern** — `WhitelistOracle` deploys new `SimpleOracle` contracts:
+      ```solidity
+      SimpleOracle newOracle = new SimpleOracle(_owner);
+      ```
+
+      **Swap-and-Pop** — Gas-efficient array removal (O(1) instead of O(n)):
+      ```solidity
+      array[index] = array[array.length - 1];
+      array.pop();
+      ```
+
+      **Stale Data Filtering** — Only use prices updated within `STALE_DATA_WINDOW` (24 seconds):
+      ```solidity
+      if (currentTime - timestamp < STALE_DATA_WINDOW) { /* price is fresh */ }
+      ```
+
+      **StatisticsUtils Library** — Already imported and applied to `uint256[]`:
+      ```solidity
+      validPrices.sort();
+      return validPrices.getMedian();
+      ```
+
+      Open `packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol` — you'll see four empty functions to implement.
+
+    questions:
+      - text: "Why does the WhitelistOracle use a median instead of an average to aggregate prices? What attack does this protect against?"
+        concepts:
+          [
+            "outlier",
+            "manipulat",
+            "extreme",
+            "resist",
+            "single bad",
+            "median",
+            "robust",
+            "skew",
+          ]
+        hint: "Think about what happens if one oracle reports a wildly wrong price. How does median vs average handle that?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol`.
+
+        Implement all four functions:
+
+        1. **`addOracle(address _owner)`** — Deploy a new `SimpleOracle` with the given owner, push it to the `oracles` array, and emit `OracleAdded`
+
+        2. **`removeOracle(uint256 index)`** — Validate the index, use swap-and-pop to remove the oracle at that index, emit `OracleRemoved`
+
+        3. **`getPrice()`** — Loop through all oracles, filter stale prices (older than `STALE_DATA_WINDOW`), collect fresh prices into a right-sized array, sort and return the median using `StatisticsUtils`
+
+        4. **`getActiveOracleNodes()`** — Similar to `getPrice()` but collect oracle **addresses** instead of prices. Return an array of active oracle addresses.
+
+        Say **"check"** when you're ready!
+
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset` to deploy your contracts
+        2. Open http://localhost:3000 — test the whitelist oracle
+        3. Try adding and removing oracles, and observe how the aggregated price changes
+        4. Change the price of individual SimpleOracle contracts and add new oracle nodes to see how the median price changes
+
+        > The `onlyOwner` modifiers are commented out so you have full control to experiment.
+
+        Run `yarn simulate:whitelist` to see a live simulation with automated bots acting as oracle providers:
+        ```
+        yarn simulate:whitelist
+        ```
+      file: "packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol"
+      test: "yarn test --grep 'Checkpoint1'"
+      hints:
+        - "For `addOracle`: create with `SimpleOracle newOracle = new SimpleOracle(_owner)`, push to array, emit event with `address(newOracle)` and `_owner`."
+        - |
+          For `getPrice`: use a temp array of size `oracles.length`, loop through oracles calling `getPrice()`, check `currentTime - timestamp < STALE_DATA_WINDOW`, collect valid prices, then create a right-sized array, sort it and call `getMedian()`.
+        - |
+          Full solutions:
+          ```solidity
+          function addOracle(address _owner) public onlyOwner {
+              SimpleOracle newOracle = new SimpleOracle(_owner);
+              oracles.push(newOracle);
+              emit OracleAdded(address(newOracle), _owner);
+          }
+
+          function removeOracle(uint256 index) public onlyOwner {
+              if (index >= oracles.length) revert IndexOutOfBounds();
+              address oracleAddress = address(oracles[index]);
+              if (index != oracles.length - 1) {
+                  oracles[index] = oracles[oracles.length - 1];
+              }
+              oracles.pop();
+              emit OracleRemoved(oracleAddress);
+          }
+
+          function getPrice() public view returns (uint256) {
+              if (oracles.length == 0) revert NoOraclesAvailable();
+              uint256[] memory prices = new uint256[](oracles.length);
+              uint256 validCount = 0;
+              uint256 currentTime = block.timestamp;
+              for (uint256 i = 0; i < oracles.length; i++) {
+                  (uint256 price, uint256 timestamp) = oracles[i].getPrice();
+                  if (currentTime - timestamp < STALE_DATA_WINDOW) {
+                      prices[validCount] = price;
+                      validCount++;
+                  }
+              }
+              uint256[] memory validPrices = new uint256[](validCount);
+              for (uint256 i = 0; i < validCount; i++) {
+                  validPrices[i] = prices[i];
+              }
+              validPrices.sort();
+              return validPrices.getMedian();
+          }
+
+          function getActiveOracleNodes() public view returns (address[] memory) {
+              address[] memory tempNodes = new address[](oracles.length);
+              uint256 count = 0;
+              for (uint256 i = 0; i < oracles.length; i++) {
+                  (, uint256 timestamp) = oracles[i].getPrice();
+                  if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
+                      tempNodes[count] = address(oracles[i]);
+                      count++;
+                  }
+              }
+              address[] memory activeNodes = new address[](count);
+              for (uint256 j = 0; j < count; j++) {
+                  activeNodes[j] = tempNodes[j];
+              }
+              return activeNodes;
+          }
+          ```
+      solution: |
+        function addOracle(address _owner) public onlyOwner {
+            SimpleOracle newOracle = new SimpleOracle(_owner);
+            oracles.push(newOracle);
+            emit OracleAdded(address(newOracle), _owner);
+        }
+
+        function removeOracle(uint256 index) public onlyOwner {
+            if (index >= oracles.length) revert IndexOutOfBounds();
+            address oracleAddress = address(oracles[index]);
+            if (index != oracles.length - 1) {
+                oracles[index] = oracles[oracles.length - 1];
+            }
+            oracles.pop();
+            emit OracleRemoved(oracleAddress);
+        }
+
+        function getPrice() public view returns (uint256) {
+            if (oracles.length == 0) revert NoOraclesAvailable();
+            uint256[] memory prices = new uint256[](oracles.length);
+            uint256 validCount = 0;
+            uint256 currentTime = block.timestamp;
+            for (uint256 i = 0; i < oracles.length; i++) {
+                (uint256 price, uint256 timestamp) = oracles[i].getPrice();
+                if (currentTime - timestamp < STALE_DATA_WINDOW) {
+                    prices[validCount] = price;
+                    validCount++;
+                }
+            }
+            uint256[] memory validPrices = new uint256[](validCount);
+            for (uint256 i = 0; i < validCount; i++) {
+                validPrices[i] = prices[i];
+            }
+            validPrices.sort();
+            return validPrices.getMedian();
+        }
+
+        function getActiveOracleNodes() public view returns (address[] memory) {
+            address[] memory tempNodes = new address[](oracles.length);
+            uint256 count = 0;
+            for (uint256 i = 0; i < oracles.length; i++) {
+                (, uint256 timestamp) = oracles[i].getPrice();
+                if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
+                    tempNodes[count] = address(oracles[i]);
+                    count++;
+                }
+            }
+            address[] memory activeNodes = new address[](count);
+            for (uint256 j = 0; j < count; j++) {
+                activeNodes[j] = tempNodes[j];
+            }
+            return activeNodes;
+        }
+
+  # ============================================================
+  # CHECKPOINT 2: Staking Oracle
+  # ============================================================
+  - id: "staking-oracle"
+    title: "Staking Oracle"
+    description: "Build a decentralized oracle with ERC-20 staking, bucket-based reporting, slashing, and economic incentives"
+
+    context: |
+      ## Staking Oracle Architecture
+
+      Unlike the whitelist oracle's centralized control, the staking oracle uses **economic incentives** to encourage honest reporting:
+
+      - Nodes stake **ORA** (ERC-20 token) to participate
+      - Nodes report prices **once per bucket** (a bucket spans 24 blocks by default)
+      - Buckets are finalized by recording the **median** price
+      - Nodes that deviate too far from the median get **slashed**
+      - Active reporters earn **ORA rewards**
+
+      ### Key Concepts
+
+      **Bucket System** — Time is divided into fixed windows:
+      ```solidity
+      function getCurrentBucketNumber() public view returns (uint256) {
+          return (block.number / BUCKET_WINDOW) + 1;  // 1-indexed
+      }
+      ```
+
+      **ERC-20 Staking** — Nodes approve and transfer ORA tokens:
+      ```solidity
+      bool success = oracleToken.transferFrom(msg.sender, address(this), amount);
+      ```
+
+      **Effective Stake** — Inactivity reduces stake over time. For each missed bucket, `INACTIVITY_PENALTY` is subtracted. Nodes in the current bucket don't count that bucket's report as "completed" yet.
+
+      **Median Finalization** — Anyone can call `recordBucketMedian(bucket)` for past buckets. This sorts a **memory copy** of prices (to preserve storage ordering for slashing) and stores the median.
+
+      **Slashing** — If a node's reported price deviates > `MAX_DEVIATION_BPS` (10%) from the recorded median, anyone can slash them. The slasher gets a percentage of the penalty as reward.
+
+      **Deviation Check** — Basis points comparison:
+      ```solidity
+      uint256 deviation = reportedPrice > medianPrice ? reportedPrice - medianPrice : medianPrice - reportedPrice;
+      uint256 deviationBps = (deviation * 10_000) / medianPrice;
+      return deviationBps > MAX_DEVIATION_BPS;
+      ```
+
+      Open `packages/hardhat/contracts/01_Staking/StakingOracle.sol` — there are 16 functions to implement. The contract skeleton has all structs, events, errors, and modifiers already defined.
+
+    questions:
+      - text: "Why does the staking oracle use buckets instead of letting nodes report prices at any time? What problem does this solve?"
+        concepts:
+          [
+            "window",
+            "group",
+            "period",
+            "aggregate",
+            "once per",
+            "spam",
+            "organize",
+            "batch",
+            "compare",
+            "fair",
+          ]
+        hint: "If nodes could report at any time, how would you decide which prices to compare against each other for slashing?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/01_Staking/StakingOracle.sol`.
+
+        Implement all 16 functions. Here's a summary of each:
+
+        **View functions:**
+        1. `getCurrentBucketNumber()` — `(block.number / BUCKET_WINDOW) + 1`
+        2. `getNodeAddresses()` — return the `nodeAddresses` array
+        3. `getEffectiveStake(address)` — compute stake minus inactivity penalties
+        4. `getLatestPrice()` — return median from `getCurrentBucketNumber() - 1`
+        5. `getPastPrice(uint256)` — return median for any finalized bucket
+        6. `getSlashedStatus(address, uint256)` — find node's price and slash status in a bucket
+        7. `getOutlierNodes(uint256)` — identify nodes that deviated beyond threshold
+
+        **State-changing functions:**
+        8. `registerNode(uint256 amount)` — stake ORA to become a node
+        9. `addStake(uint256 amount)` — increase stake
+        10. `reportPrice(uint256 price)` — report price for current bucket
+        11. `claimReward()` — claim ORA for reports made
+        12. `recordBucketMedian(uint256)` — finalize a past bucket's median
+        13. `slashNode(address, uint256, uint256, uint256)` — slash a deviated node
+        14. `exitNode(uint256 index)` — withdraw stake and leave
+
+        **Internal functions:**
+        15. `_checkPriceDeviated(uint256, uint256)` — deviation > MAX_DEVIATION_BPS?
+        16. `_removeNode(address, uint256)` — swap-and-pop + mark inactive
+
+        Say **"check"** when you're ready!
+
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset` to deploy your contracts
+        2. Open http://localhost:3000 — go to the **Staking** page
+        3. **Buy ORA**: Use the **Buy ORA** widget to swap **0.5 ETH → 100 ORA** (the ORA token mints directly when you buy)
+        4. **Register as a node**: Stake your ORA to become an oracle node
+        5. **Report a price**: Press the pencil icon to report a new price, enter your price, and confirm. Use the refresh icon to quickly re-report the same price in the next bucket
+        6. **Navigate buckets**: Use the arrows to browse past buckets
+        7. **Record median**: Press the **Record Bucket Median** button on past buckets to finalize them
+
+        > "Insufficient Stake" errors? Your staked balance has fallen below the minimum due to inactivity penalties. Buy more ORA and add stake.
+
+        Run `yarn simulate:staking` to watch a live simulation with multiple nodes:
+        ```
+        yarn simulate:staking
+        ```
+        Press the gear icon on simulation nodes to adjust price deviation and skip probability. Navigate to past buckets to see the "slash" button on deviated nodes.
+
+        To enable auto-slashing:
+        ```
+        AUTO_SLASH=true yarn simulate:staking
+        ```
+      file: "packages/hardhat/contracts/01_Staking/StakingOracle.sol"
+      test: "yarn test --grep 'Checkpoint2'"
+      hints:
+        - |
+          Start with the simple view functions:
+          ```solidity
+          function getCurrentBucketNumber() public view returns (uint256) {
+              return (block.number / BUCKET_WINDOW) + 1;
+          }
+          function getNodeAddresses() public view returns (address[] memory) {
+              return nodeAddresses;
+          }
+          ```
+        - |
+          For `registerNode`: check `amount >= MINIMUM_STAKE`, node not active, `transferFrom` ORA tokens, create `OracleNode` struct with `firstBucket: getCurrentBucketNumber()`, push to `nodeAddresses`.
+
+          For `reportPrice`: check price != 0, effective stake >= MINIMUM_STAKE, not already reported this bucket, push to `bucket.reporters` and `bucket.prices`, update node state.
+        - |
+          For `getEffectiveStake`:
+          ```solidity
+          function getEffectiveStake(address nodeAddress) public view returns (uint256) {
+              OracleNode memory n = nodes[nodeAddress];
+              if (!n.active) return 0;
+              uint256 currentBucket = getCurrentBucketNumber();
+              if (currentBucket == n.firstBucket) return n.stakedAmount;
+              uint256 expectedReports = currentBucket - n.firstBucket;
+              uint256 actualReportsCompleted = n.reportCount;
+              if (n.lastReportedBucket == currentBucket && actualReportsCompleted > 0) {
+                  actualReportsCompleted -= 1;
+              }
+              if (actualReportsCompleted >= expectedReports) return n.stakedAmount;
+              uint256 missed = expectedReports - actualReportsCompleted;
+              uint256 penalty = missed * INACTIVITY_PENALTY;
+              if (penalty > n.stakedAmount) return 0;
+              return n.stakedAmount - penalty;
+          }
+          ```
+
+          For `slashNode` — verify node active, past bucket, median recorded, not already slashed, verify indices, check deviation, slash up to MISREPORT_PENALTY, reward slasher.
+      solution: |
+        function getCurrentBucketNumber() public view returns (uint256) {
+            return (block.number / BUCKET_WINDOW) + 1;
+        }
+
+        function getNodeAddresses() public view returns (address[] memory) {
+            return nodeAddresses;
+        }
+
+        function registerNode(uint256 amount) public {
+            if (amount < MINIMUM_STAKE) revert InsufficientStake();
+            if (nodes[msg.sender].active) revert NodeAlreadyRegistered();
+            bool success = oracleToken.transferFrom(msg.sender, address(this), amount);
+            if (!success) revert TransferFailed();
+            nodes[msg.sender] = OracleNode({
+                stakedAmount: amount,
+                lastReportedBucket: 0,
+                reportCount: 0,
+                claimedReportCount: 0,
+                firstBucket: getCurrentBucketNumber(),
+                active: true
+            });
+            nodeAddresses.push(msg.sender);
+            emit NodeRegistered(msg.sender, amount);
+        }
+
+        function addStake(uint256 amount) public onlyNode {
+            if (amount == 0) revert InsufficientStake();
+            bool success = oracleToken.transferFrom(msg.sender, address(this), amount);
+            if (!success) revert TransferFailed();
+            nodes[msg.sender].stakedAmount += amount;
+            emit StakeAdded(msg.sender, amount);
+        }
+
+        function getEffectiveStake(address nodeAddress) public view returns (uint256) {
+            OracleNode memory n = nodes[nodeAddress];
+            if (!n.active) return 0;
+            uint256 currentBucket = getCurrentBucketNumber();
+            if (currentBucket == n.firstBucket) return n.stakedAmount;
+            uint256 expectedReports = currentBucket - n.firstBucket;
+            uint256 actualReportsCompleted = n.reportCount;
+            if (n.lastReportedBucket == currentBucket && actualReportsCompleted > 0) {
+                actualReportsCompleted -= 1;
+            }
+            if (actualReportsCompleted >= expectedReports) return n.stakedAmount;
+            uint256 missed = expectedReports - actualReportsCompleted;
+            uint256 penalty = missed * INACTIVITY_PENALTY;
+            if (penalty > n.stakedAmount) return 0;
+            return n.stakedAmount - penalty;
+        }
+
+        function reportPrice(uint256 price) public onlyNode {
+            if (price == 0) revert InvalidPrice();
+            if (getEffectiveStake(msg.sender) < MINIMUM_STAKE) revert InsufficientStake();
+            OracleNode storage node = nodes[msg.sender];
+            uint256 currentBucket = getCurrentBucketNumber();
+            if (node.lastReportedBucket == currentBucket) revert AlreadyReportedInCurrentBucket();
+            BlockBucket storage bucket = blockBuckets[currentBucket];
+            bucket.reporters.push(msg.sender);
+            bucket.prices.push(price);
+            node.lastReportedBucket = currentBucket;
+            node.reportCount++;
+            emit PriceReported(msg.sender, price, currentBucket);
+        }
+
+        function claimReward() public {
+            OracleNode storage node = nodes[msg.sender];
+            uint256 delta = node.reportCount - node.claimedReportCount;
+            if (delta == 0) revert NoRewardsAvailable();
+            node.claimedReportCount = node.reportCount;
+            oracleToken.mint(msg.sender, delta * REWARD_PER_REPORT);
+            emit NodeRewarded(msg.sender, delta * REWARD_PER_REPORT);
+        }
+
+        function recordBucketMedian(uint256 bucketNumber) public {
+            BlockBucket storage bucket = blockBuckets[bucketNumber];
+            if (bucket.medianPrice != 0) revert BucketMedianAlreadyRecorded();
+            if (bucketNumber >= getCurrentBucketNumber()) revert OnlyPastBucketsAllowed();
+            uint256[] memory prices = bucket.prices;
+            prices.sort();
+            bucket.medianPrice = prices.getMedian();
+            emit BucketMedianRecorded(bucketNumber, bucket.medianPrice);
+        }
+
+        function getLatestPrice() public view returns (uint256) {
+            BlockBucket storage bucket = blockBuckets[getCurrentBucketNumber() - 1];
+            if (bucket.medianPrice == 0) revert MedianNotRecorded();
+            return bucket.medianPrice;
+        }
+
+        function getPastPrice(uint256 bucketNumber) public view returns (uint256) {
+            BlockBucket storage bucket = blockBuckets[bucketNumber];
+            if (bucket.medianPrice == 0) revert MedianNotRecorded();
+            return bucket.medianPrice;
+        }
+
+        function getSlashedStatus(address nodeAddress, uint256 bucketNumber) public view returns (uint256 price, bool slashed) {
+            BlockBucket storage bucket = blockBuckets[bucketNumber];
+            for (uint256 i = 0; i < bucket.reporters.length; i++) {
+                if (bucket.reporters[i] == nodeAddress) {
+                    price = bucket.prices[i];
+                    slashed = bucket.slashedOffenses[nodeAddress];
+                }
+            }
+        }
+
+        function _checkPriceDeviated(uint256 reportedPrice, uint256 medianPrice) internal pure returns (bool) {
+            uint256 deviation = reportedPrice > medianPrice ? reportedPrice - medianPrice : medianPrice - reportedPrice;
+            uint256 deviationBps = (deviation * 10_000) / medianPrice;
+            return deviationBps > MAX_DEVIATION_BPS;
+        }
+
+        function getOutlierNodes(uint256 bucketNumber) public view returns (address[] memory) {
+            BlockBucket storage bucket = blockBuckets[bucketNumber];
+            if (bucket.medianPrice == 0) revert MedianNotRecorded();
+            address[] memory outliers = new address[](bucket.reporters.length);
+            uint256 outlierCount = 0;
+            for (uint256 i = 0; i < bucket.reporters.length; i++) {
+                address reporter = bucket.reporters[i];
+                if (bucket.slashedOffenses[reporter]) continue;
+                uint256 reportedPrice = bucket.prices[i];
+                if (reportedPrice == 0) continue;
+                if (_checkPriceDeviated(reportedPrice, bucket.medianPrice)) {
+                    outliers[outlierCount] = reporter;
+                    outlierCount++;
+                }
+            }
+            address[] memory trimmed = new address[](outlierCount);
+            for (uint256 j = 0; j < outlierCount; j++) {
+                trimmed[j] = outliers[j];
+            }
+            return trimmed;
+        }
+
+        function _removeNode(address nodeAddress, uint256 index) internal {
+            if (nodeAddresses.length <= index) revert IndexOutOfBounds();
+            if (nodeAddresses[index] != nodeAddress) revert NodeNotAtGivenIndex();
+            nodeAddresses[index] = nodeAddresses[nodeAddresses.length - 1];
+            nodeAddresses.pop();
+            nodes[nodeAddress].active = false;
+        }
+
+        function slashNode(address nodeToSlash, uint256 bucketNumber, uint256 reportIndex, uint256 nodeAddressesIndex) public {
+            if (!nodes[nodeToSlash].active) revert NodeNotRegistered();
+            if (getCurrentBucketNumber() == bucketNumber) revert OnlyPastBucketsAllowed();
+            BlockBucket storage bucket = blockBuckets[bucketNumber];
+            if (bucket.medianPrice == 0) revert MedianNotRecorded();
+            if (bucket.slashedOffenses[nodeToSlash]) revert NodeAlreadySlashed();
+            if (reportIndex >= bucket.reporters.length) revert IndexOutOfBounds();
+            if (nodeToSlash != bucket.reporters[reportIndex]) revert NodeNotAtGivenIndex();
+            uint256 reportedPrice = bucket.prices[reportIndex];
+            if (reportedPrice == 0) revert NodeDidNotReport();
+            if (!_checkPriceDeviated(reportedPrice, bucket.medianPrice)) revert NotDeviated();
+            bucket.slashedOffenses[nodeToSlash] = true;
+            OracleNode storage node = nodes[nodeToSlash];
+            uint256 actualPenalty = MISREPORT_PENALTY > node.stakedAmount ? node.stakedAmount : MISREPORT_PENALTY;
+            node.stakedAmount -= actualPenalty;
+            if (node.stakedAmount == 0) {
+                _removeNode(nodeToSlash, nodeAddressesIndex);
+                emit NodeExited(nodeToSlash, 0);
+            }
+            uint256 reward = (actualPenalty * SLASHER_REWARD_PERCENTAGE) / 100;
+            bool rewardSent = oracleToken.transfer(msg.sender, reward);
+            if (!rewardSent) revert TransferFailed();
+            emit NodeSlashed(nodeToSlash, actualPenalty);
+        }
+
+        function exitNode(uint256 index) public onlyNode {
+            OracleNode storage node = nodes[msg.sender];
+            if (node.lastReportedBucket + WAITING_PERIOD > getCurrentBucketNumber()) revert WaitingPeriodNotOver();
+            uint256 stake = getEffectiveStake(msg.sender);
+            _removeNode(msg.sender, index);
+            nodes[msg.sender].stakedAmount = 0;
+            bool success = oracleToken.transfer(msg.sender, stake);
+            if (!success) revert TransferFailed();
+            emit NodeExited(msg.sender, stake);
+        }
+
+  # ============================================================
+  # CHECKPOINT 3: Optimistic Oracle — Architecture Overview
+  # ============================================================
+  - id: "optimistic-overview"
+    title: "Optimistic Oracle Architecture"
+    description: "Understand the optimistic oracle design pattern before implementing it"
+
+    context: |
+      ## What Makes It "Optimistic"?
+
+      The system **assumes proposals are correct** unless someone disputes them. This creates a game-theoretic mechanism where economic incentives drive honest behavior.
+
+      Unlike the previous oracles that focus on price data, this one handles **any binary (true/false) question** about real-world events.
+
+      ### The Flow
+
+      **Roles:**
+      - **Asserter** — Posts a question + reward (e.g., "Did ETH hit $5000 on Jan 1?")
+      - **Proposer** — Posts an answer + bond (e.g., "Yes, true")
+      - **Disputer** — Challenges the answer + bond (if they disagree)
+      - **Decider** — Resolves disputes and picks the winner
+
+      **Lifecycle:**
+      1. Asserter creates assertion with reward and time window
+      2. Proposer proposes an outcome (true/false) with a bond = 2x reward
+      3. Dispute window opens — if no dispute, proposer wins reward + bond back
+      4. If disputed, the decider settles it — winner gets reward + their bond back, loser's bond goes to decider
+
+      **If nobody proposes** before the assertion window closes, the asserter can reclaim their reward.
+
+      ### Why Bonds?
+
+      Bonds create **skin in the game**. A proposer risks losing their bond if they propose incorrectly and get disputed. A disputer risks their bond if the decider rules against them. This economic alignment keeps everyone honest.
+
+      ### Real-World Applications
+      - Cross-chain bridges: "Did transaction X happen on chain Y?"
+      - Insurance: "Did flight ABC get delayed by 2+ hours?"
+      - Prediction markets: "Did candidate X win?"
+
+      This design is inspired by [UMA Protocol](https://uma.xyz/).
+
+    questions:
+      - text: "Why does the optimistic oracle require bonds from both proposers and disputers? What would happen without bonds?"
+        concepts:
+          [
+            "skin in the game",
+            "risk",
+            "cost",
+            "incentive",
+            "spam",
+            "frivolous",
+            "economic",
+            "penalty",
+            "stake",
+            "honest",
+          ]
+        hint: "Without bonds, what stops someone from proposing false answers or disputing valid ones with no consequences?"
+
+      - text: "Why is the bond set to 2x the reward? What game-theoretic purpose does this serve?"
+        concepts:
+          [
+            "profit",
+            "loss",
+            "greater than",
+            "disincentive",
+            "cost more",
+            "not worth",
+            "risk reward",
+            "rational",
+          ]
+        hint: "If the bond equals the reward, a malicious proposer breaks even on average. What happens when the bond is higher?"
+
+  # ============================================================
+  # CHECKPOINT 4: Optimistic Oracle — Core Functions
+  # ============================================================
+  - id: "optimistic-core"
+    title: "Optimistic Oracle — Core Functions"
+    description: "Implement assertEvent, proposeOutcome, and disputeOutcome"
+
+    context: |
+      ## Building the Core
+
+      Open `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol`. The contract skeleton has all structs, events, errors, and modifiers defined. You need to implement the logic.
+
+      ### EventAssertion Struct
+
+      Each assertion stores:
+      ```solidity
+      struct EventAssertion {
+          address asserter;        // who created it
+          address proposer;        // who proposed an outcome
+          address disputer;        // who disputed (if any)
+          bool proposedOutcome;    // the proposed answer
+          bool resolvedOutcome;    // the final answer
+          uint256 reward;          // ETH reward for correct proposal
+          uint256 bond;            // required bond (2x reward)
+          uint256 startTime;       // when proposals can begin
+          uint256 endTime;         // deadline
+          bool claimed;            // whether reward was claimed
+          address winner;          // final winner
+          string description;      // the question being asked
+      }
+      ```
+
+      ### assertEvent — Creating a Question
+
+      - Takes `description`, `startTime`, `endTime`
+      - `msg.value` is the reward (must be > 0)
+      - `startTime = 0` defaults to `block.timestamp`
+      - `endTime = 0` defaults to `startTime + MINIMUM_ASSERTION_WINDOW`
+      - Bond is set to `msg.value * 2`
+      - Store in `assertions[nextAssertionId]` and increment the ID
+
+      ### proposeOutcome — Answering the Question
+
+      - Must happen within the assertion window (`startTime` to `endTime`)
+      - `msg.value` must equal the assertion's `bond`
+      - Sets the `endTime` to `block.timestamp + DISPUTE_WINDOW` (starts the dispute clock)
+
+      ### disputeOutcome — Challenging the Answer
+
+      - Must happen before the new `endTime` (dispute window)
+      - `msg.value` must equal the assertion's `bond`
+      - Records the disputer
+
+    questions:
+      - text: "Why does proposeOutcome reset the endTime to start a dispute window, rather than keeping the original deadline?"
+        concepts:
+          [
+            "dispute",
+            "time",
+            "window",
+            "enough time",
+            "fair",
+            "challenge",
+            "opportunity",
+            "late proposal",
+          ]
+        hint: "What if someone proposes right before the original deadline? Would there be enough time to dispute?"
+
+    task:
+      description: |
+        Open `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol`.
+
+        Implement three functions:
+
+        1. **`assertEvent(string memory description, uint256 startTime, uint256 endTime)`**
+           - Require `msg.value > 0` (revert `InvalidValue`)
+           - Default `startTime` to `block.timestamp` if 0
+           - Default `endTime` to `startTime + MINIMUM_ASSERTION_WINDOW` if 0
+           - Validate `startTime >= block.timestamp` and `endTime >= startTime + MINIMUM_ASSERTION_WINDOW` (revert `InvalidTime`)
+           - Create `EventAssertion` with `bond = msg.value * 2`
+           - Store in `assertions[nextAssertionId]`, increment, emit `EventAsserted`
+
+        2. **`proposeOutcome(uint256 assertionId, bool outcome)`**
+           - Check assertion exists (asserter != address(0)), not already proposed
+           - Validate timing: `block.timestamp >= startTime` and `<= endTime`
+           - Require `msg.value == assertion.bond`
+           - Set proposer, proposedOutcome, and `endTime = block.timestamp + DISPUTE_WINDOW`
+           - Emit `OutcomeProposed`
+
+        3. **`disputeOutcome(uint256 assertionId)`**
+           - Check proposal exists, not already disputed
+           - Validate `block.timestamp <= endTime`
+           - Require `msg.value == assertion.bond`
+           - Set disputer, emit `OutcomeDisputed`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol"
+      test: "yarn test --grep 'Checkpoint4'"
+      hints:
+        - "For `assertEvent`: store the assertion ID first with `uint256 assertionId = nextAssertionId; nextAssertionId++;`, then validate, create the struct, and emit."
+        - |
+          For `proposeOutcome`, the key validations are:
+          ```solidity
+          if (assertion.asserter == address(0)) revert AssertionNotFound();
+          if (assertion.proposer != address(0)) revert AssertionProposed();
+          if (block.timestamp < assertion.startTime) revert InvalidTime();
+          if (block.timestamp > assertion.endTime) revert InvalidTime();
+          if (msg.value != assertion.bond) revert InvalidValue();
+          ```
+        - |
+          Full solutions:
+          ```solidity
+          function assertEvent(string memory description, uint256 startTime, uint256 endTime) external payable returns (uint256) {
+              uint256 assertionId = nextAssertionId;
+              nextAssertionId++;
+              if (msg.value == 0) revert InvalidValue();
+              if (startTime == 0) startTime = block.timestamp;
+              if (endTime == 0) endTime = startTime + MINIMUM_ASSERTION_WINDOW;
+              if (startTime < block.timestamp) revert InvalidTime();
+              if (endTime < startTime + MINIMUM_ASSERTION_WINDOW) revert InvalidTime();
+              assertions[assertionId] = EventAssertion({
+                  asserter: msg.sender, proposer: address(0), disputer: address(0),
+                  proposedOutcome: false, resolvedOutcome: false,
+                  reward: msg.value, bond: msg.value * 2,
+                  startTime: startTime, endTime: endTime,
+                  claimed: false, winner: address(0), description: description
+              });
+              emit EventAsserted(assertionId, msg.sender, description, msg.value);
+              return assertionId;
+          }
+
+          function proposeOutcome(uint256 assertionId, bool outcome) external payable {
+              EventAssertion storage assertion = assertions[assertionId];
+              if (assertion.asserter == address(0)) revert AssertionNotFound();
+              if (assertion.proposer != address(0)) revert AssertionProposed();
+              if (block.timestamp < assertion.startTime) revert InvalidTime();
+              if (block.timestamp > assertion.endTime) revert InvalidTime();
+              if (msg.value != assertion.bond) revert InvalidValue();
+              assertion.proposer = msg.sender;
+              assertion.proposedOutcome = outcome;
+              assertion.endTime = block.timestamp + DISPUTE_WINDOW;
+              emit OutcomeProposed(assertionId, msg.sender, outcome);
+          }
+
+          function disputeOutcome(uint256 assertionId) external payable {
+              EventAssertion storage assertion = assertions[assertionId];
+              if (assertion.proposer == address(0)) revert NotProposedAssertion();
+              if (assertion.disputer != address(0)) revert ProposalDisputed();
+              if (block.timestamp > assertion.endTime) revert InvalidTime();
+              if (msg.value != assertion.bond) revert InvalidValue();
+              assertion.disputer = msg.sender;
+              emit OutcomeDisputed(assertionId, msg.sender);
+          }
+          ```
+      solution: |
+        function assertEvent(string memory description, uint256 startTime, uint256 endTime) external payable returns (uint256) {
+            uint256 assertionId = nextAssertionId;
+            nextAssertionId++;
+            if (msg.value == 0) revert InvalidValue();
+            if (startTime == 0) startTime = block.timestamp;
+            if (endTime == 0) endTime = startTime + MINIMUM_ASSERTION_WINDOW;
+            if (startTime < block.timestamp) revert InvalidTime();
+            if (endTime < startTime + MINIMUM_ASSERTION_WINDOW) revert InvalidTime();
+            assertions[assertionId] = EventAssertion({
+                asserter: msg.sender, proposer: address(0), disputer: address(0),
+                proposedOutcome: false, resolvedOutcome: false,
+                reward: msg.value, bond: msg.value * 2,
+                startTime: startTime, endTime: endTime,
+                claimed: false, winner: address(0), description: description
+            });
+            emit EventAsserted(assertionId, msg.sender, description, msg.value);
+            return assertionId;
+        }
+
+        function proposeOutcome(uint256 assertionId, bool outcome) external payable {
+            EventAssertion storage assertion = assertions[assertionId];
+            if (assertion.asserter == address(0)) revert AssertionNotFound();
+            if (assertion.proposer != address(0)) revert AssertionProposed();
+            if (block.timestamp < assertion.startTime) revert InvalidTime();
+            if (block.timestamp > assertion.endTime) revert InvalidTime();
+            if (msg.value != assertion.bond) revert InvalidValue();
+            assertion.proposer = msg.sender;
+            assertion.proposedOutcome = outcome;
+            assertion.endTime = block.timestamp + DISPUTE_WINDOW;
+            emit OutcomeProposed(assertionId, msg.sender, outcome);
+        }
+
+        function disputeOutcome(uint256 assertionId) external payable {
+            EventAssertion storage assertion = assertions[assertionId];
+            if (assertion.proposer == address(0)) revert NotProposedAssertion();
+            if (assertion.disputer != address(0)) revert ProposalDisputed();
+            if (block.timestamp > assertion.endTime) revert InvalidTime();
+            if (msg.value != assertion.bond) revert InvalidValue();
+            assertion.disputer = msg.sender;
+            emit OutcomeDisputed(assertionId, msg.sender);
+        }
+
+  # ============================================================
+  # CHECKPOINT 5: Optimistic Oracle — Reward Claims
+  # ============================================================
+  - id: "optimistic-rewards"
+    title: "Optimistic Oracle — Reward Claims"
+    description: "Implement reward claiming, refunds, and dispute settlement"
+
+    context: |
+      ## Reward Distribution
+
+      The optimistic oracle has three payout scenarios:
+
+      ### 1. Undisputed Proposal (Happy Path)
+      Nobody disputes within the dispute window. The proposer gets:
+      - Their bond back + the asserter's reward
+      - Total: `reward + bond`
+
+      ### 2. Disputed + Settled
+      The decider resolves the dispute:
+      - **Winner** gets: their bond back + the reward (`reward + bond`)
+      - **Loser's bond** goes to the decider (payment for arbitration)
+      - Winner = proposer if `proposedOutcome == resolvedOutcome`, else disputer
+
+      ### 3. No Proposals (Refund)
+      Nobody proposes before the deadline:
+      - Asserter gets their reward back
+
+      ### Safe ETH Transfers
+
+      Always use the check-effects-interactions pattern:
+      ```solidity
+      assertion.claimed = true;  // effect FIRST
+      (bool success, ) = payable(recipient).call{value: amount}("");  // interaction SECOND
+      if (!success) revert TransferFailed();
+      ```
+
+      ### settleAssertion — The Decider's Role
+
+      Only the `decider` contract can call this (via the `onlyDecider` modifier). It sets:
+      - `resolvedOutcome` — the true answer
+      - `winner` — proposer if they were right, disputer if they were right
+
+    questions:
+      - text: "Why does the loser's bond go to the decider rather than to the winner? What incentive does this create?"
+        concepts:
+          [
+            "arbitrat",
+            "incentive",
+            "pay",
+            "service",
+            "compensat",
+            "decider",
+            "work",
+            "motivat",
+          ]
+        hint: "Someone has to do the work of resolving disputes. Why would they bother if they weren't compensated?"
+
+    task:
+      description: |
+        Still in `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol`.
+
+        Implement four functions:
+
+        1. **`claimUndisputedReward(uint256 assertionId)`**
+           - Proposal must exist, no dispute, past endTime, not claimed
+           - Set `claimed = true`, `resolvedOutcome = proposedOutcome`, `winner = proposer`
+           - Transfer `reward + bond` to proposer
+
+        2. **`claimDisputedReward(uint256 assertionId)`**
+           - Proposal + dispute must exist, winner must be set, not claimed
+           - Set `claimed = true`
+           - Transfer loser's bond to `decider`
+           - Transfer `reward + bond` to winner
+
+        3. **`claimRefund(uint256 assertionId)`**
+           - No proposer, past endTime, not claimed
+           - Set `claimed = true`, refund reward to asserter
+
+        4. **`settleAssertion(uint256 assertionId, bool resolvedOutcome)`**
+           - Only decider (modifier already on skeleton)
+           - Proposal + dispute must exist, winner not yet set
+           - Set `resolvedOutcome`, determine winner based on whether `proposedOutcome == resolvedOutcome`
+
+        Say **"check"** when you're ready!
+      file: "packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol"
+      test: "yarn test --grep 'Checkpoint5'"
+      hints:
+        - "For `claimUndisputedReward`: validate state, mark claimed FIRST (reentrancy protection), then send `reward + bond` to proposer."
+        - |
+          For `settleAssertion`, the winner logic is:
+          ```solidity
+          assertion.winner = (resolvedOutcome == assertion.proposedOutcome)
+              ? assertion.proposer
+              : assertion.disputer;
+          ```
+        - |
+          Full `claimDisputedReward`:
+          ```solidity
+          function claimDisputedReward(uint256 assertionId) external {
+              EventAssertion storage assertion = assertions[assertionId];
+              if (assertion.proposer == address(0)) revert NotProposedAssertion();
+              if (assertion.disputer == address(0)) revert NotDisputedAssertion();
+              if (assertion.winner == address(0)) revert AwaitingDecider();
+              if (assertion.claimed) revert AlreadyClaimed();
+              assertion.claimed = true;
+              (bool deciderSuccess, ) = payable(decider).call{value: assertion.bond}("");
+              if (!deciderSuccess) revert TransferFailed();
+              uint256 totalReward = assertion.reward + assertion.bond;
+              (bool winnerSuccess, ) = payable(assertion.winner).call{value: totalReward}("");
+              if (!winnerSuccess) revert TransferFailed();
+              emit RewardClaimed(assertionId, assertion.winner, totalReward);
+          }
+          ```
+      solution: |
+        function claimUndisputedReward(uint256 assertionId) external {
+            EventAssertion storage assertion = assertions[assertionId];
+            if (assertion.proposer == address(0)) revert NotProposedAssertion();
+            if (assertion.disputer != address(0)) revert ProposalDisputed();
+            if (block.timestamp <= assertion.endTime) revert InvalidTime();
+            if (assertion.claimed) revert AlreadyClaimed();
+            assertion.claimed = true;
+            assertion.resolvedOutcome = assertion.proposedOutcome;
+            assertion.winner = assertion.proposer;
+            uint256 totalReward = assertion.reward + assertion.bond;
+            (bool winnerSuccess, ) = payable(assertion.proposer).call{value: totalReward}("");
+            if (!winnerSuccess) revert TransferFailed();
+            emit RewardClaimed(assertionId, assertion.proposer, totalReward);
+        }
+
+        function claimDisputedReward(uint256 assertionId) external {
+            EventAssertion storage assertion = assertions[assertionId];
+            if (assertion.proposer == address(0)) revert NotProposedAssertion();
+            if (assertion.disputer == address(0)) revert NotDisputedAssertion();
+            if (assertion.winner == address(0)) revert AwaitingDecider();
+            if (assertion.claimed) revert AlreadyClaimed();
+            assertion.claimed = true;
+            (bool deciderSuccess, ) = payable(decider).call{value: assertion.bond}("");
+            if (!deciderSuccess) revert TransferFailed();
+            uint256 totalReward = assertion.reward + assertion.bond;
+            (bool winnerSuccess, ) = payable(assertion.winner).call{value: totalReward}("");
+            if (!winnerSuccess) revert TransferFailed();
+            emit RewardClaimed(assertionId, assertion.winner, totalReward);
+        }
+
+        function claimRefund(uint256 assertionId) external {
+            EventAssertion storage assertion = assertions[assertionId];
+            if (assertion.proposer != address(0)) revert AssertionProposed();
+            if (block.timestamp <= assertion.endTime) revert InvalidTime();
+            if (assertion.claimed) revert AlreadyClaimed();
+            assertion.claimed = true;
+            (bool refundSuccess, ) = payable(assertion.asserter).call{value: assertion.reward}("");
+            if (!refundSuccess) revert TransferFailed();
+            emit RefundClaimed(assertionId, assertion.asserter, assertion.reward);
+        }
+
+        function settleAssertion(uint256 assertionId, bool resolvedOutcome) external onlyDecider {
+            EventAssertion storage assertion = assertions[assertionId];
+            if (assertion.proposer == address(0)) revert NotProposedAssertion();
+            if (assertion.disputer == address(0)) revert NotDisputedAssertion();
+            if (assertion.winner != address(0)) revert AlreadySettled();
+            assertion.resolvedOutcome = resolvedOutcome;
+            assertion.winner = (resolvedOutcome == assertion.proposedOutcome)
+                ? assertion.proposer
+                : assertion.disputer;
+            emit AssertionSettled(assertionId, resolvedOutcome, assertion.winner);
+        }
+
+  # ============================================================
+  # CHECKPOINT 6: Optimistic Oracle — State Management
+  # ============================================================
+  - id: "optimistic-state"
+    title: "Optimistic Oracle — State Management"
+    description: "Implement getState and getResolution for querying assertion lifecycle"
+
+    context: |
+      ## State Machine
+
+      Every assertion moves through a lifecycle. The `getState` function returns where it currently is:
+
+      ```
+      Invalid → Asserted → Proposed → Settled (undisputed)
+                                    → Disputed → Settled (by decider)
+                         → Expired (no proposal by deadline)
+      ```
+
+      The states are defined as an enum:
+      ```solidity
+      enum State { Invalid, Asserted, Proposed, Disputed, Settled, Expired }
+      ```
+
+      ### Deriving State from Struct Fields
+
+      You can determine the state by checking which fields are set:
+
+      - `asserter == address(0)` → **Invalid** (doesn't exist)
+      - `winner != address(0)` → **Settled** (decider resolved it)
+      - `disputer != address(0)` → **Disputed** (awaiting decider)
+      - `proposer == address(0)`:
+        - Past endTime → **Expired**
+        - Otherwise → **Asserted** (waiting for proposals)
+      - `proposer != address(0)`:
+        - Past endTime → **Settled** (dispute window passed, can claim)
+        - Otherwise → **Proposed** (in dispute window)
+
+      ### getResolution
+
+      Returns the final boolean outcome. Must handle two paths:
+      - **Undisputed**: after dispute window passes, return `proposedOutcome`
+      - **Disputed**: after decider sets winner, return `resolvedOutcome`
+
+    questions:
+      - text: "Why does an undisputed proposal that passes its deadline count as 'Settled' rather than staying as 'Proposed'?"
+        concepts:
+          [
+            "deadline",
+            "finality",
+            "no dispute",
+            "accepted",
+            "window passed",
+            "implicit",
+            "consensus",
+            "silence",
+          ]
+        hint: "In an optimistic system, what does silence (no dispute) during the dispute window mean?"
+
+    task:
+      description: |
+        Still in `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol`.
+
+        Implement two functions:
+
+        1. **`getState(uint256 assertionId)`** — Return the current `State` enum:
+           - Check fields in order: Invalid, Settled (winner set), Disputed, then check proposer presence + timing for Expired/Asserted/Proposed/Settled
+
+        2. **`getResolution(uint256 assertionId)`** — Return the boolean outcome:
+           - Revert if assertion doesn't exist (`AssertionNotFound`)
+           - Revert if no proposal exists (`NotProposedAssertion`)
+           - If undisputed: revert if deadline hasn't passed (`InvalidTime`), return `proposedOutcome`
+           - If disputed: revert if no winner set (`AwaitingDecider`), return `resolvedOutcome`
+
+        Say **"check"** when you're ready!
+
+        ### Try it out
+
+        After tests pass:
+
+        1. Run `yarn deploy --reset` to deploy your contracts
+        2. Open http://localhost:3000 — go to the **Optimistic** page
+        3. **Submit a new assertion**: Fill in the fields to create a new assertion with a reward
+        4. **Propose an outcome**: Use the UI to propose true/false for your assertion
+        5. **Dispute an outcome**: Try disputing a proposal using the dispute button
+        6. **Wait for settlement**: Watch the dispute window expire — undisputed proposals settle automatically. For disputes, the decider must choose the winner
+        7. **Check outcomes**: View the resolution and settlement status for each assertion in the table
+
+        Run `yarn simulate:optimistic` to see the full optimistic oracle lifecycle with automated bots:
+        ```
+        yarn simulate:optimistic
+        ```
+        Bots will create assertions, propose outcomes, and submit disputes. It's up to you to settle the disputes!
+      file: "packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol"
+      test: "yarn test --grep 'Checkpoint6'"
+      hints:
+        - "For `getState`: check `winner` first (Settled), then `disputer` (Disputed), then branch on whether `proposer` is set."
+        - |
+          Full solutions:
+          ```solidity
+          function getState(uint256 assertionId) external view returns (State) {
+              EventAssertion storage a = assertions[assertionId];
+              if (a.asserter == address(0)) return State.Invalid;
+              if (a.winner != address(0)) return State.Settled;
+              if (a.disputer != address(0)) return State.Disputed;
+              if (a.proposer == address(0)) {
+                  if (block.timestamp > a.endTime) return State.Expired;
+                  return State.Asserted;
+              }
+              if (block.timestamp > a.endTime) return State.Settled;
+              return State.Proposed;
+          }
+
+          function getResolution(uint256 assertionId) external view returns (bool) {
+              EventAssertion storage a = assertions[assertionId];
+              if (a.asserter == address(0)) revert AssertionNotFound();
+              if (a.proposer == address(0)) revert NotProposedAssertion();
+              if (a.disputer == address(0)) {
+                  if (block.timestamp <= a.endTime) revert InvalidTime();
+                  return a.proposedOutcome;
+              } else {
+                  if (a.winner == address(0)) revert AwaitingDecider();
+                  return a.resolvedOutcome;
+              }
+          }
+          ```
+      solution: |
+        function getState(uint256 assertionId) external view returns (State) {
+            EventAssertion storage a = assertions[assertionId];
+            if (a.asserter == address(0)) return State.Invalid;
+            if (a.winner != address(0)) return State.Settled;
+            if (a.disputer != address(0)) return State.Disputed;
+            if (a.proposer == address(0)) {
+                if (block.timestamp > a.endTime) return State.Expired;
+                return State.Asserted;
+            }
+            if (block.timestamp > a.endTime) return State.Settled;
+            return State.Proposed;
+        }
+
+        function getResolution(uint256 assertionId) external view returns (bool) {
+            EventAssertion storage a = assertions[assertionId];
+            if (a.asserter == address(0)) revert AssertionNotFound();
+            if (a.proposer == address(0)) revert NotProposedAssertion();
+            if (a.disputer == address(0)) {
+                if (block.timestamp <= a.endTime) revert InvalidTime();
+                return a.proposedOutcome;
+            } else {
+                if (a.winner == address(0)) revert AwaitingDecider();
+                return a.resolvedOutcome;
+            }
+        }
+
+completion_message: |
+  Congratulations — you've completed the Oracle Challenge!
+
+  You built three fundamentally different oracle architectures:
+
+  **Whitelist Oracle** — Centralized price aggregation with median calculation
+  - Factory pattern for deploying SimpleOracle contracts
+  - Stale data filtering and median-based outlier resistance
+
+  **Staking Oracle** — Decentralized with economic incentives
+  - ERC-20 token staking with approve/transferFrom
+  - Bucket-based reporting with median finalization
+  - Inactivity penalties and slashing for deviated prices
+  - Reward system for active reporters
+
+  **Optimistic Oracle** — Dispute-based for any binary question
+  - Assertion/proposal/dispute lifecycle
+  - Bond mechanics creating skin in the game
+  - Decider-based dispute resolution
+  - State machine for tracking assertion lifecycle
+
+  Key takeaways:
+  - **Whitelist**: Fast and simple, but requires trust
+  - **Staking**: Decentralized with economic security, but complex
+  - **Optimistic**: Flexible for any question, efficient when honest, but higher latency
+
+  ## Next Steps
+
+  To submit your challenge, complete the remaining checkpoints on the
+  [Speedrun Ethereum challenge page](https://speedrunethereum.com/challenge/oracles):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
