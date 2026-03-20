@@ -51,11 +51,17 @@ Before you begin, you need to install the following tools:
 - [Node (>= v20.18.3)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (if choosing Foundry as your Solidity framework)
 
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
 npx create-eth@2.0.10 -e challenge-tokenization challenge-tokenization
+```
+
+> When prompted, choose your preferred Solidity framework: **Hardhat** or **Foundry**.
+
+```sh
 cd challenge-tokenization
 ```
 
@@ -75,6 +81,8 @@ The AI won't just hand you the code — it teaches first, then checks your under
 ---
 
 ## Standard Learning mode
+
+> **Note:** Screenshots below show the Hardhat network. If you're using Foundry, you'll see "Foundry" instead of "Hardhat" in the network name, but everything else works the same.
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -156,9 +164,9 @@ yarn start
 
 🕵🏻‍♂️ Inspect the `Debug Contracts` tab to figure out what address is the owner of a specific token (`ownerOf(tokenId)`) in `YourCollectible`.
 
-🔏 You can also check out your smart contract `YourCollectible.sol` in `packages/hardhat/contracts`.
+🔏 You can also check out your smart contract `YourCollectible.sol` in your contracts directory (`packages/hardhat/contracts` or `packages/foundry/contracts`).
 
-💼 Take a quick look at your deploy script `01_deploy_your_collectible.ts` in `packages/hardhat/deploy`.
+💼 Take a quick look at your deploy script in `packages/hardhat/deploy` (Hardhat) or `packages/foundry/script` (Foundry).
 
 ### Onchain Ownership 101
 
@@ -176,7 +184,9 @@ yarn start
 
 🛰 Ready to go public (on testnet)? Let's ship it.
 
-> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
+> **Hardhat**: Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia`.
+>
+> **Foundry**: You can pass the network flag directly: `yarn deploy --network sepolia`.
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
@@ -198,7 +208,7 @@ yarn start
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
-> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+> 💬 Hint: For Hardhat, you can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`. For Foundry, use `yarn deploy --network sepolia`.
 
 ---
 
@@ -241,9 +251,9 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷 `ALCHEMY_API_KEY` variable in your smart contract package's `.env` (`packages/hardhat/.env` or `packages/foundry/.env`) and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃 `ETHERSCAN_API_KEY` variable in your smart contract package's `.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
