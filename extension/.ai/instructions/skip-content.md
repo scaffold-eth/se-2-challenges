@@ -14,7 +14,10 @@ Read `.ai/CHALLENGE.yaml` and find the current checkpoint by its ID.
 
 - If the current checkpoint does NOT have a `task` field, tell the user:
   "This checkpoint doesn't have a coding task to skip. Say 'hint' if you need help with the current question."
-- If it has a `task` field, continue to Step 3
+- If it has a `task` field, continue to Step 2b
+
+### Step 2b: Resolve File Paths
+CHALLENGE.yaml `file:` fields contain framework-specific paths (e.g. `hardhat:` and `foundry:`). Detect which framework this project uses by checking which directory exists (`packages/hardhat/` vs `packages/foundry/`). Use the matching key for all `file:` lookups throughout the skip flow.
 
 ### Step 3: Show the Solution
 Display the solution from `task.solution` with an explanation:
