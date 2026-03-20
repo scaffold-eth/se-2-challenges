@@ -9,7 +9,7 @@ export const fullContentOverride = `# AGENTS.md
 
 ## Challenge Overview
 
-The learner builds an NFT minting and transferring dApp using an ERC-721 contract (\`YourCollectible\`). The goal is to understand onchain ownership, compile and deploy smart contracts with Hardhat, interact with them via a Next.js frontend, and finally deploy to a public testnet.
+The learner builds an NFT minting and transferring dApp using an ERC-721 contract (\`YourCollectible\`). The goal is to understand onchain ownership, compile and deploy smart contracts, interact with them via a Next.js frontend, and finally deploy to a public testnet.
 
 The final deliverable: an app that lets users mint and transfer NFTs. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
@@ -30,17 +30,25 @@ Real-world examples of tokenization beyond images:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+**Detect the framework** by checking which directory exists: \`packages/hardhat/\` or \`packages/foundry/\`.
 
 \`\`\`
 packages/
-  hardhat/           # Solidity contracts, deploy scripts, tests
+  hardhat/ OR foundry/   # Solidity contracts, deploy scripts, tests
     contracts/
       YourCollectible.sol    # ERC-721 NFT contract (the main contract)
+    # Hardhat-specific:
     deploy/
       01_deploy_your_collectible.ts  # Hardhat-deploy script
     test/
-      YourCollectible.ts     # Challenge grading tests
+      YourCollectible.ts     # Challenge grading tests (Hardhat)
+    # Foundry-specific:
+    script/
+      Deploy.s.sol           # Foundry deploy script
+    test/
+      YourCollectible.t.sol  # Challenge grading tests (Foundry)
   nextjs/            # React frontend (Next.js App Router)
     app/
       myNFTs/                # Mint NFTs and view holdings
@@ -63,12 +71,12 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local blockchain (Hardhat or Anvil)
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
 # Testing
-yarn test           # Run challenge grading tests (packages/hardhat/test/)
+yarn test           # Run challenge grading tests
 
 # Code quality
 yarn lint           # Lint both packages
@@ -123,16 +131,22 @@ Use the correct hook names: \`useScaffoldReadContract\`, \`useScaffoldWriteContr
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/YourCollectible.ts\`) verify:
+The grading tests verify:
 1. Contract deploys successfully
 2. \`mintItem()\` can mint an NFT and increases the owner's balance
 3. \`tokenOfOwnerByIndex()\` tracks tokens correctly
+
+Test location depends on framework:
+- **Hardhat**: \`packages/hardhat/test/YourCollectible.ts\`
+- **Foundry**: \`packages/foundry/test/YourCollectible.t.sol\`
 
 Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
+1. Configure the target network:
+   - **Hardhat**: set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
+   - **Foundry**: use \`yarn deploy --network sepolia\`
 2. \`yarn generate\` to create deployer account
 3. Fund deployer with testnet ETH from a faucet
 4. \`yarn deploy\` to deploy contracts
@@ -147,7 +161,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`01_deploy_your_collectible.ts\`) |
+| \`snake_case\` | Deploy files (e.g., \`01_deploy_your_collectible.ts\`) |
 
 ## Key Warnings
 
