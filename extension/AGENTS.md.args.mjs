@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -32,23 +32,20 @@ Real-world examples of tokenization beyond images:
 
 This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
 
-**Detect the framework** by checking which directory exists: \`packages/hardhat/\` or \`packages/foundry/\`.
+This project uses **${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** as the smart contract framework.
 
 \`\`\`
 packages/
-  hardhat/ OR foundry/   # Solidity contracts, deploy scripts, tests
+  ${solidityFramework}/   # Solidity contracts, deploy scripts, tests
     contracts/
       YourCollectible.sol    # ERC-721 NFT contract (the main contract)
-    # Hardhat-specific:
-    deploy/
+${solidityFramework === "hardhat" ? `    deploy/
       01_deploy_your_collectible.ts  # Hardhat-deploy script
     test/
-      YourCollectible.ts     # Challenge grading tests (Hardhat)
-    # Foundry-specific:
-    script/
+      YourCollectible.ts     # Challenge grading tests` : `    script/
       Deploy.s.sol           # Foundry deploy script
     test/
-      YourCollectible.t.sol  # Challenge grading tests (Foundry)
+      YourCollectible.t.sol  # Challenge grading tests`}
   nextjs/            # React frontend (Next.js App Router)
     app/
       myNFTs/                # Mint NFTs and view holdings
@@ -136,17 +133,13 @@ The grading tests verify:
 2. \`mintItem()\` can mint an NFT and increases the owner's balance
 3. \`tokenOfOwnerByIndex()\` tracks tokens correctly
 
-Test location depends on framework:
-- **Hardhat**: \`packages/hardhat/test/YourCollectible.ts\`
-- **Foundry**: \`packages/foundry/test/YourCollectible.t.sol\`
+Test location: ${solidityFramework === "hardhat" ? `\`packages/hardhat/test/YourCollectible.ts\`` : `\`packages/foundry/test/YourCollectible.t.sol\``}
 
 Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Configure the target network:
-   - **Hardhat**: set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
-   - **Foundry**: use \`yarn deploy --network sepolia\`
+${solidityFramework === "hardhat" ? `1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)` : `1. Use \`yarn deploy --network sepolia\``}
 2. \`yarn generate\` to create deployer account
 3. Fund deployer with testnet ETH from a faucet
 4. \`yarn deploy\` to deploy contracts
@@ -161,7 +154,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Deploy files (e.g., \`01_deploy_your_collectible.ts\`) |
+${solidityFramework === "hardhat" ? `| \`snake_case\` | Deploy files (e.g., \`01_deploy_your_collectible.ts\`) |` : `| \`UpperCamelCase\` | Deploy scripts (e.g., \`Deploy.s.sol\`) |`}
 
 ## Key Warnings
 
