@@ -164,7 +164,20 @@ yarn start
 
 🕵🏻‍♂️ Inspect the `Debug Contracts` tab to figure out what address is the owner of a specific token (`ownerOf(tokenId)`) in `YourCollectible`.
 
-🔏 You can also check out your smart contract `YourCollectible.sol` in your contracts directory (`packages/hardhat/contracts` or `packages/foundry/contracts`).
+🔏 You can also check out your smart contract `YourCollectible.sol` in your contracts directory
+
+<Tabs>
+  <Tab label="Hardhat">
+
+  <code>packages/hardhat/contracts</code>
+
+  </Tab>
+  <Tab label="Foundry">
+
+  Run: <code>packages/foundry/contracts</code>
+
+  </Tab>
+</Tabs>
 
 💼 Take a quick look at your deploy script in `packages/hardhat/deploy` (Hardhat) or `packages/foundry/script` (Foundry).
 
