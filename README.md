@@ -173,13 +173,24 @@ yarn start
 
   </Tab>
   <Tab label="Foundry">
-
-  Run: <code>packages/foundry/contracts</code>
-
+  <code>packages/foundry/contracts</code>
   </Tab>
 </Tabs>
 
-💼 Take a quick look at your deploy script in `packages/hardhat/deploy` (Hardhat) or `packages/foundry/script` (Foundry).
+💼 Take a quick look at your deploy script:
+
+<Tabs>
+  <Tab label="Hardhat">
+
+  <code>packages/hardhat/deploy</code>
+
+  </Tab>
+  <Tab label="Foundry">
+
+  <code>packages/foundry/script</code>
+
+  </Tab>
+</Tabs>
 
 ### Onchain Ownership 101
 
@@ -197,11 +208,23 @@ yarn start
 
 🛰 Ready to go public (on testnet)? Let's ship it.
 
-> **Hardhat**: Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia`.
->
-> **Foundry**: You can pass the network flag directly: `yarn deploy --network sepolia`.
+<Tabs>
+  <Tab label="Hardhat">
 
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
+  Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia` **OR** pass the network flag directly: `yarn deploy --network sepolia`.
+
+  <div style={{textAlign: 'left'}}>
+    <img src="https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45" />
+  </div>
+
+  </Tab>
+  <Tab label="Foundry">
+
+  You can pass the network flag directly: `yarn deploy --network sepolia`.
+
+  </Tab>
+</Tabs>
+
 
 🔐 Generate a deployer address with `yarn generate`. This creates a fresh deployer and stores the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
 
@@ -221,7 +244,18 @@ yarn start
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
-> 💬 Hint: For Hardhat, you can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`. For Foundry, use `yarn deploy --network sepolia`.
+<Tabs>
+  <Tab label="Hardhat">
+
+  > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+
+  </Tab>
+  <Tab label="Foundry">
+
+  > 💬 Hint: Use `yarn deploy --network sepolia`.
+
+  </Tab>
+</Tabs>
 
 ---
 
@@ -264,7 +298,18 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷 `ALCHEMY_API_KEY` variable in your smart contract package's `.env` (`packages/hardhat/.env` or `packages/foundry/.env`) and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+<Tabs>
+  <Tab label="Hardhat">
+
+  - 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+
+  </Tab>
+  <Tab label="Foundry">
+
+  - 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+
+  </Tab>
+</Tabs>
 
 - 📃 `ETHERSCAN_API_KEY` variable in your smart contract package's `.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
