@@ -166,31 +166,31 @@ yarn start
 
 🔏 You can also check out your smart contract `YourCollectible.sol` in your contracts directory
 
-<Tabs>
-  <Tab label="Hardhat">
+<details><summary>Hardhat</summary>
 
-  <code>packages/hardhat/contracts</code>
+`packages/hardhat/contracts`
 
-  </Tab>
-  <Tab label="Foundry">
-  <code>packages/foundry/contracts</code>
-  </Tab>
-</Tabs>
+</details>
+
+<details><summary>Foundry</summary>
+
+`packages/foundry/contracts`
+
+</details>
 
 💼 Take a quick look at your deploy script:
 
-<Tabs>
-  <Tab label="Hardhat">
+<details><summary>Hardhat</summary>
 
-  <code>packages/hardhat/deploy</code>
+`packages/hardhat/deploy`
 
-  </Tab>
-  <Tab label="Foundry">
+</details>
 
-  <code>packages/foundry/script</code>
+<details><summary>Foundry</summary>
 
-  </Tab>
-</Tabs>
+`packages/foundry/script`
+
+</details>
 
 ### Onchain Ownership 101
 
@@ -208,22 +208,19 @@ yarn start
 
 🛰 Ready to go public (on testnet)? Let's ship it.
 
-<Tabs>
-  <Tab label="Hardhat">
+<details><summary>Hardhat</summary>
 
-  Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia` **OR** pass the network flag directly: `yarn deploy --network sepolia`.
+Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia` **OR** pass the network flag directly: `yarn deploy --network sepolia`.
 
-  <div style={{textAlign: 'left'}}>
-    <img src="https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45" />
-  </div>
+![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
-  </Tab>
-  <Tab label="Foundry">
+</details>
 
-  You can pass the network flag directly: `yarn deploy --network sepolia`.
+<details><summary>Foundry</summary>
 
-  </Tab>
-</Tabs>
+You can pass the network flag directly: `yarn deploy --network sepolia`.
+
+</details>
 
 
 🔐 Generate a deployer address with `yarn generate`. This creates a fresh deployer and stores the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
@@ -244,18 +241,17 @@ yarn start
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
-<Tabs>
-  <Tab label="Hardhat">
+<details><summary>Hardhat</summary>
 
-  > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
-  </Tab>
-  <Tab label="Foundry">
+</details>
 
-  > 💬 Hint: Use `yarn deploy --network sepolia`.
+<details><summary>Foundry</summary>
 
-  </Tab>
-</Tabs>
+> 💬 Hint: Use `yarn deploy --network sepolia`.
+
+</details>
 
 ---
 
@@ -298,18 +294,17 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-<Tabs>
-  <Tab label="Hardhat">
+<details><summary>Hardhat</summary>
 
-  - 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-  </Tab>
-  <Tab label="Foundry">
+</details>
 
-  - 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+<details><summary>Foundry</summary>
 
-  </Tab>
-</Tabs>
+- 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+
+</details>
 
 - 📃 `ETHERSCAN_API_KEY` variable in your smart contract package's `.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
