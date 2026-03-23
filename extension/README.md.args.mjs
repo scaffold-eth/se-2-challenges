@@ -1,6 +1,6 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge: 📣 Crowdfunding App
+export const extraContents = ({solidityFramework}) => `# 🚩 Challenge: 📣 Crowdfunding App
 
 ![readme-1](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-crowdfunding/extension/packages/nextjs/public/hero.png)
 
@@ -36,7 +36,7 @@ yarn start
 
 > 👩‍💻 Rerun \`yarn deploy\` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run \`yarn deploy --reset\` for a completely fresh deploy.
 
-🔏 Now you are ready to edit your smart contract \`CrowdFund.sol\` in \`packages/hardhat/contracts\`
+🔏 Now you are ready to edit your smart contract \`CrowdFund.sol\` in \`packages/${solidityFramework}/contracts\`
 
 ---
 
@@ -104,7 +104,7 @@ event Contribution(address, uint256);
 
 The goal of this function is to allow anyone to contribute to the pool of funds. To do this effectively it will need to do the following:
 - Update the \`balances\` mapping
-- Emit the \`Contribute\` event 
+- Emit the \`Contribute\` event
 
 <details markdown='1'>
 <summary>🔎 Hint</summary>
@@ -112,7 +112,7 @@ The goal of this function is to allow anyone to contribute to the pool of funds.
 You can set mappings like you would access a Javascript array.
 For a mapping like this \`mapping(address => uint256) public map\` and \`address addr = 0x1234...5678\` you would access is like this: \`map[addr]\`.
 
-You need to use the address for the sender of the transaction and you will need to know how much value was sent. Is there an easy way to access these details about the transaction \`msg\`? 🤔 
+You need to use the address for the sender of the transaction and you will need to know how much value was sent. Is there an easy way to access these details about the transaction \`msg\`? 🤔
 
 Go check https://solidity-by-example.org/ if you need help on the syntax.
 
@@ -140,7 +140,7 @@ function contribute() public payable {
 
 ![Faucet](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e82e3100-20fb-4886-a6bf-4113c3729f53)
 
-> ✏ Need to troubleshoot your code? \`hardhat/console.sol\` is already imported in your contract so you can call \`console.log()\` right in your Solidity code. The output will appear in your \`yarn chain\` terminal.
+> ✏ Need to troubleshoot your code? You can use \`console.log()\` right in your Solidity code. The output will appear in your \`yarn chain\` terminal.
 
 ---
 
@@ -160,7 +160,7 @@ function contribute() public payable {
 yarn test --grep "Checkpoint1"
 \`\`\`
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/hardhat/test/CrowdFund.ts\`.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/CrowdFund.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
 
 ---
 
@@ -181,7 +181,7 @@ error NotOpenToWithdraw();
 error WithdrawTransferFailed(address to, uint256 amount);
 \`\`\`
 
-> ❓Did you know that custom errors are more gas efficient than using revert string errors?  
+> ❓Did you know that custom errors are more gas efficient than using revert string errors?
 >
 > ❌ \`require(condition, "Condition Not Met")\`
 >
@@ -208,10 +208,10 @@ The important thing is that you only send the correct amount to the user AND the
 \`\`\`solidity
 function withdraw() public {
 	if (!openToWithdraw) revert NotOpenToWithdraw();
-	
+
 	uint256 balance = balances[msg.sender];
 	balances[msg.sender] = 0;
-	
+
 	(bool success,) = msg.sender.call{value: balance}("");
 	if (!success) revert WithdrawTransferFailed(msg.sender, balance);
 }
@@ -224,7 +224,7 @@ function withdraw() public {
 
 ⚙️ Go switch \`openToWithdraw\` to be true by default so we can test the function through the front end: \`bool public openToWithdraw = true;\`
 
-👩‍💻 Now redeploy (\`yarn deploy\`) and go test your function using the \`Crowdfund\` or \`Debug Contracts\` tabs in the front end. You should be able to contribute and then withdraw the ether. 
+👩‍💻 Now redeploy (\`yarn deploy\`) and go test your function using the \`Crowdfund\` or \`Debug Contracts\` tabs in the front end. You should be able to contribute and then withdraw the ether.
 
 >‼️ Once you are content that it works as expected make sure you switch \`openToWithdraw\` back to false.
 
@@ -234,7 +234,7 @@ function withdraw() public {
 
 - [ ] Can you withdraw your ether after contributing?
 - [ ] What happens if you try to withdraw again after you have already withdrawn? Does this always fail?
-- [ ] What about with multiple users? 
+- [ ] What about with multiple users?
 ### Testing your progress
 
 🔍 Run the following command to check if you implemented the function correctly.
@@ -243,7 +243,7 @@ function withdraw() public {
 yarn test --grep "Checkpoint2"
 \`\`\`
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/hardhat/test/CrowdFund.ts\`.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/CrowdFund.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
 
 ---
 
@@ -296,7 +296,7 @@ If the balance is less than the \`threshold\`, you want to set the \`openForWith
 \`\`\`solidity
 function execute() public {
 	if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);
-	
+
 	if (address(this).balance >= threshold) {
 		fundingRecipient.complete{value: address(this).balance}();
 	} else {
@@ -358,7 +358,7 @@ function timeLeft() public view returns (uint256) {
 yarn test --grep "Checkpoint3"
 \`\`\`
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/hardhat/test/CrowdFund.ts\`.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/CrowdFund.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
 
 ---
 
@@ -422,7 +422,7 @@ error AlreadyCompleted(); // Or whatever name you want
 
 // Modifiers
 modifier notCompleted() {
-	if (fundingRecipient.completed()) revert AlreadyCompleted(); 
+	if (fundingRecipient.completed()) revert AlreadyCompleted();
 	_;
 }
 
@@ -451,7 +451,9 @@ function execute() public notCompleted {
 
 ## Checkpoint 5: 💾 Deploy your contract! 🛰
 
-📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\`
+${solidityFramework === "hardhat"
+  ? `📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\``
+  : `📡 You can deploy to a testnet by passing the network flag. We recommend \`"sepolia"\` or \`"optimismSepolia"\``}
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
@@ -461,9 +463,11 @@ function execute() public notCompleted {
 
 > 📝 If you plan on testing your challenge on the live network don't forget to set your \`deadline\` to a nice amount of time such as \`block.timestamp + 2 hours\`
 
-🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in \`hardhat.config.ts\`)
+🚀 Run \`yarn deploy${solidityFramework === "foundry" ? " --network sepolia" : ""}\` to deploy your smart contract to a public network${solidityFramework === "hardhat" ? " (selected in \\`hardhat.config.ts\\`)" : ""}.
 
-> 💬 Hint: Instead of editing \`hardhat.config.ts\` you can just add a network flag to the deploy command like this: \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`
+${solidityFramework === "hardhat"
+  ? `> 💬 Hint: Instead of editing \`hardhat.config.ts\` you can just add a network flag to the deploy command like this: \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\``
+  : `> 💬 Hint: You can also use \`yarn deploy --network optimismSepolia\` to deploy to OP Sepolia.`}
 
 ![allContributions-blockFrom](https://github.com/user-attachments/assets/e544a9b4-1bb9-4b0a-8729-d57d0b9869cf)
 
@@ -495,9 +499,9 @@ This is great for going through **Speedrun Ethereum** but...
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- \`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- \`ALCHEMY_API_KEY\` variable in \`packages/${solidityFramework}/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- \`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- \`ETHERSCAN_API_KEY\` variable in \`packages/${solidityFramework}/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 

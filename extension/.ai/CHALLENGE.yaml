@@ -7,7 +7,9 @@ estimated_time: "3 - 8 hours"
 # CODE-WRITING challenge — the contract already has a skeleton with empty function bodies.
 # No setup.template needed.
 setup:
-  file: "packages/hardhat/contracts/CrowdFund.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/CrowdFund.sol"
+    foundry: "packages/foundry/contracts/CrowdFund.sol"
 
 welcome_message: |
   Welcome to the Crowdfunding Challenge!
@@ -92,7 +94,7 @@ checkpoints:
 
       ### Your contract skeleton
 
-      Open `packages/hardhat/contracts/CrowdFund.sol`. You'll see organised sections (Errors, State Variables, Events, Functions, etc.) with placeholder comments. The `contribute()` function exists but its body is empty — your job is to fill it in.
+      Open your contract file (`packages/hardhat/contracts/CrowdFund.sol` or `packages/foundry/contracts/CrowdFund.sol` depending on your framework). You'll see organised sections (Errors, State Variables, Events, Functions, etc.) with placeholder comments. The `contribute()` function exists but its body is empty — your job is to fill it in.
 
     questions:
       - text: "If someone contributes 0.5 ETH and then contributes 0.3 ETH, what should their balance show? Why does the update use `+=` instead of `=`?"
@@ -113,7 +115,7 @@ checkpoints:
       description: |
         Implement the `contribute()` function and add the supporting state/events.
 
-        In `packages/hardhat/contracts/CrowdFund.sol`:
+        In your `CrowdFund.sol` contract:
 
         1. **Add a mapping** under *State Variables* (below `fundingRecipient`):
            ```solidity
@@ -142,10 +144,12 @@ checkpoints:
 
         > Need more funds? Click "Grab funds from faucet" or use the Faucet feature at the bottom left.
 
-        > Need to troubleshoot? `hardhat/console.sol` is already imported so you can use `console.log()` in your Solidity code. Output appears in your `yarn chain` terminal.
+        > Need to troubleshoot? You can use `console.log()` in your Solidity code. Output appears in your `yarn chain` terminal.
 
         When you're done, say **"check"** and I'll run the tests!
-      file: "packages/hardhat/contracts/CrowdFund.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/CrowdFund.sol"
+        foundry: "packages/foundry/contracts/CrowdFund.sol"
       test: "yarn test --grep 'Checkpoint1'"
       hints:
         - "`msg.sender` is the caller, `msg.value` is the ETH they sent. Use `+=` so contributions accumulate."
@@ -263,7 +267,7 @@ checkpoints:
       description: |
         Implement `withdraw()` and add the supporting state & errors.
 
-        In `packages/hardhat/contracts/CrowdFund.sol`:
+        In your `CrowdFund.sol` contract:
 
         1. **Add a bool** under *State Variables*:
            ```solidity
@@ -297,7 +301,9 @@ checkpoints:
         > **Important:** Once you're done testing, switch `openToWithdraw` back to its default (`bool public openToWithdraw;`) before running the tests!
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/CrowdFund.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/CrowdFund.sol"
+        foundry: "packages/foundry/contracts/CrowdFund.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
         - "Start with `if (!openToWithdraw) revert NotOpenToWithdraw();`. Then save, zero, send — in that order."
@@ -418,7 +424,7 @@ checkpoints:
       description: |
         Implement `execute()`, `timeLeft()`, and add the state variables and error.
 
-        In `packages/hardhat/contracts/CrowdFund.sol`:
+        In your `CrowdFund.sol` contract:
 
         1. **Add state variables** under *State Variables*:
            ```solidity
@@ -453,7 +459,9 @@ checkpoints:
         > You can run `yarn deploy --reset` any time you want a fresh contract to reload the timer.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/CrowdFund.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/CrowdFund.sol"
+        foundry: "packages/foundry/contracts/CrowdFund.sol"
       test: "yarn test --grep 'Checkpoint3'"
       hints:
         - "Time check: `if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);`. Then if/else on the balance vs threshold."
@@ -561,7 +569,9 @@ checkpoints:
         3. Send ETH directly to the contract address — does it update your `balance` and the contract's balance?
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/CrowdFund.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/CrowdFund.sol"
+        foundry: "packages/foundry/contracts/CrowdFund.sol"
       test: "yarn test --grep 'Checkpoint4'"
       hints:
         - "Just call `contribute();` inside `receive()`. That's the whole thing."
