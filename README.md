@@ -169,10 +169,14 @@ yarn start
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 `packages/hardhat/contracts`
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 `packages/foundry/contracts`
 
@@ -184,10 +188,14 @@ yarn start
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 `packages/hardhat/deploy`
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 `packages/foundry/script`
 
@@ -213,12 +221,16 @@ yarn start
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia` **OR** pass the network flag directly: `yarn deploy --network sepolia`.
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 You can pass the network flag directly: `yarn deploy --network sepolia`.
 
@@ -247,10 +259,14 @@ You can pass the network flag directly: `yarn deploy --network sepolia`.
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 > 💬 Hint: Use `yarn deploy --network sepolia`.
 
@@ -301,10 +317,14 @@ For production-grade applications, it's recommended to obtain your own API keys 
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
