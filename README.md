@@ -16,7 +16,7 @@
 
 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
-<details markdown='1'><summary>❓ Wondering what "tokenization" means?</summary>
+<details><summary>❓ Wondering what "tokenization" means?</summary>
 Tokenization is like giving anything a digital passport you can carry in your wallet. It proves who owns it, lets you hand it off in a click, and lets apps recognize it automatically. In this challenge you'll mint ERC-721 tokens (NFTs): each token is one-of-one, owned by a single address (what `ownerOf(tokenId)` returns). Transfers are atomic, instant, traceable, and run by code.
 
 - **Real-World Assets (RWAs)**: Think stocks, bonds, gold, and real estate. If these are tokenized, the token acts as a digital claim or registry entry. For real-world effect, an issuer/custodian or legal framework must link onchain transfers to off-chain rights; without that bridge, it's a collectible, not a legal transfer.
@@ -126,8 +126,8 @@ yarn start
 > 🦊 At first, **don't** connect MetaMask. If you are already connected, click **Disconnect**:
 
 <p>
-  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/2c7a1e40-50ad-4c20-ba3e-a56eff4b892b" width="33%" />
-  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/1bcf9752-e8ae-4db6-a0a6-5dc774abe46c" width="33%" />
+  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/2c7a1e40-50ad-4c20-ba3e-a56eff4b892b" width="33%"/>
+  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/1bcf9752-e8ae-4db6-a0a6-5dc774abe46c" width="33%"/>
 </p>
 
 > 🔥 We'll use burner wallets on localhost. They're disposable wallets that auto-sign transactions so you can keep building.
@@ -166,31 +166,33 @@ yarn start
 
 🔏 You can also check out your smart contract `YourCollectible.sol` in your contracts directory
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
 
 `packages/hardhat/contracts`
 
-</details>
-
-<details><summary>Foundry</summary>
+</Tab>
+<Tab label="Foundry">
 
 `packages/foundry/contracts`
 
-</details>
+</Tab>
+</Tabs>
 
 💼 Take a quick look at your deploy script:
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
 
 `packages/hardhat/deploy`
 
-</details>
-
-<details><summary>Foundry</summary>
+</Tab>
+<Tab label="Foundry">
 
 `packages/foundry/script`
 
-</details>
+</Tab>
+</Tabs>
 
 ### Onchain Ownership 101
 
@@ -208,19 +210,20 @@ yarn start
 
 🛰 Ready to go public (on testnet)? Let's ship it.
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
 
 Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia` **OR** pass the network flag directly: `yarn deploy --network sepolia`.
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
-</details>
-
-<details><summary>Foundry</summary>
+</Tab>
+<Tab label="Foundry">
 
 You can pass the network flag directly: `yarn deploy --network sepolia`.
 
-</details>
+</Tab>
+</Tabs>
 
 
 🔐 Generate a deployer address with `yarn generate`. This creates a fresh deployer and stores the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
@@ -241,17 +244,18 @@ You can pass the network flag directly: `yarn deploy --network sepolia`.
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
-</details>
-
-<details><summary>Foundry</summary>
+</Tab>
+<Tab label="Foundry">
 
 > 💬 Hint: Use `yarn deploy --network sepolia`.
 
-</details>
+</Tab>
+</Tabs>
 
 ---
 
@@ -294,17 +298,18 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
 
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-</details>
-
-<details><summary>Foundry</summary>
+</Tab>
+<Tab label="Foundry">
 
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-</details>
+</Tab>
+</Tabs>
 
 - 📃 `ETHERSCAN_API_KEY` variable in your smart contract package's `.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
