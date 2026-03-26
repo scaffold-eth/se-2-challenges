@@ -126,8 +126,8 @@ yarn start
 > 🦊 At first, **don't** connect MetaMask. If you are already connected, click **Disconnect**:
 
 <p>
-  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/2c7a1e40-50ad-4c20-ba3e-a56eff4b892b" width="33%"/>
-  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/1bcf9752-e8ae-4db6-a0a6-5dc774abe46c" width="33%"/>
+  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/2c7a1e40-50ad-4c20-ba3e-a56eff4b892b" width="33%" />
+  <img src="https://github.com/scaffold-eth/se-2-challenges/assets/80153681/1bcf9752-e8ae-4db6-a0a6-5dc774abe46c" width="33%" />
 </p>
 
 > 🔥 We'll use burner wallets on localhost. They're disposable wallets that auto-sign transactions so you can keep building.
