@@ -16,7 +16,7 @@
 
 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
-<details markdown='1'><summary>❓ Wondering what "tokenization" means?</summary>
+<details><summary>❓ Wondering what "tokenization" means?</summary>
 Tokenization is like giving anything a digital passport you can carry in your wallet. It proves who owns it, lets you hand it off in a click, and lets apps recognize it automatically. In this challenge you'll mint ERC-721 tokens (NFTs): each token is one-of-one, owned by a single address (what `ownerOf(tokenId)` returns). Transfers are atomic, instant, traceable, and run by code.
 
 - **Real-World Assets (RWAs)**: Think stocks, bonds, gold, and real estate. If these are tokenized, the token acts as a digital claim or registry entry. For real-world effect, an issuer/custodian or legal framework must link onchain transfers to off-chain rights; without that bridge, it's a collectible, not a legal transfer.
@@ -166,31 +166,41 @@ yarn start
 
 🔏 You can also check out your smart contract `YourCollectible.sol` in your contracts directory
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
 
 `packages/hardhat/contracts`
 
-</details>
+</Tab>
+<Tab label="Foundry">
 
-<details><summary>Foundry</summary>
+**Foundry**
 
 `packages/foundry/contracts`
 
-</details>
+</Tab>
+</Tabs>
 
 💼 Take a quick look at your deploy script:
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
 
 `packages/hardhat/deploy`
 
-</details>
+</Tab>
+<Tab label="Foundry">
 
-<details><summary>Foundry</summary>
+**Foundry**
 
 `packages/foundry/script`
 
-</details>
+</Tab>
+</Tabs>
 
 ### Onchain Ownership 101
 
@@ -208,19 +218,24 @@ yarn start
 
 🛰 Ready to go public (on testnet)? Let's ship it.
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
 
 Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia` **OR** pass the network flag directly: `yarn deploy --network sepolia`.
 
 ![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
-</details>
+</Tab>
+<Tab label="Foundry">
 
-<details><summary>Foundry</summary>
+**Foundry**
 
 You can pass the network flag directly: `yarn deploy --network sepolia`.
 
-</details>
+</Tab>
+</Tabs>
 
 
 🔐 Generate a deployer address with `yarn generate`. This creates a fresh deployer and stores the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
@@ -241,17 +256,22 @@ You can pass the network flag directly: `yarn deploy --network sepolia`.
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
 
-</details>
+</Tab>
+<Tab label="Foundry">
 
-<details><summary>Foundry</summary>
+**Foundry**
 
 > 💬 Hint: Use `yarn deploy --network sepolia`.
 
-</details>
+</Tab>
+</Tabs>
 
 ---
 
@@ -294,17 +314,22 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-<details><summary>Hardhat</summary>
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
 
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-</details>
+</Tab>
+<Tab label="Foundry">
 
-<details><summary>Foundry</summary>
+**Foundry**
 
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-</details>
+</Tab>
+</Tabs>
 
 - 📃 `ETHERSCAN_API_KEY` variable in your smart contract package's `.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
