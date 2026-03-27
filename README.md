@@ -47,6 +47,7 @@ Before you begin, you need to install the following tools:
 - [Node (>= v20.18.3)](https://nodejs.org/en/download/)
 - [Yarn (v2+)](https://yarnpkg.com/getting-started/install)
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (If you chose Foundry as solidity framework)
 - [Nargo](https://noir-lang.org/docs/getting_started/quick_start#installation) (v1.0.0-beta.3)
 - [bb](https://barretenberg.aztec.network/docs/getting_started/) (v0.82.2)
 
@@ -91,6 +92,8 @@ Then download the challenge to your computer and install dependencies by running
 npx create-eth@2.0.10 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
 cd challenge-zk-voting
 ```
+
+> When prompted, choose your preferred solidity framework (Hardhat or Foundry)
 
 In the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -163,7 +166,18 @@ Our contract will support three main functions:
 
 🔍 Next, switch to the **`Debug Contracts`** page. For now, you should see just one contract there — **`Voting`**.
 
+<Tabs>
+<Tab label="Hardhat">
+
 📁 The contract lives in **`packages/hardhat/contracts/Voting.sol`**
+
+</Tab>
+<Tab label="Foundry">
+
+📁 The contract lives in **`packages/foundry/contracts/Voting.sol`**
+
+</Tab>
+</Tabs>
 
 🔍 Open it up and check out the placeholder functions. Each of them represents a key piece of the voting logic.
 If you can already explain what they’re supposed to do, you’re ahead of the game! 😎
@@ -364,9 +378,22 @@ Scroll down to the functions **`getVotingData()`** and **`getVoterData(address _
 
 Then run:
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint2"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn foundry:test --match-test test_Checkpoint2
+```
+
+</Tab>
+</Tabs>
 
 ### 🚀 Tests Passed? You’re Almost There!
 
@@ -952,11 +979,26 @@ You’ve built the circuit, created the verifier contract — now it’s time to
 
 ### 🔹 Step 1: Bring in the Verifier Contract
 
+<Tabs>
+<Tab label="Hardhat">
+
 1. Replace the placeholder verifier contract **`Verifier.sol`** in **`packages/hardhat/contracts`** with the newly generated contract located in **`packages/circuits/target`**.
 2. Open **`00_deploy_your_voting_contract.ts`** and:
    - Uncomment the verifier deployment
    - Comment out the `verifierAddress`
    - Update the `args` to match your setup
+
+</Tab>
+<Tab label="Foundry">
+
+1. Replace the placeholder verifier contract **`Verifier.sol`** in **`packages/foundry/contracts`** with the newly generated contract located in **`packages/circuits/target`**.
+2. Open **`DeployVoting.s.sol`** and:
+   - Uncomment the verifier deployment
+   - Comment out the placeholder `verifierAddress`
+   - Update the constructor call to match your setup
+
+</Tab>
+</Tabs>
 
 3. In **`Voting.sol`**:
    - At the top, import the verifier contract (just uncomment the existing line)
@@ -1116,9 +1158,22 @@ function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes3
 
 Once implemented, run your tests to make sure everything works:
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint6"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn foundry:test --match-test test_Checkpoint6
+```
+
+</Tab>
+</Tabs>
 
 ### **✅ Tests Passed? You're So Close!**
 
@@ -1813,9 +1868,22 @@ For **production-grade apps**, you should generate your own API keys to avoid hi
 
 Configure your keys here:
 
+<Tabs>
+<Tab label="Hardhat">
+
 - 🔷 **`ALCHEMY_API_KEY`** in `packages/hardhat/.env` and `packages/nextjs/.env.local` → [Get key from Alchemy](https://dashboard.alchemy.com/)
 - 🔑 **`NEXT_PUBLIC_PIMLICO_API_KEY`** in `packages/nextjs/.env.local` → [Get key from Pimlico](https://dashboard.pimlico.io/)
 - 📃 **`ETHERSCAN_API_KEY`** in `packages/hardhat/.env` → [Get key from Etherscan](https://etherscan.io/myapikey)
+
+</Tab>
+<Tab label="Foundry">
+
+- 🔷 **`ALCHEMY_API_KEY`** in `packages/foundry/.env` and `packages/nextjs/.env.local` → [Get key from Alchemy](https://dashboard.alchemy.com/)
+- 🔑 **`NEXT_PUBLIC_PIMLICO_API_KEY`** in `packages/nextjs/.env.local` → [Get key from Pimlico](https://dashboard.pimlico.io/)
+- 📃 **`ETHERSCAN_API_KEY`** in `packages/foundry/.env` → [Get key from Etherscan](https://etherscan.io/myapikey)
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: Store environment variables for **Next.js** in Vercel/system env config for live apps, and use `.env.local` for local testing.
 
@@ -1827,11 +1895,24 @@ Configure your keys here:
 
 ⛽️ You will need to send ETH to your deployer address with your wallet, or obtain it from a public faucet of your chosen network.
 
-> 🚨 Don’t forget to set the owner address inside the 00_deploy_your_voting_contract.ts .
+<Tabs>
+<Tab label="Hardhat">
 
-🚀 Run `yarn deploy --network sepolia` to deploy your smart contract to Sepolia.
+> 🚨 Don't forget to set the owner address inside the `00_deploy_your_voting_contract.ts`.
 
-> 💬 Hint: You can set the defaultNetwork in hardhat.config.ts to sepolia OR you can yarn deploy --network sepolia.
+🚀 Run `yarn deploy --network sepolia` to deploy your smart contract to Sepolia.
+
+> 💬 Hint: You can set the defaultNetwork in hardhat.config.ts to sepolia OR you can yarn deploy --network sepolia.
+
+</Tab>
+<Tab label="Foundry">
+
+> 🚨 Don't forget to set the owner address inside the `DeployVoting.s.sol`.
+
+🚀 Run `yarn deploy --network sepolia` to deploy your smart contract to Sepolia.
+
+</Tab>
+</Tabs>
 
 💻 Inside `scaffold.config.ts` change the `targetNetwork` to `chains.sepolia`. View your front-end at http://localhost:3000 and verify you see the correct network Sepolia.
 
@@ -1953,3 +2034,15 @@ But this is just the beginning. The same **commitment + nullifier** pattern that
 This challenge is your **entry point into a new design space.** 💥
 
 **What will you build with Noir and ZK circuits? 🧪✨**
+
+## AI-Guided Learning Mode (Optional)
+
+This challenge supports an interactive AI learning mode. Instead of reading instructions above, you can let an AI guide you step by step.
+
+**How to use:**
+1. Open a terminal in the project root
+2. Run `/start` to begin the guided challenge
+3. The AI will teach concepts and give you coding tasks
+4. Say `check` to validate your code, `hint` for help, or `/skip` to skip a task
+
+> Note: If you chose Foundry as your framework, the screenshots in this README show the Hardhat version, but the contract logic and challenge flow are identical.
