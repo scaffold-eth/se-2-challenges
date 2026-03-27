@@ -178,18 +178,12 @@ Run \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specific che
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`deadline\` to a longer duration (e.g., \`block.timestamp + 2 hours\`) for testnet
-${solidityFramework === "hardhat"
-  ? `2. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\`
-3. \`yarn generate\` to create deployer account
-4. Fund deployer with testnet ETH
-5. \`yarn deploy\` to deploy contracts`
-  : `2. \`yarn generate\` to create deployer account
-3. Fund deployer with testnet ETH
-4. \`yarn deploy --network sepolia\` to deploy contracts`}
-${solidityFramework === "hardhat" ? "6" : "5"}. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
-${solidityFramework === "hardhat" ? "7" : "6"}. \`yarn vercel\` to deploy frontend
-${solidityFramework === "hardhat" ? "8" : "7"}. \`yarn verify --network sepolia\` to verify contracts
+1. \`yarn generate\` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. ${solidityFramework === "hardhat" ? `Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` and run \`yarn deploy\`, or use \`yarn deploy --network sepolia\`` : `\`yarn deploy --network sepolia\``}
+4. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+5. \`yarn vercel\` to deploy frontend
+6. \`yarn verify --network sepolia\` to verify contract(s) on Etherscan
 
 ## Code Style
 
