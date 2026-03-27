@@ -29,6 +29,9 @@ Read the file `.ai/CHALLENGE.yaml` to understand:
 - All checkpoints with their context, questions, tasks, and code unlocks
 - Whether each checkpoint is a **concept checkpoint** (has `unlocks`) or a **code-writing checkpoint** (has `task`)
 
+### Step 1b: Resolve File Paths
+CHALLENGE.yaml `file:` fields contain framework-specific paths (e.g. `hardhat:` and `foundry:`). Detect which framework this project uses by checking which directory exists (`packages/hardhat/` vs `packages/foundry/`). Use the matching key for all `file:` lookups throughout the challenge.
+
 ### Step 2: Apply Setup (if applicable)
 Check if CHALLENGE.yaml has a `setup.template` field:
 
