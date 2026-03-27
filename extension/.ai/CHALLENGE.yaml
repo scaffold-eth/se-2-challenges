@@ -5,7 +5,9 @@ difficulty: "intermediate"
 estimated_time: "3 - 10 hours"
 
 setup:
-  file: "packages/hardhat/contracts/DEX.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/DEX.sol"
+    foundry: "packages/foundry/contracts/DEX.sol"
 
 welcome_message: |
   Welcome to the DEX Challenge!
@@ -146,7 +148,9 @@ checkpoints:
         6. Go to http://localhost:3000/dex — verify the DEX shows ETH + $BAL reserves and your liquidity value is non-zero.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/DEX.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/DEX.sol"
+        foundry: "packages/foundry/contracts/DEX.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
         - "Start with the guard: `if (totalLiquidity != 0) revert DexAlreadyInitialized();`. Then set `totalLiquidity = address(this).balance;` and `liquidity[msg.sender] = totalLiquidity;`."
@@ -273,7 +277,9 @@ checkpoints:
         4. Try it in the Debug Contracts tab too: call `price()` with 1000000 ETH reserves, 1000000 token reserves, and 1000 input — you should get ~996 back (nearly 1:1 with fee + tiny slippage).
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/DEX.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/DEX.sol"
+        foundry: "packages/foundry/contracts/DEX.sol"
       test: "yarn test --grep 'Checkpoint3'"
       hints:
         - "It's four lines of math. Start with `uint256 xInputWithFee = xInput * 997;` and work through the formula step by step."
@@ -409,7 +415,9 @@ checkpoints:
         - Check the **Events** tab to make sure swap events are showing up.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/DEX.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/DEX.sol"
+        foundry: "packages/foundry/contracts/DEX.sol"
       test: "yarn test --grep 'Checkpoint4'"
       hints:
         - |
@@ -602,7 +610,9 @@ checkpoints:
         2. Check the **Events** tab to make sure liquidity events are showing up.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/DEX.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/DEX.sol"
+        foundry: "packages/foundry/contracts/DEX.sol"
       test: "yarn test --grep 'Checkpoint5'"
       hints:
         - |

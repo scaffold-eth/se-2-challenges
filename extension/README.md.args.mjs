@@ -1,6 +1,6 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge: ⚖️ Build a DEX
+export const extraContents = ({solidityFramework}) => `# 🚩 Challenge: ⚖️ Build a DEX
 
 ![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-dex/extension/packages/nextjs/public/hero.png)
 
@@ -49,12 +49,29 @@ yarn start
 
 ---
 
-## Checkpoint 1: 🔭 The Structure 📺
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the \`/start\` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **\`/skip\`** if you want the AI to show you the solution
+6. Your progress is saved — use \`/start\` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
+${solidityFramework === "foundry" ? `> **Note:** Screenshots below show the Hardhat network, but you're using Foundry — everything works the same, just the network name differs.
+
+` : ``}## Checkpoint 1: 🔭 The Structure 📺
 
 🧭 Navigate to the \`Debug Contracts\` tab, you should see two smart contracts displayed called \`DEX\` and \`Balloons\`.
 
-- \`packages/hardhat/contracts/Balloons.sol\`: a simple ERC20 that mints the deployer some $BAL
-- \`packages/hardhat/contracts/DEX.sol\`: the exchange contract you will implement
+- \`packages/${solidityFramework}/contracts/Balloons.sol\`: a simple ERC20 that mints the deployer some $BAL
+- \`packages/${solidityFramework}/contracts/DEX.sol\`: the exchange contract you will implement
 
 > Below is what your front-end will look like without the implementation code within your smart contracts. The buttons will likely break because there are no functions tied to them yet!
 ![firstLoad](https://github.com/user-attachments/assets/f8b2ec8f-444d-4ec0-969b-3edafcbc36c9)
@@ -141,7 +158,7 @@ function getLiquidity(address lp) public view returns (uint256 lpLiquidity) {
 
 ### 🧪 Try it out
 
-🧩 Go uncomment the line in \`packages/hardhat/deploy/00_deploy_dex.ts\` that sends 10 BAL to your frontend address (and make sure you paste in your actual frontend address).
+${solidityFramework === "hardhat" ? `🧩 Go uncomment the line in \`packages/hardhat/deploy/00_deploy_dex.ts\` that sends 10 BAL to your frontend address (and make sure you paste in your actual frontend address).` : `🧩 Go uncomment the line in \`packages/foundry/script/DeployDEX.s.sol\` that sends 10 BAL to your frontend address (and make sure you paste in your actual frontend address).`}
 
 🔁 Now redeploy (\`yarn deploy --reset\`) and visit \`http://localhost:3000/dex\` and use the \`Balloons\` contract to call \`approve()\` with:
   - spender = DEX address
@@ -237,7 +254,7 @@ function price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure
 
 ### 🧪 Try it out
 
-🧩 Uncomment the last part of \`packages/hardhat/deploy/00_deploy_dex.ts\` so that you don't have to add the liquidity manually.
+${solidityFramework === "hardhat" ? `🧩 Uncomment the last part of \`packages/hardhat/deploy/00_deploy_dex.ts\` so that you don't have to add the liquidity manually.` : `🧩 Uncomment the init section in \`packages/foundry/script/DeployDEX.s.sol\` so that you don't have to add the liquidity manually.`}
 
 🔁 Now redeploy and go to \`http://localhost:3000/dex\` and type values into the swap inputs. The curve preview should move and show output estimates (including the 0.3% fee).
 
@@ -479,7 +496,7 @@ yarn test --grep "Checkpoint5"
 
 ## Checkpoint 6: 💾 Deploy your contracts! 🛰
 
-📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\`
+${solidityFramework === "hardhat" ? `📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\`` : `📡 Deploy to a testnet using \`yarn deploy --network sepolia\` (or \`--network optimismSepolia\`)`}
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
@@ -487,9 +504,9 @@ yarn test --grep "Checkpoint5"
 
 ⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network. You can also request ETH by sending a message with your new deployer address and preferred network in the [challenge Telegram](https://t.me/+_NeUIJ664Tc1MzIx). People are usually more than willing to share.
 
-🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in \`hardhat.config.ts\`)
+🚀 Run \`yarn deploy\` to deploy your smart contract to a public network.
 
-> 💬 Hint: Instead of editing \`hardhat.config.ts\` you can just add a network flag to the deploy command like this: \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`
+${solidityFramework === "hardhat" ? `> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` and run \`yarn deploy\` **OR** you can \`yarn deploy --network sepolia\`.` : `> 💬 Hint: Use \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`.`}
 
 ---
 
@@ -509,7 +526,7 @@ yarn test --grep "Checkpoint5"
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on local networks (\`hardhat\`/\`foundry\`). You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
 #### ⚙️ Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -518,8 +535,8 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
-- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/${solidityFramework}/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/${solidityFramework}/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
 ---

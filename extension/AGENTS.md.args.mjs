@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -28,18 +28,23 @@ Why understanding AMMs is essential:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+This project uses **${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** as the smart contract framework.
 
 \`\`\`
 packages/
-  hardhat/
+  ${solidityFramework}/
     contracts/
       Balloons.sol           # ERC-20 token (provided, DO NOT EDIT)
       DEX.sol                # Decentralized exchange (learner implements)
-    deploy/
+${solidityFramework === "hardhat" ? `    deploy/
       00_deploy_your_contract.ts   # Deploys Balloons, DEX, seeds initial liquidity
     test/
-      Challenge.ts           # Checkpoint-based grading tests
+      DEX.ts                 # Checkpoint-based grading tests` : `    script/
+      DeployDEX.s.sol        # Deploys Balloons, DEX, seeds initial liquidity
+    test/
+      DEX.t.sol              # Checkpoint-based grading tests`}
   nextjs/
     app/
       dex/
@@ -52,7 +57,7 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local blockchain
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
@@ -127,8 +132,9 @@ The \`997/1000\` factor implements a **0.3% swap fee** that accrues to liquidity
 
 ## Deploy Script
 
-- **\`00_deploy_your_contract.ts\`** - Deploys \`Balloons\`, then \`DEX\`, then approves and calls \`dex.init()\` to seed the pool with initial liquidity (typically 5 ETH + 5 tokens). The learner must **uncomment** the init section.
-- Also sends 10 Balloons to the frontend address for testing (learner must set \`YOUR_FRONTEND_ADDRESS\`).
+${solidityFramework === "hardhat" ? `- **\`00_deploy_your_contract.ts\`** - Deploys \`Balloons\`, then \`DEX\`, then approves and calls \`dex.init()\` to seed the pool with initial liquidity (typically 5 ETH + 5 tokens). The learner must **uncomment** the init section.
+- Also sends 10 Balloons to the frontend address for testing (learner must set \`YOUR_FRONTEND_ADDRESS\`).` : `- **\`DeployDEX.s.sol\`** - Deploys \`Balloons\`, then \`DEX\`, then approves and calls \`dex.init()\` to seed the pool with initial liquidity (typically 5 ETH + 5 tokens). The learner must **uncomment** the init section.
+- Also sends 10 Balloons to the frontend address for testing (learner must set their address).`}
 
 ## Frontend Architecture
 
@@ -174,7 +180,7 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/Challenge.ts\`) cover:
+The grading tests (\`packages/${solidityFramework}/test/DEX.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`) cover:
 
 - **Init**: Pool initialization with correct reserves
 - **Pricing**: \`price()\` returns correct outputs with 0.3% fee
@@ -187,13 +193,12 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
-2. \`yarn generate\` to create deployer account
-3. Fund deployer with testnet ETH from a faucet
-4. \`yarn deploy\` to deploy contracts
-5. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
-6. \`yarn vercel\` to deploy frontend
-7. \`yarn verify --network sepolia\` to verify contracts on Etherscan
+1. \`yarn generate\` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. ${solidityFramework === "hardhat" ? `Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` and run \`yarn deploy\`, or use \`yarn deploy --network sepolia\`` : `\`yarn deploy --network sepolia\``}
+4. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+5. \`yarn vercel\` to deploy frontend
+6. \`yarn verify --network sepolia\` to verify contracts on Etherscan
 
 ## Code Style
 
@@ -202,7 +207,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_your_contract.ts\`) |
+${solidityFramework === "hardhat" ? `| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_your_contract.ts\`) |` : `| \`UpperCamelCase\` | Foundry script files (e.g., \`DeployDEX.s.sol\`) |`}
 
 ## Key Warnings
 
