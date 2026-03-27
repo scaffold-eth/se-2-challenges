@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -28,18 +28,25 @@ Why understanding prediction markets is essential:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension (${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"} flavor). When instantiated with \`create-eth\`, it produces a monorepo:
 
 \`\`\`
 packages/
-  hardhat/
+${solidityFramework === "hardhat" ? `  hardhat/
     contracts/
       PredictionMarket.sol        # Main contract skeleton (learner implements)
       PredictionMarketToken.sol   # ERC-20 outcome tokens (provided, DO NOT EDIT)
     deploy/
       00_deploy_your_contract.ts  # Deploys PredictionMarket with initial params
     test/
-      PredictionMarket.ts         # Checkpoint-based grading tests (Checkpoints 2–9)
+      PredictionMarket.ts         # Checkpoint-based grading tests (Checkpoints 2–9)` : `  foundry/
+    contracts/
+      PredictionMarket.sol        # Main contract skeleton (learner implements)
+      PredictionMarketToken.sol   # ERC-20 outcome tokens (provided, DO NOT EDIT)
+    script/
+      DeployPredictionMarket.s.sol  # Deploys PredictionMarket with initial params
+    test/
+      PredictionMarket.t.sol      # Checkpoint-based grading tests (Checkpoints 2–9)`}
   nextjs/
     app/
       liquidity-provider/
@@ -54,15 +61,16 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
-yarn deploy         # Deploy contracts to local network
+${solidityFramework === "hardhat" ? `yarn chain          # Start local Hardhat blockchain
+yarn deploy         # Deploy contracts to local network` : `yarn chain          # Start local Anvil blockchain
+yarn deploy         # Deploy contracts to local network`}
 yarn start          # Start Next.js frontend at http://localhost:3000
 
 # Redeploy fresh
 yarn deploy --reset
 
 # Testing (checkpoint-based)
-yarn test                       # Run all challenge tests
+${solidityFramework === "hardhat" ? `yarn test                       # Run all challenge tests
 yarn test --grep "Checkpoint2"  # Test constructor + state variables
 yarn test --grep "Checkpoint3"  # Test token deployment + minting
 yarn test --grep "Checkpoint4"  # Test add/remove liquidity
@@ -70,17 +78,25 @@ yarn test --grep "Checkpoint5"  # Test oracle reporting
 yarn test --grep "Checkpoint6"  # Test market resolution + LP withdrawal
 yarn test --grep "Checkpoint7"  # Test pricing/probability calculations
 yarn test --grep "Checkpoint8"  # Test buy/sell tokens
-yarn test --grep "Checkpoint9"  # Test redeeming winning tokens
+yarn test --grep "Checkpoint9"  # Test redeeming winning tokens` : `yarn foundry:test                                            # Run all challenge tests
+yarn foundry:test --match-test "testCheckpoint2"              # Test constructor + state variables
+yarn foundry:test --match-test "testCheckpoint3"              # Test token deployment + minting
+yarn foundry:test --match-test "testCheckpoint4"              # Test add/remove liquidity
+yarn foundry:test --match-test "testCheckpoint5"              # Test oracle reporting
+yarn foundry:test --match-test "testCheckpoint6"              # Test market resolution + LP withdrawal
+yarn foundry:test --match-test "testCheckpoint7"              # Test pricing/probability calculations
+yarn foundry:test --match-test "testCheckpoint8"              # Test buy/sell tokens
+yarn foundry:test --match-test "testCheckpoint9"              # Test redeeming winning tokens`}
 
 # Code quality
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
 # Deploy to testnet (requires interactive password prompt, cannot be run by agents)
-yarn deploy --network sepolia
+${solidityFramework === "hardhat" ? `yarn deploy --network sepolia` : `yarn deploy --network sepolia`}
 
 # Contract verification (requires interactive password prompt, cannot be run by agents)
-yarn verify --network sepolia
+${solidityFramework === "hardhat" ? `yarn verify --network sepolia` : `yarn verify --network sepolia`}
 
 # Account management (requires interactive password prompt, cannot be run by agents)
 yarn generate       # Generate deployer account (encrypted private key)
@@ -165,6 +181,8 @@ price = initialTokenValue * probabilityAvg * tradingAmount
 
 ## Deploy Script
 
+**File:** \`${solidityFramework === "hardhat" ? "packages/hardhat/deploy/00_deploy_your_contract.ts" : "packages/foundry/script/DeployPredictionMarket.s.sol"}\`
+
 **Initial parameters:**
 - Question: \`"Will the green car win?"\`
 - Initial liquidity: \`1 ETH\`
@@ -218,7 +236,7 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/PredictionMarket.ts\`) are organized by checkpoints:
+The grading tests (\`${solidityFramework === "hardhat" ? "packages/hardhat/test/PredictionMarket.ts" : "packages/foundry/test/PredictionMarket.t.sol"}\`) are organized by checkpoints:
 
 - **Checkpoint 2**: Constructor initialization and state setup
 - **Checkpoint 3**: Token deployment and configuration
@@ -229,13 +247,13 @@ The grading tests (\`packages/hardhat/test/PredictionMarket.ts\`) are organized 
 - **Checkpoint 8**: Buying and selling tokens
 - **Checkpoint 9**: Redeeming winning tokens after resolution
 
-Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`${solidityFramework === "hardhat" ? 'yarn test` for all or `yarn test --grep "CheckpointN"' : 'yarn foundry:test` for all or `yarn foundry:test --match-test "testCheckpointN"'}\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Adjust ETH amounts in \`00_deploy_your_contract.ts\` (default: 1 ETH initial liquidity, 0.01 ETH token value)
-2. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
-3. \`yarn generate\` to create deployer account
+1. Adjust ETH amounts in \`${solidityFramework === "hardhat" ? "00_deploy_your_contract.ts" : "DeployPredictionMarket.s.sol"}\` (default: 1 ETH initial liquidity, 0.01 ETH token value)
+2. ${solidityFramework === "hardhat" ? "Set `defaultNetwork` to `sepolia` in `packages/hardhat/hardhat.config.ts` (or use `--network sepolia`)" : "Use `--network sepolia` flag when deploying"}
+3. ${solidityFramework === "hardhat" ? "`yarn generate` to create deployer account" : "`yarn generate` to create deployer account"}
 4. Fund deployer with testnet ETH from a faucet
 5. \`yarn deploy\` to deploy contracts
 6. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
@@ -249,7 +267,7 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_your_contract.ts\`) |
+| ${solidityFramework === "hardhat" ? "`snake_case` | Hardhat deploy files (e.g., `00_deploy_your_contract.ts`)" : "`PascalCase` | Foundry script files (e.g., `DeployPredictionMarket.s.sol`)"} |
 
 ## Key Warnings
 

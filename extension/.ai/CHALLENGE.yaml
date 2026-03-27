@@ -5,7 +5,9 @@ difficulty: "advanced"
 estimated_time: "4 - 12 hours"
 
 setup:
-  file: "packages/hardhat/contracts/PredictionMarket.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+    foundry: "packages/foundry/contracts/PredictionMarket.sol"
 
 welcome_message: |
   Welcome to the Prediction Markets Challenge!
@@ -141,7 +143,9 @@ checkpoints:
            - Set `s_ethCollateral = msg.value`
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+        foundry: "packages/foundry/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
         - "Declare immutables at the contract level, then assign them in the constructor. Use `i_oracle = _oracle;` etc."
@@ -263,7 +267,9 @@ checkpoints:
         1. Run `yarn deploy --reset` to deploy your updated contracts.
         2. Open http://localhost:3000 — go to the **Debug Contracts** tab to inspect the initialized values.
         3. The **Liquidity Provider** tab should now display the initial question, liquidity, probability, and relevant variables.
-      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+        foundry: "packages/foundry/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint3'"
       hints:
         - |
@@ -351,7 +357,9 @@ checkpoints:
         2. **`removeLiquidity(uint256 _ethToWithdraw)`**: Calculate burn amount, check reserves, update collateral, burn tokens, send ETH, emit event
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+        foundry: "packages/foundry/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint4'"
       hints:
         - "For `addLiquidity`: `uint256 tokensAmount = (msg.value * PRECISION) / i_initialTokenValue;` then mint both tokens to `address(this)`."
@@ -483,7 +491,9 @@ checkpoints:
         2. Go to the **Oracle** tab and report the outcome (watch the race first!).
         3. Make sure you're connected with the correct oracle address — check `00_deploy_your_contract.ts` to find out which one is being used.
         4. Then go to the **Liquidity Provider** tab and try the **Resolve Market and Withdraw** function. Watch as tokens are burned and ETH flows back to the deployer.
-      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+        foundry: "packages/foundry/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint5|Checkpoint6'"
       hints:
         - "For `report`: `s_winningToken = _winningOutcome == Outcome.YES ? i_yesToken : i_noToken;`"
@@ -614,7 +624,9 @@ checkpoints:
         5. **`getSellPriceInEth`**: Call `_calculatePriceInEth(..., true)`
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+        foundry: "packages/foundry/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint7'"
       hints:
         - |
@@ -740,7 +752,9 @@ checkpoints:
         1. Run `yarn deploy --reset` to deploy your updated contracts.
         2. Go to the **User** tab to test buying and selling tokens and see how the probability changes.
         3. Make sure you **use another account** (not the liquidity provider), otherwise you'll be restricted from trading.
-      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+        foundry: "packages/foundry/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint8'"
       hints:
         - "For buy: `uint256 ethNeeded = getBuyPriceInEth(_outcome, _amountTokenToBuy); if (msg.value != ethNeeded) revert PredictionMarket__MustSendExactETHAmount();`"
@@ -833,7 +847,9 @@ checkpoints:
         2. Purchase some winning tokens on the **User** tab first.
         3. Report the race via the **Oracle** tab.
         4. Then redeem your tokens on the **User** tab.
-      file: "packages/hardhat/contracts/PredictionMarket.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/PredictionMarket.sol"
+        foundry: "packages/foundry/contracts/PredictionMarket.sol"
       test: "yarn test --grep 'Checkpoint9'"
       hints:
         - "The ETH calculation: `uint256 ethToReceive = (_amount * i_initialTokenValue) / PRECISION;` — then subtract from `s_ethCollateral`, burn, and send."
