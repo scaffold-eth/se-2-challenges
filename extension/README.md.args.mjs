@@ -167,10 +167,6 @@ yarn start
 
 🛰 Ready to go public (on testnet)? Let's ship it.
 
-${solidityFramework === "hardhat" ? `> Change the \`defaultNetwork\` in \`packages/hardhat/hardhat.config.ts\` to \`sepolia\`.
-
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)` : `> Pass the network flag directly: \`yarn deploy --network sepolia\`.`}
-
 🔐 Generate a deployer address with \`yarn generate\`. This creates a unique deployer address and saves the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
 
 > This local account will deploy your contracts, allowing you to avoid entering a personal private key.
@@ -189,7 +185,9 @@ ${solidityFramework === "hardhat" ? `> Change the \`defaultNetwork\` in \`packag
 
 🚀 Deploy your NFT smart contract with \`yarn deploy\`.
 
-${solidityFramework === "hardhat" ? `> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` **OR** you can \`yarn deploy --network sepolia\`.` : `> 💬 Hint: Use \`yarn deploy --network sepolia\`.`}
+${solidityFramework === "hardhat" ? `> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` and run \`yarn deploy\` **OR** you can \`yarn deploy --network sepolia\`.
+
+![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)` : `> 💬 Hint: Use \`yarn deploy --network sepolia\`.`}
 
 ---
 

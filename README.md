@@ -218,26 +218,6 @@ yarn start
 
 🛰 Ready to go public (on testnet)? Let's ship it.
 
-<Tabs>
-<Tab label="Hardhat">
-
-**Hardhat**
-
-Change the `defaultNetwork` in `packages/hardhat/hardhat.config.ts` to `sepolia` **OR** pass the network flag directly: `yarn deploy --network sepolia`.
-
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
-
-</Tab>
-<Tab label="Foundry">
-
-**Foundry**
-
-You can pass the network flag directly: `yarn deploy --network sepolia`.
-
-</Tab>
-</Tabs>
-
-
 🔐 Generate a deployer address with `yarn generate`. This creates a fresh deployer and stores the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
 
 > This local account deploys your contracts(no need to paste personal private keys).
@@ -261,7 +241,9 @@ You can pass the network flag directly: `yarn deploy --network sepolia`.
 
 **Hardhat**
 
-> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` and run `yarn deploy` **OR** you can `yarn deploy --network sepolia`.
+
+![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
 </Tab>
 <Tab label="Foundry">
