@@ -46,6 +46,13 @@ Oracles are bridges between blockchains and the external world. They solve a fun
 
 ## Checkpoint 0: 📦 Environment 📚
 
+Before you begin, you need to install the following tools:
+
+- [Node (>= v18.18)](https://nodejs.org/en/download/)
+- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+- [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (only if choosing Foundry as your solidity framework)
+
 > 💻 Start your local network (a blockchain emulator in your computer):
 
 ```sh
@@ -55,6 +62,8 @@ npx create-eth@2.0.4 -e challenge-oracles challenge-oracles
 cd challenge-oracles
 
 ```
+
+> When prompted to choose a Solidity framework, you can pick either **Hardhat** or **Foundry**. Both are fully supported. The screenshots in this guide may show one or the other, but the concepts are identical.
 
 > 💻 In the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -98,7 +107,18 @@ yarn start
 
 ### 🔗 Simple Oracle - The Building Block
 
+<Tabs>
+<Tab label="Hardhat">
+
 🔍 Open the `packages/hardhat/contracts/00_Whitelist/SimpleOracle.sol` file to examine the basic oracle functionality.
+
+</Tab>
+<Tab label="Foundry">
+
+🔍 Open the `packages/foundry/contracts/00_Whitelist/SimpleOracle.sol` file to examine the basic oracle functionality.
+
+</Tab>
+</Tabs>
 
 #### 📖 Understanding the Code:
 
@@ -128,7 +148,18 @@ yarn start
 
 🎯 **Your Mission**: Complete the missing function implementations in the `WhitelistOracle.sol` contract.
 
+<Tabs>
+<Tab label="Hardhat">
+
 🔍 Open the `packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol` file to implement the whitelist oracle functionality.
+
+</Tab>
+<Tab label="Foundry">
+
+🔍 Open the `packages/foundry/contracts/00_Whitelist/WhitelistOracle.sol` file to implement the whitelist oracle functionality.
+
+</Tab>
+</Tabs>
 
 #### 📖 Understanding the Relationship:
 
@@ -436,7 +467,18 @@ yarn test --grep "Checkpoint1"
 
 ```
 
+<Tabs>
+<Tab label="Hardhat">
+
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/WhitelistOracle.ts`.
+
+</Tab>
+<Tab label="Foundry">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/WhitelistOracle.t.sol`.
+
+</Tab>
+</Tabs>
 
 ### Try it out!
 
@@ -486,7 +528,18 @@ yarn simulate:whitelist
 
 🎯 **Your Mission**: Complete the missing function implementations in the `StakingOracle.sol` contract. The contract skeleton is already provided with all the necessary structs, events, and modifiers but you need to fill in the logic.
 
+<Tabs>
+<Tab label="Hardhat">
+
 🔍 Open the `packages/hardhat/contracts/01_Staking/StakingOracle.sol` file to implement the staking oracle functionality.
+
+</Tab>
+<Tab label="Foundry">
+
+🔍 Open the `packages/foundry/contracts/01_Staking/StakingOracle.sol` file to implement the staking oracle functionality.
+
+</Tab>
+</Tabs>
 
 ### ✏️ Tasks:
 
@@ -1185,7 +1238,18 @@ yarn test --grep "Checkpoint2"
 
 ```
 
+<Tabs>
+<Tab label="Hardhat">
+
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/StakingOracle.ts`.
+
+</Tab>
+<Tab label="Foundry">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/StakingOracle.t.sol`.
+
+</Tab>
+</Tabs>
 
 ### Try it out!
 
@@ -1302,7 +1366,18 @@ AUTO_SLASH=true yarn simulate:staking
 
 🧪 **Testing Strategy**: Each function you implement can be tested individually using the provided test suite. Run `yarn test` after implementing each function to verify your solution works correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 🔍 Open the `packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol` file to implement the optimistic oracle functionality.
+
+</Tab>
+<Tab label="Foundry">
+
+🔍 Open the `packages/foundry/contracts/02_Optimistic/OptimisticOracle.sol` file to implement the optimistic oracle functionality.
+
+</Tab>
+</Tabs>
 
 ### ✏️ Tasks:
 
@@ -1867,7 +1942,18 @@ yarn test --grep "Checkpoint6"
 
 ```
 
+<Tabs>
+<Tab label="Hardhat">
+
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/OptimisticOracle.ts`.
+
+</Tab>
+<Tab label="Foundry">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/OptimisticOracle.t.sol`.
+
+</Tab>
+</Tabs>
 
 ### Try it out!
 
@@ -1980,17 +2066,28 @@ Each oracle design solves different problems:
 
 🎉 Well done on building the optimistic oracle system! Now, let's get it on a public testnet.
 
-📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts` (e.g., `sepolia`).
-
 🔐 You will need to generate a **deployer address** using `yarn generate`. This creates a mnemonic and saves it locally.
 
 👩‍🚀 Use `yarn account` to view your deployer account balances.
 
 ⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
+<Tabs>
+<Tab label="Hardhat">
+
+📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts` (e.g., `sepolia`).
+
 🚀 Run `yarn deploy` to deploy your optimistic oracle contracts to a public network (selected in `hardhat.config.ts`)
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+
+</Tab>
+<Tab label="Foundry">
+
+🚀 Run `yarn deploy --network sepolia` to deploy your optimistic oracle contracts to Sepolia testnet.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -2010,7 +2107,7 @@ Each oracle design solves different problems:
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `localhost`. You can enable them on every chain by setting `onlyLocalBurnerWallet: false` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -2020,8 +2117,20 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
+<Tabs>
+<Tab label="Hardhat">
+
 - 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 - 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+<Tab label="Foundry">
+
+- 🔷`ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃`ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -2054,3 +2163,18 @@ Oracles are fundamental infrastructure for the decentralized web. They enable sm
 🚀 As you continue your blockchain development journey, you'll encounter many variations and combinations of these patterns. Understanding the fundamental trade-offs will help you choose the right oracle design for your specific use case.
 
 🧠 Remember: the best oracle is the one that provides the right balance of security, speed, flexibility and cost for your application's needs!
+
+## 🤖 AI-Guided Learning Mode (Optional)
+
+This challenge supports an interactive AI learning mode. Instead of working through the checkpoints on your own, you can have an AI guide you step-by-step.
+
+### Quick Start
+Run `/start` in your AI-enabled IDE (Cursor, VS Code with Claude, etc.) to begin.
+
+### Commands
+- `/start` — Begin or resume the challenge
+- `/skip` — Skip current task (AI writes + explains the solution)
+- `hint` — Get contextual help anytime
+- `check` — Validate your current code
+
+> 📝 Your progress is saved automatically in `.challenge-ai/progress.json`.
