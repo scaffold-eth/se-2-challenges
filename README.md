@@ -199,15 +199,17 @@ function contribute() public payable {
 yarn test --grep "Checkpoint1"
 ```
 
+✅ Did the tests pass? You can dig into any errors by viewing the tests:
+
 <Tabs>
 <Tab label="Hardhat">
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+`packages/hardhat/test/CrowdFund.ts`
 
 </Tab>
 <Tab label="Foundry">
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
+`packages/foundry/test/CrowdFund.t.sol`
 
 </Tab>
 </Tabs>
@@ -295,15 +297,17 @@ function withdraw() public {
 yarn test --grep "Checkpoint2"
 ```
 
+✅ Did the tests pass? You can dig into any errors by viewing the tests:
+
 <Tabs>
 <Tab label="Hardhat">
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+`packages/hardhat/test/CrowdFund.ts`
 
 </Tab>
 <Tab label="Foundry">
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
+`packages/foundry/test/CrowdFund.t.sol`
 
 </Tab>
 </Tabs>
@@ -423,15 +427,17 @@ function timeLeft() public view returns (uint256) {
 yarn test --grep "Checkpoint3"
 ```
 
+✅ Did the tests pass? You can dig into any errors by viewing the tests:
+
 <Tabs>
 <Tab label="Hardhat">
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+`packages/hardhat/test/CrowdFund.ts`
 
 </Tab>
 <Tab label="Foundry">
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
+`packages/foundry/test/CrowdFund.t.sol`
 
 </Tab>
 </Tabs>

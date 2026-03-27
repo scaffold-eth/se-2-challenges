@@ -71,7 +71,9 @@ The AI won't just give you the answers — it teaches first, then has you implem
 
 ## Standard Learning Mode
 
-## 🧑‍🚀 Your Mission
+${solidityFramework === "foundry" ? `> **Note:** Screenshots below show the Hardhat network, but you're using Foundry — everything works the same, just the network name differs.
+
+` : ``}## 🧑‍🚀 Your Mission
 
 🏦 Build a \`CrowdFund.sol\` contract that collects **ETH** from numerous addresses using a payable \`contribute()\` function and keeps track of \`balances\`. After some \`deadline\` if it has at least some \`threshold\` of ETH, it sends it to a \`FundingRecipient\` contract (This is a stand-in for any potential use case a group of people would want to fund together). It then triggers the \`complete()\` action, sending the full balance. If not enough **ETH** is collected, allow users to \`withdraw()\`.
 
