@@ -17,11 +17,17 @@ Before you begin, you need to install the following tools:
 - [Node (>= v20.18.3)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (if choosing Foundry as your Solidity framework)
 
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
 npx create-eth@2.0.10 -e challenge-crowdfunding challenge-crowdfunding
+```
+
+> When prompted, choose your preferred Solidity framework: **Hardhat** or **Foundry**.
+
+```sh
 cd challenge-crowdfunding
 ```
 
@@ -49,7 +55,24 @@ yarn start
 
 > 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
 
-🔏 Now you are ready to edit your smart contract `CrowdFund.sol` in `packages/hardhat/contracts`
+🔏 Now you are ready to edit your smart contract `CrowdFund.sol` in your contracts directory
+
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
+`packages/hardhat/contracts`
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+`packages/foundry/contracts`
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -82,6 +105,8 @@ The AI won't just give you the answers — it teaches first, then has you implem
 ---
 
 ## Standard Learning Mode
+
+> **Note:** Screenshots below show the Hardhat network. If you're using Foundry, you'll see "Foundry" instead of "Hardhat" in the network name, but everything else works the same.
 
 ## 🧑‍🚀 Your Mission
 
@@ -120,7 +145,7 @@ The goal of this function is to allow anyone to contribute to the pool of funds.
 - Update the `balances` mapping
 - Emit the `Contribute` event
 
-<details markdown='1'>
+<details>
 <summary>🔎 Hint</summary>
 
 You can set mappings like you would access a Javascript array.
@@ -130,7 +155,7 @@ You need to use the address for the sender of the transaction and you will need 
 
 Go check https://solidity-by-example.org/ if you need help on the syntax.
 
-<details markdown='1'>
+<details>
 
 <summary>🎯 Solution</summary>
 
@@ -154,7 +179,7 @@ function contribute() public payable {
 
 ![Faucet](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e82e3100-20fb-4886-a6bf-4113c3729f53)
 
-> ✏ Need to troubleshoot your code? `hardhat/console.sol` is already imported in your contract so you can call `console.log()` right in your Solidity code. The output will appear in your `yarn chain` terminal.
+> ✏ Need to troubleshoot your code? You can use `console.log()` in your Solidity code. The output will appear in your `yarn chain` terminal.
 
 ---
 
@@ -174,7 +199,18 @@ function contribute() public payable {
 yarn test --grep "Checkpoint1"
 ```
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+<Tabs>
+<Tab label="Hardhat">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+
+</Tab>
+<Tab label="Foundry">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -210,13 +246,13 @@ This function will need to do the following:
 - Check that `openToWithdraw` is true. Throw `NotOpenToWithdraw` if not.
 - Send the correct amount to the user who is withdrawing. Throw `WithdrawTransferFailed` if it does not succeed.
 
-<details markdown='1'>
+<details>
 <summary>🔎 Hint</summary>
 
 You need to send the user's balance (`balances[msg.sender]`) back to their address.
 The important thing is that you only send the correct amount to the user AND they can only do it when `openToWithdraw` is true.
 
-<details markdown='1'>
+<details>
 
 <summary>🎯 Solution</summary>
 
@@ -259,7 +295,18 @@ function withdraw() public {
 yarn test --grep "Checkpoint2"
 ```
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+<Tabs>
+<Tab label="Hardhat">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+
+</Tab>
+<Tab label="Foundry">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -299,14 +346,14 @@ error TooEarly(uint256 deadline, uint256 currentTimestamp);
 
 > ‼️ Check the `FundingRecipient.sol` to see what function you will call but DO NOT edit the `FundingRecipient.sol` as it can slow the auto grading.
 
-<details markdown='1'>
+<details>
 <summary>🔎 Hint</summary>
 
 If the `address(this).balance` of the contract is over the `threshold` by the `deadline`, you will want to call: `fundingRecipient.complete{value: address(this).balance}()`
 
 If the balance is less than the `threshold`, you want to set the `openForWithdraw` bool to `true` which will allow users to `withdraw()` their funds.
 
-<details markdown='1'>
+<details>
 
 <summary>🎯 Solution</summary>
 
@@ -333,12 +380,12 @@ function execute() public {
 
 ⚠️ Be careful! If `block.timestamp >= deadline` you want to `return 0;`
 
-<details markdown='1'>
+<details>
 <summary>🔎 Hint</summary>
 
 If the `deadline` is greater than `block.timestamp` then return the difference between the two. Otherwise return 0.
 
-<details markdown='1'>
+<details>
 
 <summary>🎯 Solution</summary>
 
@@ -376,7 +423,18 @@ function timeLeft() public view returns (uint256) {
 yarn test --grep "Checkpoint3"
 ```
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+<Tabs>
+<Tab label="Hardhat">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
+
+</Tab>
+<Tab label="Foundry">
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -386,12 +444,12 @@ yarn test --grep "Checkpoint3"
 
 > Use the [receive()](https://docs.soliditylang.org/en/v0.8.9/contracts.html?highlight=receive#receive-ether-function) function in solidity to "catch" ETH sent to the contract _without a specific method indicated_ and call `contribute()` to update `balances`.
 
-<details markdown='1'>
+<details>
 <summary>🔎 Hint</summary>
 
 Don't overthink it. This `receive` method will be called anytime somebody sends funds directly to your contract without any particular method specified. Just make sure the `contribute()` method is called when this happens so that their balance is updated.
 
-<details markdown='1'>
+<details>
 
 <summary>🎯 Solution</summary>
 
@@ -424,12 +482,12 @@ receive() external payable {
 - [ ] Make sure funds can't get trapped in the contract! **Try sending funds after you have executed! What happens?**
 - [ ] Update the [modifier](https://solidity-by-example.org/function-modifier/) called `notCompleted`. It should check that `FundingRecipient` is not completed yet. Use it to protect your `execute`, `contribute` and `withdraw` functions by throwing a new custom error if it has already been completed.
 
-<details markdown='1'>
+<details>
 <summary>🔎 Hint</summary>
 
 You can access the funding recipient contract with the `fundingRecipient` variable. Then you just need to make sure that `.completed()` does not return `true`. If it does then you need to revert with an error; Your choice for what the error will be called. `AlreadyCompleted`? `RecipientAlreadyFunded`? Or your own idea for a good error name. You choose!
 
-<details markdown='1'>
+<details>
 
 <summary>🎯 Solution</summary>
 
@@ -469,8 +527,6 @@ function execute() public notCompleted {
 
 ## Checkpoint 5: 💾 Deploy your contract! 🛰
 
-📡 Edit the `defaultNetwork` in `hardhat.config.ts` to match the name of one of testnets from the `networks` object. We recommend to use `"sepolia"` or `"optimismSepolia"`
-
 🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
 
 👩‍🚀 Use `yarn account` to view your deployer account balances.
@@ -479,9 +535,24 @@ function execute() public notCompleted {
 
 > 📝 If you plan on testing your challenge on the live network don't forget to set your `deadline` to a nice amount of time such as `block.timestamp + 2 hours`
 
-🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
+🚀 Deploy your smart contract to a public network.
 
-> 💬 Hint: Instead of editing `hardhat.config.ts` you can just add a network flag to the deploy command like this: `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+> 💬 Hint: Use `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
+
+</Tab>
+</Tabs>
 
 ![allContributions-blockFrom](https://github.com/user-attachments/assets/e544a9b4-1bb9-4b0a-8729-d57d0b9869cf)
 
@@ -513,9 +584,24 @@ This is great for going through **Speedrun Ethereum** but...
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+<Tabs>
+<Tab label="Hardhat">
 
+**Hardhat**
+
+- `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 - `ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+- `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- `ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
