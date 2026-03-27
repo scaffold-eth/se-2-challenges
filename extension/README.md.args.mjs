@@ -1,6 +1,6 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 💰 MyUSD Stablecoin
+export const extraContents = ({solidityFramework}) => `# 💰 MyUSD Stablecoin
 
 ![readme-stablecoin](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-stablecoins/extension/packages/nextjs/public/hero.png)
 
@@ -77,7 +77,7 @@ yarn start
 
 🔍 Let's understand the key components and mechanics of our stablecoin system.
 
-These are located in \`packages/hardhat/contracts\`. Go check them out and reference the following descriptions of each contract.
+These are located in \`packages/${solidityFramework}/contracts\`. Go check them out and reference the following descriptions of each contract.
 
 ### Core Components
 
@@ -121,7 +121,7 @@ This system creates a stablecoin where we have two levers to pull in order to ma
 
 First, users need a way to deposit collateral (ETH) into the system. We also need to know the USD value of this collateral.
 
-🔍 Open the \`packages/hardhat/contracts/MyUSDEngine.sol\` file to begin adding the logic to the existing (empty) methods.
+🔍 Open the \`packages/${solidityFramework}/contracts/MyUSDEngine.sol\` file to begin adding the logic to the existing (empty) methods.
 
 ### ✏️ Tasks:
 
@@ -138,19 +138,19 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
     - Receives ETH via \`msg.value\`
     - Updates a mapping to track how much ETH each user has deposited
     - Emits an event for tracking
-    
+
     Remember to:
     - Check for zero value
     - Use the existing mapping
     - Include the current ETH price (in MyUSD) in the event
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
     \`\`\`solidity
     function addCollateral() public payable {
         if (msg.value == 0) revert Engine__InvalidAmount();
-        
+
         s_userCollateral[msg.sender] += msg.value;
         emit CollateralAdded(msg.sender, msg.value, i_oracle.getETHMyUSDPrice());
     }
@@ -174,12 +174,12 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
     - Get the user's ETH amount from the mapping
     - Get the current ETH price from the oracle
     - Multiply them together and divide by PRECISION
-    
+
     Think about:
     - Why we need to divide by PRECISION
     - What units the oracle price is in
     - What units the collateral amount is in
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -260,20 +260,20 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - How much time has passed since \`lastUpdateTime\`
     - What the total debt value is currently (\`totalDebtShares\` x \`debtExchangeRate\`)
     - How much interest that debt has earned at the current \`borrowRate\`
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
     \`\`\`solidity
     function _getCurrentExchangeRate() internal view returns (uint256) {
         if (totalDebtShares == 0) return debtExchangeRate;
-        
+
         uint256 timeElapsed = block.timestamp - lastUpdateTime;
         if (timeElapsed == 0 || borrowRate == 0) return debtExchangeRate;
-        
+
         uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
         uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
-        
+
         return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
     }
     \`\`\`
@@ -294,12 +294,12 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Get the new exchange rate
     - Update the stored rate
     - Update the timestamp
-    
+
     Remember to:
     - Handle the case where there are no debt shares
     - Update both the exchange rate and timestamp
     - Use the helper function we just created (\`_getCurrentExchangeRate()\`)
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -309,7 +309,7 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
             lastUpdateTime = block.timestamp;
             return;
         }
-        
+
         debtExchangeRate = _getCurrentExchangeRate();
         lastUpdateTime = block.timestamp;
     }
@@ -330,11 +330,11 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     Think about this like a currency conversion:
     - If 1 share = 1.1 MyUSD (exchange rate)
     - Then 100 MyUSD = 100/1.1 shares
-    
+
     You need to:
     - Get the current exchange rate
     - Use it to calculate how many shares represent the given amount
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -381,9 +381,9 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - If we know how many shares a user has
     - And we know the current exchange rate
     - We can calculate their total debt value
-    
+
     Remember to handle the case where a user has no shares!
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -414,12 +414,12 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     The position ratio is like a health score for a user's position:
     - Higher ratio = safer position
     - Lower ratio = riskier position
-    
+
     Think about:
     - What happens if someone has no debt?
     - How to handle division by zero
     - Why we need to multiply by \`PRECISION\` before dividing
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -427,7 +427,7 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     function calculatePositionRatio(address user) public view returns (uint256) {
         uint256 debtValue = getCurrentDebtValue(user);
         if (debtValue == 0) return type(uint256).max;
-        
+
         uint256 collateralValue = calculateCollateralValue(user);
         return (collateralValue * PRECISION) / debtValue;
     }
@@ -451,9 +451,9 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Get the ratio
     - Compare it to the required ratio (150%)
     - Revert if it's too low
-    
+
     Remember to handle the precision correctly when comparing!
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -489,27 +489,27 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Update the user's and total shares
     - Check if the position is still safe
     - Mint the actual tokens
-    
+
     Remember to:
     - Check for zero amount
     - Update both share mappings
     - Validate before minting
     - Emit the event
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
     \`\`\`solidity
     function mintMyUSD(uint256 mintAmount) public {
         if (mintAmount == 0) revert Engine__InvalidAmount();
-        
+
         uint256 shares = _getMyUSDToShares(mintAmount);
         s_userDebtShares[msg.sender] += shares;
         totalDebtShares += shares;
-        
+
         _validatePosition(msg.sender);
         i_myUSD.mintTo(msg.sender, mintAmount);
-        
+
         emit DebtSharesMinted(msg.sender, mintAmount, shares);
     }
     \`\`\`
@@ -554,11 +554,11 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - Run \`_accrueInterest()\`
     - Update the rate
     - Emit the event
-    
+
     Remember to:
     - Use the modifier for access control
     - Emit the event with the new rate
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -615,13 +615,13 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - User wants to repay more than they owe (we cap at their actual debt)
     - User doesn't have enough balance
     - User hasn't approved enough allowance
-    
+
     Remember to:
     - Convert MyUSD amount to shares first
     - If user tries to repay more than they owe, cap it at their actual debt
     - Update both user's shares and total shares
     - Burn the correct amount of MyUSD
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -675,12 +675,12 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - Check if they have enough collateral
     - Reduce their collateral but immediately \`_validatePosition\` to check if they'd still be safe
     - Only transfer ETH if the position remains safe
-    
+
     Remember to:
     - Handle the case where user has no debt
     - Use the existing position validation function
     - Emit the event with the current price (this is solely for the frontend)
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -688,7 +688,7 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     function withdrawCollateral(uint256 amount) external {
         if (amount == 0) revert Engine__InvalidAmount();
         if (s_userCollateral[msg.sender] < amount) revert Engine__InsufficientCollateral();
-        
+
         // Temporarily reduce the user's collateral to check if they remain safe
         uint256 newCollateral = s_userCollateral[msg.sender] - amount;
         s_userCollateral[msg.sender] = newCollateral;
@@ -741,11 +741,11 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     <summary>💡 Hint: Checking Liquidation Status</summary>
 
     This function is very similar logic to \`_validatePosition\` except it only returns a bool instead of reverting.
-    
+
     Think about:
     - How the position ratio relates to the collateral ratio
     - Why we multiply by 100 and compare with COLLATERAL_RATIO * PRECISION
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -790,13 +790,13 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - It allows anyone to step in and resolve unsafe positions
     - It ensures the liquidator is compensated for their service
     - It protects the system from accumulating bad debt
-    
+
     Key considerations:
     - Always accrue interest first to get current debt values
     - Calculate collateral amounts carefully to maintain system solvency
     - Handle edge cases where collateral might not cover the full debt
     - Ensure proper event emission for off-chain monitoring
-    
+
     <details markdown='1'>
     <summary>🎯 Solution</summary>
 
@@ -826,7 +826,7 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
         uint256 collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue;
         uint256 rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100;
         uint256 amountForLiquidator = collateralToCoverDebt + rewardAmount;
-        
+
         if (amountForLiquidator > userCollateral) {
             amountForLiquidator = userCollateral;
         }
@@ -912,7 +912,7 @@ yarn simulate
 - Total supply drops significantly
 - The peg is restored
 
-🧩 Now this is just a small example of what a very small group of market participants can do to the price of an asset. 
+🧩 Now this is just a small example of what a very small group of market participants can do to the price of an asset.
 
 ❓ Is our stablecoin doomed to either have a very small market cap or lose its peg perpetually? Find out in the next section...
 
@@ -936,7 +936,7 @@ yarn simulate
 <details markdown='1'>
 <summary>Where does the yield come from?</summary>
 
-No MyUSD can exist that is not paying for the borrow rate so <b>as long as the savings rate is less than or equal to the borrow rate this is sustainable</b>. Maybe you are thinking, "What about all the DEX liquidity?". Even this DEX liquidity is just a large borrower who deposited ETH collateral and has a lot of MyUSD borrowed and then supplied it all to the DEX. Take a look at the <code>packages/hardhat/deploy/00_deploy_contract.ts</code> deploy file to see where the DEX is supplied with liquidity. Technically all of the MyUSD that is accrued from the borrow rate that is not being allocated to stakers should exist <i>somewhere</i> in the system but we decided against adding that to an already complex system. As a result, if everyone (including the DEX liquidity provider) decided to attempt repaying all their debt, they would not be able to do so.
+No MyUSD can exist that is not paying for the borrow rate so <b>as long as the savings rate is less than or equal to the borrow rate this is sustainable</b>. Maybe you are thinking, "What about all the DEX liquidity?". Even this DEX liquidity is just a large borrower who deposited ETH collateral and has a lot of MyUSD borrowed and then supplied it all to the DEX. Take a look at the <code>packages/${solidityFramework}/deploy/00_deploy_contract.ts</code> deploy file to see where the DEX is supplied with liquidity. Technically all of the MyUSD that is accrued from the borrow rate that is not being allocated to stakers should exist <i>somewhere</i> in the system but we decided against adding that to an already complex system. As a result, if everyone (including the DEX liquidity provider) decided to attempt repaying all their debt, they would not be able to do so.
 
 </details>
 
@@ -1048,7 +1048,9 @@ function setBorrowRate(uint256 newRate) external onlyRateController {
 
 Well done on building a stablecoin engine! Now, let's get it on a public testnet.
 
-📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages/hardhat/hardhat.config.ts\` (e.g., \`sepolia\`).
+${solidityFramework === "hardhat"
+  ? `📡 Edit the \`defaultNetwork\` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in \`packages/hardhat/hardhat.config.ts\` (e.g., \`sepolia\`).`
+  : `📡 Deploy to a public testnet using the \`--network\` flag:`}
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\`. This creates a mnemonic and saves it locally.
 
@@ -1056,9 +1058,11 @@ Well done on building a stablecoin engine! Now, let's get it on a public testnet
 
 ⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
-🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in \`hardhat.config.ts\`)
+🚀 Run \`yarn deploy\` to deploy your smart contract to a public network${solidityFramework === "hardhat" ? ` (selected in \`hardhat.config.ts\`)` : ``}
 
-> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` **OR** you can \`yarn deploy --network sepolia\`.
+${solidityFramework === "hardhat"
+  ? `> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` **OR** you can \`yarn deploy --network sepolia\`.`
+  : `> 💬 Hint: Run \`yarn deploy --network sepolia\` to deploy to Sepolia testnet.`}
 
 ---
 
@@ -1078,7 +1082,7 @@ Well done on building a stablecoin engine! Now, let's get it on a public testnet
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`localhost\` . You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -1087,9 +1091,9 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/${solidityFramework}/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/${solidityFramework}/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -1104,6 +1108,16 @@ Run the \`yarn verify --network your_network\` command to verify your contracts 
 ---
 
 > 🎉 Congratulations on completing the MyUSD Stablecoin Engine Challenge! You've gained valuable insights into the mechanics of decentralized stablecoins.
+
+## AI-Guided Learning Mode (Optional)
+
+This challenge includes an interactive AI-guided learning mode. Instead of reading through the checkpoints above, you can have an AI guide you step-by-step through building the smart contract.
+
+**How to use it:**
+1. Open the project in Cursor or VS Code with Claude Code
+2. Type \`/start\` to begin the guided challenge
+3. The AI will teach concepts, ask questions, and give you coding tasks
+4. Say "check" to validate your code, "hint" for help, or use \`/skip\` to see solutions
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 

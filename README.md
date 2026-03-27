@@ -43,6 +43,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 - [Node (>=20.18.3)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (only if choosing Foundry as framework)
 
 📥 Then download the challenge to your computer and install dependencies by running:
 
@@ -50,6 +51,8 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 npx create-eth@2.0.10 -e scaffold-eth/se-2-challenges:challenge-stablecoins challenge-stablecoins
 cd challenge-stablecoins
 ```
+
+When prompted, choose your preferred framework (Hardhat or Foundry).
 
 > 💻 In the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -90,7 +93,18 @@ yarn start
 
 🔍 Let's understand the key components and mechanics of our stablecoin system.
 
+<Tabs>
+<Tab label="Hardhat">
+
 These are located in `packages/hardhat/contracts`. Go check them out and reference the following descriptions of each contract.
+
+</Tab>
+<Tab label="Foundry">
+
+These are located in `packages/foundry/contracts`. Go check them out and reference the following descriptions of each contract.
+
+</Tab>
+</Tabs>
 
 ### Core Components
 
@@ -134,7 +148,18 @@ This system creates a stablecoin where we have two levers to pull in order to ma
 
 First, users need a way to deposit collateral (ETH) into the system. We also need to know the USD value of this collateral.
 
+<Tabs>
+<Tab label="Hardhat">
+
 🔍 Open the `packages/hardhat/contracts/MyUSDEngine.sol` file to begin adding the logic to the existing (empty) methods.
+
+</Tab>
+<Tab label="Foundry">
+
+🔍 Open the `packages/foundry/contracts/MyUSDEngine.sol` file to begin adding the logic to the existing (empty) methods.
+
+</Tab>
+</Tabs>
 
 ### ✏️ Tasks:
 
@@ -1070,7 +1095,18 @@ function setBorrowRate(uint256 newRate) external onlyRateController {
 
 Well done on building a stablecoin engine! Now, let's get it on a public testnet.
 
+<Tabs>
+<Tab label="Hardhat">
+
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts` (e.g., `sepolia`).
+
+</Tab>
+<Tab label="Foundry">
+
+📡 Edit the `targetFork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/foundry/foundry.toml` (e.g., `sepolia`).
+
+</Tab>
+</Tabs>
 
 🔐 You will need to generate a **deployer address** using `yarn generate`. This creates a mnemonic and saves it locally.
 
@@ -1080,7 +1116,18 @@ Well done on building a stablecoin engine! Now, let's get it on a public testnet
 
 🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
 
+<Tabs>
+<Tab label="Hardhat">
+
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+
+</Tab>
+<Tab label="Foundry">
+
+> 💬 Hint: You can set the `targetFork` in `foundry.toml` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -1100,7 +1147,7 @@ Well done on building a stablecoin engine! Now, let's get it on a public testnet
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `localhost` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -1109,9 +1156,22 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
+<Tabs>
+<Tab label="Hardhat">
+
 - 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
 - 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+<Tab label="Foundry">
+
+- 🔷`ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+
+- 📃`ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -1122,6 +1182,18 @@ For production-grade applications, it's recommended to obtain your own API keys 
 Run the `yarn verify --network your_network` command to verify your contracts on Etherscan 🛰.
 
 👉 Search your deployed `MyUSDEngine` contract address on [Sepolia Etherscan](https://sepolia.etherscan.io/) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
+
+---
+
+## AI-Guided Learning Mode (Optional)
+
+This challenge includes an interactive AI-guided learning mode. Instead of reading through the checkpoints above, you can have an AI guide you step-by-step through building the smart contract.
+
+**How to use it:**
+1. Open the project in Cursor or VS Code with Claude Code
+2. Type `/start` to begin the guided challenge
+3. The AI will teach concepts, ask questions, and give you coding tasks
+4. Say "check" to validate your code, "hint" for help, or use `/skip` to see solutions
 
 ---
 
