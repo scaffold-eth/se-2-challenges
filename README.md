@@ -23,13 +23,36 @@ Before you begin, you need to install the following tools:
 - [Node (>= v20.18.3)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (if choosing Foundry as your Solidity framework)
 
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
 npx create-eth@2.0.10 -e challenge-token-vendor challenge-token-vendor
+```
+
+> When prompted, choose your preferred Solidity framework: **Hardhat** or **Foundry**.
+
+```sh
 cd challenge-token-vendor
 ```
+
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts as you go? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the `/start` command
+3. The AI teaches each concept, then gives you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** anytime you're stuck, or **`/skip`** to move forward
+6. Your progress is saved — use `/start` to resume anytime
+
+---
+
+## Standard Learning mode
+
+> **Note:** Screenshots below show the Hardhat network. If you're using Foundry, you'll see "Foundry" instead of "Hardhat" in the network name, but everything else works the same.
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -66,7 +89,20 @@ yarn start
 
 ## Checkpoint 1: 🏵Your Token 💵
 
-> 👩‍💻 Go to `packages/hardhat/contracts/YourToken.sol` look at how this contract is inheriting the **ERC20** token standard from OpenZeppelin. This means that the `YourToken` contract obtains every method that is a part of the **ERC20** standard and so it has all the default properties needed to be a used as a token on Ethereum.
+> 👩‍💻 Go to your `YourToken.sol` contract and look at how it inherits the **ERC20** token standard from OpenZeppelin. This means that the `YourToken` contract obtains every method that is a part of the **ERC20** standard and so it has all the default properties needed to be a used as a token on Ethereum.
+
+<Tabs>
+<Tab label="Hardhat">
+
+`packages/hardhat/contracts/YourToken.sol`
+
+</Tab>
+<Tab label="Foundry">
+
+`packages/foundry/contracts/YourToken.sol`
+
+</Tab>
+</Tabs>
 
 > In the `constructor()`, mint a fixed supply of **1000** tokens (with 18 decimals) to `msg.sender` (the deployer).
 
@@ -103,8 +139,21 @@ constructor() ERC20("Gold", "GLD") {
 ### 🥅 Goals
 
 - ⚠️ **Important:** Your initial token supply was minted to the **deployer**. If the wallet you use in the frontend is a different address, you won’t see a balance there yet.
-  - Update `FRONTEND_ADDRESS` in `packages/hardhat/deploy/01_deploy_vendor.ts` and keep `SEND_TOKENS_TO_VENDOR = false` since we are not ready for that step.
-  - Then run `yarn deploy --reset` to send the tokens to your frontend wallet so you can test in the UI.
+
+<Tabs>
+<Tab label="Hardhat">
+
+  Update `FRONTEND_ADDRESS` in `packages/hardhat/deploy/01_deploy_vendor.ts` and keep `SEND_TOKENS_TO_VENDOR = false` since we are not ready for that step.
+
+</Tab>
+<Tab label="Foundry">
+
+  Update the deploy script in `packages/foundry/script/DeployYourToken.s.sol` to transfer tokens to your frontend address.
+
+</Tab>
+</Tabs>
+
+  Then run `yarn deploy --reset` to send the tokens to your frontend wallet so you can test in the UI.
 
 - [ ] Can you check the `balanceOf()` your frontend address in the `Debug Contracts` tab? (`YourToken` contract)
 - [ ] Can you `transfer()` your token to another account and check _that_ account's `balanceOf`?
@@ -125,7 +174,20 @@ yarn test --grep "Checkpoint1"
 
 ## Checkpoint 2: ⚖️ Vendor 🤖
 
-> 👩‍💻 Edit `packages/hardhat/contracts/Vendor.sol` and build a token vending machine with a **payable** `buyTokens()` function.
+> 👩‍💻 Edit `Vendor.sol` and build a token vending machine with a **payable** `buyTokens()` function.
+
+<Tabs>
+<Tab label="Hardhat">
+
+`packages/hardhat/contracts/Vendor.sol`
+
+</Tab>
+<Tab label="Foundry">
+
+`packages/foundry/contracts/Vendor.sol`
+
+</Tab>
+</Tabs>
 
 ### Step 1: Add a price constant
 
@@ -206,7 +268,20 @@ function buyTokens() external payable {
 
 ### Try it out (frontend + deploy)
 
+Update your deploy script to seed the Vendor with tokens:
+
+<Tabs>
+<Tab label="Hardhat">
+
 Edit `packages/hardhat/deploy/01_deploy_vendor.ts` to set `SEND_TOKENS_TO_VENDOR` to `true`. This will deploy the Vendor contract and automatically seed it with the tokens INSTEAD of sending the tokens to your `FRONTEND_ADDRESS`. It will also set your address as the owner of the Vendor contract but we will dig into that later...
+
+</Tab>
+<Tab label="Foundry">
+
+Edit `packages/foundry/script/DeployYourToken.s.sol` and uncomment the lines that transfer tokens to the Vendor and transfer ownership. This will seed the Vendor with tokens and set your address as the owner.
+
+</Tab>
+</Tabs>
 
 > 🔎 Look in `packages/nextjs/app/token-vendor/page.tsx` and uncomment the `Vendor Balances` and `Buy Tokens` sections to display the Vendor ETH and Token balances as well as enable buying tokens from the frontend.
 
@@ -427,7 +502,7 @@ yarn test --grep "Checkpoint4"
 
 ## Checkpoint 5: 💾 Deploy your contracts! 🛰
 
-📡 Edit the `defaultNetwork` in `hardhat.config.ts` to match the name of one of testnets from the `networks` object. We recommend to use `"sepolia"` or `"optimismSepolia"`
+📡 Deploy to a public testnet. We recommend `sepolia` or `optimismSepolia`.
 
 🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
 
@@ -435,9 +510,20 @@ yarn test --grep "Checkpoint4"
 
 ⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network. You can also request ETH by sending a message with your new deployer address and preferred network in the [challenge Telegram](https://t.me/joinchat/IfARhZFc5bfPwpjq). People are usually more than willing to share.
 
-🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
+🚀 Run `yarn deploy` to deploy your smart contract to a public network.
 
-> 💬 Hint: Instead of editing `hardhat.config.ts` you can just add a network flag to the deploy command like this: `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`
+<Tabs>
+<Tab label="Hardhat">
+
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` and run `yarn deploy` **OR** you can `yarn deploy --network sepolia`.
+
+</Tab>
+<Tab label="Foundry">
+
+> 💬 Hint: Use `yarn deploy --network sepolia`.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -457,7 +543,7 @@ yarn test --grep "Checkpoint4"
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `hardhat` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on your local chain. You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -466,9 +552,20 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+<Tabs>
+<Tab label="Hardhat">
 
-- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃 `ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+<Tab label="Foundry">
+
+- 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃 `ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 

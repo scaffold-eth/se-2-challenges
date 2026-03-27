@@ -1,0 +1,204 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import { Test } from "forge-std/Test.sol";
+import { YourToken } from "../contracts/YourToken.sol";
+import { Vendor } from "../contracts/Vendor.sol";
+
+contract VendorTest is Test {
+    YourToken public yourToken;
+    Vendor public vendor;
+    address public deployer;
+    address public user;
+
+    uint256 constant TOKENS_PER_ETH = 100;
+    uint256 constant INITIAL_SUPPLY = 1000 ether;
+
+    function setUp() public {
+        deployer = address(this);
+        user = makeAddr("user");
+        vm.deal(user, 100 ether);
+
+        yourToken = new YourToken();
+        vendor = new Vendor(address(yourToken));
+
+        // Seed vendor with tokens
+        yourToken.transfer(address(vendor), INITIAL_SUPPLY);
+    }
+
+    // ============================================================
+    // Checkpoint 1: YourToken (ERC20 mint + transfer)
+    // ============================================================
+
+    function test_Checkpoint1_MintsExactly1000TokensToDeployer() public {
+        // Deploy a fresh token to test initial state
+        YourToken freshToken = new YourToken();
+        assertEq(freshToken.totalSupply(), INITIAL_SUPPLY);
+        assertEq(freshToken.balanceOf(address(this)), INITIAL_SUPPLY);
+    }
+
+    function test_Checkpoint1_CanTransferTokensAndBalanceUpdates() public {
+        YourToken freshToken = new YourToken();
+        uint256 amount = 10 ether;
+
+        freshToken.transfer(user, amount);
+
+        assertEq(freshToken.balanceOf(user), amount);
+        assertEq(freshToken.balanceOf(address(this)), INITIAL_SUPPLY - amount);
+    }
+
+    // ============================================================
+    // Checkpoint 2: Vendor buyTokens()
+    // ============================================================
+
+    function test_Checkpoint2_TokensPerEthIs100() public view {
+        assertEq(vendor.tokensPerEth(), TOKENS_PER_ETH);
+    }
+
+    function test_Checkpoint2_BuyTokensRevertsOn0Eth() public {
+        vm.prank(user);
+        vm.expectRevert(Vendor.InvalidEthAmount.selector);
+        vendor.buyTokens{ value: 0 }();
+    }
+
+    function test_Checkpoint2_CanBuy10TokensFor0Point1Eth() public {
+        uint256 ethToSpend = 0.1 ether;
+        uint256 expectedTokens = ethToSpend * TOKENS_PER_ETH;
+
+        uint256 startingBalance = yourToken.balanceOf(user);
+
+        vm.prank(user);
+        vendor.buyTokens{ value: ethToSpend }();
+
+        assertEq(yourToken.balanceOf(user), startingBalance + expectedTokens);
+    }
+
+    function test_Checkpoint2_BuyTokensEmitsBuyTokensEvent() public {
+        uint256 ethToSpend = 0.1 ether;
+        uint256 expectedTokens = ethToSpend * TOKENS_PER_ETH;
+
+        vm.expectEmit(true, false, false, true);
+        emit Vendor.BuyTokens(user, ethToSpend, expectedTokens);
+
+        vm.prank(user);
+        vendor.buyTokens{ value: ethToSpend }();
+    }
+
+    function test_Checkpoint2_RevertsIfVendorLacksTokens() public {
+        // Deploy a vendor with no tokens
+        Vendor emptyVendor = new Vendor(address(yourToken));
+        uint256 ethToSpend = 1 ether;
+        uint256 requiredTokens = ethToSpend * TOKENS_PER_ETH;
+
+        vm.prank(user);
+        vm.expectRevert(
+            abi.encodeWithSelector(Vendor.InsufficientVendorTokenBalance.selector, 0, requiredTokens)
+        );
+        emptyVendor.buyTokens{ value: ethToSpend }();
+    }
+
+    // ============================================================
+    // Checkpoint 3: Ownable + withdraw()
+    // ============================================================
+
+    function test_Checkpoint3_DeployerIsOwner() public view {
+        assertEq(vendor.owner(), deployer);
+    }
+
+    function test_Checkpoint3_NonOwnerCannotWithdraw() public {
+        // Fund vendor with ETH
+        vm.prank(user);
+        vendor.buyTokens{ value: 0.1 ether }();
+
+        vm.prank(user);
+        vm.expectRevert();
+        vendor.withdraw();
+    }
+
+    function test_Checkpoint3_OwnerWithdrawsAllEth() public {
+        // Fund vendor with ETH via buy
+        vm.prank(user);
+        vendor.buyTokens{ value: 0.1 ether }();
+
+        uint256 vendorEthBefore = address(vendor).balance;
+        assertGt(vendorEthBefore, 0);
+
+        uint256 ownerEthBefore = deployer.balance;
+
+        vendor.withdraw();
+
+        assertEq(address(vendor).balance, 0);
+        assertEq(deployer.balance, ownerEthBefore + vendorEthBefore);
+    }
+
+    // ============================================================
+    // Checkpoint 4: Vendor buyback (sellTokens + approve)
+    // ============================================================
+
+    function test_Checkpoint4_SellTokensRejectsZeroAmount() public {
+        vm.prank(user);
+        vm.expectRevert(Vendor.InvalidTokenAmount.selector);
+        vendor.sellTokens(0);
+    }
+
+    function test_Checkpoint4_SellTokensRevertsIfVendorLacksEth() public {
+        // Give user tokens directly
+        YourToken freshToken = new YourToken();
+        Vendor noEthVendor = new Vendor(address(freshToken));
+        freshToken.transfer(user, 10 ether);
+
+        uint256 amountToSell = 10 ether;
+        uint256 expectedEth = amountToSell / TOKENS_PER_ETH;
+
+        vm.startPrank(user);
+        freshToken.approve(address(noEthVendor), amountToSell);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(Vendor.InsufficientVendorEthBalance.selector, 0, expectedEth)
+        );
+        noEthVendor.sellTokens(amountToSell);
+        vm.stopPrank();
+    }
+
+    function test_Checkpoint4_ApproveAndSellReturnsCorrectEth() public {
+        // User buys tokens first
+        vm.prank(user);
+        vendor.buyTokens{ value: 0.1 ether }();
+
+        uint256 amountToSell = 10 ether; // 10 tokens
+        uint256 expectedEth = amountToSell / TOKENS_PER_ETH; // 0.1 ether
+
+        vm.startPrank(user);
+        yourToken.approve(address(vendor), amountToSell);
+
+        uint256 userEthBefore = user.balance;
+        uint256 userTokensBefore = yourToken.balanceOf(user);
+
+        vendor.sellTokens(amountToSell);
+        vm.stopPrank();
+
+        assertEq(yourToken.balanceOf(user), userTokensBefore - amountToSell);
+        assertEq(user.balance, userEthBefore + expectedEth);
+    }
+
+    function test_Checkpoint4_SellTokensEmitsSellTokensEvent() public {
+        // User buys tokens first
+        vm.prank(user);
+        vendor.buyTokens{ value: 0.1 ether }();
+
+        uint256 amountToSell = 10 ether;
+        uint256 expectedEth = amountToSell / TOKENS_PER_ETH;
+
+        vm.startPrank(user);
+        yourToken.approve(address(vendor), amountToSell);
+
+        vm.expectEmit(true, false, false, true);
+        emit Vendor.SellTokens(user, amountToSell, expectedEth);
+
+        vendor.sellTokens(amountToSell);
+        vm.stopPrank();
+    }
+
+    // Allow this contract to receive ETH (for withdraw)
+    receive() external payable {}
+}

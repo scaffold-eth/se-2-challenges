@@ -7,7 +7,9 @@ estimated_time: "3 - 8 hours"
 # CODE-WRITING challenge — both contracts have skeletons with empty function bodies.
 # No setup.template needed.
 setup:
-  file: "packages/hardhat/contracts/Vendor.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/Vendor.sol"
+    foundry: "packages/foundry/contracts/Vendor.sol"
 
 welcome_message: |
   Welcome to the Token Vendor Challenge!
@@ -104,7 +106,7 @@ checkpoints:
 
     task:
       description: |
-        Open `packages/hardhat/contracts/YourToken.sol`.
+        Open `contracts/YourToken.sol` in your solidity framework package.
 
         The constructor body is currently empty. Add a `_mint()` call to mint **1000 tokens** (with 18 decimals) to `msg.sender`:
 
@@ -118,7 +120,7 @@ checkpoints:
 
         After writing the code:
 
-        1. **Deploy script**: Open `packages/hardhat/deploy/01_deploy_vendor.ts`. Set `FRONTEND_ADDRESS` to your frontend wallet address and keep `SEND_TOKENS_TO_VENDOR = false` (we're not ready for that yet).
+        1. **Deploy script**: Update the deploy script to set your frontend wallet address and keep the initial mode where tokens are NOT sent to the vendor (we're not ready for that yet).
         2. Run `yarn deploy --reset` to deploy your contracts.
         3. Open http://localhost:3000 — go to the **Debug Contracts** tab.
         4. Check `balanceOf()` on `YourToken` with your frontend address — you should see **1000** tokens.
@@ -127,7 +129,9 @@ checkpoints:
         > **Tip:** Open an incognito window to get a fresh burner wallet address you can transfer to.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/YourToken.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/YourToken.sol"
+        foundry: "packages/foundry/contracts/YourToken.sol"
       test: "yarn test --grep 'Checkpoint1'"
       hints:
         - "Add a single line inside the constructor body: `_mint(msg.sender, 1000 * 10 ** 18);`"
@@ -157,7 +161,7 @@ checkpoints:
     context: |
       ## The Vendor Contract
 
-      The Vendor is like a vending machine: users insert ETH and get tokens back. Open `packages/hardhat/contracts/Vendor.sol` — you'll see a skeleton with organized sections (Errors, State Variables, Events, Functions) and empty function bodies.
+      The Vendor is like a vending machine: users insert ETH and get tokens back. Open `contracts/Vendor.sol` in your solidity framework package — you'll see a skeleton with organized sections (Errors, State Variables, Events, Functions) and empty function bodies.
 
       ### Price Variable
 
@@ -202,7 +206,7 @@ checkpoints:
 
       ## Deploy Script
 
-      The deploy script at `packages/hardhat/deploy/01_deploy_vendor.ts` uses a `SEND_TOKENS_TO_VENDOR` toggle. It should already be set to `true` — this deploys the Vendor, transfers 1000 tokens to it, and transfers ownership to your frontend address. You must set `FRONTEND_ADDRESS` to the wallet address you use in the frontend, so that ownership is transferred correctly (otherwise it stays with the Hardhat deployer, which is different from your burner wallet).
+      The deploy script uses a toggle to control whether tokens are sent to the Vendor. It should already be set to send tokens to the Vendor — this deploys the Vendor, transfers 1000 tokens to it, and transfers ownership to your frontend address. You must set the frontend address in the deploy script to the wallet address you use in the frontend, so that ownership is transferred correctly.
 
       ## Frontend
 
@@ -224,7 +228,7 @@ checkpoints:
 
     task:
       description: |
-        Open `packages/hardhat/contracts/Vendor.sol`.
+        Open `contracts/Vendor.sol` in your solidity framework package.
 
         1. **Add custom errors** under the *Errors* section:
            ```solidity
@@ -249,7 +253,7 @@ checkpoints:
            - Transfer tokens to `msg.sender`
            - Emit `BuyTokens`
 
-        5. **Deploy script**: In `packages/hardhat/deploy/01_deploy_vendor.ts`, set `SEND_TOKENS_TO_VENDOR` to `true`. This deploys the Vendor and seeds it with tokens instead of sending them to your frontend address.
+        5. **Deploy script**: Update the deploy script to enable sending tokens to the Vendor. This deploys the Vendor and seeds it with tokens instead of sending them to your frontend address.
 
         6. **Frontend**: Uncomment the **Vendor Balances** and **Buy Tokens** sections in `packages/nextjs/app/token-vendor/page.tsx`.
 
@@ -266,7 +270,9 @@ checkpoints:
         7. Check the **Events** tab — you should see your `BuyTokens` event.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Vendor.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/Vendor.sol"
+        foundry: "packages/foundry/contracts/Vendor.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
         - "Start with input validation: `if (msg.value == 0) revert InvalidEthAmount();`. Then calculate, check balance, transfer, emit."
@@ -390,7 +396,7 @@ checkpoints:
 
     task:
       description: |
-        Open `packages/hardhat/contracts/Vendor.sol`.
+        Open `contracts/Vendor.sol` in your solidity framework package.
 
         1. **Add a custom error** under *Errors*:
            ```solidity
@@ -414,7 +420,9 @@ checkpoints:
         5. Then call `withdraw()` from the Debug Contracts tab — the Vendor's ETH should transfer to your address.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Vendor.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/Vendor.sol"
+        foundry: "packages/foundry/contracts/Vendor.sol"
       test: "yarn test --grep 'Checkpoint3'"
       hints:
         - "Use `owner()` as the recipient, `address(this).balance` as the amount. Save the balance before sending so the error has the right value."
@@ -529,7 +537,7 @@ checkpoints:
 
     task:
       description: |
-        Open `packages/hardhat/contracts/Vendor.sol`.
+        Open `contracts/Vendor.sol` in your solidity framework package.
 
         1. **Add custom errors** under *Errors*:
            ```solidity
@@ -564,7 +572,9 @@ checkpoints:
         5. Check the **Events** tab — you should see both `BuyTokens` and `SellTokens` events.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Vendor.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/Vendor.sol"
+        foundry: "packages/foundry/contracts/Vendor.sol"
       test: "yarn test --grep 'Checkpoint4'"
       hints:
         - "Validate first (`amount == 0`), then calculate ETH, check vendor ETH balance, transferFrom tokens, send ETH, emit event."
