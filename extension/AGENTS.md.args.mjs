@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -29,10 +29,10 @@ Real-world examples of the concepts in this challenge:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension (${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"} flavor). When instantiated with \`create-eth\`, it produces a monorepo:
 
 \`\`\`
-packages/
+${solidityFramework === "hardhat" ? `packages/
   hardhat/
     contracts/
       00_Whitelist/
@@ -61,7 +61,28 @@ packages/
       runOptimisticBots.ts           # Simulates optimistic oracle participants
       oracle-bot/                    # Bot configuration and utilities
         config.json, balances.ts, price.ts, reporting.ts, types.ts, validation.ts
-      utils.ts                       # Shared script utilities
+      utils.ts                       # Shared script utilities` : `packages/
+  foundry/
+    contracts/
+      00_Whitelist/
+        SimpleOracle.sol       # Basic oracle storing price+timestamp (provided, reference)
+        WhitelistOracle.sol    # Aggregator with median calculation (LEARNER IMPLEMENTS - Checkpoint 1)
+      01_Staking/
+        OracleToken.sol        # ERC-20 token for staking (provided)
+        StakingOracle.sol      # Economic incentive oracle (LEARNER IMPLEMENTS - Checkpoint 2)
+      02_Optimistic/
+        Decider.sol            # Dispute settler helper (provided)
+        OptimisticOracle.sol   # Binary event oracle (LEARNER IMPLEMENTS - Checkpoints 4-6)
+      utils/
+        StatisticsUtils.sol    # Sorting and median library (provided)
+    script/
+      DeployWhitelist.s.sol    # Deploy WhitelistOracle + 10 SimpleOracles on localhost
+      DeployStaking.s.sol      # Deploy OracleToken + StakingOracle
+      DeployOptimistic.s.sol   # Deploy OptimisticOracle + Decider (nonce prediction)
+    test/
+      WhitelistOracle.t.sol    # Checkpoint 1 grading tests
+      StakingOracle.t.sol      # Checkpoint 2 grading tests
+      OptimisticOracle.t.sol   # Checkpoints 4-6 grading tests`}
   nextjs/
     app/
       whitelist/
@@ -120,7 +141,7 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local ${solidityFramework === "hardhat" ? "Hardhat" : "Anvil"} blockchain
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
@@ -128,14 +149,14 @@ yarn start          # Start Next.js frontend at http://localhost:3000
 yarn deploy --reset
 
 # Testing
-yarn test           # Run all challenge tests
+${solidityFramework === "hardhat" ? `yarn test           # Run all challenge tests` : `yarn foundry:test   # Run all challenge tests`}
 
-# Simulation scripts (run after yarn chain + yarn deploy)
+${solidityFramework === "hardhat" ? `# Simulation scripts (run after yarn chain + yarn deploy)
 yarn hardhat run scripts/runWhitelistOracleBots.ts    # Simulate whitelist oracle reporters
 yarn hardhat run scripts/runStakingOracleBots.ts      # Simulate staking oracle nodes
 yarn hardhat run scripts/runOptimisticBots.ts         # Simulate optimistic oracle participants
 
-# Code quality
+` : ``}# Code quality
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
@@ -154,9 +175,9 @@ yarn vercel         # Deploy frontend to Vercel
 yarn vercel --prod  # Redeploy to production URL
 \`\`\`
 
-Note: The simulation bot scripts are defined in the hardhat package as \`simulate:whitelist\`, \`simulate:staking\`, and \`simulate:optimistic\`. Run them from the \`packages/hardhat\` directory or use the full \`yarn hardhat run\` commands shown above.
+${solidityFramework === "hardhat" ? `Note: The simulation bot scripts are defined in the hardhat package as \`simulate:whitelist\`, \`simulate:staking\`, and \`simulate:optimistic\`. Run them from the \`packages/hardhat\` directory or use the full \`yarn hardhat run\` commands shown above.
 
-## Smart Contracts
+` : ``}## Smart Contracts
 
 ### SimpleOracle.sol (Provided, DO NOT EDIT)
 
@@ -427,9 +448,11 @@ Library with sorting and median calculation utilities.
 
 ## Deploy Scripts
 
-- **\`00_deploy_whitelist.ts\`** -- Deploys WhitelistOracle. On localhost: creates 10 SimpleOracle instances via \`addOracle()\`, fetches initial ETH price from Uniswap, sets prices on each oracle.
+${solidityFramework === "hardhat" ? `- **\`00_deploy_whitelist.ts\`** -- Deploys WhitelistOracle. On localhost: creates 10 SimpleOracle instances via \`addOracle()\`, fetches initial ETH price from Uniswap, sets prices on each oracle.
 - **\`01_deploy_staking.ts\`** -- Deploys OracleToken + StakingOracle. Transfers ORA ownership to StakingOracle for reward minting.
-- **\`02_deploy_optimistic.ts\`** -- Pre-calculates Decider address using \`getCreateAddress\` (nonce + 1), deploys OptimisticOracle with future Decider address, then deploys Decider with OptimisticOracle address.
+- **\`02_deploy_optimistic.ts\`** -- Pre-calculates Decider address using \`getCreateAddress\` (nonce + 1), deploys OptimisticOracle with future Decider address, then deploys Decider with OptimisticOracle address.` : `- **\`DeployWhitelist.s.sol\`** -- Deploys WhitelistOracle. On localhost: creates 10 SimpleOracle instances via \`addOracle()\`, fetches initial ETH price from Uniswap, sets prices on each oracle.
+- **\`DeployStaking.s.sol\`** -- Deploys OracleToken + StakingOracle. Transfers ORA ownership to StakingOracle for reward minting.
+- **\`DeployOptimistic.s.sol\`** -- Pre-calculates Decider address using \`getCreateAddress\` (nonce + 1), deploys OptimisticOracle with future Decider address, then deploys Decider with OptimisticOracle address.`}
 
 ## Frontend Architecture
 
@@ -471,15 +494,15 @@ Use the correct hook names:
 
 The grading tests cover the following areas:
 
-- **Checkpoint 1 (WhitelistOracle.ts)** -- ~15 tests: owner deployment, adding/removing oracles with events, median calculation (odd/even oracle counts), stale data filtering, active oracle nodes tracking, edge cases (empty array, all stale)
-- **Checkpoint 2 (StakingOracle.ts)** -- ~40+ tests: node registration with validation, price reporting with bucket tracking, reward claiming, effective stake with inactivity penalties, bucket finalization (median recording), slashing mechanism (deviation detection >10%, reward distribution, node removal at zero stake, double-slash prevention, only past buckets), node exit with waiting period, outlier detection
-- **Checkpoints 4-6 (OptimisticOracle.ts)** -- ~50+ tests: deployment and constants, event assertion with validation, outcome proposal with bonding, outcome dispute, time window validation, undisputed/disputed reward claiming, refund claiming, dispute settlement by decider, state transitions, resolution queries
+- **Checkpoint 1 (${solidityFramework === "hardhat" ? "WhitelistOracle.ts" : "WhitelistOracle.t.sol"})** -- ~15 tests: owner deployment, adding/removing oracles with events, median calculation (odd/even oracle counts), stale data filtering, active oracle nodes tracking, edge cases (empty array, all stale)
+- **Checkpoint 2 (${solidityFramework === "hardhat" ? "StakingOracle.ts" : "StakingOracle.t.sol"})** -- ~40+ tests: node registration with validation, price reporting with bucket tracking, reward claiming, effective stake with inactivity penalties, bucket finalization (median recording), slashing mechanism (deviation detection >10%, reward distribution, node removal at zero stake, double-slash prevention, only past buckets), node exit with waiting period, outlier detection
+- **Checkpoints 4-6 (${solidityFramework === "hardhat" ? "OptimisticOracle.ts" : "OptimisticOracle.t.sol"})** -- ~50+ tests: deployment and constants, event assertion with validation, outcome proposal with bonding, outcome dispute, time window validation, undisputed/disputed reward claiming, refund claiming, dispute settlement by decider, state transitions, resolution queries
 
-Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`${solidityFramework === "hardhat" ? "yarn test" : "yarn foundry:test"}\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
+${solidityFramework === "hardhat" ? `1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)` : `1. Use the \`--network\` flag when deploying (e.g., \`yarn deploy --network sepolia\`)`}
 2. \`yarn generate\` to create deployer account
 3. Fund deployer with testnet ETH from a faucet
 4. \`yarn deploy\` to deploy contracts
@@ -494,7 +517,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_whitelist.ts\`) |
+| ${solidityFramework === "hardhat" ? `\`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_whitelist.ts\`)` : `\`PascalCase\` | Foundry script files (e.g., \`DeployWhitelist.s.sol\`)`} |
 
 ## Key Warnings
 
@@ -509,7 +532,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 - **Effective stake**: Calculated as \`stakedAmount - (missedBuckets * INACTIVITY_PENALTY)\`. A node with zero effective stake should be removable
 - **Waiting period**: Nodes must wait \`WAITING_PERIOD\` buckets after their last report before exiting
 - The deploy scripts use nonce prediction -- if you add or remove deployments, predicted addresses will be wrong
-- Simulation bot scripts require contracts to be deployed first (\`yarn chain\` + \`yarn deploy\`)
+${solidityFramework === "hardhat" ? `- Simulation bot scripts require contracts to be deployed first (\`yarn chain\` + \`yarn deploy\`)` : ``}
 
 # Speedrun Ethereum AI-Guided mode
 
