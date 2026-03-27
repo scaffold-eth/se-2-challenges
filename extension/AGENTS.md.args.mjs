@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -28,19 +28,24 @@ Why this matters beyond dice:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+This project uses **${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** as the smart contract framework.
 
 \`\`\`
 packages/
-  hardhat/
+  ${solidityFramework}/
     contracts/
       DiceGame.sol           # House dice game contract (DO NOT EDIT)
       RiggedRoll.sol         # Attacker contract (learner implements)
-    deploy/
+${solidityFramework === "hardhat" ? `    deploy/
       00_deploy_dice_game.ts       # Deploys DiceGame, funds with 0.05 ETH
       01_deploy_rigged_roll.ts     # Deploys RiggedRoll (learner must uncomment)
     test/
-      RiggedRoll.ts          # Checkpoint-based grading tests
+      RiggedRoll.ts          # Checkpoint-based grading tests` : `    script/
+      DeployDiceGame.s.sol   # Deploys DiceGame + RiggedRoll (learner must uncomment RiggedRoll)
+    test/
+      RiggedRoll.t.sol       # Checkpoint-based grading tests`}
   nextjs/
     app/
       dice/
@@ -53,7 +58,7 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local blockchain
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
@@ -121,8 +126,8 @@ Because \`blockhash(block.number - 1)\` and \`address(diceGame)\` are known at c
 
 ## Deploy Scripts
 
-- **\`00_deploy_dice_game.ts\`** - Deploys \`DiceGame\` and funds it with **0.05 ETH**.
-- **\`01_deploy_rigged_roll.ts\`** - Deploys \`RiggedRoll\` with the DiceGame address. The learner must **uncomment** the relevant lines in this file. The owner should be set to the frontend address so the UI can call \`withdraw\`.
+${solidityFramework === "hardhat" ? `- **\`00_deploy_dice_game.ts\`** - Deploys \`DiceGame\` and funds it with **0.05 ETH**.
+- **\`01_deploy_rigged_roll.ts\`** - Deploys \`RiggedRoll\` with the DiceGame address. The learner must **uncomment** the relevant lines in this file. The owner should be set to the frontend address so the UI can call \`withdraw\`.` : `- **\`DeployDiceGame.s.sol\`** - Deploys \`DiceGame\` (funded with 0.05 ETH) and \`RiggedRoll\`. The learner must **uncomment** the RiggedRoll deployment lines. The owner should be set to the frontend address so the UI can call \`withdraw\`.`}
 
 ## Frontend Architecture
 
@@ -157,11 +162,11 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 - After \`yarn deploy\`, contract ABIs auto-generate to \`packages/nextjs/contracts/deployedContracts.ts\`
 - Fund the RiggedRoll contract from the faucet before attempting \`riggedRoll()\`, it needs 0.002 ETH
 - The frontend dice displays hexadecimal characters (A–F = 10–15) but the contract uses integers
-- \`hardhat/console.sol\` can be imported for debugging, output appears in \`yarn chain\` terminal
+${solidityFramework === "hardhat" ? `- \`hardhat/console.sol\` can be imported for debugging, output appears in \`yarn chain\` terminal` : `- Use \`console.log\` from \`forge-std/console.sol\` for debugging, output appears in \`yarn chain\` terminal`}
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/RiggedRoll.ts\`) are organized into checkpoints:
+The grading tests (\`packages/${solidityFramework}/test/RiggedRoll.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`) are organized into checkpoints:
 
 - **Checkpoint 2**: \`RiggedRoll\` can predict outcomes and only rolls on winning numbers; reverts with \`NotWinningRoll\` on losing predictions
 - **Checkpoint 3**: \`RiggedRoll\` owner can withdraw funds; non-owner is rejected; \`InsufficientBalance\` on over-withdraw
@@ -170,13 +175,12 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
-2. \`yarn generate\` to create deployer account
-3. Fund deployer with testnet ETH from a faucet
-4. \`yarn deploy\` to deploy contracts
-5. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
-6. \`yarn vercel\` to deploy frontend
-7. \`yarn verify --network sepolia\` to verify contracts on Etherscan
+1. \`yarn generate\` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. ${solidityFramework === "hardhat" ? `Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` and run \`yarn deploy\`, or use \`yarn deploy --network sepolia\`` : `\`yarn deploy --network sepolia\``}
+4. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+5. \`yarn vercel\` to deploy frontend
+6. \`yarn verify --network sepolia\` to verify contracts on Etherscan
 
 ## Code Style
 
@@ -185,7 +189,7 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_dice_game.ts\`) |
+${solidityFramework === "hardhat" ? `| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_dice_game.ts\`) |` : `| \`UpperCamelCase\` | Foundry script files (e.g., \`DeployDiceGame.s.sol\`) |`}
 
 ## Key Warnings
 
@@ -195,7 +199,7 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 - The RiggedRoll must send exactly 0.002 ETH when calling \`rollTheDice()\`
 - Forgetting the \`receive()\` function means the contract cannot receive winnings
 - Use \`address(diceGame)\` (not \`address(this)\` or \`msg.sender\`) when replicating the hash, DiceGame uses \`msg.sender\` which will be the RiggedRoll contract's address
-- The \`01_deploy_rigged_roll.ts\` deploy script lines must be uncommented before deploying
+${solidityFramework === "hardhat" ? `- The \`01_deploy_rigged_roll.ts\` deploy script lines must be uncommented before deploying` : `- The RiggedRoll deployment lines in \`DeployDiceGame.s.sol\` must be uncommented before deploying`}
 - On-chain pseudo-randomness is **not** secure, this challenge demonstrates the vulnerability
 
 # Speedrun Ethereum AI-Guided mode
