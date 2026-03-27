@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import "./OptimisticOracle.sol";
-
 contract Decider {
     address public owner;
-    OptimisticOracle public oracle;
+    IOptimisticOracle public oracle;
 
     event DisputeSettled(uint256 indexed assertionId, bool resolvedValue);
 
     constructor(address _oracle) {
         owner = msg.sender;
-        oracle = OptimisticOracle(_oracle);
+        oracle = IOptimisticOracle(_oracle);
     }
 
     /**
@@ -30,11 +28,15 @@ contract Decider {
 
     function setOracle(address newOracle) external {
         require(msg.sender == owner, "Only owner can set oracle");
-        oracle = OptimisticOracle(newOracle);
+        oracle = IOptimisticOracle(newOracle);
     }
 
     /**
      * @notice Allow the contract to receive ETH
      */
     receive() external payable {}
+}
+
+interface IOptimisticOracle {
+    function settleAssertion(uint256, bool) external;
 }
