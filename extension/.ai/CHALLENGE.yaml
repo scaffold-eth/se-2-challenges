@@ -5,7 +5,9 @@ difficulty: "intermediate"
 estimated_time: "4 - 10 hours"
 
 setup:
-  file: "packages/hardhat/contracts/Lending.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/Lending.sol"
+    foundry: "packages/foundry/contracts/Lending.sol"
 
 welcome_message: |
   Welcome to the Over-Collateralized Lending Challenge!
@@ -128,7 +130,9 @@ checkpoints:
         4. Can you add collateral and withdraw collateral? Does the frontend update?
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Lending.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/Lending.sol"
+        foundry: "packages/foundry/contracts/Lending.sol"
       test: "yarn test --grep 'Collateral Operations'"
       hints:
         - "For `addCollateral`: it's just `s_userCollateral[msg.sender] += msg.value` after the validation check."
@@ -242,7 +246,9 @@ checkpoints:
         4. **`_validatePosition(address user)`** — Revert with `Lending__UnsafePositionRatio()` if `isLiquidatable(user)` returns true
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Lending.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/Lending.sol"
+        foundry: "packages/foundry/contracts/Lending.sol"
       test: "yarn test --grep 'Collateral Operations'"
       hints:
         - "`calculateCollateralValue` is a one-liner: `return (s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18;`"
@@ -382,7 +388,9 @@ checkpoints:
         4. Try withdrawing collateral while you have a loan — does the position validation prevent unsafe withdrawals?
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Lending.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/Lending.sol"
+        foundry: "packages/foundry/contracts/Lending.sol"
       test: "yarn test --grep 'Borrowing Operations|Repayment Operations|Collateral Operations'"
       hints:
         - "For `borrowCorn`: update mapping first, validate, then transfer. The order matters — `_validatePosition` checks the new state."
@@ -517,7 +525,9 @@ checkpoints:
         6. Notice how the borrower still has their borrowed CORN — the liquidator paid the debt back on their behalf.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Lending.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/Lending.sol"
+        foundry: "packages/foundry/contracts/Lending.sol"
       test: "yarn test --grep 'Liquidation'"
       hints:
         - "Check `isLiquidatable(user)` first. Then verify `i_corn.balanceOf(msg.sender) >= userDebt`. Use `transferFrom` to pull the CORN from the liquidator."

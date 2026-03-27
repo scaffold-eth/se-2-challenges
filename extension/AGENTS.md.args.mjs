@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -28,22 +28,27 @@ Why understanding lending protocols is essential:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+This project uses **${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** as the smart contract framework.
 
 \`\`\`
 packages/
-  hardhat/
+  ${solidityFramework}/   # Solidity contracts, deploy scripts, tests
     contracts/
       Corn.sol               # ERC-20 token with owner-only mint
       CornDEX.sol            # Constant product AMM & price oracle
       Lending.sol            # Main lending contract (learner implements)
       MovePrice.sol          # Price manipulation helper for testing
-    deploy/
+${solidityFramework === "hardhat" ? `    deploy/
       00_deploy_contracts.ts # Deploys all contracts and seeds liquidity
     test/
       Challenge.ts           # Checkpoint-based grading tests
     scripts/
-      marketSimulator.ts     # Bot accounts that simulate market activity
+      marketSimulator.ts     # Bot accounts that simulate market activity` : `    script/
+      DeployLending.s.sol    # Deploys all contracts and seeds liquidity
+    test/
+      Lending.t.sol          # Comprehensive Foundry tests`}
   nextjs/
     app/
       dashboard/
@@ -54,7 +59,7 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local ${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"} blockchain
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
@@ -142,9 +147,9 @@ All ratio and value calculations use **1e18 fixed-point arithmetic**. Multiply b
 - Helper contract used to manipulate the CornDEX price via large swaps.
 - The frontend uses + / - buttons to adjust CORN price for testing liquidation scenarios.
 
-## Deploy Script (00_deploy_contracts.ts)
+## Deploy Script
 
-The deploy script performs the following in order:
+${solidityFramework === "hardhat" ? `The deploy script (\`packages/hardhat/deploy/00_deploy_contracts.ts\`) performs the following in order:` : `The deploy script (\`packages/foundry/script/DeployLending.s.sol\`) performs the following in order:`}
 1. Deploy \`Corn\` token.
 2. Deploy \`CornDEX\` with the Corn token address.
 3. Deploy \`Lending\` with Corn and CornDEX addresses.
@@ -188,14 +193,14 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 - **Next.js App Router** (not Pages Router) - pages are at \`app/<route>/page.tsx\`
 - **Import alias**: use \`~~\` for nextjs package imports (e.g., \`import { ... } from "~~/hooks/scaffold-eth"\`)
 - After \`yarn deploy\`, contract ABIs auto-generate to \`packages/nextjs/contracts/deployedContracts.ts\`
-- \`hardhat/console.sol\` is available, use \`console.log()\` in Solidity for debugging (output in \`yarn chain\` terminal)
+${solidityFramework === "hardhat" ? `- \`hardhat/console.sol\` is available, use \`console.log()\` in Solidity for debugging (output in \`yarn chain\` terminal)` : `- \`forge-std/console2.sol\` is available, use \`console2.log()\` in Solidity for debugging (output in \`yarn chain\` terminal)`}
 - Open a private browser tab to simulate multiple accounts (borrower + liquidator)
 - Use the CORN price controls on the frontend to make positions liquidatable for testing
 - \`yarn simulate\` runs bot accounts that interact with your lending platform
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/Challenge.ts\`) cover:
+${solidityFramework === "hardhat" ? `The grading tests (\`packages/hardhat/test/Challenge.ts\`) cover:` : `The tests (\`packages/foundry/test/Lending.t.sol\`) cover:`}
 
 - **Collateral**: \`addCollateral\` deposits ETH, \`withdrawCollateral\` enforces ratio after withdrawal
 - **Borrowing**: \`borrowCorn\` mints tokens, enforces 120% ratio
@@ -216,13 +221,12 @@ Build a \`Leverage\` contract with iterative borrow-swap-deposit loops to maximi
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
-2. \`yarn generate\` to create deployer account
-3. Fund deployer with testnet ETH from a faucet
-4. \`yarn deploy\` to deploy contracts
-5. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
-6. \`yarn vercel\` to deploy frontend
-7. \`yarn verify --network sepolia\` to verify contracts on Etherscan
+1. \`yarn generate\` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. ${solidityFramework === "hardhat" ? `Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` and run \`yarn deploy\`, or use \`yarn deploy --network sepolia\`` : `\`yarn deploy --network sepolia\``}
+4. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+5. \`yarn vercel\` to deploy frontend
+6. \`yarn verify --network sepolia\` to verify contracts on Etherscan
 
 ## Code Style
 
@@ -231,7 +235,7 @@ Build a \`Leverage\` contract with iterative borrow-swap-deposit loops to maximi
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_contracts.ts\`) |
+${solidityFramework === "hardhat" ? `| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_contracts.ts\`) |` : `| \`UpperCamelCase\` | Deploy scripts (e.g., \`DeployLending.s.sol\`) |`}
 
 ## Key Warnings
 
