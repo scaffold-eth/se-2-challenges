@@ -69,10 +69,10 @@ yarn start          # Start Next.js frontend at http://localhost:3000
 
 # Testing (checkpoint-based)
 yarn test                       # Run all challenge tests
-yarn test --grep "Checkpoint1"  # Test just contributing
-yarn test --grep "Checkpoint2"  # Test just withdrawing
-yarn test --grep "Checkpoint3"  # Test state machine / timing
-yarn test --grep "Checkpoint4"  # Test receive function
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint1"  # Test just contributing
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"  # Test just withdrawing
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"  # Test state machine / timing
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint4"  # Test receive function
 
 # Redeploy fresh (resets deadline timer)
 yarn deploy --reset
@@ -174,7 +174,7 @@ Tests are checkpoint-based in \`packages/${solidityFramework}/test/CrowdFund.${s
 - **Checkpoint 3**: \`execute()\` reverts before deadline (TooEarly), \`timeLeft()\` decreases, execute triggers \`complete()\` when threshold met, enables withdraw when threshold not met
 - **Checkpoint 4**: Sending ETH directly to contract behaves like \`contribute()\`
 
-Run \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specific checkpoints.
+Run \`yarn test\` for all or \`yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "CheckpointN"\` for specific checkpoints.
 
 ## Deployment Checklist (Testnet)
 

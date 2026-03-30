@@ -195,21 +195,27 @@ function contribute() public payable {
 
 🔍 Run the following command to check if you implemented the function correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint1"
 ```
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests:
-
-<Tabs>
-<Tab label="Hardhat">
-
-`packages/hardhat/test/CrowdFund.ts`
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
 
 </Tab>
 <Tab label="Foundry">
 
-`packages/foundry/test/CrowdFund.t.sol`
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint1"
+```
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
 
 </Tab>
 </Tabs>
@@ -293,21 +299,27 @@ function withdraw() public {
 
 🔍 Run the following command to check if you implemented the function correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint2"
 ```
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests:
-
-<Tabs>
-<Tab label="Hardhat">
-
-`packages/hardhat/test/CrowdFund.ts`
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
 
 </Tab>
 <Tab label="Foundry">
 
-`packages/foundry/test/CrowdFund.t.sol`
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint2"
+```
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
 
 </Tab>
 </Tabs>
@@ -423,21 +435,27 @@ function timeLeft() public view returns (uint256) {
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint3"
 ```
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests:
-
-<Tabs>
-<Tab label="Hardhat">
-
-`packages/hardhat/test/CrowdFund.ts`
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/CrowdFund.ts`.
 
 </Tab>
 <Tab label="Foundry">
 
-`packages/foundry/test/CrowdFund.t.sol`
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint3"
+```
+
+✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/CrowdFund.t.sol`.
 
 </Tab>
 </Tabs>

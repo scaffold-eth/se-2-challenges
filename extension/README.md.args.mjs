@@ -159,7 +159,7 @@ function contribute() public payable {
 🔍 Run the following command to check if you implemented the function correctly.
 
 \`\`\`shell
-yarn test --grep "Checkpoint1"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint1"
 \`\`\`
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/CrowdFund.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
@@ -242,7 +242,7 @@ function withdraw() public {
 🔍 Run the following command to check if you implemented the function correctly.
 
 \`\`\`shell
-yarn test --grep "Checkpoint2"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"
 \`\`\`
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/CrowdFund.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
@@ -357,7 +357,7 @@ function timeLeft() public view returns (uint256) {
 🔍 Run the following command to check if you implemented the functions correctly.
 
 \`\`\`shell
-yarn test --grep "Checkpoint3"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"
 \`\`\`
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/CrowdFund.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.

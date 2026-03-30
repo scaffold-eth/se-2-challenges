@@ -2,18 +2,19 @@
 pragma solidity 0.8.20;
 
 import { Test } from "forge-std/Test.sol";
+import { ICrowdFund } from "../contracts/ICrowdFund.sol";
 import { CrowdFund } from "../contracts/CrowdFund.sol";
 import { FundingRecipient } from "../contracts/FundingRecipient.sol";
 
 contract CrowdFundTest is Test {
     FundingRecipient public fundingRecipient;
-    CrowdFund public crowdFund;
+    ICrowdFund public crowdFund;
     address public user1;
     address public user2;
 
     function setUp() public {
         fundingRecipient = new FundingRecipient();
-        crowdFund = new CrowdFund(address(fundingRecipient));
+        crowdFund = ICrowdFund(address(new CrowdFund(address(fundingRecipient))));
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
         vm.deal(user1, 10 ether);
@@ -29,7 +30,7 @@ contract CrowdFundTest is Test {
 
         uint256 amount = 0.001 ether;
         vm.prank(user1);
-        crowdFund.contribute{value: amount}();
+        crowdFund.contribute{ value: amount }();
 
         uint256 newBalance = crowdFund.balances(user1);
         assertEq(newBalance, startingBalance + amount);
@@ -40,7 +41,7 @@ contract CrowdFundTest is Test {
         vm.prank(user1);
         vm.expectEmit(false, false, false, true);
         emit Contribution(user1, amount);
-        crowdFund.contribute{value: amount}();
+        crowdFund.contribute{ value: amount }();
     }
 
     // Declare the event to match against
@@ -52,8 +53,8 @@ contract CrowdFundTest is Test {
         uint256 a1 = 0.001 ether;
         uint256 a2 = 0.002 ether;
         vm.startPrank(user1);
-        crowdFund.contribute{value: a1}();
-        crowdFund.contribute{value: a2}();
+        crowdFund.contribute{ value: a1 }();
+        crowdFund.contribute{ value: a2 }();
         vm.stopPrank();
 
         uint256 ending = crowdFund.balances(user1);
@@ -65,10 +66,10 @@ contract CrowdFundTest is Test {
         uint256 a2 = 0.002 ether;
 
         vm.prank(user1);
-        crowdFund.contribute{value: a1}();
+        crowdFund.contribute{ value: a1 }();
 
         vm.prank(user2);
-        crowdFund.contribute{value: a2}();
+        crowdFund.contribute{ value: a2 }();
 
         assertEq(crowdFund.balances(user1), a1);
         assertEq(crowdFund.balances(user2), a2);
@@ -79,7 +80,7 @@ contract CrowdFundTest is Test {
 
         uint256 amount = 0.001 ether;
         vm.prank(user1);
-        crowdFund.contribute{value: amount}();
+        crowdFund.contribute{ value: amount }();
 
         uint256 endContractBal = address(crowdFund).balance;
         assertEq(endContractBal, startContractBal + amount);
@@ -106,14 +107,14 @@ contract CrowdFundTest is Test {
                 bytes32 mutated = original;
                 // Set the byte at byteIdx to 0x01
                 mutated = bytes32(
-                    (uint256(original) & ~(uint256(0xFF) << (8 * (31 - byteIdx)))) |
-                    (uint256(0x01) << (8 * (31 - byteIdx)))
+                    (uint256(original) & ~(uint256(0xFF) << (8 * (31 - byteIdx))))
+                        | (uint256(0x01) << (8 * (31 - byteIdx)))
                 );
                 vm.store(address(crowdFund), bytes32(s), mutated);
 
                 try crowdFund.openToWithdraw() returns (bool isOpen) {
                     if (isOpen) return; // Found it, leave the mutation
-                } catch {}
+                } catch { }
 
                 // Restore original before trying next byte
                 vm.store(address(crowdFund), bytes32(s), original);
@@ -132,7 +133,7 @@ contract CrowdFundTest is Test {
     function test_Checkpoint2_WithdrawSendsBalanceAndZerosOut() public {
         uint256 amount = 0.001 ether;
         vm.prank(user1);
-        crowdFund.contribute{value: amount}();
+        crowdFund.contribute{ value: amount }();
         assertEq(crowdFund.balances(user1), amount);
 
         _setOpenToWithdrawTrue();
@@ -148,7 +149,7 @@ contract CrowdFundTest is Test {
     function test_Checkpoint2_DoubleWithdrawDoesNotDrainExtra() public {
         uint256 amount = 0.001 ether;
         vm.prank(user1);
-        crowdFund.contribute{value: amount}();
+        crowdFund.contribute{ value: amount }();
 
         _setOpenToWithdrawTrue();
 
@@ -190,7 +191,7 @@ contract CrowdFundTest is Test {
         assertGt(timeLeft1, 0, "timeLeft not greater than 0. Did you implement timeLeft() correctly?");
 
         vm.prank(user1);
-        crowdFund.contribute{value: 1 ether}();
+        crowdFund.contribute{ value: 1 ether }();
 
         vm.warp(block.timestamp + 72 hours);
 
@@ -209,7 +210,7 @@ contract CrowdFundTest is Test {
 
     function test_Checkpoint3_ExecuteEnablesWithdrawWhenThresholdNotMet() public {
         vm.prank(user2);
-        crowdFund.contribute{value: 0.001 ether}();
+        crowdFund.contribute{ value: 0.001 ether }();
 
         vm.warp(block.timestamp + 72 hours);
 
@@ -236,7 +237,7 @@ contract CrowdFundTest is Test {
 
         uint256 amount = 0.001 ether;
         vm.prank(user1);
-        (bool success,) = address(crowdFund).call{value: amount}("");
+        (bool success,) = address(crowdFund).call{ value: amount }("");
         assertTrue(success);
 
         uint256 newBalance = crowdFund.balances(user1);
