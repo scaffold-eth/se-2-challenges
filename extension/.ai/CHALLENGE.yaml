@@ -150,7 +150,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/CrowdFund.sol"
         foundry: "packages/foundry/contracts/CrowdFund.sol"
-      test: "yarn test --grep 'Checkpoint1'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint1'"
+        foundry: "yarn test --match-test 'Checkpoint1'"
       hints:
         - "`msg.sender` is the caller, `msg.value` is the ETH they sent. Use `+=` so contributions accumulate."
         - |
@@ -304,7 +306,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/CrowdFund.sol"
         foundry: "packages/foundry/contracts/CrowdFund.sol"
-      test: "yarn test --grep 'Checkpoint2'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint2'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - "Start with `if (!openToWithdraw) revert NotOpenToWithdraw();`. Then save, zero, send — in that order."
         - |
@@ -462,7 +466,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/CrowdFund.sol"
         foundry: "packages/foundry/contracts/CrowdFund.sol"
-      test: "yarn test --grep 'Checkpoint3'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint3'"
+        foundry: "yarn test --match-test 'Checkpoint3'"
       hints:
         - "Time check: `if (block.timestamp <= deadline) revert TooEarly(deadline, block.timestamp);`. Then if/else on the balance vs threshold."
         - |
@@ -572,7 +578,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/CrowdFund.sol"
         foundry: "packages/foundry/contracts/CrowdFund.sol"
-      test: "yarn test --grep 'Checkpoint4'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint4'"
+        foundry: "yarn test --match-test 'Checkpoint4'"
       hints:
         - "Just call `contribute();` inside `receive()`. That's the whole thing."
         - |
