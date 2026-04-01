@@ -5,8 +5,8 @@ description: "Understand NFTs and onchain ownership before you start coding"
 welcome_message: |
   Before you write any code, let's get you grounded on what this challenge is actually about.
   You're going to build an NFT contract — but first, let's understand what NFTs are, why they
-  matter beyond monkey JPEGs, and how ownership works on Ethereum. Should take about 5 minutes,
-  then I'll help you set it up locally.
+  matter beyond monkey JPEGs, and how ownership works on Ethereum. Once you've got the
+  concepts down, I'll help you set it up locally.
 
 completion_message: |
   Nice. You now understand what makes tokens non-fungible, how real projects like ENS and
