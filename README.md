@@ -288,7 +288,6 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 ```
 
 </details>
-</details>
 
 ---
 
