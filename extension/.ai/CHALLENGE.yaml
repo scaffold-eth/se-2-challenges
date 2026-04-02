@@ -151,7 +151,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/DEX.sol"
         foundry: "packages/foundry/contracts/DEX.sol"
-      test: "yarn test --grep 'Checkpoint2'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint2'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - "Start with the guard: `if (totalLiquidity != 0) revert DexAlreadyInitialized();`. Then set `totalLiquidity = address(this).balance;` and `liquidity[msg.sender] = totalLiquidity;`."
         - |
@@ -280,7 +282,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/DEX.sol"
         foundry: "packages/foundry/contracts/DEX.sol"
-      test: "yarn test --grep 'Checkpoint3'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint3'"
+        foundry: "yarn test --match-test 'Checkpoint3'"
       hints:
         - "It's four lines of math. Start with `uint256 xInputWithFee = xInput * 997;` and work through the formula step by step."
         - |
@@ -418,7 +422,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/DEX.sol"
         foundry: "packages/foundry/contracts/DEX.sol"
-      test: "yarn test --grep 'Checkpoint4'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint4'"
+        foundry: "yarn test --match-test 'Checkpoint4'"
       hints:
         - |
           For ethToToken(), the reserve trick is key:
@@ -613,7 +619,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/DEX.sol"
         foundry: "packages/foundry/contracts/DEX.sol"
-      test: "yarn test --grep 'Checkpoint5'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint5'"
+        foundry: "yarn test --match-test 'Checkpoint5'"
       hints:
         - |
           For deposit(), the key formulas are:

@@ -4,10 +4,11 @@ pragma solidity 0.8.20;
 import { Test } from "forge-std/Test.sol";
 import { Balloons } from "../contracts/Balloons.sol";
 import { DEX } from "../contracts/DEX.sol";
+import { IDEX } from "../contracts/IDEX.sol";
 
 contract DEXTest is Test {
     Balloons public balloons;
-    DEX public dex;
+    IDEX public dex;
     address public deployer;
     address public user2;
     address public user3;
@@ -23,7 +24,7 @@ contract DEXTest is Test {
 
         vm.startPrank(deployer);
         balloons = new Balloons();
-        dex = new DEX(address(balloons));
+        dex = IDEX(address(new DEX(address(balloons))));
         vm.stopPrank();
     }
 
@@ -56,7 +57,7 @@ contract DEXTest is Test {
         balloons.approve(address(dex), 100 ether);
         dex.init{ value: 5 ether }(5 ether);
 
-        vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("DexAlreadyInitialized()"))));
+        vm.expectRevert(abi.encodeWithSelector(IDEX.DexAlreadyInitialized.selector));
         dex.init{ value: 1 ether }(1 ether);
         vm.stopPrank();
     }
@@ -89,7 +90,7 @@ contract DEXTest is Test {
 
     function test_Checkpoint4_EthToTokenRevertsOnZeroEth() public {
         _initDex();
-        vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("InvalidEthAmount()"))));
+        vm.expectRevert(abi.encodeWithSelector(IDEX.InvalidEthAmount.selector));
         dex.ethToToken{ value: 0 }();
     }
 
@@ -121,7 +122,7 @@ contract DEXTest is Test {
 
     function test_Checkpoint4_TokenToEthRevertsOnZeroTokens() public {
         _initDex();
-        vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("InvalidTokenAmount()"))));
+        vm.expectRevert(abi.encodeWithSelector(IDEX.InvalidTokenAmount.selector));
         dex.tokenToEth(0);
     }
 
@@ -157,7 +158,7 @@ contract DEXTest is Test {
 
     function test_Checkpoint5_DepositRevertsOnZeroEth() public {
         _initDex();
-        vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("InvalidEthAmount()"))));
+        vm.expectRevert(abi.encodeWithSelector(IDEX.InvalidEthAmount.selector));
         dex.deposit{ value: 0 }();
     }
 
@@ -196,7 +197,7 @@ contract DEXTest is Test {
         _initDex();
 
         vm.prank(user2);
-        vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("InsufficientLiquidity()"))));
+        vm.expectRevert(abi.encodeWithSelector(IDEX.InsufficientLiquidity.selector));
         dex.withdraw(1 ether);
     }
 

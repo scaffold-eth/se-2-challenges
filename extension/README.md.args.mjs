@@ -180,7 +180,7 @@ ${solidityFramework === "hardhat" ? `🧩 Go uncomment the line in \`packages/ha
 ▶️ Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint2"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"
 \`\`\`
 
 ---
@@ -278,7 +278,7 @@ Finally, let's say the ratio is the same, but we want to swap 100,000 tokens ins
 ▶️ Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint3"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"
 \`\`\`
 
 ---
@@ -376,7 +376,7 @@ function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
 ▶️ Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint4"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint4"
 \`\`\`
 
 ---
@@ -489,7 +489,7 @@ function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tok
 ▶️ Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint5"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint5"
 \`\`\`
 
 ---

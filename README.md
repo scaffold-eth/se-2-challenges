@@ -229,9 +229,26 @@ function getLiquidity(address lp) public view returns (uint256 lpLiquidity) {
 
 ▶️ Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint2"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint2"
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -344,9 +361,26 @@ Finally, let's say the ratio is the same, but we want to swap 100,000 tokens ins
 
 ▶️ Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint3"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint3"
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -442,9 +476,26 @@ function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
 
 ▶️ Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint4"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint4"
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -555,9 +606,26 @@ function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tok
 
 ▶️ Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint5"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint5"
+```
+
+</Tab>
+</Tabs>
 
 ---
 
