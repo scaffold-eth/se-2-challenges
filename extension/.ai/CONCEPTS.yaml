@@ -1,0 +1,105 @@
+name: "Crowdfunding App"
+version: "1.0"
+description: "Understand how a group of strangers can coordinate funding on Ethereum — trustlessly, with built-in refunds if things don't work out."
+
+welcome_message: |
+  This challenge is about building a decentralized crowdfunding contract — a way for a group of people to pool ETH toward a goal, where the code handles the rules instead of a middleman.
+
+  We'll walk through the key concepts first: how contributions are tracked on-chain, why sending ETH back safely is trickier than you'd expect, and how the contract decides whether the campaign succeeded or failed. Once you've got the mental model, I'll help you set it up locally and start coding.
+
+completion_message: |
+  You now understand the core mechanics behind on-chain crowdfunding — how mappings track who gave what, why the Checks-Effects-Interactions pattern exists, how state machines model contract logic, and why smart contracts need someone to trigger state changes.
+
+  Let me know when you're ready to set up the challenge locally and I'll walk you through it step by step.
+
+checkpoints:
+  - id: 1
+    title: "Trustless coordination"
+    context: |
+      The core idea behind this challenge: a group of strangers can pool money together without trusting each other — they only have to trust the code.
+
+      Here's the setup. A bunch of people want to fund something together. If enough ETH is collected before a deadline, the funds go to a recipient contract. If not, everyone gets their money back. No middleman, no escrow service, no "trust me bro."
+
+      This works because the rules are enforced by the smart contract itself. Once deployed, nobody can change them — not the creator, not the contributors, not anyone. The contract holds the ETH, checks the conditions, and either forwards the funds or enables refunds. The worst case is that everyone gets their money back.
+
+      This is a pattern you see all over Ethereum: adversarial groups using shared rules to cooperate safely. DAOs, token launches, grants rounds — they all build on this same idea of code-as-coordination.
+
+      In this challenge, you'll build a `CrowdFund` contract with four pieces: accepting contributions, handling refunds, deciding success vs failure, and making sure ETH never gets stuck.
+    questions:
+      - question: "Why don't contributors need to trust each other or a middleman in this system? What enforces the rules?"
+        concepts: ["smart contract", "code", "rules", "enforced", "deployed", "can't change", "on-chain", "trustless"]
+        hint: "Think about what happens after the contract is deployed — who can modify the rules?"
+      - question: "What are the two possible outcomes of the crowdfunding campaign, and what triggers each one?"
+        concepts: ["threshold", "deadline", "success", "failed", "enough ETH", "refund", "forward", "recipient"]
+        hint: "It comes down to two conditions: how much ETH was collected and whether the deadline has passed."
+
+  - id: 2
+    title: "Tracking contributions on-chain"
+    context: |
+      To run a crowdfunding campaign, the contract needs to know two things: how much total ETH it holds, and how much each person contributed. The total is tracked automatically (every contract has a balance), but individual contributions need explicit tracking.
+
+      That's where **mappings** come in. A mapping is like a dictionary — it maps keys to values. In this case, it maps each contributor's address to the amount they've sent:
+
+      ```
+      address → uint256
+      ```
+
+      Every address starts at zero by default. When someone contributes, you add their amount to their existing balance (using `+=`, not `=`, so multiple contributions accumulate instead of overwriting).
+
+      The contract also needs to tell the outside world when something happens. That's what **events** are for. Events are log entries emitted during transactions — the frontend listens for them to update the UI in real-time. Without events, the frontend would have to constantly poll the contract to detect changes.
+
+      For a function to receive ETH, it must be marked `payable`. Inside any function, `msg.sender` gives you the caller's address and `msg.value` gives you the ETH they sent. These come from the transaction itself — they can't be faked.
+    questions:
+      - question: "If someone contributes 0.5 ETH and then contributes 0.3 ETH, what should their tracked balance be? What would go wrong if you used `=` instead of `+=` to update the mapping?"
+        concepts: ["0.8", "accumulate", "add", "total", "overwrite", "previous", "lost", "sum"]
+        hint: "Think about what `=` does vs `+=` — one replaces the value, the other adds to it."
+      - question: "Why do smart contracts need events? What problem would the frontend have without them?"
+        concepts: ["frontend", "off-chain", "listen", "log", "notify", "poll", "detect", "real-time", "bridge"]
+        hint: "Smart contracts live on-chain, frontends live off-chain — how does information cross that gap?"
+
+  - id: 3
+    title: "Sending ETH safely"
+    context: |
+      When the crowdfunding campaign fails, people need their money back. Sounds simple — just send them their ETH. But sending ETH in Solidity is one of the most dangerous operations you can do, and getting the order wrong can drain your entire contract.
+
+      The vulnerability is called a **reentrancy attack**. Here's how it works: when you send ETH to an address, if that address is a smart contract, it can run code when it receives the ETH. That code could call your `withdraw()` function again — before you've updated the balance. So the attacker withdraws, re-enters, withdraws again, re-enters again, draining everything. This is exactly how the famous DAO hack happened in 2016.
+
+      The fix is the **Checks-Effects-Interactions** pattern:
+      1. **Checks** — verify conditions (is withdrawal allowed?)
+      2. **Effects** — update state (zero out the balance)
+      3. **Interactions** — make external calls (send the ETH)
+
+      The key insight: update the balance to zero *before* sending the ETH. If a malicious contract tries to re-enter, the balance is already zero, so they get nothing on the second call.
+
+      Modern Solidity also uses **custom errors** instead of error strings for validation — they're more gas-efficient because the error message doesn't get stored on-chain.
+    questions:
+      - question: "Why is it critical to set a user's balance to zero before sending them ETH? What could happen if you sent the ETH first and then updated the balance?"
+        concepts: ["reentrancy", "re-enter", "call again", "drain", "attack", "before", "state", "zero"]
+        hint: "Think about what happens if the recipient is a smart contract that runs code when it receives ETH..."
+      - question: "What are the three steps of the Checks-Effects-Interactions pattern, and why does the order matter?"
+        concepts: ["checks", "effects", "interactions", "verify", "update state", "external call", "before", "order"]
+        hint: "Each step has a purpose — validating, changing your own state, and talking to the outside world. The danger is in doing them out of order."
+
+  - id: 4
+    title: "State machines and deadlines"
+    context: |
+      Your crowdfunding contract is a **state machine** — it has distinct states and rules for transitioning between them:
+
+      - **Funding**: people can contribute. The clock is ticking.
+      - **Success**: enough ETH was collected before the deadline. Send it to the recipient.
+      - **Failed**: not enough ETH. Let everyone withdraw their refunds.
+
+      The transition from Funding to Success or Failed happens through an `execute()` function. It checks two things: has the deadline passed? And did the contract collect enough ETH to meet the threshold?
+
+      Here's a key insight about smart contracts: **they can't run on their own**. There's no cron job, no scheduler, no automatic trigger. Even after the deadline passes, the contract just sits there in the Funding state until someone sends a transaction to call `execute()`. That's why `execute()` exists — someone (anyone) needs to trigger the state change.
+
+      Solidity gives you `block.timestamp` for the current time (in seconds) and time unit suffixes like `seconds`, `minutes`, `hours` for readability. A deadline set to `block.timestamp + 30 seconds` at deployment time means "30 seconds after this contract was created."
+
+      Values that never change (like the funding threshold) can be marked `constant` — they get inlined at compile time instead of taking up a storage slot, which saves gas.
+    questions:
+      - question: "After the deadline passes and not enough ETH was collected, why can't contributors just call withdraw() directly? Why does someone need to call execute() first?"
+        concepts: ["state transition", "openToWithdraw", "trigger", "someone", "can't auto-execute", "no automatic", "flip", "enable"]
+        hint: "Think about the openToWithdraw flag — what is it set to by default, and what changes it?"
+      - question: "What are the three states of the crowdfunding contract, and what determines which state it transitions to after the deadline?"
+        concepts: ["funding", "success", "failed", "threshold", "enough ETH", "balance", "deadline", "transition"]
+        hint: "It's a simple fork — one condition (the amount collected vs the threshold) decides which of two outcomes happens."
