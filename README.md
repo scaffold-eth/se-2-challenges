@@ -94,10 +94,14 @@ yarn start
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 `packages/hardhat/contracts/YourToken.sol`
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 `packages/foundry/contracts/YourToken.sol`
 
@@ -143,12 +147,16 @@ constructor() ERC20("Gold", "GLD") {
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
   Update `FRONTEND_ADDRESS` in `packages/hardhat/deploy/01_deploy_vendor.ts` and keep `SEND_TOKENS_TO_VENDOR = false` since we are not ready for that step.
 
 </Tab>
 <Tab label="Foundry">
 
-  Update the deploy script in `packages/foundry/script/DeployYourToken.s.sol` to transfer tokens to your frontend address.
+**Foundry**
+
+  Update `FRONTEND_ADDRESS` in `packages/foundry/script/DeployYourToken.s.sol` and keep `SEND_TOKENS_TO_VENDOR = false` since we are not ready for that step.
 
 </Tab>
 </Tabs>
@@ -196,10 +204,14 @@ yarn test --match-test "Checkpoint1"
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 `packages/hardhat/contracts/Vendor.sol`
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 `packages/foundry/contracts/Vendor.sol`
 
@@ -290,12 +302,16 @@ Update your deploy script to seed the Vendor with tokens:
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 Edit `packages/hardhat/deploy/01_deploy_vendor.ts` to set `SEND_TOKENS_TO_VENDOR` to `true`. This will deploy the Vendor contract and automatically seed it with the tokens INSTEAD of sending the tokens to your `FRONTEND_ADDRESS`. It will also set your address as the owner of the Vendor contract but we will dig into that later...
 
 </Tab>
 <Tab label="Foundry">
 
-Edit `packages/foundry/script/DeployYourToken.s.sol` and uncomment the lines that transfer tokens to the Vendor and transfer ownership. This will seed the Vendor with tokens and set your address as the owner.
+**Foundry**
+
+Edit `packages/foundry/script/DeployYourToken.s.sol` to set `SEND_TOKENS_TO_VENDOR` to `true`. This will deploy the Vendor contract and automatically seed it with the tokens INSTEAD of sending the tokens to your `FRONTEND_ADDRESS`. It will also set your address as the owner of the Vendor contract but we will dig into that later...
 
 </Tab>
 </Tabs>
@@ -583,10 +599,14 @@ yarn test --match-test "Checkpoint4"
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` and run `yarn deploy` **OR** you can `yarn deploy --network sepolia`.
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 > 💬 Hint: Use `yarn deploy --network sepolia`.
 
@@ -623,11 +643,15 @@ For production-grade applications, it's recommended to obtain your own API keys 
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 - 📃 `ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 - 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 - 📃 `ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).

@@ -109,7 +109,7 @@ constructor() ERC20("Gold", "GLD") {
 ### 🥅 Goals
 
 - ⚠️ **Important:** Your initial token supply was minted to the **deployer**. If the wallet you use in the frontend is a different address, you won’t see a balance there yet.
-${solidityFramework === "hardhat" ? `  - Update \`FRONTEND_ADDRESS\` in \`packages/hardhat/deploy/01_deploy_vendor.ts\` and keep \`SEND_TOKENS_TO_VENDOR = false\` since we are not ready for that step.` : `  - Update the deploy script in \`packages/foundry/script/DeployYourToken.s.sol\` to transfer tokens to your frontend address.`}
+  - Update \`FRONTEND_ADDRESS\` in \`packages/${solidityFramework}/${solidityFramework === "hardhat" ? "deploy/01_deploy_vendor.ts" : "script/DeployYourToken.s.sol"}\` and keep \`SEND_TOKENS_TO_VENDOR = false\` since we are not ready for that step.
   - Then run \`yarn deploy --reset\` to send the tokens to your frontend wallet so you can test in the UI.
 
 - [ ] Can you check the \`balanceOf()\` your frontend address in the \`Debug Contracts\` tab? (\`YourToken\` contract)
@@ -212,7 +212,7 @@ function buyTokens() external payable {
 
 ### Try it out (frontend + deploy)
 
-${solidityFramework === "hardhat" ? `Edit \`packages/hardhat/deploy/01_deploy_vendor.ts\` to set \`SEND_TOKENS_TO_VENDOR\` to \`true\`. This will deploy the Vendor contract and automatically seed it with the tokens INSTEAD of sending the tokens to your \`FRONTEND_ADDRESS\`. It will also set your address as the owner of the Vendor contract but we will dig into that later...` : `Edit \`packages/foundry/script/DeployYourToken.s.sol\` and uncomment the lines that transfer tokens to the Vendor and transfer ownership. This will seed the Vendor with tokens and set your address as the owner of the Vendor contract.`}
+Edit \`packages/${solidityFramework}/${solidityFramework === "hardhat" ? "deploy/01_deploy_vendor.ts" : "script/DeployYourToken.s.sol"}\` to set \`SEND_TOKENS_TO_VENDOR\` to \`true\`. This will deploy the Vendor contract and automatically seed it with the tokens INSTEAD of sending the tokens to your \`FRONTEND_ADDRESS\`. It will also set your address as the owner of the Vendor contract but we will dig into that later...
 
 > 🔎 Look in \`packages/nextjs/app/token-vendor/page.tsx\` and uncomment the \`Vendor Balances\` and \`Buy Tokens\` sections to display the Vendor ETH and Token balances as well as enable buying tokens from the frontend.
 
