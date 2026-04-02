@@ -1,0 +1,93 @@
+name: "Token Vendor"
+version: "1.0"
+description: "Understand how tokens work on Ethereum, why standards matter, and how contracts can act as always-on vending machines that buy and sell digital currency."
+
+welcome_message: |
+  This challenge is about creating your own digital currency on Ethereum and building an unstoppable vending machine that trades it for ETH — anyone can buy or sell, anytime, with no middleman.
+
+  We'll cover the key concepts first: what tokens actually are, how a contract can act as an automated exchange, why access control matters, and the two-step permission pattern that makes token trading safe. Once you've got the mental model, I'll help you set it up locally and start building.
+
+completion_message: |
+  You now understand how ERC-20 tokens work, why a shared standard matters, how contracts can act as always-on exchanges, why access control is critical for protecting funds, and how the approve pattern enables safe contract-to-contract token movement — the same pattern that powers most of DeFi.
+
+  Let me know when you're ready to set up the challenge locally and I'll walk you through it step by step.
+
+checkpoints:
+  - id: 1
+    title: "Tokens and why standards matter"
+    context: |
+      On Ethereum, anyone can create a new digital currency — a **token**. But if every token worked differently, wallets, exchanges, and other contracts wouldn't know how to interact with them. That's where the **ERC-20 standard** comes in.
+
+      ERC-20 is a shared interface that every fungible token follows. "Fungible" means every unit is identical and interchangeable — like dollar bills. One token is worth exactly the same as any other token of the same type. The standard defines a common set of operations: checking balances, transferring tokens, and granting permissions.
+
+      Because every ERC-20 token follows the same interface, any wallet can display them, any exchange can list them, and any contract can interact with them — without needing custom code for each token. This composability is a huge part of why Ethereum's ecosystem works.
+
+      One important detail: tokens use **18 decimal places** by default, just like ETH (where 1 ETH = 10^18 wei). So when you create 1000 tokens, you're really creating 1000 × 10^18 of the smallest unit. This convention means token math and ETH math use the same scale, which makes conversions simpler.
+
+      In this challenge, your token's supply is **fixed at deployment** — all tokens are created once, upfront, and no more can ever be made. This is important for trust: holders know the supply can't be inflated later.
+    questions:
+      - question: "Why does it matter that all tokens follow the ERC-20 standard? What would happen if every token had its own unique interface?"
+        concepts: ["standard", "compatible", "wallet", "exchange", "composable", "interact", "common", "interface"]
+        hint: "Think about what a wallet or a decentralized exchange needs to do with a token — and how many tokens exist on Ethereum."
+      - question: "Why do ERC-20 tokens use 18 decimal places? What's the practical benefit of matching ETH's decimal scale?"
+        concepts: ["18", "decimals", "wei", "same scale", "conversion", "math", "smallest unit", "match"]
+        hint: "If ETH and tokens both use 18 decimals, what happens when you need to calculate a price like '100 tokens per 1 ETH'?"
+
+  - id: 2
+    title: "The vending machine model"
+    context: |
+      Smart contracts are like vending machines — they're always on, anyone can use them, and they follow their rules no matter what. In this challenge, you're building a contract that acts as an automated token exchange: users put in ETH and get tokens back, at a fixed price.
+
+      The contract holds a supply of tokens and has a price ratio (say, 100 tokens per 1 ETH). When someone sends ETH, the contract calculates how many tokens they should receive and transfers them. The math is simple multiplication — and because both ETH and tokens use 18 decimal places, the conversion just works without any special scaling.
+
+      This is a **contract-to-contract interaction**. The vendor contract doesn't hold tokens natively — it holds a balance of a separate token contract. When it "sends" tokens to a buyer, it's actually calling the token contract and asking it to update the ownership records. Two contracts working together through a shared standard.
+
+      The vendor also accumulates ETH from sales. That ETH sits in the contract's balance, which raises an important question: who should be able to take it out? That's where access control comes in.
+    questions:
+      - question: "When the vendor 'sends' tokens to a buyer, what's actually happening behind the scenes? Where do tokens live?"
+        concepts: ["token contract", "separate", "balance", "records", "ownership", "contract-to-contract", "calls", "updates"]
+        hint: "The vendor doesn't store tokens inside itself — think about where the actual token balances are recorded."
+      - question: "Why does the price conversion between ETH and tokens work without any special decimal handling?"
+        concepts: ["18 decimals", "same scale", "both", "wei", "smallest unit", "multiply", "match", "convention"]
+        hint: "Both ETH (in wei) and tokens use the same number of decimal places — what does that mean for multiplication?"
+
+  - id: 3
+    title: "Access control and trust"
+    context: |
+      Your vendor contract accumulates ETH every time someone buys tokens. That ETH needs to go somewhere eventually — but who should be able to withdraw it?
+
+      Without access control, anyone could drain the contract. That's obviously bad. The common pattern is **ownership** — one address (usually the deployer) is designated as the owner and only they can call sensitive functions like withdrawing funds.
+
+      But here's the interesting trust question: if the owner can withdraw all the ETH anytime, how much do users actually trust the system? If you're holding tokens and want to sell them back, you need the vendor to have ETH liquidity. An owner who drains the contract kills that ability.
+
+      This is a real design tension in DeFi. Some protocols let the owner withdraw (more flexible, but requires trust). Others lock funds permanently or use governance (more trustless, but less flexible). There's no single right answer — it depends on what you're building and who your users are.
+
+      In this challenge, the owner can withdraw. But it's worth thinking about: would people be more interested in your token if they knew nobody could drain the ETH backing it?
+    questions:
+      - question: "Why is access control necessary for the withdrawal function? What would happen without it?"
+        concepts: ["anyone", "drain", "steal", "restrict", "owner", "permission", "unauthorized", "protect"]
+        hint: "Without any restriction, think about who could call the function and what they'd do."
+      - question: "If the owner can withdraw all the ETH from the vendor, why might that make users less willing to hold the token?"
+        concepts: ["trust", "liquidity", "sell back", "drain", "no ETH", "can't sell", "risk", "backing"]
+        hint: "Think about what happens when a token holder wants to sell their tokens back — what do they need the vendor to have?"
+
+  - id: 4
+    title: "The approve pattern"
+    context: |
+      Buying tokens is straightforward — send ETH, get tokens. But selling tokens back is harder, and the reason is a fundamental security constraint: **a contract can't just take tokens from your wallet**.
+
+      If any contract could pull tokens out of any wallet, a malicious contract could drain everyone's tokens. So ERC-20 uses a two-step permission model:
+
+      1. **Approve** — the user tells the token contract: "I authorize this specific contract to move up to X of my tokens." This just sets a permission — no tokens move yet.
+      2. **Transfer from** — the authorized contract pulls the tokens. The token contract checks the permission and only allows the transfer if it's been approved for enough.
+
+      This means selling tokens requires two transactions: first approve the vendor, then tell the vendor to take the tokens and give you ETH back. It's an extra step, but it's the price of safety — you're giving explicit, scoped consent rather than blanket access.
+
+      This approve pattern isn't unique to this challenge. It's the foundation of how Uniswap handles swaps, how Aave handles deposits, how NFT marketplaces handle listings — basically any time a contract needs to move tokens on your behalf. Understanding it here means you'll recognize it everywhere in DeFi.
+    questions:
+      - question: "Why can't the vendor contract just take tokens directly from the user's wallet? What security problem would that create?"
+        concepts: ["security", "malicious", "any contract", "drain", "permission", "consent", "authorize", "can't take"]
+        hint: "Imagine if any contract could pull tokens from any wallet — what would stop a bad actor from writing a contract that takes everyone's tokens?"
+      - question: "Why does selling tokens require two separate transactions instead of one? What does each step accomplish?"
+        concepts: ["approve", "permission", "first", "second", "transfer", "pull", "consent", "two-step"]
+        hint: "The first transaction sets a permission, the second uses it — think about what each one does and why they can't be combined into one."
