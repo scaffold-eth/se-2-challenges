@@ -383,12 +383,15 @@ Great job! If your tests are passing, you’re just one step away from deploymen
 
 Before deploying, make one important change:
 
-1. Open **\`00_deploy_your_voting_contract.ts\`**
+${isFoundry ? `1. Open **\`DeployVoting.s.sol\`**
+2. Set your address as the \`ownerAddress\`
+
+> 💡 In Foundry, library linking is handled automatically at compile time — no need to deploy PoseidonT3 or LeanIMT separately.` : `1. Open **\`00_deploy_your_voting_contract.ts\`**
 2. Set your address as the \`ownerAddress\`
 3. Uncomment deployment of both \`poseidon3\` and \`leanIMT\`
 4. Set LeanIMT library address (\`leanIMT.address\`) at line 62
 
-> 💡 **Poseidon3** is the hash function we use. More on that later.
+> 💡 **Poseidon3** is the hash function we use. More on that later.`}
 
 Once that’s done, you’re ready to deploy! 🔗
 

@@ -169,10 +169,14 @@ Our contract will support three main functions:
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 📁 The contract lives in **`packages/hardhat/contracts/Voting.sol`**
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 📁 The contract lives in **`packages/foundry/contracts/Voting.sol`**
 
@@ -381,12 +385,16 @@ Then run:
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 ```sh
 yarn test --grep "Checkpoint2"
 ```
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 ```sh
 yarn test --match-test "Checkpoint2"
@@ -401,12 +409,30 @@ Great job! If your tests are passing, you’re just one step away from deploymen
 
 Before deploying, make one important change:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 1. Open **`00_deploy_your_voting_contract.ts`**
 2. Set your address as the `ownerAddress`
 3. Uncomment deployment of both `poseidon3` and `leanIMT`
 4. Set LeanIMT library address (`leanIMT.address`) at line 62
 
 > 💡 **Poseidon3** is the hash function we use. More on that later.
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+1. Open **`DeployVoting.s.sol`**
+2. Set your address as the `ownerAddress`
+
+> 💡 In Foundry, library linking is handled automatically at compile time — no need to deploy PoseidonT3 or LeanIMT separately.
+
+</Tab>
+</Tabs>
 
 Once that’s done, you’re ready to deploy! 🔗
 
@@ -982,6 +1008,8 @@ You’ve built the circuit, created the verifier contract — now it’s time to
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 1. Replace the placeholder verifier contract **`Verifier.sol`** in **`packages/hardhat/contracts`** with the newly generated contract located in **`packages/circuits/target`**.
 2. Open **`00_deploy_your_voting_contract.ts`** and:
    - Uncomment the verifier deployment
@@ -990,6 +1018,8 @@ You’ve built the circuit, created the verifier contract — now it’s time to
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 1. Replace the placeholder verifier contract **`Verifier.sol`** in **`packages/foundry/contracts`** with the newly generated contract located in **`packages/circuits/target`**.
 2. Open **`DeployVoting.s.sol`** and:
@@ -1161,12 +1191,16 @@ Once implemented, run your tests to make sure everything works:
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 ```sh
 yarn test --grep "Checkpoint6"
 ```
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 ```sh
 yarn test --match-test "Checkpoint6"
@@ -1871,12 +1905,16 @@ Configure your keys here:
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 - 🔷 **`ALCHEMY_API_KEY`** in `packages/hardhat/.env` and `packages/nextjs/.env.local` → [Get key from Alchemy](https://dashboard.alchemy.com/)
 - 🔑 **`NEXT_PUBLIC_PIMLICO_API_KEY`** in `packages/nextjs/.env.local` → [Get key from Pimlico](https://dashboard.pimlico.io/)
 - 📃 **`ETHERSCAN_API_KEY`** in `packages/hardhat/.env` → [Get key from Etherscan](https://etherscan.io/myapikey)
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 - 🔷 **`ALCHEMY_API_KEY`** in `packages/foundry/.env` and `packages/nextjs/.env.local` → [Get key from Alchemy](https://dashboard.alchemy.com/)
 - 🔑 **`NEXT_PUBLIC_PIMLICO_API_KEY`** in `packages/nextjs/.env.local` → [Get key from Pimlico](https://dashboard.pimlico.io/)
@@ -1898,6 +1936,8 @@ Configure your keys here:
 <Tabs>
 <Tab label="Hardhat">
 
+**Hardhat**
+
 > 🚨 Don't forget to set the owner address inside the `00_deploy_your_voting_contract.ts`.
 
 🚀 Run `yarn deploy --network sepolia` to deploy your smart contract to Sepolia.
@@ -1906,6 +1946,8 @@ Configure your keys here:
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
 
 > 🚨 Don't forget to set the owner address inside the `DeployVoting.s.sol`.
 
