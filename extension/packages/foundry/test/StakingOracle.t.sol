@@ -4,10 +4,11 @@ pragma solidity >=0.8.0 <0.9.0;
 import { Test } from "forge-std/Test.sol";
 import { ORA } from "../contracts/01_Staking/OracleToken.sol";
 import { StakingOracle } from "../contracts/01_Staking/StakingOracle.sol";
+import { IStakingOracle } from "../contracts/01_Staking/IStakingOracle.sol";
 
 contract StakingOracleTest is Test {
     ORA public oraToken;
-    StakingOracle public oracle;
+    IStakingOracle public oracle;
 
     address public node1;
     address public node2;
@@ -35,7 +36,7 @@ contract StakingOracleTest is Test {
 
         vm.startPrank(node1);
         oraToken = new ORA();
-        oracle = new StakingOracle(address(oraToken));
+        oracle = IStakingOracle(address(new StakingOracle(address(oraToken))));
         oraToken.transferOwnership(address(oracle));
         vm.stopPrank();
     }
@@ -114,7 +115,7 @@ contract StakingOracleTest is Test {
         }
         assertTrue(found, "NodeRegistered event should be emitted");
 
-        (uint256 stakedAmount,,,, bool active) = oracle.nodes(node1);
+        (uint256 stakedAmount,,,,, bool active) = oracle.nodes(node1);
         assertEq(stakedAmount, MINIMUM_STAKE);
         assertTrue(active);
     }
@@ -307,7 +308,7 @@ contract StakingOracleTest is Test {
         _mineBuckets(2);
 
         uint256 eff1 = oracle.getEffectiveStake(node1);
-        (uint256 stakedAmount,,,,) = oracle.nodes(node1);
+        (uint256 stakedAmount,,,,,) = oracle.nodes(node1);
         assertEq(eff1, stakedAmount - 2 * INACTIVITY_PENALTY);
 
         uint256 addAmount = 500;
@@ -455,7 +456,7 @@ contract StakingOracleTest is Test {
         }
         assertFalse(found, "node3 should be removed");
 
-        (,,,,bool active) = oracle.nodes(node3);
+        (,,,,,bool active) = oracle.nodes(node3);
         assertFalse(active);
     }
 

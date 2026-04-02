@@ -3,10 +3,11 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import { Test } from "forge-std/Test.sol";
 import { WhitelistOracle } from "../contracts/00_Whitelist/WhitelistOracle.sol";
+import { IWhitelistOracle } from "../contracts/00_Whitelist/IWhitelistOracle.sol";
 import { SimpleOracle } from "../contracts/00_Whitelist/SimpleOracle.sol";
 
 contract WhitelistOracleTest is Test {
-    WhitelistOracle public whitelistOracle;
+    IWhitelistOracle public whitelistOracle;
     address public owner;
     address public addr1;
     address public addr2;
@@ -20,7 +21,7 @@ contract WhitelistOracleTest is Test {
         addr3 = makeAddr("addr3");
         addr4 = makeAddr("addr4");
 
-        whitelistOracle = new WhitelistOracle();
+        whitelistOracle = IWhitelistOracle(address(new WhitelistOracle()));
     }
 
     // ============================================================

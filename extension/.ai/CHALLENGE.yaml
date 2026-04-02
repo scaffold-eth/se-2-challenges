@@ -157,7 +157,9 @@ checkpoints:
         yarn simulate:whitelist
         ```
       file: "packages/hardhat/contracts/00_Whitelist/WhitelistOracle.sol"
-      test: "yarn test --grep 'Checkpoint1'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint1'"
+        foundry: "yarn test --match-test 'Checkpoint1'"
       hints:
         - "For `addOracle`: create with `SimpleOracle newOracle = new SimpleOracle(_owner)`, push to array, emit event with `address(newOracle)` and `_owner`."
         - |
@@ -391,7 +393,9 @@ checkpoints:
         AUTO_SLASH=true yarn simulate:staking
         ```
       file: "packages/hardhat/contracts/01_Staking/StakingOracle.sol"
-      test: "yarn test --grep 'Checkpoint2'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint2'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - |
           Start with the simple view functions:
@@ -776,7 +780,9 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol"
-      test: "yarn test --grep 'Checkpoint4'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint4'"
+        foundry: "yarn test --match-test 'Checkpoint4'"
       hints:
         - "For `assertEvent`: store the assertion ID first with `uint256 assertionId = nextAssertionId; nextAssertionId++;`, then validate, create the struct, and emit."
         - |
@@ -961,7 +967,9 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol"
-      test: "yarn test --grep 'Checkpoint5'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint5'"
+        foundry: "yarn test --match-test 'Checkpoint5'"
       hints:
         - "For `claimUndisputedReward`: validate state, mark claimed FIRST (reentrancy protection), then send `reward + bond` to proposer."
         - |
@@ -1136,7 +1144,9 @@ checkpoints:
         ```
         Bots will create assertions, propose outcomes, and submit disputes. It's up to you to settle the disputes!
       file: "packages/hardhat/contracts/02_Optimistic/OptimisticOracle.sol"
-      test: "yarn test --grep 'Checkpoint6'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint6'"
+        foundry: "yarn test --match-test 'Checkpoint6'"
       hints:
         - "For `getState`: check `winner` first (Settled), then `disputer` (Disputed), then branch on whether `proposer` is set."
         - |

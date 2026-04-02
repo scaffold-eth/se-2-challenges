@@ -3,10 +3,11 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import { Test } from "forge-std/Test.sol";
 import { OptimisticOracle } from "../contracts/02_Optimistic/OptimisticOracle.sol";
+import { IOptimisticOracle } from "../contracts/02_Optimistic/IOptimisticOracle.sol";
 import { Decider } from "../contracts/02_Optimistic/Decider.sol";
 
 contract OptimisticOracleTest is Test {
-    OptimisticOracle public optimisticOracle;
+    IOptimisticOracle public optimisticOracle;
     Decider public deciderContract;
 
     address public owner;
@@ -28,7 +29,7 @@ contract OptimisticOracleTest is Test {
         vm.deal(otherUser, 100 ether);
 
         // Deploy OptimisticOracle with owner as temporary decider
-        optimisticOracle = new OptimisticOracle(owner);
+        optimisticOracle = IOptimisticOracle(address(new OptimisticOracle(owner)));
 
         // Deploy Decider
         deciderContract = new Decider(address(optimisticOracle));
@@ -481,7 +482,7 @@ contract OptimisticOracleTest is Test {
         assertTrue(found, "AssertionSettled event should be emitted");
 
         // State should be Settled (4)
-        OptimisticOracle.State state = optimisticOracle.getState(assertionId);
+        IOptimisticOracle.State state = optimisticOracle.getState(assertionId);
         assertEq(uint256(state), 4);
     }
 
@@ -515,7 +516,7 @@ contract OptimisticOracleTest is Test {
 
     function test_Checkpoint6_StateTransitions() public {
         // Invalid state for non-existent assertion
-        OptimisticOracle.State state = optimisticOracle.getState(999);
+        IOptimisticOracle.State state = optimisticOracle.getState(999);
         assertEq(uint256(state), 0); // Invalid
 
         // Asserted state
@@ -553,7 +554,7 @@ contract OptimisticOracleTest is Test {
 
         vm.warp(block.timestamp + 181);
 
-        OptimisticOracle.State state = optimisticOracle.getState(assertionId);
+        IOptimisticOracle.State state = optimisticOracle.getState(assertionId);
         assertEq(uint256(state), 4); // Settled
     }
 
@@ -563,7 +564,7 @@ contract OptimisticOracleTest is Test {
 
         vm.warp(block.timestamp + 181);
 
-        OptimisticOracle.State state = optimisticOracle.getState(assertionId);
+        IOptimisticOracle.State state = optimisticOracle.getState(assertionId);
         assertEq(uint256(state), 5); // Expired
     }
 

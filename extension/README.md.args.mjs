@@ -433,7 +433,7 @@ WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] �
 
 \`\`\`sh
 
-yarn test --grep "Checkpoint1"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint1"
 
 \`\`\`
 
@@ -1182,7 +1182,7 @@ function exitNode(uint256 index) public onlyNode {
 
 \`\`\`sh
 
-yarn test --grep "Checkpoint2"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"
 
 \`\`\`
 
@@ -1488,7 +1488,7 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 \`\`\`sh
 
-yarn test --grep "Checkpoint4"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint4"
 
 \`\`\`
 
@@ -1736,7 +1736,7 @@ Then set the winner to the proposer if the proposer was correct _or_ set it to t
 
 \`\`\`sh
 
-yarn test --grep "Checkpoint5"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint5"
 
 \`\`\`
 
@@ -1864,7 +1864,7 @@ The important thing here is that it reverts if it is not settled and if it has b
 
 \`\`\`sh
 
-yarn test --grep "Checkpoint6"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint6"
 
 \`\`\`
 

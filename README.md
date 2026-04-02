@@ -461,19 +461,25 @@ WhitelistOracle → getPrice() → [100, 102, 98] → sort → [98, 100, 102] �
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
-
-yarn test --grep "Checkpoint1"
-
-```
-
 <Tabs>
 <Tab label="Hardhat">
+
+**Hardhat**
+
+```shell
+yarn test --grep "Checkpoint1"
+```
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/WhitelistOracle.ts`.
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint1"
+```
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/WhitelistOracle.t.sol`.
 
@@ -1232,19 +1238,25 @@ function exitNode(uint256 index) public onlyNode {
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
-
-yarn test --grep "Checkpoint2"
-
-```
-
 <Tabs>
 <Tab label="Hardhat">
+
+**Hardhat**
+
+```shell
+yarn test --grep "Checkpoint2"
+```
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/StakingOracle.ts`.
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint2"
+```
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/StakingOracle.t.sol`.
 
@@ -1560,11 +1572,26 @@ The bond amount should be the bond set on the assertion. The same amount that th
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
+<Tabs>
+<Tab label="Hardhat">
 
+**Hardhat**
+
+```shell
 yarn test --grep "Checkpoint4"
-
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint4"
+```
+
+</Tab>
+</Tabs>
 
 ### 🥅 Goals:
 
@@ -1808,11 +1835,26 @@ Then set the winner to the proposer if the proposer was correct _or_ set it to t
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
+<Tabs>
+<Tab label="Hardhat">
 
+**Hardhat**
+
+```shell
 yarn test --grep "Checkpoint5"
-
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint5"
+```
+
+</Tab>
+</Tabs>
 
 ### 🥅 Goals:
 
@@ -1936,19 +1978,25 @@ The important thing here is that it reverts if it is not settled and if it has b
 
 🔍 Run the following command to check if you implemented the functions correctly.
 
-```sh
-
-yarn test --grep "Checkpoint6"
-
-```
-
 <Tabs>
 <Tab label="Hardhat">
+
+**Hardhat**
+
+```shell
+yarn test --grep "Checkpoint6"
+```
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/hardhat/test/OptimisticOracle.ts`.
 
 </Tab>
 <Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint6"
+```
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at `packages/foundry/test/OptimisticOracle.t.sol`.
 
