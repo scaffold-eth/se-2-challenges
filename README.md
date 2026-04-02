@@ -169,33 +169,33 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
     - It should emit a `CollateralAdded` event.
     - Don't forget to revert if `msg.value` is zero using `Engine__InvalidAmount()`.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Adding Collateral</summary>
+<details markdown='1'>
+<summary>💡 Hint: Adding Collateral</summary>
 
-    This is a simple function that:
-    - Receives ETH via `msg.value`
-    - Updates a mapping to track how much ETH each user has deposited
-    - Emits an event for tracking
+This is a simple function that:
+- Receives ETH via `msg.value`
+- Updates a mapping to track how much ETH each user has deposited
+- Emits an event for tracking
 
-    Remember to:
-    - Check for zero value
-    - Use the existing mapping
-    - Include the current ETH price (in MyUSD) in the event
+Remember to:
+- Check for zero value
+- Use the existing mapping
+- Include the current ETH price (in MyUSD) in the event
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function addCollateral() public payable {
-        if (msg.value == 0) revert Engine__InvalidAmount();
+```solidity
+function addCollateral() public payable {
+    if (msg.value == 0) revert Engine__InvalidAmount();
 
-        s_userCollateral[msg.sender] += msg.value;
-        emit CollateralAdded(msg.sender, msg.value, i_oracle.getETHMyUSDPrice());
-    }
-    ```
+    s_userCollateral[msg.sender] += msg.value;
+    emit CollateralAdded(msg.sender, msg.value, i_oracle.getETHMyUSDPrice());
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -205,31 +205,31 @@ First, users need a way to deposit collateral (ETH) into the system. We also nee
     - The collateral amount `s_userCollateral[user]` is in wei (1e18 wei = 1 ETH).
     - Calculation: `(collateralAmount * ethPrice) / PRECISION`.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Calculating Collateral Value</summary>
+<details markdown='1'>
+<summary>💡 Hint: Calculating Collateral Value</summary>
 
-    This function converts ETH to USD value:
-    - Get the user's ETH amount from the mapping
-    - Get the current ETH price from the oracle
-    - Multiply them together and divide by PRECISION
+This function converts ETH to USD value:
+- Get the user's ETH amount from the mapping
+- Get the current ETH price from the oracle
+- Multiply them together and divide by PRECISION
 
-    Think about:
-    - Why we need to divide by PRECISION
-    - What units the oracle price is in
-    - What units the collateral amount is in
+Think about:
+- Why we need to divide by PRECISION
+- What units the oracle price is in
+- What units the collateral amount is in
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function calculateCollateralValue(address user) public view returns (uint256) {
-        uint256 collateralAmount = s_userCollateral[user];
-        return (collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION;
-    }
-    ```
+```solidity
+function calculateCollateralValue(address user) public view returns (uint256) {
+    uint256 collateralAmount = s_userCollateral[user];
+    return (collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION;
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -292,33 +292,33 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Calculate interest based on total debt value and time elapsed. This will require multiplying the total debt by the borrow rate and the time elapsed since the last update but you will need to divide by `SECONDS_PER_YEAR` and 100% (`10000`)
     - Return the current exchange rate which should be the existing exchange rate + interest (in shares, not value _which is what we figured above_)
 
-    <details markdown='1'>
-    <summary>💡 Hint: Calculating Current Exchange Rate</summary>
+<details markdown='1'>
+<summary>💡 Hint: Calculating Current Exchange Rate</summary>
 
-    You need to calculate how much interest has accrued since the last update. Think about:
-    - How much time has passed since `lastUpdateTime`
-    - What the total debt value is currently (`totalDebtShares` x `debtExchangeRate`)
-    - How much interest that debt has earned at the current `borrowRate`
+You need to calculate how much interest has accrued since the last update. Think about:
+- How much time has passed since `lastUpdateTime`
+- What the total debt value is currently (`totalDebtShares` x `debtExchangeRate`)
+- How much interest that debt has earned at the current `borrowRate`
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function _getCurrentExchangeRate() internal view returns (uint256) {
-        if (totalDebtShares == 0) return debtExchangeRate;
+```solidity
+function _getCurrentExchangeRate() internal view returns (uint256) {
+    if (totalDebtShares == 0) return debtExchangeRate;
 
-        uint256 timeElapsed = block.timestamp - lastUpdateTime;
-        if (timeElapsed == 0 || borrowRate == 0) return debtExchangeRate;
+    uint256 timeElapsed = block.timestamp - lastUpdateTime;
+    if (timeElapsed == 0 || borrowRate == 0) return debtExchangeRate;
 
-        uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
-        uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
+    uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
+    uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
 
-        return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
-    }
-    ```
+    return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -326,36 +326,36 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Update `debtExchangeRate` using `_getCurrentExchangeRate()`.
     - Update `lastUpdateTime` to current timestamp.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Accruing Interest</summary>
+<details markdown='1'>
+<summary>💡 Hint: Accruing Interest</summary>
 
-    This function updates the exchange rate to include accrued interest:
-    - Get the new exchange rate
-    - Update the stored rate
-    - Update the timestamp
+This function updates the exchange rate to include accrued interest:
+- Get the new exchange rate
+- Update the stored rate
+- Update the timestamp
 
-    Remember to:
-    - Handle the case where there are no debt shares
-    - Update both the exchange rate and timestamp
-    - Use the helper function we just created (`_getCurrentExchangeRate()`)
+Remember to:
+- Handle the case where there are no debt shares
+- Update both the exchange rate and timestamp
+- Use the helper function we just created (`_getCurrentExchangeRate()`)
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function _accrueInterest() internal {
-        if (totalDebtShares == 0) {
-            lastUpdateTime = block.timestamp;
-            return;
-        }
-
-        debtExchangeRate = _getCurrentExchangeRate();
+```solidity
+function _accrueInterest() internal {
+    if (totalDebtShares == 0) {
         lastUpdateTime = block.timestamp;
+        return;
     }
-    ```
 
-    </details>
-    </details>
+    debtExchangeRate = _getCurrentExchangeRate();
+    lastUpdateTime = block.timestamp;
+}
+```
+
+</details>
+</details>
 
 ---
 
@@ -363,29 +363,29 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Convert a MyUSD `amount` into the equivalent number of `debtShares`.
     - Use `_getCurrentExchangeRate()` to get the current rate.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Converting MyUSD to Shares</summary>
+<details markdown='1'>
+<summary>💡 Hint: Converting MyUSD to Shares</summary>
 
-    Think about this like a currency conversion:
-    - If 1 share = 1.1 MyUSD (exchange rate)
-    - Then 100 MyUSD = 100/1.1 shares
+Think about this like a currency conversion:
+- If 1 share = 1.1 MyUSD (exchange rate)
+- Then 100 MyUSD = 100/1.1 shares
 
-    You need to:
-    - Get the current exchange rate
-    - Use it to calculate how many shares represent the given amount
+You need to:
+- Get the current exchange rate
+- Use it to calculate how many shares represent the given amount
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function _getMyUSDToShares(uint256 amount) internal view returns (uint256) {
-        uint256 currentExchangeRate = _getCurrentExchangeRate();
-        return (amount * PRECISION) / currentExchangeRate;
-    }
-    ```
+```solidity
+function _getMyUSDToShares(uint256 amount) internal view returns (uint256) {
+    uint256 currentExchangeRate = _getCurrentExchangeRate();
+    return (amount * PRECISION) / currentExchangeRate;
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -413,29 +413,29 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Calculate: `(s_userDebtShares[user] * currentExchangeRate) / PRECISION`.
     - This represents the total debt value including accrued interest.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Calculating Current Debt Value</summary>
+<details markdown='1'>
+<summary>💡 Hint: Calculating Current Debt Value</summary>
 
-    This is the inverse of `_getMyUSDToShares`:
-    - If we know how many shares a user has
-    - And we know the current exchange rate
-    - We can calculate their total debt value
+This is the inverse of `_getMyUSDToShares`:
+- If we know how many shares a user has
+- And we know the current exchange rate
+- We can calculate their total debt value
 
-    Remember to handle the case where a user has no shares!
+Remember to handle the case where a user has no shares!
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function getCurrentDebtValue(address user) public view returns (uint256) {
-        if (s_userDebtShares[user] == 0) return 0;
-        uint256 currentExchangeRate = _getCurrentExchangeRate();
-        return (s_userDebtShares[user] * currentExchangeRate) / PRECISION;
-    }
-    ```
+```solidity
+function getCurrentDebtValue(address user) public view returns (uint256) {
+    if (s_userDebtShares[user] == 0) return 0;
+    uint256 currentExchangeRate = _getCurrentExchangeRate();
+    return (s_userDebtShares[user] * currentExchangeRate) / PRECISION;
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -447,33 +447,33 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Calculate: `(collateralValue * PRECISION) / debtValue`.
     - This ratio must stay above 150% to keep the position safe.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Calculating Position Ratio</summary>
+<details markdown='1'>
+<summary>💡 Hint: Calculating Position Ratio</summary>
 
-    The position ratio is like a health score for a user's position:
-    - Higher ratio = safer position
-    - Lower ratio = riskier position
+The position ratio is like a health score for a user's position:
+- Higher ratio = safer position
+- Lower ratio = riskier position
 
-    Think about:
-    - What happens if someone has no debt?
-    - How to handle division by zero
-    - Why we need to multiply by `PRECISION` before dividing
+Think about:
+- What happens if someone has no debt?
+- How to handle division by zero
+- Why we need to multiply by `PRECISION` before dividing
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function calculatePositionRatio(address user) public view returns (uint256) {
-        uint256 debtValue = getCurrentDebtValue(user);
-        if (debtValue == 0) return type(uint256).max;
+```solidity
+function calculatePositionRatio(address user) public view returns (uint256) {
+    uint256 debtValue = getCurrentDebtValue(user);
+    if (debtValue == 0) return type(uint256).max;
 
-        uint256 collateralValue = calculateCollateralValue(user);
-        return (collateralValue * PRECISION) / debtValue;
-    }
-    ```
+    uint256 collateralValue = calculateCollateralValue(user);
+    return (collateralValue * PRECISION) / debtValue;
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -483,30 +483,30 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - A position is safe if `(positionRatio * 100) >= (COLLATERAL_RATIO * PRECISION)`.
     - If unsafe, revert with `Engine__UnsafePositionRatio()`.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Validating Position Safety</summary>
+<details markdown='1'>
+<summary>💡 Hint: Validating Position Safety</summary>
 
-    This is a simple check that uses the position ratio:
-    - Get the ratio
-    - Compare it to the required ratio (150%)
-    - Revert if it's too low
+This is a simple check that uses the position ratio:
+- Get the ratio
+- Compare it to the required ratio (150%)
+- Revert if it's too low
 
-    Remember to handle the precision correctly when comparing!
+Remember to handle the precision correctly when comparing!
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function _validatePosition(address user) internal view {
-        uint256 positionRatio = calculatePositionRatio(user);
-        if ((positionRatio * 100) < COLLATERAL_RATIO * PRECISION) {
-            revert Engine__UnsafePositionRatio();
-        }
+```solidity
+function _validatePosition(address user) internal view {
+    uint256 positionRatio = calculatePositionRatio(user);
+    if ((positionRatio * 100) < COLLATERAL_RATIO * PRECISION) {
+        revert Engine__UnsafePositionRatio();
     }
-    ```
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -520,41 +520,41 @@ Keep in mind, in the absence of decimals we will assume that a borrow rate of 12
     - Mint the MyUSD tokens to the user.
     - Emit `DebtSharesMinted` event with the amount and shares.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Minting MyUSD</summary>
+<details markdown='1'>
+<summary>💡 Hint: Minting MyUSD</summary>
 
-    This function ties everything together:
-    - Convert the mint amount to shares
-    - Update the user's and total shares
-    - Check if the position is still safe
-    - Mint the actual tokens
+This function ties everything together:
+- Convert the mint amount to shares
+- Update the user's and total shares
+- Check if the position is still safe
+- Mint the actual tokens
 
-    Remember to:
-    - Check for zero amount
-    - Update both share mappings
-    - Validate before minting
-    - Emit the event
+Remember to:
+- Check for zero amount
+- Update both share mappings
+- Validate before minting
+- Emit the event
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function mintMyUSD(uint256 mintAmount) public {
-        if (mintAmount == 0) revert Engine__InvalidAmount();
+```solidity
+function mintMyUSD(uint256 mintAmount) public {
+    if (mintAmount == 0) revert Engine__InvalidAmount();
 
-        uint256 shares = _getMyUSDToShares(mintAmount);
-        s_userDebtShares[msg.sender] += shares;
-        totalDebtShares += shares;
+    uint256 shares = _getMyUSDToShares(mintAmount);
+    s_userDebtShares[msg.sender] += shares;
+    totalDebtShares += shares;
 
-        _validatePosition(msg.sender);
-        i_myUSD.mintTo(msg.sender, mintAmount);
+    _validatePosition(msg.sender);
+    i_myUSD.mintTo(msg.sender, mintAmount);
 
-        emit DebtSharesMinted(msg.sender, mintAmount, shares);
-    }
-    ```
+    emit DebtSharesMinted(msg.sender, mintAmount, shares);
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -585,32 +585,32 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - Run `_accrueInterest()` to update the `debtExchangeRate` and `lastUpdateTime`
     - Update `borrowRate` and emit the `BorrowRateUpdated` event.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Setting Borrow Rate</summary>
+<details markdown='1'>
+<summary>💡 Hint: Setting Borrow Rate</summary>
 
-    This function lets the rate controller adjust the borrow rate:
-    - Check if caller is the rate controller (handled by modifier)
-    - Run `_accrueInterest()`
-    - Update the rate
-    - Emit the event
+This function lets the rate controller adjust the borrow rate:
+- Check if caller is the rate controller (handled by modifier)
+- Run `_accrueInterest()`
+- Update the rate
+- Emit the event
 
-    Remember to:
-    - Use the modifier for access control
-    - Emit the event with the new rate
+Remember to:
+- Use the modifier for access control
+- Emit the event with the new rate
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function setBorrowRate(uint256 newRate) external onlyRateController {
-        _accrueInterest();
-        borrowRate = newRate;
-        emit BorrowRateUpdated(newRate);
-    }
-    ```
+```solidity
+function setBorrowRate(uint256 newRate) external onlyRateController {
+    _accrueInterest();
+    borrowRate = newRate;
+    emit BorrowRateUpdated(newRate);
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -646,56 +646,56 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - Burn the MyUSD from the user: `i_myUSD.burnFrom(msg.sender, amount)`.
     - Emit `DebtSharesBurned`.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Repaying Debt</summary>
+<details markdown='1'>
+<summary>💡 Hint: Repaying Debt</summary>
 
-    This function needs to handle several cases:
-    - User wants to repay exactly what they owe
-    - User wants to repay more than they owe (we cap at their actual debt)
-    - User doesn't have enough balance
-    - User hasn't approved enough allowance
+This function needs to handle several cases:
+- User wants to repay exactly what they owe
+- User wants to repay more than they owe (we cap at their actual debt)
+- User doesn't have enough balance
+- User hasn't approved enough allowance
 
-    Remember to:
-    - Convert MyUSD amount to shares first
-    - If user tries to repay more than they owe, cap it at their actual debt
-    - Update both user's shares and total shares
-    - Burn the correct amount of MyUSD
+Remember to:
+- Convert MyUSD amount to shares first
+- If user tries to repay more than they owe, cap it at their actual debt
+- Update both user's shares and total shares
+- Burn the correct amount of MyUSD
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function repayUpTo(uint256 amount) public {
-        uint256 amountInShares = _getMyUSDToShares(amount);
-        // Check if user has enough debt
-        if (amountInShares > s_userDebtShares[msg.sender]) {
-            // will only use the max amount of MyUSD that can be repaid
-            amountInShares = s_userDebtShares[msg.sender];
-            amount = getCurrentDebtValue(msg.sender);
-        }
-
-        // Check balance
-        if (amount == 0 || i_myUSD.balanceOf(msg.sender) < amount) {
-            revert MyUSD__InsufficientBalance();
-        }
-
-        // Check allowance
-        if (i_myUSD.allowance(msg.sender, address(this)) < amount) {
-            revert MyUSD__InsufficientAllowance();
-        }
-
-        // Update user's debt shares and total shares
-        s_userDebtShares[msg.sender] -= amountInShares;
-        totalDebtShares -= amountInShares;
-
-        i_myUSD.burnFrom(msg.sender, amount);
-
-        emit DebtSharesBurned(msg.sender, amount, amountInShares);
+```solidity
+function repayUpTo(uint256 amount) public {
+    uint256 amountInShares = _getMyUSDToShares(amount);
+    // Check if user has enough debt
+    if (amountInShares > s_userDebtShares[msg.sender]) {
+        // will only use the max amount of MyUSD that can be repaid
+        amountInShares = s_userDebtShares[msg.sender];
+        amount = getCurrentDebtValue(msg.sender);
     }
-    ```
 
-    </details>
-    </details>
+    // Check balance
+    if (amount == 0 || i_myUSD.balanceOf(msg.sender) < amount) {
+        revert MyUSD__InsufficientBalance();
+    }
+
+    // Check allowance
+    if (i_myUSD.allowance(msg.sender, address(this)) < amount) {
+        revert MyUSD__InsufficientAllowance();
+    }
+
+    // Update user's debt shares and total shares
+    s_userDebtShares[msg.sender] -= amountInShares;
+    totalDebtShares -= amountInShares;
+
+    i_myUSD.burnFrom(msg.sender, amount);
+
+    emit DebtSharesBurned(msg.sender, amount, amountInShares);
+}
+```
+
+</details>
+</details>
 
 ---
 
@@ -707,45 +707,45 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - If the position is still valid (or they have no debt), transfer the ETH: `payable(msg.sender).transfer(amount);`. Handle potential transfer failure with `Engine__TransferFailed()`.
     - Emit `CollateralWithdrawn` with the current ETH price.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Withdrawing Collateral</summary>
+<details markdown='1'>
+<summary>💡 Hint: Withdrawing Collateral</summary>
 
-    This function needs to be careful about maintaining the user's position safety:
-    - Check if they have enough collateral
-    - Reduce their collateral but immediately `_validatePosition` to check if they'd still be safe
-    - Only transfer ETH if the position remains safe
+This function needs to be careful about maintaining the user's position safety:
+- Check if they have enough collateral
+- Reduce their collateral but immediately `_validatePosition` to check if they'd still be safe
+- Only transfer ETH if the position remains safe
 
-    Remember to:
-    - Handle the case where user has no debt
-    - Use the existing position validation function
-    - Emit the event with the current price (this is solely for the frontend)
+Remember to:
+- Handle the case where user has no debt
+- Use the existing position validation function
+- Emit the event with the current price (this is solely for the frontend)
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function withdrawCollateral(uint256 amount) external {
-        if (amount == 0) revert Engine__InvalidAmount();
-        if (s_userCollateral[msg.sender] < amount) revert Engine__InsufficientCollateral();
+```solidity
+function withdrawCollateral(uint256 amount) external {
+    if (amount == 0) revert Engine__InvalidAmount();
+    if (s_userCollateral[msg.sender] < amount) revert Engine__InsufficientCollateral();
 
-        // Temporarily reduce the user's collateral to check if they remain safe
-        uint256 newCollateral = s_userCollateral[msg.sender] - amount;
-        s_userCollateral[msg.sender] = newCollateral;
+    // Temporarily reduce the user's collateral to check if they remain safe
+    uint256 newCollateral = s_userCollateral[msg.sender] - amount;
+    s_userCollateral[msg.sender] = newCollateral;
 
-        // Validate the user's position after withdrawal
-        if (s_userDebtShares[msg.sender] > 0) {
-            _validatePosition(msg.sender);
-        }
-
-        // Transfer the collateral to the user
-        payable(msg.sender).transfer(amount);
-
-        emit CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice());
+    // Validate the user's position after withdrawal
+    if (s_userDebtShares[msg.sender] > 0) {
+        _validatePosition(msg.sender);
     }
-    ```
 
-    </details>
-    </details>
+    // Transfer the collateral to the user
+    payable(msg.sender).transfer(amount);
+
+    emit CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice());
+}
+```
+
+</details>
+</details>
 
 ---
 
@@ -777,27 +777,27 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - Calculate the user's current position ratio using `calculatePositionRatio(user)`. This will automatically use the current exchange rate to get up-to-date debt values.
     - Return `true` if `(positionRatio * 100) < COLLATERAL_RATIO * PRECISION`, otherwise `false`.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Checking Liquidation Status</summary>
+<details markdown='1'>
+<summary>💡 Hint: Checking Liquidation Status</summary>
 
-    This function is very similar logic to `_validatePosition` except it only returns a bool instead of reverting.
+This function is very similar logic to `_validatePosition` except it only returns a bool instead of reverting.
 
-    Think about:
-    - How the position ratio relates to the collateral ratio
-    - Why we multiply by 100 and compare with COLLATERAL_RATIO \* PRECISION
+Think about:
+- How the position ratio relates to the collateral ratio
+- Why we multiply by 100 and compare with COLLATERAL_RATIO \* PRECISION
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function isLiquidatable(address user) public view returns (bool) {
-        uint256 positionRatio = calculatePositionRatio(user);
-        return (positionRatio * 100) < COLLATERAL_RATIO * PRECISION;
-    }
-    ```
+```solidity
+function isLiquidatable(address user) public view returns (bool) {
+    uint256 positionRatio = calculatePositionRatio(user);
+    return (positionRatio * 100) < COLLATERAL_RATIO * PRECISION;
+}
+```
 
-    </details>
-    </details>
+</details>
+</details>
 
 ---
 
@@ -823,65 +823,65 @@ Whenever the rate is changed we need to "lock-in" all the interest accrued since
     - Transfer `amountForLiquidator` ETH to `msg.sender`. Handle potential transfer failure.
     - Emit `Liquidation` event.
 
-    <details markdown='1'>
-    <summary>💡 Hint: Liquidating Positions</summary>
+<details markdown='1'>
+<summary>💡 Hint: Liquidating Positions</summary>
 
-    This is the core function that maintains system health:
-    - It allows anyone to step in and resolve unsafe positions
-    - It ensures the liquidator is compensated for their service
-    - It protects the system from accumulating bad debt
+This is the core function that maintains system health:
+- It allows anyone to step in and resolve unsafe positions
+- It ensures the liquidator is compensated for their service
+- It protects the system from accumulating bad debt
 
-    Key considerations:
-    - Always accrue interest first to get current debt values
-    - Calculate collateral amounts carefully to maintain system solvency
-    - Handle edge cases where collateral might not cover the full debt
-    - Ensure proper event emission for off-chain monitoring
+Key considerations:
+- Always accrue interest first to get current debt values
+- Calculate collateral amounts carefully to maintain system solvency
+- Handle edge cases where collateral might not cover the full debt
+- Ensure proper event emission for off-chain monitoring
 
-    <details markdown='1'>
-    <summary>🎯 Solution</summary>
+<details markdown='1'>
+<summary>🎯 Solution</summary>
 
-    ```solidity
-    function liquidate(address user) external {
-        if (!isLiquidatable(user)) {
-            revert Engine__NotLiquidatable();
-        }
-
-        uint256 userDebtValue = getCurrentDebtValue(user);
-        uint256 userCollateral = s_userCollateral[user];
-        uint256 collateralValue = calculateCollateralValue(user);
-
-        if (i_myUSD.balanceOf(msg.sender) < userDebtValue) {
-            revert MyUSD__InsufficientBalance();
-        }
-
-        if (i_myUSD.allowance(msg.sender, address(this)) < userDebtValue) {
-            revert MyUSD__InsufficientAllowance();
-        }
-
-        i_myUSD.burnFrom(msg.sender, userDebtValue);
-
-        totalDebtShares -= s_userDebtShares[user];
-        s_userDebtShares[user] = 0;
-
-        uint256 collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue;
-        uint256 rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100;
-        uint256 amountForLiquidator = collateralToCoverDebt + rewardAmount;
-
-        if (amountForLiquidator > userCollateral) {
-            amountForLiquidator = userCollateral;
-        }
-
-        s_userCollateral[user] = userCollateral - amountForLiquidator;
-
-        (bool sent, ) = payable(msg.sender).call{ value: amountForLiquidator }("");
-        if (!sent) revert Engine__TransferFailed();
-
-        emit Liquidation(user, msg.sender, amountForLiquidator, userDebtValue, i_oracle.getETHMyUSDPrice());
+```solidity
+function liquidate(address user) external {
+    if (!isLiquidatable(user)) {
+        revert Engine__NotLiquidatable();
     }
-    ```
 
-    </details>
-    </details>
+    uint256 userDebtValue = getCurrentDebtValue(user);
+    uint256 userCollateral = s_userCollateral[user];
+    uint256 collateralValue = calculateCollateralValue(user);
+
+    if (i_myUSD.balanceOf(msg.sender) < userDebtValue) {
+        revert MyUSD__InsufficientBalance();
+    }
+
+    if (i_myUSD.allowance(msg.sender, address(this)) < userDebtValue) {
+        revert MyUSD__InsufficientAllowance();
+    }
+
+    i_myUSD.burnFrom(msg.sender, userDebtValue);
+
+    totalDebtShares -= s_userDebtShares[user];
+    s_userDebtShares[user] = 0;
+
+    uint256 collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue;
+    uint256 rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100;
+    uint256 amountForLiquidator = collateralToCoverDebt + rewardAmount;
+
+    if (amountForLiquidator > userCollateral) {
+        amountForLiquidator = userCollateral;
+    }
+
+    s_userCollateral[user] = userCollateral - amountForLiquidator;
+
+    (bool sent, ) = payable(msg.sender).call{ value: amountForLiquidator }("");
+    if (!sent) revert Engine__TransferFailed();
+
+    emit Liquidation(user, msg.sender, amountForLiquidator, userDebtValue, i_oracle.getETHMyUSDPrice());
+}
+```
+
+</details>
+</details>
 
 ---
 
