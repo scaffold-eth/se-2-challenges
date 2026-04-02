@@ -67,8 +67,8 @@ yarn deploy --reset
 
 # Testing (checkpoint-based)
 yarn test                       # Run all challenge tests
-yarn test --grep "Checkpoint2"  # Test RiggedRoll prediction logic
-yarn test --grep "Checkpoint3"  # Test withdraw function
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"  # Test RiggedRoll prediction logic
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"  # Test withdraw function
 
 # Code quality
 yarn lint           # Lint both packages
@@ -171,7 +171,7 @@ The grading tests (\`packages/${solidityFramework}/test/RiggedRoll.${solidityFra
 - **Checkpoint 2**: \`RiggedRoll\` can predict outcomes and only rolls on winning numbers; reverts with \`NotWinningRoll\` on losing predictions
 - **Checkpoint 3**: \`RiggedRoll\` owner can withdraw funds; non-owner is rejected; \`InsufficientBalance\` on over-withdraw
 
-Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`yarn test\` for all or \`yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "CheckpointN"\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 

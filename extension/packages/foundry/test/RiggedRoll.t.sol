@@ -4,10 +4,12 @@ pragma solidity >=0.8.0 <0.9.0;
 import { Test } from "forge-std/Test.sol";
 import { DiceGame } from "../contracts/DiceGame.sol";
 import { RiggedRoll } from "../contracts/RiggedRoll.sol";
+import { IDiceGame } from "../contracts/IDiceGame.sol";
+import { IRiggedRoll } from "../contracts/IRiggedRoll.sol";
 
 contract RiggedRollTest is Test {
-    DiceGame public diceGame;
-    RiggedRoll public riggedRoll;
+    IDiceGame public diceGame;
+    IRiggedRoll public riggedRoll;
     address public deployer;
 
     uint256 constant ROLL_AMOUNT = 0.002 ether;
@@ -17,8 +19,8 @@ contract RiggedRollTest is Test {
         vm.deal(deployer, 100 ether);
 
         vm.startPrank(deployer);
-        diceGame = new DiceGame{ value: 0.05 ether }();
-        riggedRoll = new RiggedRoll(payable(address(diceGame)));
+        diceGame = IDiceGame(address(new DiceGame{ value: 0.05 ether }()));
+        riggedRoll = IRiggedRoll(address(new RiggedRoll(payable(address(diceGame)))));
         vm.stopPrank();
     }
 
@@ -64,7 +66,7 @@ contract RiggedRollTest is Test {
     function test_Checkpoint2_ShouldRevertIfBalanceLessThanRollAmount() public {
         vm.expectRevert(
             abi.encodeWithSelector(
-                bytes4(keccak256("NotEnoughETH(uint256,uint256)")),
+                IRiggedRoll.NotEnoughETH.selector,
                 ROLL_AMOUNT,
                 0
             )
@@ -92,7 +94,7 @@ contract RiggedRollTest is Test {
         bool foundWinner = false;
         for (uint256 i = 0; i < entries.length; i++) {
             // Roll event: Roll(address indexed player, uint256 amount, uint256 roll)
-            if (entries[i].topics[0] == keccak256("Roll(address,uint256,uint256)")) {
+            if (entries[i].topics[0] == IDiceGame.Roll.selector) {
                 (uint256 amount, uint256 roll) = abi.decode(entries[i].data, (uint256, uint256));
                 assertEq(entries[i].topics[1], bytes32(uint256(uint160(address(riggedRoll)))), "Player should be RiggedRoll");
                 assertEq(amount, ROLL_AMOUNT, "Amount should be roll amount");
@@ -100,7 +102,7 @@ contract RiggedRollTest is Test {
                 foundRoll = true;
             }
             // Winner event
-            if (entries[i].topics[0] == keccak256("Winner(address,uint256)")) {
+            if (entries[i].topics[0] == IDiceGame.Winner.selector) {
                 foundWinner = true;
             }
         }
@@ -115,7 +117,7 @@ contract RiggedRollTest is Test {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                bytes4(keccak256("NotWinningRoll(uint256)")),
+                IRiggedRoll.NotWinningRoll.selector,
                 expectedRoll
             )
         );
@@ -148,7 +150,7 @@ contract RiggedRollTest is Test {
         vm.prank(deployer);
         vm.expectRevert(
             abi.encodeWithSelector(
-                bytes4(keccak256("InsufficientBalance(uint256,uint256)")),
+                IRiggedRoll.InsufficientBalance.selector,
                 tooMuch,
                 riggedRollBalance
             )

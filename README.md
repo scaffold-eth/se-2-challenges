@@ -226,9 +226,26 @@ function riggedRoll() external {
 
 🔍 Run the following command to check if you implemented the rigged roll logic correctly:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint2"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint2"
+```
+
+</Tab>
+</Tabs>
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests:
 
@@ -319,9 +336,26 @@ function withdraw(address _addr, uint256 _amount) external onlyOwner {
 
 🔍 Run the following command to check if you implemented the withdraw function correctly:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint3"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint3"
+```
+
+</Tab>
+</Tabs>
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests:
 

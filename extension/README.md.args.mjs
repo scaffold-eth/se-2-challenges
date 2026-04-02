@@ -178,7 +178,7 @@ ${solidityFramework === "hardhat" ? `🚀 To deploy your RiggedRoll contract, un
 🔍 Run the following command to check if you implemented the rigged roll logic correctly:
 
 \`\`\`shell
-yarn test --grep "Checkpoint2"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"
 \`\`\`
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/RiggedRoll.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
@@ -237,7 +237,7 @@ function withdraw(address _addr, uint256 _amount) external onlyOwner {
 🔍 Run the following command to check if you implemented the withdraw function correctly:
 
 \`\`\`shell
-yarn test --grep "Checkpoint3"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"
 \`\`\`
 
 ✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/RiggedRoll.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
