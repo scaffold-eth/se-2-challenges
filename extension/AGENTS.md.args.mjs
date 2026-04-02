@@ -69,10 +69,10 @@ yarn deploy --reset
 
 # Testing (checkpoint-based)
 yarn test                       # Run all challenge tests
-yarn test --grep "Checkpoint1"  # Test YourToken minting
-yarn test --grep "Checkpoint2"  # Test buyTokens
-yarn test --grep "Checkpoint3"  # Test withdraw (onlyOwner)
-yarn test --grep "Checkpoint4"  # Test sellTokens (approve + sell flow)
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint1"  # Test YourToken minting
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"  # Test buyTokens
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"  # Test withdraw (onlyOwner)
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint4"  # Test sellTokens (approve + sell flow)
 
 # Code quality
 yarn lint           # Lint both packages
@@ -199,7 +199,7 @@ The grading tests (\`packages/${solidityFramework}/test/${solidityFramework === 
 - **Checkpoint 3**: \`withdraw\` is \`onlyOwner\`: non-owner reverts, owner receives ETH
 - **Checkpoint 4**: \`sellTokens\` works: approve + sell flow, emits \`SellTokens\`, handles errors
 
-Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`yarn test\` for all or \`yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "CheckpointN"\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 

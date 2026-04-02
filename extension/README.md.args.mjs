@@ -124,7 +124,7 @@ ${solidityFramework === "hardhat" ? `  - Update \`FRONTEND_ADDRESS\` in \`packag
 🔍 Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint1"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint1"
 \`\`\`
 
 ---
@@ -231,7 +231,7 @@ ${solidityFramework === "hardhat" ? `Edit \`packages/hardhat/deploy/01_deploy_ve
 🔍 Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint2"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"
 \`\`\`
 
 ---
@@ -307,7 +307,7 @@ Deploy the updated contract with \`yarn deploy --reset\` and then go test it out
 🔍 Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint3"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"
 \`\`\`
 
 ---
@@ -425,7 +425,7 @@ function sellTokens(uint256 amount) external {
 🔍 Run:
 
 \`\`\`shell
-yarn test --grep "Checkpoint4"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint4"
 \`\`\`
 
 ---

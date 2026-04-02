@@ -132,7 +132,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/YourToken.sol"
         foundry: "packages/foundry/contracts/YourToken.sol"
-      test: "yarn test --grep 'Checkpoint1'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint1'"
+        foundry: "yarn test --match-test 'Checkpoint1'"
       hints:
         - "Add a single line inside the constructor body: `_mint(msg.sender, 1000 * 10 ** 18);`"
         - |
@@ -273,7 +275,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Vendor.sol"
         foundry: "packages/foundry/contracts/Vendor.sol"
-      test: "yarn test --grep 'Checkpoint2'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint2'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - "Start with input validation: `if (msg.value == 0) revert InvalidEthAmount();`. Then calculate, check balance, transfer, emit."
         - |
@@ -423,7 +427,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Vendor.sol"
         foundry: "packages/foundry/contracts/Vendor.sol"
-      test: "yarn test --grep 'Checkpoint3'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint3'"
+        foundry: "yarn test --match-test 'Checkpoint3'"
       hints:
         - "Use `owner()` as the recipient, `address(this).balance` as the amount. Save the balance before sending so the error has the right value."
         - |
@@ -575,7 +581,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Vendor.sol"
         foundry: "packages/foundry/contracts/Vendor.sol"
-      test: "yarn test --grep 'Checkpoint4'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint4'"
+        foundry: "yarn test --match-test 'Checkpoint4'"
       hints:
         - "Validate first (`amount == 0`), then calculate ETH, check vendor ETH balance, transferFrom tokens, send ETH, emit event."
         - |

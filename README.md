@@ -166,9 +166,26 @@ constructor() ERC20("Gold", "GLD") {
 
 🔍 Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint1"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint1"
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -299,9 +316,26 @@ Edit `packages/foundry/script/DeployYourToken.s.sol` and uncomment the lines tha
 
 🔍 Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint2"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint2"
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -377,9 +411,26 @@ Deploy the updated contract with `yarn deploy --reset` and then go test it out b
 
 🔍 Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint3"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint3"
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -494,9 +545,26 @@ function sellTokens(uint256 amount) external {
 
 🔍 Run:
 
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
 ```shell
 yarn test --grep "Checkpoint4"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+```shell
+yarn test --match-test "Checkpoint4"
+```
+
+</Tab>
+</Tabs>
 
 ---
 

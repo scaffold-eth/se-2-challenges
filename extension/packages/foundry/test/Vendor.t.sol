@@ -2,12 +2,14 @@
 pragma solidity ^0.8.20;
 
 import { Test } from "forge-std/Test.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IVendor } from "../contracts/IVendor.sol";
 import { YourToken } from "../contracts/YourToken.sol";
 import { Vendor } from "../contracts/Vendor.sol";
 
 contract VendorTest is Test {
-    YourToken public yourToken;
-    Vendor public vendor;
+    IERC20 public yourToken;
+    IVendor public vendor;
     address public deployer;
     address public user;
 
@@ -19,8 +21,9 @@ contract VendorTest is Test {
         user = makeAddr("user");
         vm.deal(user, 100 ether);
 
-        yourToken = new YourToken();
-        vendor = new Vendor(address(yourToken));
+        YourToken tokenImpl = new YourToken();
+        yourToken = IERC20(address(tokenImpl));
+        vendor = IVendor(address(new Vendor(address(yourToken))));
 
         // Seed vendor with tokens
         yourToken.transfer(address(vendor), INITIAL_SUPPLY);
@@ -32,13 +35,13 @@ contract VendorTest is Test {
 
     function test_Checkpoint1_MintsExactly1000TokensToDeployer() public {
         // Deploy a fresh token to test initial state
-        YourToken freshToken = new YourToken();
+        IERC20 freshToken = IERC20(address(new YourToken()));
         assertEq(freshToken.totalSupply(), INITIAL_SUPPLY);
         assertEq(freshToken.balanceOf(address(this)), INITIAL_SUPPLY);
     }
 
     function test_Checkpoint1_CanTransferTokensAndBalanceUpdates() public {
-        YourToken freshToken = new YourToken();
+        IERC20 freshToken = IERC20(address(new YourToken()));
         uint256 amount = 10 ether;
 
         freshToken.transfer(user, amount);
@@ -57,7 +60,7 @@ contract VendorTest is Test {
 
     function test_Checkpoint2_BuyTokensRevertsOn0Eth() public {
         vm.prank(user);
-        vm.expectRevert(Vendor.InvalidEthAmount.selector);
+        vm.expectRevert(IVendor.InvalidEthAmount.selector);
         vendor.buyTokens{ value: 0 }();
     }
 
@@ -78,7 +81,7 @@ contract VendorTest is Test {
         uint256 expectedTokens = ethToSpend * TOKENS_PER_ETH;
 
         vm.expectEmit(true, false, false, true);
-        emit Vendor.BuyTokens(user, ethToSpend, expectedTokens);
+        emit IVendor.BuyTokens(user, ethToSpend, expectedTokens);
 
         vm.prank(user);
         vendor.buyTokens{ value: ethToSpend }();
@@ -86,13 +89,13 @@ contract VendorTest is Test {
 
     function test_Checkpoint2_RevertsIfVendorLacksTokens() public {
         // Deploy a vendor with no tokens
-        Vendor emptyVendor = new Vendor(address(yourToken));
+        IVendor emptyVendor = IVendor(address(new Vendor(address(yourToken))));
         uint256 ethToSpend = 1 ether;
         uint256 requiredTokens = ethToSpend * TOKENS_PER_ETH;
 
         vm.prank(user);
         vm.expectRevert(
-            abi.encodeWithSelector(Vendor.InsufficientVendorTokenBalance.selector, 0, requiredTokens)
+            abi.encodeWithSelector(IVendor.InsufficientVendorTokenBalance.selector, 0, requiredTokens)
         );
         emptyVendor.buyTokens{ value: ethToSpend }();
     }
@@ -137,14 +140,14 @@ contract VendorTest is Test {
 
     function test_Checkpoint4_SellTokensRejectsZeroAmount() public {
         vm.prank(user);
-        vm.expectRevert(Vendor.InvalidTokenAmount.selector);
+        vm.expectRevert(IVendor.InvalidTokenAmount.selector);
         vendor.sellTokens(0);
     }
 
     function test_Checkpoint4_SellTokensRevertsIfVendorLacksEth() public {
         // Give user tokens directly
-        YourToken freshToken = new YourToken();
-        Vendor noEthVendor = new Vendor(address(freshToken));
+        IERC20 freshToken = IERC20(address(new YourToken()));
+        IVendor noEthVendor = IVendor(address(new Vendor(address(freshToken))));
         freshToken.transfer(user, 10 ether);
 
         uint256 amountToSell = 10 ether;
@@ -154,7 +157,7 @@ contract VendorTest is Test {
         freshToken.approve(address(noEthVendor), amountToSell);
 
         vm.expectRevert(
-            abi.encodeWithSelector(Vendor.InsufficientVendorEthBalance.selector, 0, expectedEth)
+            abi.encodeWithSelector(IVendor.InsufficientVendorEthBalance.selector, 0, expectedEth)
         );
         noEthVendor.sellTokens(amountToSell);
         vm.stopPrank();
@@ -193,7 +196,7 @@ contract VendorTest is Test {
         yourToken.approve(address(vendor), amountToSell);
 
         vm.expectEmit(true, false, false, true);
-        emit Vendor.SellTokens(user, amountToSell, expectedEth);
+        emit IVendor.SellTokens(user, amountToSell, expectedEth);
 
         vendor.sellTokens(amountToSell);
         vm.stopPrank();
