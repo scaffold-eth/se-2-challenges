@@ -713,7 +713,7 @@ Run the `yarn verify --network your_network` command to verify your contracts on
 
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedrunEthereum.com](https://speedrunethereum.com).
 
-## Checkpoint 10: Deeper Understanding and Next Steps
+## Checkpoint 9: Deeper Understanding and Next Steps
 
 🎉 So you have built a functioning DEX. What an accomplishment! Now you have great context to begin to understand different DEX designs. Go research the latest DEX designs and their improvements.
 
