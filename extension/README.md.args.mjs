@@ -374,7 +374,7 @@ Scroll down to the functions **\`getVotingData()\`** and **\`getVoterData(addres
 Then run:
 
 \`\`\`javascript
-${isFoundry ? "yarn foundry:test --match-test test_Checkpoint2" : "yarn test --grep \"Checkpoint2\""}
+yarn test ${isFoundry ? '--match-test' : '--grep'} "Checkpoint2"
 \`\`\`
 
 ### 🚀 Tests Passed? You’re Almost There!
@@ -1129,7 +1129,7 @@ function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes3
 Once implemented, run your tests to make sure everything works:
 
 \`\`\`javascript
-${isFoundry ? "yarn foundry:test --match-test test_Checkpoint6" : "yarn test --grep \"Checkpoint6\""}
+yarn test ${isFoundry ? '--match-test' : '--grep'} "Checkpoint6"
 \`\`\`
 
 ### **✅ Tests Passed? You're So Close!**

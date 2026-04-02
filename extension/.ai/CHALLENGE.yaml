@@ -174,7 +174,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Voting.sol"
         foundry: "packages/foundry/contracts/Voting.sol"
-      test: "yarn test --grep 'Checkpoint2'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint2'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - "The two guard checks use existing state: `s_voters` (allowlist) and the new `s_hasRegistered` mapping."
         - |
@@ -726,7 +728,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Voting.sol"
         foundry: "packages/foundry/contracts/Voting.sol"
-      test: "yarn test --grep 'Checkpoint6'"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint6'"
+        foundry: "yarn test --match-test 'Checkpoint6'"
       hints:
         - "Don't forget the setup steps: replace Verifier.sol, update the deploy script, uncomment the import, add the two state variables, and initialize `i_verifier` in the constructor."
         - |

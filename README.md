@@ -389,7 +389,7 @@ yarn test --grep "Checkpoint2"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test test_Checkpoint2
+yarn test --match-test "Checkpoint2"
 ```
 
 </Tab>
@@ -1169,7 +1169,7 @@ yarn test --grep "Checkpoint6"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test test_Checkpoint6
+yarn test --match-test "Checkpoint6"
 ```
 
 </Tab>

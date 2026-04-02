@@ -100,7 +100,7 @@ yarn start          # Start Next.js frontend at http://localhost:3000
 yarn deploy --reset
 
 # Testing
-${isFoundry ? `yarn foundry:test   # Run all challenge tests` : `yarn test           # Run all challenge tests`}
+yarn test           # Run all challenge tests
 
 # Circuit compilation (requires Nargo CLI)
 cd packages/circuits
@@ -328,7 +328,7 @@ The grading tests (\`packages/${contractsDir}/test/${isFoundry ? "Voting.t.sol" 
 
 Tests use \`VerifierMock\` with configurable verification behavior. The mock's \`setExpectedInputs(nullifier, root, vote, depth)\` validates the exact public inputs array passed to \`verify()\`.
 
-Run with \`${isFoundry ? "yarn foundry:test" : "yarn test"}\`. These same tests are used by the SpeedRunEthereum autograder.
+Run with \`yarn test\`. These same tests are used by the SpeedRunEthereum autograder.
 
 ## Deployment Checklist (Testnet)
 

@@ -2,12 +2,13 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "forge-std/Test.sol";
+import "../contracts/IVoting.sol";
 import "../contracts/Voting.sol";
 import "../contracts/Verifier.sol";
 import "../contracts/mocks/VerifierMock.sol";
 
 contract VotingCheckpoint2Test is Test {
-    Voting public voting;
+    IVoting public voting;
     address public owner;
     address public alice;
     address public bob;
@@ -18,7 +19,7 @@ contract VotingCheckpoint2Test is Test {
         bob = makeAddr("bob");
 
         vm.prank(owner);
-        voting = new Voting(owner, address(0), "Should we build zk apps?");
+        voting = IVoting(address(new Voting(owner, address(0), "Should we build zk apps?")));
     }
 
     function test_Checkpoint2_AllowsOnlyAllowlistedVotersToRegister() public {
@@ -32,7 +33,7 @@ contract VotingCheckpoint2Test is Test {
 
         uint256 commitment = 111;
         vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSelector(Voting.Voting__NotAllowedToVote.selector));
+        vm.expectRevert(abi.encodeWithSelector(IVoting.Voting__NotAllowedToVote.selector));
         voting.register(commitment);
     }
 
@@ -53,7 +54,7 @@ contract VotingCheckpoint2Test is Test {
         voting.register(duplicateCommitment);
 
         vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSelector(Voting.Voting__CommitmentAlreadyAdded.selector, duplicateCommitment));
+        vm.expectRevert(abi.encodeWithSelector(IVoting.Voting__CommitmentAlreadyAdded.selector, duplicateCommitment));
         voting.register(duplicateCommitment);
     }
 
@@ -70,7 +71,7 @@ contract VotingCheckpoint2Test is Test {
         voting.register(333);
 
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(Voting.Voting__NotAllowedToVote.selector));
+        vm.expectRevert(abi.encodeWithSelector(IVoting.Voting__NotAllowedToVote.selector));
         voting.register(444);
     }
 
@@ -107,7 +108,7 @@ contract VotingCheckpoint2Test is Test {
         uint256 commitment = 666;
 
         vm.expectEmit(false, false, false, true);
-        emit Voting.NewLeaf(0, commitment);
+        emit IVoting.NewLeaf(0, commitment);
 
         vm.prank(alice);
         voting.register(commitment);
@@ -115,7 +116,7 @@ contract VotingCheckpoint2Test is Test {
 }
 
 contract VotingCheckpoint6Test is Test {
-    Voting public voting;
+    IVoting public voting;
     VerifierMock public verifier;
     address public owner;
     address public alice;
@@ -131,7 +132,7 @@ contract VotingCheckpoint6Test is Test {
         verifier = new VerifierMock();
 
         vm.prank(owner);
-        voting = new Voting(owner, address(verifier), "Question?");
+        voting = IVoting(address(new Voting(owner, address(verifier), "Question?")));
 
         // Allowlist and register alice to set a non-zero root
         address[] memory voters = new address[](1);
@@ -163,7 +164,7 @@ contract VotingCheckpoint6Test is Test {
         voting.vote(dummyProof, nullifier, rootAfter, yesVote, depthAfter);
 
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(Voting.Voting__NullifierHashAlreadyUsed.selector, nullifier));
+        vm.expectRevert(abi.encodeWithSelector(IVoting.Voting__NullifierHashAlreadyUsed.selector, nullifier));
         voting.vote(dummyProof, nullifier, rootAfter, yesVote, depthAfter);
     }
 
@@ -175,7 +176,7 @@ contract VotingCheckpoint6Test is Test {
         verifier.setShouldVerify(false);
 
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(Voting.Voting__InvalidProof.selector));
+        vm.expectRevert(abi.encodeWithSelector(IVoting.Voting__InvalidProof.selector));
         voting.vote(dummyProof, nullifier, rootAfter, yesVote, depthAfter);
     }
 
@@ -230,7 +231,7 @@ contract VotingCheckpoint6Test is Test {
         verifier.setShouldVerify(true);
 
         vm.expectEmit(true, true, false, false);
-        emit Voting.VoteCast(nullifier, alice, true, block.timestamp, 1, 0);
+        emit IVoting.VoteCast(nullifier, alice, true, block.timestamp, 1, 0);
 
         vm.prank(alice);
         voting.vote(proof, nullifier, rootAfter, yes, depthAfter);
@@ -246,7 +247,7 @@ contract VotingCheckpoint6Test is Test {
         verifier.setShouldVerify(true);
 
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(Voting.Voting__EmptyTree.selector));
+        vm.expectRevert(abi.encodeWithSelector(IVoting.Voting__EmptyTree.selector));
         voting.vote(proof, nullifier, emptyRoot, yes, depthAfter);
     }
 
@@ -260,7 +261,7 @@ contract VotingCheckpoint6Test is Test {
         verifier.setShouldVerify(true);
 
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(Voting.Voting__InvalidRoot.selector));
+        vm.expectRevert(abi.encodeWithSelector(IVoting.Voting__InvalidRoot.selector));
         voting.vote(proof, nullifier, invalidRoot, yes, depthAfter);
     }
 }
