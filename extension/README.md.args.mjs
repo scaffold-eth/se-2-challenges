@@ -335,7 +335,7 @@ constructor(
 Run the following command to check if you have implemented all variables and checks correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint2"' : 'yarn foundry:test --match-test "test_Checkpoint2"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint2"' : 'yarn test --match-test "Checkpoint2"'}
 \`\`\`
 
 > 🚨 Before we deploy the contract we need to finish implementing the constructor in the next checkpoint 3.
@@ -532,7 +532,7 @@ constructor(
 Run the following command to check if you have implemented all variables and checks correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint3"' : 'yarn foundry:test --match-test "test_Checkpoint3"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint3"' : 'yarn test --match-test "Checkpoint3"'}
 \`\`\`
 
 ### ✅ Tests Passed? You're So Close!
@@ -657,7 +657,7 @@ function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner {
 Run the following command to check if you have implemented the functions correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint4"' : 'yarn foundry:test --match-test "test_Checkpoint4"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint4"' : 'yarn test --match-test "Checkpoint4"'}
 \`\`\`
 
 ## Checkpoint 5: 🔮 Let the oracle report
@@ -788,7 +788,7 @@ function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner predictionNo
 Run the following command to check if you have implemented the report function for the oracle correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint5"' : 'yarn foundry:test --match-test "test_Checkpoint5"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint5"' : 'yarn test --match-test "Checkpoint5"'}
 \`\`\`
 
 ✅ Tests Passed? You’re Almost There!
@@ -913,7 +913,7 @@ function resolveMarketAndWithdraw() external onlyOwner predictionReported return
 Run the following command to check if you have implemented the \`resolveMarketAndWithdraw\` function correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint6"' : 'yarn foundry:test --match-test "test_Checkpoint6"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint6"' : 'yarn test --match-test "Checkpoint6"'}
 \`\`\`
 
 Make sure to redeploy the contract and report the outcome again using the Oracle tab.
@@ -1155,7 +1155,7 @@ function _calculateProbability(uint256 tokensSold, uint256 totalSold) private pu
 Run the following command to check if you have implemented all the functions correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint7"' : 'yarn foundry:test --match-test "test_Checkpoint7"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint7"' : 'yarn test --match-test "Checkpoint7"'}
 \`\`\`
 
 ## Checkpoint 8: 🔁💰 Buy and sell "Yes" or "No" Tokens for ETH
@@ -1354,7 +1354,7 @@ function sellTokensForEth(Outcome _outcome, uint256 _tradingAmount)
 Run the following command to check if you have implemented all the functions correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint8"' : 'yarn foundry:test --match-test "test_Checkpoint8"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint8"' : 'yarn test --match-test "Checkpoint8"'}
 \`\`\`
 
 And then run \`yarn deploy\` to test it in the front-end and see how the probability changes.
@@ -1459,7 +1459,7 @@ function redeemWinningTokens(uint256 _amount) external amountGreaterThanZero(_am
 Run the following command to check if you have implemented the last function for this challenge correctly.
 
 \`\`\`sh
-${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint9"' : 'yarn foundry:test --match-test "test_Checkpoint9"'}
+${solidityFramework === "hardhat" ? 'yarn test --grep "Checkpoint9"' : 'yarn test --match-test "Checkpoint9"'}
 \`\`\`
 
 Then run \`yarn deploy\` to test it on the front-end. Make sure to purchase some winning tokens beforehand and report the race. After that, you should be able to redeem your desired amount.

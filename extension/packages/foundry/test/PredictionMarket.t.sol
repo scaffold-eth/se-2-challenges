@@ -3,10 +3,11 @@ pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
 import "../contracts/PredictionMarket.sol";
+import "../contracts/IPredictionMarket.sol";
 import "../contracts/PredictionMarketToken.sol";
 
 contract PredictionMarketTest is Test {
-    PredictionMarket public predictionMarket;
+    IPredictionMarket public predictionMarket;
     PredictionMarketToken public yesToken;
     PredictionMarketToken public noToken;
 
@@ -35,17 +36,17 @@ contract PredictionMarketTest is Test {
         vm.deal(redeemer, 100 ether);
 
         vm.prank(owner);
-        predictionMarket = new PredictionMarket{value: INITIAL_LIQUIDITY}(
+        predictionMarket = IPredictionMarket(address(new PredictionMarket{value: INITIAL_LIQUIDITY}(
             owner,
             oracle,
             "Test Question",
             INITIAL_TOKEN_VALUE,
             INITIAL_PROBABILITY,
             PERCENTAGE_LOCKED
-        );
+        )));
 
-        yesToken = PredictionMarketToken(address(predictionMarket.i_yesToken()));
-        noToken = PredictionMarketToken(address(predictionMarket.i_noToken()));
+        yesToken = PredictionMarketToken(predictionMarket.i_yesToken());
+        noToken = PredictionMarketToken(predictionMarket.i_noToken());
     }
 
     // ============================================================
@@ -53,7 +54,7 @@ contract PredictionMarketTest is Test {
     // ============================================================
 
     function test_Checkpoint2_RevertWhenNoETHProvided() public {
-        vm.expectRevert(PredictionMarket.PredictionMarket__MustProvideETHForInitialLiquidity.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__MustProvideETHForInitialLiquidity.selector);
         vm.prank(owner);
         new PredictionMarket{value: 0}(
             owner, oracle, "Test Question", INITIAL_TOKEN_VALUE, INITIAL_PROBABILITY, PERCENTAGE_LOCKED
@@ -62,14 +63,14 @@ contract PredictionMarketTest is Test {
 
     function test_Checkpoint2_RevertWhenInvalidProbability() public {
         // probability = 0
-        vm.expectRevert(PredictionMarket.PredictionMarket__InvalidProbability.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__InvalidProbability.selector);
         vm.prank(owner);
         new PredictionMarket{value: INITIAL_LIQUIDITY}(
             owner, oracle, "Test Question", INITIAL_TOKEN_VALUE, 0, PERCENTAGE_LOCKED
         );
 
         // probability = 100
-        vm.expectRevert(PredictionMarket.PredictionMarket__InvalidProbability.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__InvalidProbability.selector);
         vm.prank(owner);
         new PredictionMarket{value: INITIAL_LIQUIDITY}(
             owner, oracle, "Test Question", INITIAL_TOKEN_VALUE, 100, PERCENTAGE_LOCKED
@@ -78,14 +79,14 @@ contract PredictionMarketTest is Test {
 
     function test_Checkpoint2_RevertWhenInvalidPercentageToLock() public {
         // percentageToLock = 0
-        vm.expectRevert(PredictionMarket.PredictionMarket__InvalidPercentageToLock.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__InvalidPercentageToLock.selector);
         vm.prank(owner);
         new PredictionMarket{value: INITIAL_LIQUIDITY}(
             owner, oracle, "Test Question", INITIAL_TOKEN_VALUE, INITIAL_PROBABILITY, 0
         );
 
         // percentageToLock = 100
-        vm.expectRevert(PredictionMarket.PredictionMarket__InvalidPercentageToLock.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__InvalidPercentageToLock.selector);
         vm.prank(owner);
         new PredictionMarket{value: INITIAL_LIQUIDITY}(
             owner, oracle, "Test Question", INITIAL_TOKEN_VALUE, INITIAL_PROBABILITY, 100
@@ -100,9 +101,9 @@ contract PredictionMarketTest is Test {
         uint256 liquidity = 1 ether;
 
         vm.prank(owner);
-        PredictionMarket pm = new PredictionMarket{value: liquidity}(
+        IPredictionMarket pm = IPredictionMarket(address(new PredictionMarket{value: liquidity}(
             owner, oracle, question, tokenValue, probability, pctLocked
-        );
+        )));
 
         assertEq(pm.i_oracle(), oracle);
         assertEq(pm.s_question(), question);
@@ -124,12 +125,12 @@ contract PredictionMarketTest is Test {
         uint256 liquidity = 1 ether;
 
         vm.prank(owner);
-        PredictionMarket pm = new PredictionMarket{value: liquidity}(
+        IPredictionMarket pm = IPredictionMarket(address(new PredictionMarket{value: liquidity}(
             owner, oracle, question, tokenValue, probability, pctLocked
-        );
+        )));
 
-        PredictionMarketToken yt = PredictionMarketToken(address(pm.i_yesToken()));
-        PredictionMarketToken nt = PredictionMarketToken(address(pm.i_noToken()));
+        PredictionMarketToken yt = PredictionMarketToken(pm.i_yesToken());
+        PredictionMarketToken nt = PredictionMarketToken(pm.i_noToken());
 
         uint256 initialTokenAmount = (liquidity * PRECISION) / tokenValue; // 100 tokens
 
@@ -145,12 +146,12 @@ contract PredictionMarketTest is Test {
         uint256 liquidity = 1 ether;
 
         vm.prank(owner);
-        PredictionMarket pm = new PredictionMarket{value: liquidity}(
+        IPredictionMarket pm = IPredictionMarket(address(new PredictionMarket{value: liquidity}(
             owner, oracle, question, tokenValue, probability, pctLocked
-        );
+        )));
 
-        PredictionMarketToken yt = PredictionMarketToken(address(pm.i_yesToken()));
-        PredictionMarketToken nt = PredictionMarketToken(address(pm.i_noToken()));
+        PredictionMarketToken yt = PredictionMarketToken(pm.i_yesToken());
+        PredictionMarketToken nt = PredictionMarketToken(pm.i_noToken());
 
         uint256 initialTokenAmount = (liquidity * PRECISION) / tokenValue;
         uint256 initialYesAmountLocked = (initialTokenAmount * uint256(probability) * uint256(pctLocked) * 2) / 10000;
@@ -210,7 +211,7 @@ contract PredictionMarketTest is Test {
 
         vm.prank(owner);
         vm.expectEmit(true, false, false, true);
-        emit PredictionMarket.LiquidityAdded(owner, liquidityToAdd, expectedTokenAmount);
+        emit IPredictionMarket.LiquidityAdded(owner, liquidityToAdd, expectedTokenAmount);
         predictionMarket.addLiquidity{value: liquidityToAdd}();
 
         uint256 ethToRemove = 3 ether;
@@ -218,7 +219,7 @@ contract PredictionMarketTest is Test {
 
         vm.prank(owner);
         vm.expectEmit(true, false, false, true);
-        emit PredictionMarket.LiquidityRemoved(owner, ethToRemove, expectedRemoveTokenAmount);
+        emit IPredictionMarket.LiquidityRemoved(owner, ethToRemove, expectedRemoveTokenAmount);
         predictionMarket.removeLiquidity(ethToRemove);
     }
 
@@ -228,37 +229,37 @@ contract PredictionMarketTest is Test {
 
     function test_Checkpoint5_RevertAddLiquidityAfterReport() public {
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         vm.prank(owner);
-        vm.expectRevert(PredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
         predictionMarket.addLiquidity{value: 1 ether}();
     }
 
     function test_Checkpoint5_RevertRemoveLiquidityAfterReport() public {
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         vm.prank(owner);
-        vm.expectRevert(PredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
         predictionMarket.removeLiquidity(1 ether);
     }
 
     function test_Checkpoint5_RevertDoubleReport() public {
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         vm.prank(oracle);
-        vm.expectRevert(PredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
     }
 
     function test_Checkpoint5_RevertNonOracleReport() public {
         address nonOracle = makeAddr("nonOracle");
 
         vm.prank(nonOracle);
-        vm.expectRevert(PredictionMarket.PredictionMarket__OnlyOracleCanReport.selector);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__OnlyOracleCanReport.selector);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
     }
 
     function test_Checkpoint5_SetsWinningTokenAndIsReported() public {
@@ -266,42 +267,42 @@ contract PredictionMarketTest is Test {
 
         // Report YES
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         assertEq(predictionMarket.s_isReported(), true);
         assertEq(predictionMarket.s_winningToken(), address(yesToken));
 
         // Deploy new instance for NO test
         vm.prank(owner);
-        PredictionMarket pm2 = new PredictionMarket{value: INITIAL_LIQUIDITY}(
+        IPredictionMarket pm2 = IPredictionMarket(address(new PredictionMarket{value: INITIAL_LIQUIDITY}(
             owner, oracle, "Test Question 2", INITIAL_TOKEN_VALUE, INITIAL_PROBABILITY, PERCENTAGE_LOCKED
-        );
+        )));
 
         assertEq(pm2.s_isReported(), false);
 
         vm.prank(oracle);
-        pm2.report(PredictionMarket.Outcome.NO);
+        pm2.report(IPredictionMarket.Outcome.NO);
 
         assertEq(pm2.s_isReported(), true);
-        assertEq(pm2.s_winningToken(), address(pm2.i_noToken()));
+        assertEq(pm2.s_winningToken(), pm2.i_noToken());
     }
 
     function test_Checkpoint5_EmitsMarketReportedEvent() public {
         vm.prank(oracle);
         vm.expectEmit(true, false, false, true);
-        emit PredictionMarket.MarketReported(oracle, PredictionMarket.Outcome.YES, address(yesToken));
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        emit IPredictionMarket.MarketReported(oracle, IPredictionMarket.Outcome.YES, address(yesToken));
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         // Deploy new instance for NO event test
         vm.prank(owner);
-        PredictionMarket pm2 = new PredictionMarket{value: INITIAL_LIQUIDITY}(
+        IPredictionMarket pm2 = IPredictionMarket(address(new PredictionMarket{value: INITIAL_LIQUIDITY}(
             owner, oracle, "Test Question 2", INITIAL_TOKEN_VALUE, INITIAL_PROBABILITY, PERCENTAGE_LOCKED
-        );
+        )));
 
         vm.prank(oracle);
         vm.expectEmit(true, false, false, true);
-        emit PredictionMarket.MarketReported(oracle, PredictionMarket.Outcome.NO, address(pm2.i_noToken()));
-        pm2.report(PredictionMarket.Outcome.NO);
+        emit IPredictionMarket.MarketReported(oracle, IPredictionMarket.Outcome.NO, pm2.i_noToken());
+        pm2.report(IPredictionMarket.Outcome.NO);
     }
 
     // ============================================================
@@ -310,7 +311,7 @@ contract PredictionMarketTest is Test {
 
     function test_Checkpoint6_RevertResolveBeforeReport() public {
         vm.prank(owner);
-        vm.expectRevert(PredictionMarket.PredictionMarket__PredictionNotReported.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__PredictionNotReported.selector);
         predictionMarket.resolveMarketAndWithdraw();
     }
 
@@ -320,7 +321,7 @@ contract PredictionMarketTest is Test {
 
         // Report YES
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         // Calculate expected amounts
         uint256 contractWinningTokens = yesToken.balanceOf(address(predictionMarket));
@@ -354,7 +355,7 @@ contract PredictionMarketTest is Test {
         uint256 lpTradingRevenue = predictionMarket.s_lpTradingRevenue();
 
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         uint256 contractWinningTokens = yesToken.balanceOf(address(predictionMarket));
         uint256 ethFromTokens = (contractWinningTokens * INITIAL_TOKEN_VALUE) / PRECISION;
@@ -375,7 +376,7 @@ contract PredictionMarketTest is Test {
         uint256 initialTokenAmount = (INITIAL_LIQUIDITY * PRECISION) / INITIAL_TOKEN_VALUE;
         uint256 tradingAmount = initialTokenAmount / 10;
 
-        uint256 buyPrice = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, tradingAmount);
+        uint256 buyPrice = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, tradingAmount);
 
         // Calculate expected price
         uint256 currentTokenSoldBefore = initialTokenAmount - yesToken.balanceOf(address(predictionMarket));
@@ -398,7 +399,7 @@ contract PredictionMarketTest is Test {
         uint256 initialTokenAmount = (INITIAL_LIQUIDITY * PRECISION) / INITIAL_TOKEN_VALUE;
         uint256 tradingAmount = initialTokenAmount / 10;
 
-        uint256 sellPrice = predictionMarket.getSellPriceInEth(PredictionMarket.Outcome.YES, tradingAmount);
+        uint256 sellPrice = predictionMarket.getSellPriceInEth(IPredictionMarket.Outcome.YES, tradingAmount);
 
         // Calculate expected price
         uint256 currentTokenSoldBefore = initialTokenAmount - yesToken.balanceOf(address(predictionMarket));
@@ -421,8 +422,8 @@ contract PredictionMarketTest is Test {
         uint256 reserveAmount = yesToken.balanceOf(address(predictionMarket));
         uint256 tooMany = reserveAmount + 1;
 
-        vm.expectRevert(PredictionMarket.PredictionMarket__InsufficientLiquidity.selector);
-        predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, tooMany);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__InsufficientLiquidity.selector);
+        predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, tooMany);
     }
 
     function test_Checkpoint7_ProbabilityWithLiquidityChanges() public {
@@ -453,8 +454,8 @@ contract PredictionMarketTest is Test {
 
         // Small amount to test price calculation
         uint256 smallAmount = 1e15;
-        uint256 yesPrice = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, smallAmount);
-        uint256 noPrice = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.NO, smallAmount);
+        uint256 yesPrice = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, smallAmount);
+        uint256 noPrice = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.NO, smallAmount);
         assertGt(yesPrice, 0);
         assertGt(noPrice, 0);
 
@@ -470,8 +471,8 @@ contract PredictionMarketTest is Test {
         assertEq(newYesReserve, newNoReserve);
 
         // Prices still valid
-        uint256 yesPriceAfter = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, smallAmount);
-        uint256 noPriceAfter = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.NO, smallAmount);
+        uint256 yesPriceAfter = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, smallAmount);
+        uint256 noPriceAfter = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.NO, smallAmount);
         assertGt(yesPriceAfter, 0);
         assertGt(noPriceAfter, 0);
     }
@@ -503,34 +504,34 @@ contract PredictionMarketTest is Test {
 
     function test_Checkpoint8_RevertBuyZeroAmount() public {
         vm.prank(buyer);
-        vm.expectRevert(PredictionMarket.PredictionMarket__AmountMustBeGreaterThanZero.selector);
-        predictionMarket.buyTokensWithETH{value: 1 ether}(PredictionMarket.Outcome.YES, 0);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__AmountMustBeGreaterThanZero.selector);
+        predictionMarket.buyTokensWithETH{value: 1 ether}(IPredictionMarket.Outcome.YES, 0);
     }
 
     function test_Checkpoint8_RevertSellZeroAmount() public {
         vm.prank(buyer);
-        vm.expectRevert(PredictionMarket.PredictionMarket__AmountMustBeGreaterThanZero.selector);
-        predictionMarket.sellTokensForEth(PredictionMarket.Outcome.YES, 0);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__AmountMustBeGreaterThanZero.selector);
+        predictionMarket.sellTokensForEth(IPredictionMarket.Outcome.YES, 0);
     }
 
     function test_Checkpoint8_RevertBuyWithIncorrectETH() public {
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         vm.prank(buyer);
-        vm.expectRevert(PredictionMarket.PredictionMarket__MustSendExactETHAmount.selector);
-        predictionMarket.buyTokensWithETH{value: requiredEth + 1}(PredictionMarket.Outcome.YES, amountToBuy);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__MustSendExactETHAmount.selector);
+        predictionMarket.buyTokensWithETH{value: requiredEth + 1}(IPredictionMarket.Outcome.YES, amountToBuy);
     }
 
     function test_Checkpoint8_BuyTokens() public {
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         uint256 initialBuyerTokens = yesToken.balanceOf(buyer);
         uint256 initialContractBalance = address(predictionMarket).balance;
 
         vm.prank(buyer);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         assertEq(yesToken.balanceOf(buyer), initialBuyerTokens + amountToBuy);
         assertEq(address(predictionMarket).balance, initialContractBalance + requiredEth);
@@ -539,9 +540,9 @@ contract PredictionMarketTest is Test {
     function test_Checkpoint8_SellTokens() public {
         // First buy some tokens
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
         vm.prank(seller);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Approve tokens
         vm.prank(seller);
@@ -551,10 +552,10 @@ contract PredictionMarketTest is Test {
         uint256 initialContractBalance = address(predictionMarket).balance;
         uint256 initialSellerTokens = yesToken.balanceOf(seller);
 
-        uint256 ethToReceive = predictionMarket.getSellPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 ethToReceive = predictionMarket.getSellPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         vm.prank(seller);
-        predictionMarket.sellTokensForEth(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.sellTokensForEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         assertEq(yesToken.balanceOf(seller), initialSellerTokens - amountToBuy);
         assertEq(seller.balance - initialSellerBalance, ethToReceive);
@@ -564,9 +565,9 @@ contract PredictionMarketTest is Test {
     function test_Checkpoint8_RevertSellMoreThanOwned() public {
         // Buy some tokens
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
         vm.prank(seller);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Approve
         vm.prank(seller);
@@ -576,74 +577,74 @@ contract PredictionMarketTest is Test {
         vm.prank(seller);
         vm.expectRevert(
             abi.encodeWithSelector(
-                PredictionMarket.PredictionMarket__InsufficientBalance.selector,
+                IPredictionMarket.PredictionMarket__InsufficientBalance.selector,
                 amountToBuy + 1,
                 amountToBuy
             )
         );
-        predictionMarket.sellTokensForEth(PredictionMarket.Outcome.YES, amountToBuy + 1);
+        predictionMarket.sellTokensForEth(IPredictionMarket.Outcome.YES, amountToBuy + 1);
     }
 
     function test_Checkpoint8_RevertSellWithoutApproval() public {
         // Buy some tokens
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
         vm.prank(seller);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Try to sell without approval
         vm.prank(seller);
         vm.expectRevert(
             abi.encodeWithSelector(
-                PredictionMarket.PredictionMarket__InsufficientAllowance.selector,
+                IPredictionMarket.PredictionMarket__InsufficientAllowance.selector,
                 amountToBuy,
                 0
             )
         );
-        predictionMarket.sellTokensForEth(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.sellTokensForEth(IPredictionMarket.Outcome.YES, amountToBuy);
     }
 
     function test_Checkpoint8_EmitsBuySellEvents() public {
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Buy and check event
         vm.prank(buyer);
         vm.expectEmit(true, false, false, true);
-        emit PredictionMarket.TokensPurchased(buyer, PredictionMarket.Outcome.YES, amountToBuy, requiredEth);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        emit IPredictionMarket.TokensPurchased(buyer, IPredictionMarket.Outcome.YES, amountToBuy, requiredEth);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Approve for selling
         vm.prank(buyer);
         yesToken.approve(address(predictionMarket), amountToBuy);
 
-        uint256 ethToReceive = predictionMarket.getSellPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 ethToReceive = predictionMarket.getSellPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Sell and check event
         vm.prank(buyer);
         vm.expectEmit(true, false, false, true);
-        emit PredictionMarket.TokensSold(buyer, PredictionMarket.Outcome.YES, amountToBuy, ethToReceive);
-        predictionMarket.sellTokensForEth(PredictionMarket.Outcome.YES, amountToBuy);
+        emit IPredictionMarket.TokensSold(buyer, IPredictionMarket.Outcome.YES, amountToBuy, ethToReceive);
+        predictionMarket.sellTokensForEth(IPredictionMarket.Outcome.YES, amountToBuy);
     }
 
     function test_Checkpoint8_RevertBuyAfterReport() public {
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         vm.prank(buyer);
-        vm.expectRevert(PredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
     }
 
     function test_Checkpoint8_RevertSellAfterReport() public {
         // Buy first
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
         vm.prank(seller);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Approve
         vm.prank(seller);
@@ -651,27 +652,27 @@ contract PredictionMarketTest is Test {
 
         // Report
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         // Try to sell
         vm.prank(seller);
-        vm.expectRevert(PredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
-        predictionMarket.sellTokensForEth(PredictionMarket.Outcome.YES, amountToBuy);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__PredictionAlreadyReported.selector);
+        predictionMarket.sellTokensForEth(IPredictionMarket.Outcome.YES, amountToBuy);
     }
 
     function test_Checkpoint8_OwnerCannotBuyOrSell() public {
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Owner tries to buy
         vm.prank(owner);
-        vm.expectRevert(PredictionMarket.PredictionMarket__OwnerCannotCall.selector);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__OwnerCannotCall.selector);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Owner tries to sell
         vm.prank(owner);
-        vm.expectRevert(PredictionMarket.PredictionMarket__OwnerCannotCall.selector);
-        predictionMarket.sellTokensForEth(PredictionMarket.Outcome.YES, amountToBuy);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__OwnerCannotCall.selector);
+        predictionMarket.sellTokensForEth(IPredictionMarket.Outcome.YES, amountToBuy);
     }
 
     // ============================================================
@@ -680,38 +681,38 @@ contract PredictionMarketTest is Test {
 
     function test_Checkpoint9_RevertRedeemBeforeReport() public {
         vm.prank(redeemer);
-        vm.expectRevert(PredictionMarket.PredictionMarket__PredictionNotReported.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__PredictionNotReported.selector);
         predictionMarket.redeemWinningTokens(1 ether);
     }
 
     function test_Checkpoint9_RevertRedeemMoreThanOwned() public {
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         vm.prank(redeemer);
-        vm.expectRevert(PredictionMarket.PredictionMarket__InsufficientWinningTokens.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__InsufficientWinningTokens.selector);
         predictionMarket.redeemWinningTokens(1 ether);
     }
 
     function test_Checkpoint9_RevertRedeemZero() public {
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         vm.prank(redeemer);
-        vm.expectRevert(PredictionMarket.PredictionMarket__AmountMustBeGreaterThanZero.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__AmountMustBeGreaterThanZero.selector);
         predictionMarket.redeemWinningTokens(0);
     }
 
     function test_Checkpoint9_RedeemWinningTokens() public {
         // Buy YES tokens
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
         vm.prank(redeemer);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Report YES wins
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         uint256 initialRedeemerBalance = redeemer.balance;
         uint256 initialContractBalance = address(predictionMarket).balance;
@@ -730,28 +731,28 @@ contract PredictionMarketTest is Test {
     function test_Checkpoint9_EmitsRedeemEvent() public {
         // Buy YES tokens
         uint256 amountToBuy = yesToken.balanceOf(address(predictionMarket)) / 10;
-        uint256 requiredEth = predictionMarket.getBuyPriceInEth(PredictionMarket.Outcome.YES, amountToBuy);
+        uint256 requiredEth = predictionMarket.getBuyPriceInEth(IPredictionMarket.Outcome.YES, amountToBuy);
         vm.prank(redeemer);
-        predictionMarket.buyTokensWithETH{value: requiredEth}(PredictionMarket.Outcome.YES, amountToBuy);
+        predictionMarket.buyTokensWithETH{value: requiredEth}(IPredictionMarket.Outcome.YES, amountToBuy);
 
         // Report YES wins
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         uint256 expectedEth = (amountToBuy * INITIAL_TOKEN_VALUE) / PRECISION;
 
         vm.prank(redeemer);
         vm.expectEmit(true, false, false, true);
-        emit PredictionMarket.WinningTokensRedeemed(redeemer, amountToBuy, expectedEth);
+        emit IPredictionMarket.WinningTokensRedeemed(redeemer, amountToBuy, expectedEth);
         predictionMarket.redeemWinningTokens(amountToBuy);
     }
 
     function test_Checkpoint9_OwnerCannotRedeem() public {
         vm.prank(oracle);
-        predictionMarket.report(PredictionMarket.Outcome.YES);
+        predictionMarket.report(IPredictionMarket.Outcome.YES);
 
         vm.prank(owner);
-        vm.expectRevert(PredictionMarket.PredictionMarket__OwnerCannotCall.selector);
+        vm.expectRevert(IPredictionMarket.PredictionMarket__OwnerCannotCall.selector);
         predictionMarket.redeemWinningTokens(1 ether);
     }
 }

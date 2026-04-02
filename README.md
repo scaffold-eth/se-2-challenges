@@ -382,7 +382,7 @@ yarn test --grep "Checkpoint2"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint2"
+yarn test --match-test "Checkpoint2"
 ```
 
 </Tab>
@@ -578,7 +578,7 @@ yarn test --grep "Checkpoint3"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint3"
+yarn test --match-test "Checkpoint3"
 ```
 
 </Tab>
@@ -716,7 +716,7 @@ yarn test --grep "Checkpoint4"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint4"
+yarn test --match-test "Checkpoint4"
 ```
 
 </Tab>
@@ -860,7 +860,7 @@ yarn test --grep "Checkpoint5"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint5"
+yarn test --match-test "Checkpoint5"
 ```
 
 </Tab>
@@ -1009,7 +1009,7 @@ yarn test --grep "Checkpoint6"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint6"
+yarn test --match-test "Checkpoint6"
 ```
 
 </Tab>
@@ -1264,7 +1264,7 @@ yarn test --grep "Checkpoint7"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint7"
+yarn test --match-test "Checkpoint7"
 ```
 
 </Tab>
@@ -1476,7 +1476,7 @@ yarn test --grep "Checkpoint8"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint8"
+yarn test --match-test "Checkpoint8"
 ```
 
 </Tab>
@@ -1594,7 +1594,7 @@ yarn test --grep "Checkpoint9"
 <Tab label="Foundry">
 
 ```sh
-yarn foundry:test --match-test "test_Checkpoint9"
+yarn test --match-test "Checkpoint9"
 ```
 
 </Tab>

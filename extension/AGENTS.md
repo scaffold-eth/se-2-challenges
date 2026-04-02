@@ -228,7 +228,7 @@ The grading tests (`packages/hardhat/test/PredictionMarket.ts`) are organized by
 - **Checkpoint 8**: Buying and selling tokens
 - **Checkpoint 9**: Redeeming winning tokens after resolution
 
-Run with `yarn test` for all or `yarn test --grep "CheckpointN"` for specific checkpoints. These same tests are used by the SpeedRunEthereum autograder.
+Run with `yarn test` for all or `yarn test --grep "CheckpointN"` for specific checkpoints (or `yarn test --match-test "CheckpointN"` for Foundry). These same tests are used by the SpeedRunEthereum autograder.
 
 ## Deployment Checklist (Testnet)
 

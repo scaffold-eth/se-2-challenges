@@ -78,15 +78,15 @@ yarn test --grep "Checkpoint5"  # Test oracle reporting
 yarn test --grep "Checkpoint6"  # Test market resolution + LP withdrawal
 yarn test --grep "Checkpoint7"  # Test pricing/probability calculations
 yarn test --grep "Checkpoint8"  # Test buy/sell tokens
-yarn test --grep "Checkpoint9"  # Test redeeming winning tokens` : `yarn foundry:test                                            # Run all challenge tests
-yarn foundry:test --match-test "testCheckpoint2"              # Test constructor + state variables
-yarn foundry:test --match-test "testCheckpoint3"              # Test token deployment + minting
-yarn foundry:test --match-test "testCheckpoint4"              # Test add/remove liquidity
-yarn foundry:test --match-test "testCheckpoint5"              # Test oracle reporting
-yarn foundry:test --match-test "testCheckpoint6"              # Test market resolution + LP withdrawal
-yarn foundry:test --match-test "testCheckpoint7"              # Test pricing/probability calculations
-yarn foundry:test --match-test "testCheckpoint8"              # Test buy/sell tokens
-yarn foundry:test --match-test "testCheckpoint9"              # Test redeeming winning tokens`}
+yarn test --grep "Checkpoint9"  # Test redeeming winning tokens` : `yarn test                                            # Run all challenge tests
+yarn test --match-test "Checkpoint2"                 # Test constructor + state variables
+yarn test --match-test "Checkpoint3"                 # Test token deployment + minting
+yarn test --match-test "Checkpoint4"                 # Test add/remove liquidity
+yarn test --match-test "Checkpoint5"                 # Test oracle reporting
+yarn test --match-test "Checkpoint6"                 # Test market resolution + LP withdrawal
+yarn test --match-test "Checkpoint7"                 # Test pricing/probability calculations
+yarn test --match-test "Checkpoint8"                 # Test buy/sell tokens
+yarn test --match-test "Checkpoint9"                 # Test redeeming winning tokens`}
 
 # Code quality
 yarn lint           # Lint both packages
@@ -247,7 +247,7 @@ The grading tests (\`${solidityFramework === "hardhat" ? "packages/hardhat/test/
 - **Checkpoint 8**: Buying and selling tokens
 - **Checkpoint 9**: Redeeming winning tokens after resolution
 
-Run with \`${solidityFramework === "hardhat" ? 'yarn test` for all or `yarn test --grep "CheckpointN"' : 'yarn foundry:test` for all or `yarn foundry:test --match-test "testCheckpointN"'}\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`${solidityFramework === "hardhat" ? 'yarn test` for all or `yarn test --grep "CheckpointN"' : 'yarn test` for all or `yarn test --match-test "CheckpointN"'}\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
