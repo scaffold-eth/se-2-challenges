@@ -36,9 +36,9 @@ checkpoints:
       - question: "What does 'non-fungible' mean? Why can't you swap one NFT for another like you can with ETH?"
         concepts: ["unique", "not interchangeable", "one-of-a-kind", "different", "specific"]
         hint: "Think about fungible things like dollars — any dollar is the same as another. But with NFTs, each one is..."
-      - question: "If every NFT has a token ID and an owner, how is that different from just keeping a list in a regular database?"
-        concepts: ["decentralized", "no central authority", "anyone can verify", "on-chain", "trustless"]
-        hint: "Think about who controls a regular database vs who controls the blockchain."
+      - question: "How does an NFT contract keep track of who owns what? What two pieces of information does it store for each token?"
+        concepts: ["token id", "owner", "address", "map", "serial number"]
+        hint: "The context compared token IDs to serial numbers. Each one is linked to..."
 
   - id: 2
     title: "NFTs beyond JPEGs — real-world composability"
