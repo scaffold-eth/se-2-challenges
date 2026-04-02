@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import { Test } from "forge-std/Test.sol";
+import { IMyUSDEngine } from "../contracts/IMyUSDEngine.sol";
 import { MyUSD } from "../contracts/MyUSD.sol";
 import { MyUSDEngine } from "../contracts/MyUSDEngine.sol";
 import { MyUSDStaking } from "../contracts/MyUSDStaking.sol";
@@ -11,7 +12,7 @@ import { RateController } from "../contracts/RateController.sol";
 
 contract MyUSDEngineTest is Test {
     MyUSD public myUSD;
-    MyUSDEngine public engine;
+    IMyUSDEngine public engine;
     MyUSDStaking public staking;
     DEX public dex;
     Oracle public oracle;
@@ -45,7 +46,7 @@ contract MyUSDEngineTest is Test {
         dex = new DEX(address(myUSD));
         oracle = new Oracle(address(dex), ETH_PRICE);
         staking = new MyUSDStaking(address(myUSD), futureEngineAddress, address(rateController));
-        engine = new MyUSDEngine(address(oracle), address(myUSD), address(staking), address(rateController));
+        engine = IMyUSDEngine(address(new MyUSDEngine(address(oracle), address(myUSD), address(staking), address(rateController))));
 
         // Verify addresses match predictions
         assertEq(address(staking), futureStakingAddress, "Staking address mismatch");

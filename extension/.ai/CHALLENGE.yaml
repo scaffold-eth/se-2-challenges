@@ -194,7 +194,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
         foundry: "packages/foundry/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Borrowing Operations'"
+      test:
+        hardhat: "yarn test --grep 'Borrowing Operations'"
+        foundry: "yarn test --match-test 'Borrowing Operations'"
       hints:
         - "Start with addCollateral — it's just a validation, a mapping update, and an event emit."
         - |
@@ -409,7 +411,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
         foundry: "packages/foundry/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Interest Accrual'"
+      test:
+        hardhat: "yarn test --grep 'Interest Accrual'"
+        foundry: "yarn test --match-test 'Interest Accrual'"
       hints:
         - "It's just 3 lines: accrue interest, update the rate, emit the event."
         - |
@@ -510,7 +514,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
         foundry: "packages/foundry/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Repayment Operations'"
+      test:
+        hardhat: "yarn test --grep 'Repayment Operations'"
+        foundry: "yarn test --match-test 'Repayment Operations'"
       hints:
         - |
           For `repayUpTo`, the key is handling overpayment:
@@ -680,7 +686,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
         foundry: "packages/foundry/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Liquidation'"
+      test:
+        hardhat: "yarn test --grep 'Liquidation'"
+        foundry: "yarn test --match-test 'Liquidation'"
       hints:
         - |
           `isLiquidatable` is the same check as `_validatePosition` but returns a bool instead of reverting:
@@ -843,7 +851,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
         foundry: "packages/foundry/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Borrow Rate Management'"
+      test:
+        hardhat: "yarn test --grep 'Borrow Rate Management'"
+        foundry: "yarn test --match-test 'Borrow Rate Management'"
       hints:
         - "You just need to add one line at the top of setBorrowRate: `if (newRate < i_staking.savingsRate()) revert Engine__InvalidBorrowRate();`"
         - |
