@@ -5,11 +5,12 @@ import { Test } from "forge-std/Test.sol";
 import { Corn } from "../contracts/Corn.sol";
 import { CornDEX } from "../contracts/CornDEX.sol";
 import { Lending } from "../contracts/Lending.sol";
+import { ILending } from "../contracts/ILending.sol";
 
 contract LendingTest is Test {
     Corn public cornToken;
     CornDEX public cornDEX;
-    Lending public lending;
+    ILending public lending;
 
     address public owner;
     address public user1;
@@ -34,7 +35,7 @@ contract LendingTest is Test {
         cornToken.approve(address(cornDEX), 1_000_000 ether);
         cornDEX.init{ value: 1_000 ether }(1_000_000 ether);
 
-        lending = new Lending(address(cornDEX), address(cornToken));
+        lending = ILending(address(new Lending(address(cornDEX), address(cornToken))));
         cornToken.mintTo(address(lending), 10_000_000_000_000_000_000_000 ether);
     }
 

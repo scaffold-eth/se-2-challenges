@@ -133,7 +133,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Lending.sol"
         foundry: "packages/foundry/contracts/Lending.sol"
-      test: "yarn test --grep 'Collateral Operations'"
+      test:
+        hardhat: "yarn test --grep 'Collateral Operations'"
+        foundry: "yarn test --match-test 'Collateral'"
       hints:
         - "For `addCollateral`: it's just `s_userCollateral[msg.sender] += msg.value` after the validation check."
         - |
@@ -249,7 +251,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Lending.sol"
         foundry: "packages/foundry/contracts/Lending.sol"
-      test: "yarn test --grep 'Collateral Operations'"
+      test:
+        hardhat: "yarn test --grep 'Collateral Operations'"
+        foundry: "yarn test --match-test 'Collateral'"
       hints:
         - "`calculateCollateralValue` is a one-liner: `return (s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18;`"
         - |
@@ -391,7 +395,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Lending.sol"
         foundry: "packages/foundry/contracts/Lending.sol"
-      test: "yarn test --grep 'Borrowing Operations|Repayment Operations|Collateral Operations'"
+      test:
+        hardhat: "yarn test --grep 'Borrowing Operations|Repayment Operations|Collateral Operations'"
+        foundry: "yarn test --match-test 'Borrowing|Repayment|Collateral'"
       hints:
         - "For `borrowCorn`: update mapping first, validate, then transfer. The order matters — `_validatePosition` checks the new state."
         - |
@@ -528,7 +534,9 @@ checkpoints:
       file:
         hardhat: "packages/hardhat/contracts/Lending.sol"
         foundry: "packages/foundry/contracts/Lending.sol"
-      test: "yarn test --grep 'Liquidation'"
+      test:
+        hardhat: "yarn test --grep 'Liquidation'"
+        foundry: "yarn test --match-test 'Liquidation'"
       hints:
         - "Check `isLiquidatable(user)` first. Then verify `i_corn.balanceOf(msg.sender) >= userDebt`. Use `transferFrom` to pull the CORN from the liquidator."
         - |
