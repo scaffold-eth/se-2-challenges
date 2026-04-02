@@ -1,0 +1,90 @@
+welcome_message: |
+  Welcome to the DEX challenge! You're going to build a decentralized exchange — a contract that lets people swap between ETH and tokens without needing a middleman or an order book.
+
+  Before you start coding, let's understand the ideas behind how automated market makers work, how they price trades, and how liquidity providers make the whole thing possible. Then we'll get you set up locally.
+
+completion_message: |
+  You now understand the core ideas behind decentralized exchanges — how liquidity pools replace order books, how the constant product formula prices trades automatically, how tokens use a two-step permission model, and how liquidity providers deposit and withdraw proportionally.
+
+  Let me know when you're ready to set up the challenge locally and I'll walk you through it step by step.
+
+checkpoints:
+  - id: 1
+    title: "AMMs: replacing the order book"
+    context: |
+      On a traditional exchange like Coinbase or the NYSE, trading works through an order book. Buyers post the price they're willing to pay, sellers post the price they want, and the exchange matches them. This works, but it requires active participants on both sides — if nobody's selling what you want to buy, you're stuck.
+
+      Automated Market Makers (AMMs) take a completely different approach. Instead of matching buyers and sellers, an AMM holds a pool of two assets — say ETH and a token called BAL. Anyone who wants to trade just interacts with this pool directly. You send in ETH, the pool gives you BAL. You send in BAL, the pool gives you ETH.
+
+      The pool always has liquidity available because it's pre-funded by liquidity providers — people who deposit both assets into the pool. In return, they earn a share of the trading fees. It's like a currency exchange booth at an airport: the booth holds reserves of multiple currencies and serves anyone who walks up, adjusting its rates based on how much of each currency it has left.
+
+      Uniswap popularized this model in 2018, and it's now the standard for decentralized trading. The DEX you'll build in this challenge follows the same design: a pool holding ETH and BAL tokens, with a math formula setting the price.
+    questions:
+      - question: "What's the key difference between how a traditional order book exchange and an AMM handle trades?"
+        concepts: [match, buyers, sellers, pool, directly, liquidity, pre-funded, reserves]
+        hint: "Think about what happens on a traditional exchange when there's no seller for what you want to buy. How does an AMM avoid that problem?"
+      - question: "What role do liquidity providers play in making an AMM work, and what do they get in return?"
+        concepts: [deposit, both assets, fund, pool, trading fees, earn, share]
+        hint: "The checkpoint compares it to a currency exchange booth. Who stocks the booth with currency, and why would they bother?"
+
+  - id: 2
+    title: "The constant product formula"
+    context: |
+      So how does the pool decide prices? It uses a beautifully simple formula: x * y = k.
+
+      Here, x is the amount of one asset in the pool (say ETH), y is the amount of the other (BAL tokens), and k is a constant that must stay the same after every trade. When someone sends ETH into the pool, x increases — so y must decrease to keep k constant. The tokens that leave the pool go to the trader.
+
+      The formula automatically adjusts prices based on supply and demand. If lots of people are buying BAL (sending ETH in), the pool's ETH reserve grows while its BAL reserve shrinks. Each subsequent BAL token costs more ETH — the price goes up naturally, with no one setting it.
+
+      This also means larger trades get worse prices. If you try to buy a big chunk of the pool's BAL reserve in one trade, the formula pushes the price up sharply against you. This is called slippage — the gap between the expected price and the actual price you get. It's a natural consequence of the curve: you're moving further along it with a bigger trade.
+
+      The 0.3% trading fee is another key detail. On every trade, a small portion of the input is kept by the pool instead of being counted in the pricing formula. This fee accumulates in the pool's reserves, growing the value for liquidity providers over time. Since Solidity only works with whole numbers (no decimals), the fee is applied using an integer trick: multiply the input by 997 and divide by 1000. Same result as taking 99.7%, but using only integer math.
+    questions:
+      - question: "Using the x * y = k formula, explain why a larger trade gets a worse price than a smaller one."
+        concepts: [constant, reserve, shifts, ratio, slippage, curve, proportionally more]
+        hint: "If k must stay constant and you're adding a lot of x, what happens to the amount of y you receive per unit of x?"
+      - question: "Why does the DEX multiply trading inputs by 997 and divide by 1000 instead of simply multiplying by 0.997?"
+        concepts: [integer, no decimals, no floats, whole numbers, Solidity, multiply then divide]
+        hint: "Think about what types of numbers Solidity supports. What would happen if you tried to use 0.997 directly?"
+
+  - id: 3
+    title: "The token permission model"
+    context: |
+      There's a fundamental difference between how ETH and tokens move. When you call a payable function and attach ETH, the ETH transfers automatically — it arrives in the contract before your code even runs. Tokens don't work this way.
+
+      ERC-20 tokens (the standard for fungible tokens like BAL) use a two-step permission model. A contract can't just reach into your wallet and take your tokens. Instead:
+
+      First, you grant permission — you tell the token contract "I authorize this DEX contract to move up to X of my tokens." This is called an approval, and it's recorded in the token contract itself. The DEX never touches your tokens during this step.
+
+      Second, the DEX pulls the tokens — when you call a function on the DEX that needs your tokens, the DEX asks the token contract to transfer tokens from your address to itself. The token contract checks: "Did this person authorize the DEX to move this many tokens?" If yes, the transfer happens. If not, it fails.
+
+      This two-step process exists for security. Without it, any contract could drain tokens from any address. The approval step puts you in control — you decide exactly which contracts can move your tokens and how many.
+
+      This matters throughout the DEX challenge. Every operation that moves tokens into the pool — the initial setup, swaps from token to ETH, adding liquidity — requires the user to have approved the DEX first.
+    questions:
+      - question: "Why can't a DEX contract simply pull tokens from your wallet without your prior approval?"
+        concepts: [security, permission, authorize, approval, control, drain, any contract]
+        hint: "Think about what would happen if contracts could move anyone's tokens freely. The two-step process exists to prevent something specific."
+      - question: "How does the two-step token permission model differ from how ETH transfers work?"
+        concepts: [automatic, payable, arrives, approval, permission, two-step, pull]
+        hint: "The checkpoint explains that ETH arrives in the contract before your code runs. Tokens need something extra. What's different?"
+
+  - id: 4
+    title: "Liquidity provisioning"
+    context: |
+      Someone has to stock the pool with assets before trading can happen. The first deposit sets the initial ratio — if you put in equal value of ETH and BAL, that establishes the starting price. But after that, the pool needs to stay balanced.
+
+      When a new liquidity provider wants to add funds to an existing pool, they can't just dump in one asset. They must deposit both assets in the same ratio the pool currently holds. If the pool is 60% ETH and 40% BAL by value, that's the ratio you need to match. This protects existing providers from having their share diluted by a lopsided deposit.
+
+      In return for depositing, providers receive liquidity shares — a number representing their ownership stake in the pool. If the pool has 100 total shares and you deposit 10% of the pool's value, you get 10 new shares (and total shares becomes 110). These shares are how the contract tracks who owns what portion of the pool.
+
+      When you withdraw, you burn your shares and receive both assets back, proportional to your ownership. If you hold 10% of total shares, you get 10% of the ETH and 10% of the BAL in the pool. Because trading fees have been accumulating in the reserves, your 10% might be worth more than what you originally deposited — that's how liquidity providers earn.
+
+      One subtle detail: because Solidity rounds down on division, the math for calculating how many tokens a depositor must provide gets rounded up by one unit. Without this, depositors could contribute slightly less than their fair share on every deposit, slowly draining value from existing providers.
+    questions:
+      - question: "Why must liquidity providers deposit both assets in the pool's current ratio, rather than depositing just one asset?"
+        concepts: [ratio, balanced, dilute, proportional, existing providers, lopsided, imbalanced]
+        hint: "Think about what happens to the pool's price curve if someone adds a lot of one asset but none of the other. How would that affect existing providers?"
+      - question: "How do liquidity providers earn returns on their deposits, even without actively trading?"
+        concepts: [fees, accumulate, reserves, shares, proportional, worth more, trading fees]
+        hint: "The checkpoint mentions what happens to trading fees and how they affect the pool's reserves over time."
