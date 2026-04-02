@@ -80,12 +80,27 @@ yarn start
 
 ---
 
-⚠️ We have disabled AI in Cursor and VSCode and highly suggest that you do not enable it so you can focus on the challenge, do everything by yourself, and hence better understand and remember things. If you are using another IDE, please disable AI yourself.
+⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via `.vscode/settings.json` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included `AGENTS.md` and `CLAUDE.md` files with project context to help AI assistants understand the codebase.
 
-🔧 If you are a vibe-coder and don't care about understanding the syntax of the code used and just want to understand the general takeaways, you can re-enable AI by:
+🔒 Want to disable AI and do everything yourself? (Recommended for deeper learning):
 
-- Cursor: remove `*` from `.cursorignore` file
-- VSCode: set `chat.disableAIFeatures` to `false` in `.vscode/settings.json` file
+- Cursor: add `*` to a `.cursorignore` file in the root of your project
+- VSCode: set `chat.disableAIFeatures` to `true` in `.vscode/settings.json` file
+
+---
+
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the `/start` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **`/skip`** if you want the AI to show you the solution
+6. Your progress is saved — use `/start` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
 
 ---
 
