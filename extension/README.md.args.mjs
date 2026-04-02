@@ -161,6 +161,12 @@ yarn start
 
 📝 If you want to edit the frontend, navigate to \`packages/nextjs/app\` and open the specific page you want to modify. For instance: \`/myNFTs/page.tsx\`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
 
+> ✅ Run the automated tests to make sure your contracts work correctly:
+
+\`\`\`sh
+yarn test
+\`\`\`
+
 ---
 
 ## Checkpoint 3: 💾 Deploy your contract! 🛰
@@ -216,12 +222,6 @@ yarn vercel
 > If you want to redeploy to the same production URL you can run \`yarn vercel --prod\`. If you omit the \`--prod\` flag it will deploy it to a preview/test URL.
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
-
-⚠️ Run the automated testing function to make sure your app passes
-
-\`\`\`sh
-yarn test
-\`\`\`
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
