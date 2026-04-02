@@ -13,12 +13,11 @@ contract DeployDEX is ScaffoldETHDeploy {
         DEX dex = new DEX(address(balloons));
         console.logString(string.concat("DEX deployed at: ", vm.toString(address(dex))));
 
-        // CHECKPOINT 2:
-        // Uncomment below to seed initial liquidity after implementing init()
-        // balloons.approve(address(dex), 5 ether);
-        // dex.init{value: 5 ether}(5 ether);
-
-        // Uncomment and replace YOUR_FRONTEND_ADDRESS to send 10 BAL to your frontend
+        // CHECKPOINT 2: Uncomment and replace YOUR_FRONTEND_ADDRESS to send 10 BAL to your frontend
         // balloons.transfer(YOUR_FRONTEND_ADDRESS, 10 ether);
+
+        // CHECKPOINT 3: Uncomment below to seed initial liquidity after implementing init()
+        // balloons.approve(address(dex), 100 ether);
+        // dex.init{value: 5 ether}(5 ether);
     }
 }
