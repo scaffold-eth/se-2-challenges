@@ -1,0 +1,86 @@
+welcome_message: |
+  Welcome to the Dice Game challenge! Before you start coding, let's understand what makes this challenge interesting — it's really about a fundamental security problem in blockchain: the illusion of randomness.
+
+  By the end of this primer, you'll understand why on-chain "randomness" isn't random at all, how contracts can exploit this, and why access control matters when contracts hold funds. Then we'll get you set up locally.
+
+completion_message: |
+  You now understand the core ideas behind this challenge — on-chain transparency makes block-hash randomness predictable, contracts sharing a transaction can exploit that predictability, and access control protects accumulated funds.
+
+  Let me know when you're ready to set up the challenge locally and I'll walk you through it step by step.
+
+checkpoints:
+  - id: 1
+    title: "On-chain transparency"
+    context: |
+      Here's something that surprises a lot of people new to blockchain: there are no secrets on-chain. Every piece of data — contract state, transaction inputs, block metadata — is publicly readable by anyone, including other contracts.
+
+      This is by design. Blockchain's whole value proposition is transparency and verifiability. Every node needs to independently verify every computation, which means every input to every computation must be available to everyone.
+
+      Think about what this means for a dice game. In a physical casino, the randomness comes from physical processes you can't predict — how a die tumbles, where a ball lands. But on a blockchain, any value used to generate a "random" number is visible to everyone. Block hashes, timestamps, transaction counters — they're all public data.
+
+      This transparency is great for trust and auditability. But it creates a real problem when a contract needs unpredictable outcomes.
+    questions:
+      - question: "Why can't a smart contract use on-chain data to generate a truly secret or unpredictable value?"
+        concepts: [public, transparent, readable, verifiable, visible, every node]
+        hint: "Think about what makes blockchain work — every node needs to reach the same result independently. What does that require about the inputs?"
+      - question: "How does blockchain transparency differ from a physical casino when it comes to generating random outcomes?"
+        concepts: [physical, predict, visible, public data, on-chain, observable]
+        hint: "In a casino, randomness comes from physical processes. On a blockchain, what are the 'dice' made of?"
+
+  - id: 2
+    title: "The randomness illusion"
+    context: |
+      A common approach to generating "random" numbers in smart contracts is to hash together some on-chain values — the previous block's hash, the contract's address, a counter that increments with each use. The hash output looks random: a big, seemingly unpredictable number.
+
+      But here's the catch: looking random and being random are different things. If you know all the inputs to a hash function, you can compute the exact same output. And as we just covered, all these inputs are public.
+
+      The previous block's hash? Any contract can read it. The contract address? Publicly known. A counter variable? Readable from the contract's state. An attacker who knows all three inputs can compute the hash themselves and know the "random" result before it's used.
+
+      This is why security-conscious projects use off-chain randomness oracles like Chainlink VRF. The oracle generates randomness off-chain using a process that can't be predicted or manipulated, then delivers the result on-chain with a cryptographic proof that it wasn't tampered with. The key difference: the randomness comes from outside the blockchain's transparent environment.
+    questions:
+      - question: "If a contract hashes together the previous block hash, its own address, and a counter to generate a number — why isn't this truly random?"
+        concepts: [public, known, compute, predict, inputs, deterministic, readable]
+        hint: "The hash function itself is fine. The problem is what goes into it. Can anyone else access those same inputs?"
+      - question: "How do off-chain randomness oracles solve the problem that on-chain randomness has?"
+        concepts: [off-chain, outside, oracle, cryptographic proof, can't predict, not public, tamper]
+        hint: "The checkpoint mentions where the randomness is generated and how it's verified. What's different about generating it off-chain?"
+
+  - id: 3
+    title: "Same-transaction exploitation"
+    context: |
+      Here's where it gets really interesting. Contracts can call other contracts, and when they do, everything happens in the same transaction — same block number, same block hash, same state.
+
+      This means an attacker contract can do something powerful: compute the "random" result first, check if it's favorable, and only proceed if it guarantees a win. If the result would be a loss, the attacker contract simply reverts the entire transaction — no ETH spent, no loss taken.
+
+      It's like being able to see the dice result before deciding whether to place your bet. You'd never lose.
+
+      This is a specific class of vulnerability: the contract being attacked can't distinguish between a legitimate user rolling the dice and an attacker contract that pre-computed the result. To the dice game, both look like normal calls. The attacker just has more information — because they did the math first, in the same block context.
+
+      The defense? Don't use predictable on-chain data for randomness in the first place. But understanding the attack is just as important as knowing the defense — it reveals how contract-to-contract interactions can be exploited when shared state is involved.
+    questions:
+      - question: "Why is the same-transaction property critical to this attack? What would change if the attacker had to predict the result in a separate, earlier transaction?"
+        concepts: [same block, same transaction, block hash changes, different block, revert, guarantee]
+        hint: "Think about what stays the same within a single transaction versus what changes between blocks."
+      - question: "How does the attacker contract avoid losing ETH on unfavorable rolls?"
+        concepts: [revert, check first, only proceed, don't call, refuse, abort, no loss]
+        hint: "The checkpoint describes what happens when the computed result would be a loss. What does the attacker contract do?"
+
+  - id: 4
+    title: "Access control and fund extraction"
+    context: |
+      When an attacker contract wins, the prize ETH accumulates inside that contract — not in the attacker's personal wallet. The game sends the prize to whoever called it, and that caller is the attacker contract, not a person.
+
+      This creates a practical problem: how do you get the funds out? The contract needs a way to send its accumulated ETH to a specific address. But if anyone could trigger that transfer, a different attacker could simply drain the contract.
+
+      This is where access control comes in. The idea is simple: certain operations should only be callable by authorized addresses. The most common pattern is an "owner" — typically the address that deployed the contract. Only the owner can call restricted functions.
+
+      It's like a bank vault. Anyone can deposit money (the contract can receive ETH from winning). But only authorized people with the right keys can make withdrawals. Without this restriction, the vault might as well have no door.
+
+      By default, smart contracts can't even receive plain ETH transfers — a transfer to a contract without the right setup will fail. This is actually a safety feature: contracts must explicitly opt in to receiving ETH, which forces developers to think about how incoming funds should be handled.
+    questions:
+      - question: "Why does the attacker contract need access control for its fund extraction logic, even though it's the one that won the game?"
+        concepts: [anyone, drain, unauthorized, restrict, owner, permission, callable]
+        hint: "If the extraction function had no restrictions, who else could call it?"
+      - question: "Why do smart contracts reject plain ETH transfers by default, and why is this considered a safety feature?"
+        concepts: [opt in, explicit, safety, handle, force, intentional, default reject]
+        hint: "The checkpoint mentions that contracts must explicitly opt in. What would happen if any contract could silently receive ETH without the developer planning for it?"
