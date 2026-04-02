@@ -10,8 +10,14 @@ import "../contracts/RateController.sol";
 import "./DeployHelpers.s.sol";
 
 contract DeployMyUSD is ScaffoldETHDeploy {
-    // Default ETH price (~$2000 USD), used as oracle fallback
+    // Default ETH price (~$2000 USD scaled to 18 decimals).
+    // Note: Hardhat deploy fetches real ETH price from Uniswap via fetchPriceFromUniswap().
+    // Foundry can't easily call external contracts at deploy time, so we use a hardcoded default.
     uint256 constant DEFAULT_ETH_PRICE = 2000 ether;
+
+    // Set to a non-zero address to transfer engine/staking ownership after deployment.
+    // Mirrors Hardhat's CONTRACT_OWNER logic — defaults to address(0) (no transfer).
+    address constant CONTRACT_OWNER = address(0);
 
     function run() external ScaffoldEthDeployerRunner {
         // Pre-compute future addresses for circular dependencies
@@ -47,15 +53,28 @@ contract DeployMyUSD is ScaffoldETHDeploy {
         console.logString(string.concat("MyUSDEngine deployed at: ", vm.toString(address(engine))));
         require(address(engine) == futureEngineAddress, "Engine address mismatch");
 
-        // Seed liquidity (localhost only equivalent)
-        uint256 ethCollateralAmount = 10_000_000_000_000_000_000 ether;
-        uint256 ethDEXAmount = 10_000_000 ether;
-        uint256 myUSDAmount = DEFAULT_ETH_PRICE * 10_000_000;
+        // Seed liquidity — localhost only (matches Hardhat's localhost guard)
+        if (block.chainid == 31337) {
+            // Fund deployer with large ETH balance (equivalent to Hardhat's hardhat_setBalance)
+            vm.deal(msg.sender, 100_000_000_000_000_000_000 ether);
 
-        engine.addCollateral{ value: ethCollateralAmount }();
-        engine.mintMyUSD(myUSDAmount);
+            uint256 ethCollateralAmount = 10_000_000_000_000_000_000 ether;
+            uint256 ethDEXAmount = 10_000_000 ether;
+            uint256 myUSDAmount = DEFAULT_ETH_PRICE * 10_000_000;
 
-        myUSD.approve(address(dex), myUSDAmount);
-        dex.init{ value: ethDEXAmount }(myUSDAmount);
+            engine.addCollateral{ value: ethCollateralAmount }();
+            engine.mintMyUSD(myUSDAmount);
+
+            if (myUSD.balanceOf(msg.sender) == myUSDAmount) {
+                myUSD.approve(address(dex), myUSDAmount);
+                dex.init{ value: ethDEXAmount }(myUSDAmount);
+            }
+
+            // Transfer ownership if CONTRACT_OWNER is set
+            if (CONTRACT_OWNER != address(0) && CONTRACT_OWNER != msg.sender) {
+                engine.transferOwnership(CONTRACT_OWNER);
+                staking.transferOwnership(CONTRACT_OWNER);
+            }
+        }
     }
 }
