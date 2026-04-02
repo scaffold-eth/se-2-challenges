@@ -32,6 +32,13 @@ checkpoints:
       On Ethereum, each NFT has a token ID (just a number, like a serial number) permanently
       tied to a single owner address. The contract keeps a map of "token ID → owner" so
       anyone can verify who owns what without asking a central authority.
+    questions:
+      - question: "What does 'non-fungible' mean? Why can't you swap one NFT for another like you can with ETH?"
+        concepts: ["unique", "not interchangeable", "one-of-a-kind", "different", "specific"]
+        hint: "Think about fungible things like dollars — any dollar is the same as another. But with NFTs, each one is..."
+      - question: "If every NFT has a token ID and an owner, how is that different from just keeping a list in a regular database?"
+        concepts: ["decentralized", "no central authority", "anyone can verify", "on-chain", "trustless"]
+        hint: "Think about who controls a regular database vs who controls the blockchain."
 
   - id: 2
     title: "NFTs beyond JPEGs — real-world composability"
@@ -53,6 +60,13 @@ checkpoints:
       where you can buy fractional exposure to CryptoPunks through a strategy that
       automatically buys and relists them. That's only possible because they're tokens that
       any contract can interact with.
+    questions:
+      - question: "The README mentions ENS and Uniswap V3 as examples. What do these show about NFTs beyond just being images?"
+        concepts: ["composability", "useful", "more than images", "real applications", "domain names", "liquidity"]
+        hint: "These examples show that NFTs aren't just pictures — they have real utility and can represent..."
+      - question: "What does 'composability' mean in the context of Ethereum tokens?"
+        concepts: ["interact", "other contracts", "plug in", "build on top", "permissionless", "any app"]
+        hint: "Once something is a token on Ethereum, what can other smart contracts do with it?"
 
   - id: 3
     title: "How onchain ownership actually works"
@@ -71,6 +85,13 @@ checkpoints:
       a single token to someone with `approve`, or give blanket permission with
       `setApprovalForAll` — which is what marketplaces like OpenSea use so they can list
       and sell your NFTs on your behalf.
+    questions:
+      - question: "If you want to know who owns token #5, what function would you call and what would it return?"
+        concepts: ["ownerOf", "address", "owner address", "tokenId"]
+        hint: "There's a specific function that takes a tokenId and returns the owner's..."
+      - question: "What does `balanceOf(address)` tell you? How is this different from `ownerOf(tokenId)`?"
+        concepts: ["how many", "count", "total tokens", "balanceOf counts", "ownerOf shows who"]
+        hint: "One tells you WHO owns a specific token, the other tells you HOW MANY tokens someone owns..."
 
   - id: 4
     title: "Where NFT images actually live — IPFS"
@@ -89,3 +110,10 @@ checkpoints:
       startup shut down, your NFT's image and name would just vanish. With IPFS, that
       single point of failure goes away. The content-addressed URLs also mean nobody can
       swap out your NFT's image without changing the hash — what you minted is what stays.
+    questions:
+      - question: "Why is IPFS better than a regular web server for storing NFT metadata?"
+        concepts: ["decentralized", "won't go down", "permanent", "distributed", "no single point of failure"]
+        hint: "What happens to your NFT's image if the company hosting it goes bankrupt?"
+      - question: "If the actual image isn't stored on the blockchain, what IS stored on-chain for each NFT?"
+        concepts: ["token id", "owner", "URI", "pointer", "reference", "address"]
+        hint: "The blockchain stores the ownership info and a link to the metadata, not the metadata itself..."
