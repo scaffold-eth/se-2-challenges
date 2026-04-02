@@ -8,7 +8,7 @@ welcome_message: |
   We'll walk through the key concepts first: how contributions are tracked on-chain, why sending ETH back safely is trickier than you'd expect, and how the contract decides whether the campaign succeeded or failed. Once you've got the mental model, I'll help you set it up locally and start coding.
 
 completion_message: |
-  You now understand the core mechanics behind on-chain crowdfunding — how mappings track who gave what, why the Checks-Effects-Interactions pattern exists, how state machines model contract logic, and why smart contracts need someone to trigger state changes.
+  You now understand the core mechanics behind on-chain crowdfunding — how mappings track who gave what, why the Checks-Effects-Interactions pattern exists, how state machines model contract logic, how contracts handle unexpected ETH, and why thinking about edge cases is just as important as writing the happy path.
 
   Let me know when you're ready to set up the challenge locally and I'll walk you through it step by step.
 
@@ -103,3 +103,43 @@ checkpoints:
       - question: "What are the three states of the crowdfunding contract, and what determines which state it transitions to after the deadline?"
         concepts: ["funding", "success", "failed", "threshold", "enough ETH", "balance", "deadline", "transition"]
         hint: "It's a simple fork — one condition (the amount collected vs the threshold) decides which of two outcomes happens."
+
+  - id: 5
+    title: "Handling unexpected ETH"
+    context: |
+      Right now, users have to call `contribute()` to send ETH to the contract. But what if someone just sends ETH directly — like hitting "Send" in their wallet without specifying a function? That transaction would go through, but the ETH wouldn't be tracked in the `balances` mapping. The money is in the contract, but nobody gets credit for it.
+
+      Solidity has a special function called `receive()` that handles exactly this. It runs automatically when the contract receives a plain ETH transfer — no function call, no calldata, just raw ETH. The signature is fixed: `receive() external payable`, no arguments, no return value.
+
+      The smart move is to have `receive()` call `contribute()` internally. That way, no matter how ETH arrives — through `contribute()` directly or through a plain transfer — it gets tracked the same way. The contributor's balance updates, the event fires, the frontend sees it.
+
+      This is a UX pattern you'll see in well-designed contracts: make it hard for users to make mistakes. If there's a way to send money that bypasses your tracking, someone will eventually do it by accident. Good contract design anticipates that and handles it gracefully.
+    questions:
+      - question: "What happens if someone sends ETH directly to the contract without calling contribute(), and the contract has no receive() function?"
+        concepts: ["not tracked", "balance", "mapping", "lost", "no credit", "bypasses", "untracked"]
+        hint: "Think about what updates the balances mapping — and what happens if that code never runs."
+      - question: "Why is it better to have receive() call contribute() instead of duplicating the contribution logic inside receive()?"
+        concepts: ["reuse", "single place", "consistent", "same behavior", "one function", "DRY", "maintain"]
+        hint: "What happens if you later change how contributions work but forget to update one of the two places?"
+
+  - id: 6
+    title: "Edge cases and trapped funds"
+    context: |
+      The core logic works — contribute, execute, withdraw. But there are edge cases that can break things if you don't think about them. Smart contract security isn't just about the happy path. It's about asking "what could go wrong?"
+
+      Here's the big one: what happens if someone sends ETH to the contract *after* `execute()` has already been called and the funds were forwarded to the recipient? That ETH is now stuck. The campaign is over, the recipient already got paid, but there's no way to get the new ETH out. It's trapped forever.
+
+      The fix is a **modifier** — a reusable guard you attach to functions. You create a `notCompleted` modifier that checks whether the `FundingRecipient` has already been funded. If it has, the function reverts. Attach it to `contribute()`, `withdraw()`, and `execute()` so none of them can run after the campaign is done.
+
+      ```
+      modifier notCompleted() → checks if fundingRecipient.completed() is true → reverts if so
+      ```
+
+      There are other edge cases worth thinking about too: can `execute()` be called more than once? Can people keep contributing after the deadline? Can they withdraw and then contribute again? These are the kinds of questions that separate a working contract from a secure one. The code should make invalid states impossible, not just unlikely.
+    questions:
+      - question: "What happens if someone sends ETH to the contract after execute() has already forwarded funds to the recipient? Why is this a problem?"
+        concepts: ["trapped", "stuck", "no way out", "already completed", "campaign over", "forever", "lost"]
+        hint: "Think about what functions are available to move ETH out of the contract — and whether any of them would work after the campaign is done."
+      - question: "How does a modifier like notCompleted prevent the trapped-funds problem? Which functions would you attach it to and why?"
+        concepts: ["modifier", "guard", "revert", "contribute", "withdraw", "execute", "check", "completed"]
+        hint: "The modifier runs before the function body — if the check fails, the whole transaction reverts as if nothing happened."
