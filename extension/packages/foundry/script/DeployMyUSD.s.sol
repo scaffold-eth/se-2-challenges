@@ -55,13 +55,9 @@ contract DeployMyUSD is ScaffoldETHDeploy {
 
         // Seed liquidity — localhost only (matches Hardhat's localhost guard)
         if (block.chainid == 31337) {
-            // Fund deployer with large ETH balance (equivalent to Hardhat's hardhat_setBalance)
-            vm.deal(deployer, 100_000_000_000_000_000_000 ether);
-            vm.rpc("anvil_setBalance", string.concat("[\"", vm.toString(deployer), "\", \"0x4b3b4ca85a86c47a098a224000000000\"]"));
-
-            uint256 ethCollateralAmount = 10_000_000_000_000_000_000 ether;
-            uint256 ethDEXAmount = 10_000_000 ether;
-            uint256 myUSDAmount = DEFAULT_ETH_PRICE * 10_000_000;
+            uint256 ethCollateralAmount = 1000 ether;
+            uint256 ethDEXAmount = 100 ether;
+            uint256 myUSDAmount = DEFAULT_ETH_PRICE * 100;
 
             engine.addCollateral{ value: ethCollateralAmount }();
             engine.mintMyUSD(myUSDAmount);
