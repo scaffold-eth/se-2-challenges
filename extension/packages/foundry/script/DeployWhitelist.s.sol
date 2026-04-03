@@ -29,11 +29,17 @@ contract DeployWhitelist is ScaffoldETHDeploy {
         if (block.chainid == 31337) {
             console.logString("Localhost detected: seeding oracle prices...");
             for (uint256 i = 0; i < oracleCount; i++) {
-                SimpleOracle oracle = whitelistOracle.oracles(i);
-                oracle.setPrice(DEFAULT_PRICE);
-                console.logString(
-                    string.concat("Set price for SimpleOracle ", vm.toString(i + 1), " to: ", vm.toString(DEFAULT_PRICE))
-                );
+                try whitelistOracle.oracles(i) returns (SimpleOracle oracle) {
+                    oracle.setPrice(DEFAULT_PRICE);
+                    console.logString(
+                        string.concat(
+                            "Set price for SimpleOracle ", vm.toString(i + 1), " to: ", vm.toString(DEFAULT_PRICE)
+                        )
+                    );
+                } catch {
+                    console.logString("Oracle not yet implemented, skipping price seeding");
+                    break;
+                }
             }
         }
     }
