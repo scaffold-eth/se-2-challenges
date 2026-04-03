@@ -2,8 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "./MyUSDStaking.sol";
-
-error Engine__InvalidBorrowRate();
+import {Engine__InvalidBorrowRate} from "./MyUSDEngine.sol";
 
 contract RateController {
     IMyUSDEngine private i_myUSD;

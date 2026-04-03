@@ -22,10 +22,10 @@ contract DeployMyUSD is ScaffoldETHDeploy {
     function run() external ScaffoldEthDeployerRunner {
         // Pre-compute future addresses for circular dependencies
         // Deploy order: RateController(+0), MyUSD(+1), DEX(+2), Oracle(+3), MyUSDStaking(+4), MyUSDEngine(+5)
-        uint64 deployerNonce = vm.getNonce(msg.sender);
+        uint64 deployerNonce = vm.getNonce(deployer);
 
-        address futureStakingAddress = vm.computeCreateAddress(msg.sender, deployerNonce + 4);
-        address futureEngineAddress = vm.computeCreateAddress(msg.sender, deployerNonce + 5);
+        address futureStakingAddress = vm.computeCreateAddress(deployer, deployerNonce + 4);
+        address futureEngineAddress = vm.computeCreateAddress(deployer, deployerNonce + 5);
 
         // 1. Deploy RateController (needs future engine + staking addresses)
         RateController rateController = new RateController(futureEngineAddress, futureStakingAddress);
@@ -56,7 +56,8 @@ contract DeployMyUSD is ScaffoldETHDeploy {
         // Seed liquidity — localhost only (matches Hardhat's localhost guard)
         if (block.chainid == 31337) {
             // Fund deployer with large ETH balance (equivalent to Hardhat's hardhat_setBalance)
-            vm.deal(msg.sender, 100_000_000_000_000_000_000 ether);
+            vm.deal(deployer, 100_000_000_000_000_000_000 ether);
+            vm.rpc("anvil_setBalance", string.concat("[\"", vm.toString(deployer), "\", \"0x4b3b4ca85a86c47a098a224000000000\"]"));
 
             uint256 ethCollateralAmount = 10_000_000_000_000_000_000 ether;
             uint256 ethDEXAmount = 10_000_000 ether;
@@ -65,13 +66,13 @@ contract DeployMyUSD is ScaffoldETHDeploy {
             engine.addCollateral{ value: ethCollateralAmount }();
             engine.mintMyUSD(myUSDAmount);
 
-            if (myUSD.balanceOf(msg.sender) == myUSDAmount) {
+            if (myUSD.balanceOf(deployer) == myUSDAmount) {
                 myUSD.approve(address(dex), myUSDAmount);
                 dex.init{ value: ethDEXAmount }(myUSDAmount);
             }
 
             // Transfer ownership if CONTRACT_OWNER is set
-            if (CONTRACT_OWNER != address(0) && CONTRACT_OWNER != msg.sender) {
+            if (CONTRACT_OWNER != address(0) && CONTRACT_OWNER != deployer) {
                 engine.transferOwnership(CONTRACT_OWNER);
                 staking.transferOwnership(CONTRACT_OWNER);
             }
