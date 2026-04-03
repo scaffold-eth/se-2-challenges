@@ -23,12 +23,16 @@ contract DeployLending is ScaffoldETHDeploy {
 
         // Only seed liquidity and set up state on localhost
         if (block.chainid == 31337) {
-            // Give deployer huge ETH and CORN balance
-            vm.deal(msg.sender, 100_000_000_000 ether);
-            corn.mintTo(msg.sender, 1_000_000_000_000 ether);
-
-            // Give ETH and CORN to MovePrice contract for price manipulation testing
+            // Give deployer and MovePrice huge ETH balances
+            // vm.deal for forge simulation, anvil_setBalance for actual chain
+            vm.deal(deployer, 100_000_000_000 ether);
             vm.deal(address(movePrice), 10_000_000_000_000_000_000_000 ether);
+            vm.rpc("anvil_setBalance", string.concat("[\"", vm.toString(deployer), "\", \"0x1431e0fae6d7217caa0000000\"]"));
+            vm.rpc("anvil_setBalance", string.concat("[\"", vm.toString(address(movePrice)), "\", \"0x1d6329f1c35ca4bfabb9f5610000000000\"]"));
+
+            corn.mintTo(deployer, 1_000_000_000_000 ether);
+
+            // Give CORN to MovePrice contract for price manipulation testing
             corn.mintTo(address(movePrice), 10_000_000_000_000_000_000_000 ether);
 
             // Mint CORN to lending contract for borrowers
