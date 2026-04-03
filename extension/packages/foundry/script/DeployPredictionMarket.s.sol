@@ -12,8 +12,8 @@ contract DeployPredictionMarket is ScaffoldETHDeploy {
         uint256 initialTokenValue = 0.01 ether;
         uint8 initialProbability = 50;
         uint8 percentageLocked = 10;
-        address liquidityProvider = msg.sender;
-        address oracle = msg.sender;
+        address liquidityProvider = deployer;
+        address oracle = deployer;
 
         PredictionMarket predictionMarket = new PredictionMarket{value: initialLiquidity}(
             liquidityProvider,
@@ -27,18 +27,5 @@ contract DeployPredictionMarket is ScaffoldETHDeploy {
         console.logString(
             string.concat("PredictionMarket deployed at: ", vm.toString(address(predictionMarket)))
         );
-
-        // Export YES/NO token ABIs to deployments if tokens exist
-        try predictionMarket.i_yesToken() returns (PredictionMarketToken yesToken) {
-            PredictionMarketToken noToken = predictionMarket.i_noToken();
-            console.logString(
-                string.concat("YES token at: ", vm.toString(address(yesToken)))
-            );
-            console.logString(
-                string.concat("NO token at: ", vm.toString(address(noToken)))
-            );
-        } catch {
-            console.logString("No Yes/No token contracts deployed yet");
-        }
     }
 }
