@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, Vm } from "forge-std/Test.sol";
 import { Balloons } from "../contracts/Balloons.sol";
 import { DEX } from "../contracts/DEX.sol";
 import { IDEX } from "../contracts/IDEX.sol";
