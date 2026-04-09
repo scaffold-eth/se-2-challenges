@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import { Test } from "forge-std/Test.sol";
+import { Vm } from "forge-std/Vm.sol";
 import { DiceGame } from "../contracts/DiceGame.sol";
 import { RiggedRoll } from "../contracts/RiggedRoll.sol";
 import { IDiceGame } from "../contracts/IDiceGame.sol";
