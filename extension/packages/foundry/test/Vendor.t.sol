@@ -8,6 +8,9 @@ import { YourToken } from "../contracts/YourToken.sol";
 import { Vendor } from "../contracts/Vendor.sol";
 
 contract VendorTest is Test {
+    event BuyTokens(address indexed buyer, uint256 amountOfETH, uint256 amountOfTokens);
+    event SellTokens(address indexed seller, uint256 amountOfTokens, uint256 amountOfETH);
+
     IERC20 public yourToken;
     IVendor public vendor;
     address public deployer;
@@ -81,7 +84,7 @@ contract VendorTest is Test {
         uint256 expectedTokens = ethToSpend * TOKENS_PER_ETH;
 
         vm.expectEmit(true, false, false, true);
-        emit IVendor.BuyTokens(user, ethToSpend, expectedTokens);
+        emit BuyTokens(user, ethToSpend, expectedTokens);
 
         vm.prank(user);
         vendor.buyTokens{ value: ethToSpend }();
@@ -94,9 +97,7 @@ contract VendorTest is Test {
         uint256 requiredTokens = ethToSpend * TOKENS_PER_ETH;
 
         vm.prank(user);
-        vm.expectRevert(
-            abi.encodeWithSelector(IVendor.InsufficientVendorTokenBalance.selector, 0, requiredTokens)
-        );
+        vm.expectRevert(abi.encodeWithSelector(IVendor.InsufficientVendorTokenBalance.selector, 0, requiredTokens));
         emptyVendor.buyTokens{ value: ethToSpend }();
     }
 
@@ -156,9 +157,7 @@ contract VendorTest is Test {
         vm.startPrank(user);
         freshToken.approve(address(noEthVendor), amountToSell);
 
-        vm.expectRevert(
-            abi.encodeWithSelector(IVendor.InsufficientVendorEthBalance.selector, 0, expectedEth)
-        );
+        vm.expectRevert(abi.encodeWithSelector(IVendor.InsufficientVendorEthBalance.selector, 0, expectedEth));
         noEthVendor.sellTokens(amountToSell);
         vm.stopPrank();
     }
@@ -196,12 +195,12 @@ contract VendorTest is Test {
         yourToken.approve(address(vendor), amountToSell);
 
         vm.expectEmit(true, false, false, true);
-        emit IVendor.SellTokens(user, amountToSell, expectedEth);
+        emit SellTokens(user, amountToSell, expectedEth);
 
         vendor.sellTokens(amountToSell);
         vm.stopPrank();
     }
 
     // Allow this contract to receive ETH (for withdraw)
-    receive() external payable {}
+    receive() external payable { }
 }
