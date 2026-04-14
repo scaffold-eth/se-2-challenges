@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -32,19 +32,22 @@ Real-world examples of onchain crowdfunding and coordination:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension (**${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** flavor). When instantiated with \`create-eth\`, it produces a monorepo:
 
 \`\`\`
 packages/
-  hardhat/
+  ${solidityFramework}/
     contracts/
       CrowdFund.sol            # Main contract - learner fills in the logic
       FundingRecipient.sol     # Simple recipient contract (DO NOT edit)
-    deploy/
+${solidityFramework === "hardhat" ? `    deploy/
       00_deploy_funding_recipient.ts  # Deploys FundingRecipient first
       01_deploy_crowdfund.ts          # Deploys CrowdFund with FundingRecipient address
     test/
-      CrowdFund.ts             # Checkpoint-based grading tests
+      CrowdFund.ts             # Checkpoint-based grading tests` : `    script/
+      DeployCrowdFund.s.sol    # Deploys FundingRecipient + CrowdFund
+    test/
+      CrowdFund.t.sol          # Checkpoint-based grading tests`}
   nextjs/
     app/
       crowdfund/               # Main crowdfund UI page
@@ -60,16 +63,16 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local blockchain
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
 # Testing (checkpoint-based)
 yarn test                       # Run all challenge tests
-yarn test --grep "Checkpoint1"  # Test just contributing
-yarn test --grep "Checkpoint2"  # Test just withdrawing
-yarn test --grep "Checkpoint3"  # Test state machine / timing
-yarn test --grep "Checkpoint4"  # Test receive function
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint1"  # Test just contributing
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"  # Test just withdrawing
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"  # Test state machine / timing
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint4"  # Test receive function
 
 # Redeploy fresh (resets deadline timer)
 yarn deploy --reset
@@ -137,7 +140,7 @@ Simple contract with:
 - \`bool public completed\` - tracks if funding was received
 - \`function complete() public payable\` - sets \`completed = true\`, receives ETH
 
-**Deploy order matters**: FundingRecipient deploys first (script \`00_\`), CrowdFund deploys second (script \`01_\`) with FundingRecipient's address as constructor arg.
+**Deploy order matters**: FundingRecipient deploys first, CrowdFund deploys second with FundingRecipient's address as constructor arg.
 
 ## Frontend Architecture
 
@@ -160,29 +163,27 @@ Use the correct hook names: \`useScaffoldReadContract\`, \`useScaffoldWriteContr
 - **Import alias**: use \`~~\` for nextjs package imports (e.g., \`import { ... } from "~~/hooks/scaffold-eth"\`)
 - After \`yarn deploy\`, contract ABIs auto-generate to \`packages/nextjs/contracts/deployedContracts.ts\`
 - \`yarn deploy --reset\` is useful to reset the 30-second deadline timer during development
-- \`hardhat/console.sol\` is already imported, use \`console.log()\` in Solidity for debugging (output appears in \`yarn chain\` terminal)
+- Use \`console.log()\` in Solidity for debugging (output appears in \`yarn chain\` terminal)
 
 ## Testing
 
-Tests are checkpoint-based in \`packages/hardhat/test/CrowdFund.ts\`:
+Tests are checkpoint-based in \`packages/${solidityFramework}/test/CrowdFund.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`:
 
 - **Checkpoint 1**: \`contribute()\` updates balances, emits events, accumulates correctly, tracks per-contributor
 - **Checkpoint 2**: \`withdraw()\` reverts when not open, sends correct balance, zeros out balance, prevents double-withdraw
 - **Checkpoint 3**: \`execute()\` reverts before deadline (TooEarly), \`timeLeft()\` decreases, execute triggers \`complete()\` when threshold met, enables withdraw when threshold not met
 - **Checkpoint 4**: Sending ETH directly to contract behaves like \`contribute()\`
 
-Tests use \`evm_increaseTime\` and \`evm_mine\` to simulate time passing. Run \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specific checkpoints.
+Run \`yarn test\` for all or \`yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "CheckpointN"\` for specific checkpoints.
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`deadline\` to a longer duration (e.g., \`block.timestamp + 2 hours\`) for testnet
-2. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\`
-3. \`yarn generate\` to create deployer account
-4. Fund deployer with testnet ETH
-5. \`yarn deploy\` to deploy contracts
-6. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
-7. \`yarn vercel\` to deploy frontend
-8. \`yarn verify --network sepolia\` to verify contracts
+1. \`yarn generate\` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. ${solidityFramework === "hardhat" ? `Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` and run \`yarn deploy\`, or use \`yarn deploy --network sepolia\`` : `\`yarn deploy --network sepolia\``}
+4. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+5. \`yarn vercel\` to deploy frontend
+6. \`yarn verify --network sepolia\` to verify contract(s) on Etherscan
 
 ## Code Style
 
@@ -191,7 +192,6 @@ Tests use \`evm_increaseTime\` and \`evm_mine\` to simulate time passing. Run \`
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files |
 
 ## Key Warnings
 
