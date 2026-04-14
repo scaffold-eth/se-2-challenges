@@ -1,6 +1,6 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge: 🎲 Dice Game
+export const extraContents = ({solidityFramework}) => `# 🚩 Challenge: 🎲 Dice Game
 
 ![readme](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-dice-game/extension/packages/nextjs/public/hero.png)
 
@@ -51,9 +51,28 @@ yarn start
 
 ---
 
-## Checkpoint 1: 🎲 Dice Game
+## 🤖 AI-Guided Learning Mode (Optional)
 
-🔍 Inspect the code in the \`DiceGame.sol\` contract in \`packages/hardhat/contracts\`
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in **Claude Code** or **Cursor**
+2. Run the \`/start\` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **\`/skip\`** if you want the AI to show you the solution
+6. Your progress is saved — use \`/start\` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
+## Standard Learning Mode
+
+${solidityFramework === "foundry" ? `> **Note:** Screenshots below show the Hardhat network, but you're using Foundry — everything works the same, just the network name differs.
+
+` : ``}## Checkpoint 1: 🎲 Dice Game
+
+🔍 Inspect the code in the \`DiceGame.sol\` contract in \`packages/${solidityFramework}/contracts\`
 
 🔒 You will not be changing any code in the \`DiceGame.sol\` contract in this challenge. You will write your own contract to predict the outcome, then only roll the dice when it is favourable.
 
@@ -75,7 +94,7 @@ Start by creating a \`receive()\` function in the \`RiggedRoll.sol\` contract to
 <details markdown='1'>
 <summary>🔎 Hint</summary>
 
-Your rigged contract needs to be able to receive ETH via a plain transfer (no calldata). In Solidity, that’s what \`receive()\` is for.
+Your rigged contract needs to be able to receive ETH via a plain transfer (no calldata). In Solidity, that's what \`receive()\` is for.
 
 <details markdown='1'>
 <summary>🎯 Solution</summary>
@@ -102,12 +121,12 @@ Next add a \`riggedRoll()\` function. This function should predict the randomnes
 
 🎲 Keep in mind the dice on the frontend is using hexadecimal characters but in the contract we can get by with integers. A,B,C,D,E,F = 10,11,12,13,14,15
 
-❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some \`console.log()\` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.
+${solidityFramework === "hardhat" ? `❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some \`console.log()\` statements in both contracts to help you track the values. These messages will appear in the Hardhat node terminal.` : `❓ If you're struggling to get the exact same random number as the DiceGame contract, try adding some \`console.log\` statements (import \`forge-std/console.sol\`) in both contracts to help you track the values.`}
 
 <details markdown='1'>
 <summary>🔎 Hint</summary>
 
-To match \`DiceGame.sol\`, you’ll want to:
+To match \`DiceGame.sol\`, you'll want to:
 
 - Read the current \`nonce\` from the \`DiceGame\` contract
 - Use \`blockhash(block.number - 1)\` as the previous block hash
@@ -115,7 +134,7 @@ To match \`DiceGame.sol\`, you’ll want to:
 - Convert to a roll with \`% 16\`
 - Only call \`rollTheDice()\` when the roll will be a winner
 - Revert with \`NotWinningRoll\` if not a winning number; This way you never pay for gas unless you are winning
-- Revert with \`NotEnoughETH\` if your contract doesn’t have at least \`0.002 ether\` to spend
+- Revert with \`NotEnoughETH\` if your contract doesn't have at least \`0.002 ether\` to spend
 
 <details markdown='1'>
 <summary>🎯 Solution</summary>
@@ -131,7 +150,7 @@ function riggedRoll() external {
     bytes32 hash = keccak256(abi.encodePacked(prevHash, address(diceGame), nonce));
     uint256 roll = uint256(hash) % 16;
 
-    // Only roll when we know we’ll win (matches the provided tests)
+    // Only roll when we know we'll win (matches the provided tests)
     if (roll > 5) revert NotWinningRoll(roll);
 
     diceGame.rollTheDice{value: required}();
@@ -141,7 +160,7 @@ function riggedRoll() external {
 </details>
 </details>
 
-🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the \`01_deploy_riggedRoll.ts\` file in \`packages/hardhat/deploy\` and run \`yarn deploy --reset\`
+${solidityFramework === "hardhat" ? `🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in the \`01_deploy_riggedRoll.ts\` file in \`packages/hardhat/deploy\` and run \`yarn deploy --reset\`` : `🚀 To deploy your RiggedRoll contract, uncomment the appropriate lines in \`DeployDiceGame.s.sol\` in \`packages/foundry/script\` and run \`yarn deploy --reset\``}
 
 💸 You will need to send some funds to your RiggedRoll contract before doing your first roll, you can use the Faucet button at the bottom left of the page.
 
@@ -159,10 +178,10 @@ function riggedRoll() external {
 🔍 Run the following command to check if you implemented the rigged roll logic correctly:
 
 \`\`\`shell
-yarn test --grep "Checkpoint2"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"
 \`\`\`
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/hardhat/test/RiggedRoll.ts\`.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/RiggedRoll.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
 
 ---
 
@@ -184,7 +203,7 @@ Make sure you lock the withdraw function so it can only be called by the owner. 
 
 ![WithdrawOnlyOwner](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/e8397b1e-a077-4009-b518-30a6d8deb6e7)
 
-> ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in \`01_deploy_riggedRoll.ts\`. This will allow your front end address to call the withdraw function.
+${solidityFramework === "hardhat" ? `> ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in \`01_deploy_riggedRoll.ts\`. This will allow your front end address to call the withdraw function.` : `> ⚠️ But wait, I am not the owner! You will want to set your front end address as the owner in \`DeployDiceGame.s.sol\`. This will allow your front end address to call the withdraw function.`}
 
 <details markdown='1'>
 <summary>🔎 Hint</summary>
@@ -218,14 +237,14 @@ function withdraw(address _addr, uint256 _amount) external onlyOwner {
 🔍 Run the following command to check if you implemented the withdraw function correctly:
 
 \`\`\`shell
-yarn test --grep "Checkpoint3"
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"
 \`\`\`
 
-✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/hardhat/test/RiggedRoll.ts\`.
+✅ Did the tests pass? You can dig into any errors by viewing the tests at \`packages/${solidityFramework}/test/RiggedRoll.${solidityFramework === "hardhat" ? "ts" : "t.sol"}\`.
 
 ## Checkpoint 4: 💾 Deploy your contracts! 🛰
 
-📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\`
+${solidityFramework === "hardhat" ? `📡 Edit the \`defaultNetwork\` in \`hardhat.config.ts\` to match the name of one of testnets from the \`networks\` object. We recommend to use \`"sepolia"\` or \`"optimismSepolia"\`` : `📡 Deploy to a testnet using \`yarn deploy --network sepolia\` (or \`--network optimismSepolia\`)`}
 
 🔐 You will need to generate a **deployer address** using \`yarn generate\` This creates a mnemonic and saves it locally.
 
@@ -233,9 +252,9 @@ yarn test --grep "Checkpoint3"
 
 ⛽️ You will need to send ETH to your deployer address with your wallet, or get it from a public faucet of your chosen network. You can also request ETH by sending a message with your new deployer address and preferred network in the [challenge Telegram](https://t.me/+3StA0aBSArFjNjUx). People are usually more than willing to share.
 
-🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in \`hardhat.config.ts\`)
+🚀 Run \`yarn deploy\` to deploy your smart contract to a public network (selected in ${solidityFramework === "hardhat" ? `\`hardhat.config.ts\`` : `the deploy command`})
 
-> 💬 Hint: Instead of editing \`hardhat.config.ts\` you can just add a network flag to the deploy command like this: \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`
+> 💬 Hint: ${solidityFramework === "hardhat" ? `Instead of editing \`hardhat.config.ts\` you can just add a network flag to the deploy command like this: \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\`` : `Use \`yarn deploy --network sepolia\` or \`yarn deploy --network optimismSepolia\``}
 
 ---
 
@@ -255,7 +274,7 @@ yarn test --grep "Checkpoint3"
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` and \`foundry\` local networks. You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -264,9 +283,9 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷\`ALCHEMY_API_KEY\` variable in \`packages/${solidityFramework}/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃\`ETHERSCAN_API_KEY\` variable in \`packages/${solidityFramework}/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 

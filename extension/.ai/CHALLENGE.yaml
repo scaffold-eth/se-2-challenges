@@ -5,7 +5,9 @@ difficulty: "beginner"
 estimated_time: "2 - 6 hours"
 
 setup:
-  file: "packages/hardhat/contracts/RiggedRoll.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/RiggedRoll.sol"
+    foundry: "packages/foundry/contracts/RiggedRoll.sol"
 
 welcome_message: |
   Welcome to the Dice Game Challenge!
@@ -123,8 +125,12 @@ checkpoints:
         2. DiceGame can send prize ETH back to RiggedRoll when we win
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/RiggedRoll.sol"
-      test: "yarn test --grep 'Checkpoint1'"
+      file:
+        hardhat: "packages/hardhat/contracts/RiggedRoll.sol"
+        foundry: "packages/foundry/contracts/RiggedRoll.sol"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint1'"
+        foundry: "yarn test --match-test 'Checkpoint1'"
       hints:
         - "Add `receive() external payable {}` as the last function in the contract. Note: no `function` keyword needed."
         - |
@@ -277,8 +283,12 @@ checkpoints:
         6. **Side quest**: Uncomment the `Rigged Roll!` button in `packages/nextjs/app/dice/page.tsx` so you can test from the main UI without switching tabs.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/RiggedRoll.sol"
-      test: "yarn test --grep 'Checkpoint2'"
+      file:
+        hardhat: "packages/hardhat/contracts/RiggedRoll.sol"
+        foundry: "packages/foundry/contracts/RiggedRoll.sol"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint2'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - "Start with a balance check using `if (available < required) revert NotEnoughETH(required, available);`, then compute the hash exactly like DiceGame does."
         - |
@@ -434,8 +444,12 @@ checkpoints:
         5. Call `withdraw()` to send the winnings to your address — check that your balance increases!
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/RiggedRoll.sol"
-      test: "yarn test --grep 'Checkpoint3'"
+      file:
+        hardhat: "packages/hardhat/contracts/RiggedRoll.sol"
+        foundry: "packages/foundry/contracts/RiggedRoll.sol"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint3'"
+        foundry: "yarn test --match-test 'Checkpoint3'"
       hints:
         - "The function signature is `function withdraw(address _addr, uint256 _amount) external onlyOwner`. Check balance first, then use `.call{value: _amount}` to send ETH."
         - |
