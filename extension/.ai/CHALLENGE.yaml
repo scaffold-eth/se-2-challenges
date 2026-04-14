@@ -6,7 +6,9 @@ estimated_time: "1 - 4 hours"
 
 setup:
   description: "Replace the complete contract with a TODO-marked template for progressive learning"
-  file: "packages/hardhat/contracts/YourCollectible.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/YourCollectible.sol"
+    foundry: "packages/foundry/contracts/YourCollectible.sol"
   template: |
     // SPDX-License-Identifier: MIT
     pragma solidity ^0.8.20;
@@ -102,7 +104,9 @@ checkpoints:
         hint: "Think about what happens if you want to show a user all the NFTs they own — how would you find them without enumeration?"
 
     unlocks:
-      file: "packages/hardhat/contracts/YourCollectible.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/YourCollectible.sol"
+        foundry: "packages/foundry/contracts/YourCollectible.sol"
       todo: "imports"
       code: |
         import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -111,7 +115,9 @@ checkpoints:
         import "@openzeppelin/contracts/access/Ownable.sol";
 
     unlocks_extra:
-      - file: "packages/hardhat/contracts/YourCollectible.sol"
+      - file:
+          hardhat: "packages/hardhat/contracts/YourCollectible.sol"
+          foundry: "packages/foundry/contracts/YourCollectible.sol"
         todo: "inheritance"
         code: "is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable"
 
@@ -168,7 +174,9 @@ checkpoints:
         hint: "msg.sender is a built-in Solidity variable — who is 'sending' the deployment transaction?"
 
     unlocks:
-      file: "packages/hardhat/contracts/YourCollectible.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/YourCollectible.sol"
+        foundry: "packages/foundry/contracts/YourCollectible.sol"
       todo: "state"
       code: |
         uint256 public tokenIdCounter;
@@ -223,7 +231,9 @@ checkpoints:
         hint: "In Solidity, what value does an uninitialized uint256 have? What if you want to check whether something 'exists'?"
 
     unlocks:
-      file: "packages/hardhat/contracts/YourCollectible.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/YourCollectible.sol"
+        foundry: "packages/foundry/contracts/YourCollectible.sol"
       todo: "mint"
       code: |
         function mintItem(address to, string memory uri) public returns (uint256) {
@@ -282,7 +292,9 @@ checkpoints:
         hint: "Imagine a marketplace contract that wants to list your NFT — how does it know your contract actually follows the ERC-721 standard?"
 
     unlocks:
-      file: "packages/hardhat/contracts/YourCollectible.sol"
+      file:
+        hardhat: "packages/hardhat/contracts/YourCollectible.sol"
+        foundry: "packages/foundry/contracts/YourCollectible.sol"
       todo: "overrides"
       code: |
         // Override functions from OpenZeppelin ERC721, ERC721Enumerable and ERC721URIStorage

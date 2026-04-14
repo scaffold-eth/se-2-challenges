@@ -1,6 +1,6 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge: 🎟 Tokenization
+export const extraContents = ({solidityFramework}) => `# 🚩 Challenge: 🎟 Tokenization
 
 ![readme](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-tokenization/extension/packages/nextjs/public/hero.png)
 
@@ -67,7 +67,9 @@ The AI won't just hand you the code — it teaches first, then checks your under
 
 ## Standard Learning Mode
 
-> Start your local network (a blockchain emulator in your computer):
+${solidityFramework === "foundry" ? `> **Note:** Screenshots below show the Hardhat network, but you're using Foundry — everything works the same, just the network name differs.
+
+` : ``}> Start your local network (a blockchain emulator in your computer):
 
 \`\`\`sh
 yarn chain
@@ -145,9 +147,9 @@ yarn start
 
 🕵🏻‍♂️ Inspect the \`Debug Contracts\` tab to figure out what address is the owner of a specific token (\`ownerOf(tokenId)\`) in \`YourCollectible\`.
 
-🔏 You can also check out your smart contract \`YourCollectible.sol\` in \`packages/hardhat/contracts\`.
+🔏 You can also check out your smart contract \`YourCollectible.sol\` in \`packages/${solidityFramework}/contracts\`.
 
-💼 Take a quick look at your deploy script \`01_deploy_your_collectible.ts\` in \`packages/hardhat/deploy\`.
+💼 Take a quick look at your deploy script in ${solidityFramework === "hardhat" ? `\`packages/hardhat/deploy\`` : `\`packages/foundry/script\``}.
 
 ### Onchain Ownership 101
 
@@ -159,15 +161,17 @@ yarn start
 
 📝 If you want to edit the frontend, navigate to \`packages/nextjs/app\` and open the specific page you want to modify. For instance: \`/myNFTs/page.tsx\`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
 
+> ✅ Run the automated tests to make sure your contracts work correctly:
+
+\`\`\`sh
+yarn test
+\`\`\`
+
 ---
 
 ## Checkpoint 3: 💾 Deploy your contract! 🛰
 
 🛰 Ready to go public (on testnet)? Let's ship it.
-
-> Change the defaultNetwork in \`packages/hardhat/hardhat.config.ts\` to \`sepolia\`.
-
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
 🔐 Generate a deployer address with \`yarn generate\`. This creates a unique deployer address and saves the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
 
@@ -187,7 +191,9 @@ yarn start
 
 🚀 Deploy your NFT smart contract with \`yarn deploy\`.
 
-> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` **OR** you can \`yarn deploy --network sepolia\`.
+${solidityFramework === "hardhat" ? `> 💬 Hint: You can set the \`defaultNetwork\` in \`hardhat.config.ts\` to \`sepolia\` and run \`yarn deploy\` **OR** you can \`yarn deploy --network sepolia\`.
+
+![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)` : `> 💬 Hint: Use \`yarn deploy --network sepolia\`.`}
 
 ---
 
@@ -201,7 +207,7 @@ yarn start
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/50eef1f7-e1a3-4b3b-87e2-59c19362c4ff)
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`hardhat\` . You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 \`burner wallets\` are only available on \`${solidityFramework}\` . You can enable them on every chain by setting \`burnerWalletMode: "allNetworks"\` in your frontend config (\`scaffold.config.ts\` in \`packages/nextjs/\`)
 
 ![image](https://github.com/scaffold-eth/se-2-challenges/assets/80153681/f582d311-9b57-4503-8143-bac60346ea33)
 
@@ -217,12 +223,6 @@ yarn vercel
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-⚠️ Run the automated testing function to make sure your app passes
-
-\`\`\`sh
-yarn test
-\`\`\`
-
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
@@ -230,9 +230,9 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷 \`ALCHEMY_API_KEY\` variable in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 🔷 \`ALCHEMY_API_KEY\` variable in \`packages/${solidityFramework}/.env\` and \`packages/nextjs/.env.local\`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
-- 📃 \`ETHERSCAN_API_KEY\` variable in \`packages/hardhat/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+- 📃 \`ETHERSCAN_API_KEY\` variable in \`packages/${solidityFramework}/.env\` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 

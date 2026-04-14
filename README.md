@@ -16,7 +16,7 @@
 
 💬 Meet other builders working on this challenge and get help in the [Challenge Telegram](https://t.me/+Y2vqXZZ_pEFhMGMx)!
 
-<details markdown='1'><summary>❓ Wondering what "tokenization" means?</summary>
+<details><summary>❓ Wondering what "tokenization" means?</summary>
 Tokenization is like giving anything a digital passport you can carry in your wallet. It proves who owns it, lets you hand it off in a click, and lets apps recognize it automatically. In this challenge you'll mint ERC-721 tokens (NFTs): each token is one-of-one, owned by a single address (what `ownerOf(tokenId)` returns). Transfers are atomic, instant, traceable, and run by code.
 
 - **Real-World Assets (RWAs)**: Think stocks, bonds, gold, and real estate. If these are tokenized, the token acts as a digital claim or registry entry. For real-world effect, an issuer/custodian or legal framework must link onchain transfers to off-chain rights; without that bridge, it's a collectible, not a legal transfer.
@@ -51,11 +51,17 @@ Before you begin, you need to install the following tools:
 - [Node (>= v20.18.3)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (if choosing Foundry as your Solidity framework)
 
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
 npx create-eth@2.0.10 -e challenge-tokenization challenge-tokenization
+```
+
+> When prompted, choose your preferred Solidity framework: **Hardhat** or **Foundry**.
+
+```sh
 cd challenge-tokenization
 ```
 
@@ -75,6 +81,8 @@ The AI won't just hand you the code — it teaches first, then checks your under
 ---
 
 ## Standard Learning mode
+
+> **Note:** Screenshots below show the Hardhat network. If you're using Foundry, you'll see "Foundry" instead of "Hardhat" in the network name, but everything else works the same.
 
 > in the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -156,9 +164,43 @@ yarn start
 
 🕵🏻‍♂️ Inspect the `Debug Contracts` tab to figure out what address is the owner of a specific token (`ownerOf(tokenId)`) in `YourCollectible`.
 
-🔏 You can also check out your smart contract `YourCollectible.sol` in `packages/hardhat/contracts`.
+🔏 You can also check out your smart contract `YourCollectible.sol` in your contracts directory
 
-💼 Take a quick look at your deploy script `01_deploy_your_collectible.ts` in `packages/hardhat/deploy`.
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
+`packages/hardhat/contracts`
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+`packages/foundry/contracts`
+
+</Tab>
+</Tabs>
+
+💼 Take a quick look at your deploy script:
+
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
+`packages/hardhat/deploy`
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+`packages/foundry/script`
+
+</Tab>
+</Tabs>
 
 ### Onchain Ownership 101
 
@@ -170,15 +212,17 @@ yarn start
 
 📝 If you want to edit the frontend, navigate to `packages/nextjs/app` and open the specific page you want to modify. For instance: `/myNFTs/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
 
+> ✅ Run the automated tests to make sure your contracts work correctly:
+
+```sh
+yarn test
+```
+
 ---
 
 ## Checkpoint 3: 💾 Deploy your contract! 🛰
 
 🛰 Ready to go public (on testnet)? Let's ship it.
-
-> Change the defaultNetwork in `packages/hardhat/hardhat.config.ts` to `sepolia`.
-
-![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
 
 🔐 Generate a deployer address with `yarn generate`. This creates a fresh deployer and stores the mnemonic locally. You will be prompted to enter a password, which will be used to encrypt your private key. **Make sure to remember this password, as you'll need it for future deployments and account queries.**
 
@@ -198,7 +242,24 @@ yarn start
 
 🚀 Deploy your NFT smart contract with `yarn deploy`.
 
-> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` **OR** you can `yarn deploy --network sepolia`.
+<Tabs>
+<Tab label="Hardhat">
+
+**Hardhat**
+
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` and run `yarn deploy` **OR** you can `yarn deploy --network sepolia`.
+
+![chall-0-hardhat-config](https://github.com/scaffold-eth/se-2-challenges/assets/55535804/f94b47d8-aa51-46eb-9c9e-7536559a5d45)
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+> 💬 Hint: Use `yarn deploy --network sepolia`.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -228,12 +289,6 @@ yarn vercel
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-⚠️ Run the automated testing function to make sure your app passes
-
-```sh
-yarn test
-```
-
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
 By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular services such as Alchemy and Etherscan. This allows you to begin developing and testing your applications more easily, avoiding the need to register for these services.
@@ -241,9 +296,24 @@ This is great to complete your **Speedrun Ethereum**.
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
-- 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+<Tabs>
+<Tab label="Hardhat">
 
-- 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+**Hardhat**
+
+- 🔷 `ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃 `ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+<Tab label="Foundry">
+
+**Foundry**
+
+- 🔷 `ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃 `ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 

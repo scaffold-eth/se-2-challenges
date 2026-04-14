@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -9,7 +9,7 @@ export const fullContentOverride = `# AGENTS.md
 
 ## Challenge Overview
 
-The learner builds an NFT minting and transferring dApp using an ERC-721 contract (\`YourCollectible\`). The goal is to understand onchain ownership, compile and deploy smart contracts with Hardhat, interact with them via a Next.js frontend, and finally deploy to a public testnet.
+The learner builds an NFT minting and transferring dApp using an ERC-721 contract (\`YourCollectible\`). The goal is to understand onchain ownership, compile and deploy smart contracts, interact with them via a Next.js frontend, and finally deploy to a public testnet.
 
 The final deliverable: an app that lets users mint and transfer NFTs. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
@@ -30,17 +30,22 @@ Real-world examples of tokenization beyond images:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+This project uses **${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** as the smart contract framework.
 
 \`\`\`
 packages/
-  hardhat/           # Solidity contracts, deploy scripts, tests
+  ${solidityFramework}/   # Solidity contracts, deploy scripts, tests
     contracts/
       YourCollectible.sol    # ERC-721 NFT contract (the main contract)
-    deploy/
+${solidityFramework === "hardhat" ? `    deploy/
       01_deploy_your_collectible.ts  # Hardhat-deploy script
     test/
-      YourCollectible.ts     # Challenge grading tests
+      YourCollectible.ts     # Challenge grading tests` : `    script/
+      Deploy.s.sol           # Foundry deploy script
+    test/
+      YourCollectible.t.sol  # Challenge grading tests`}
   nextjs/            # React frontend (Next.js App Router)
     app/
       myNFTs/                # Mint NFTs and view holdings
@@ -63,12 +68,12 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local blockchain (Hardhat or Anvil)
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
 # Testing
-yarn test           # Run challenge grading tests (packages/hardhat/test/)
+yarn test           # Run challenge grading tests
 
 # Code quality
 yarn lint           # Lint both packages
@@ -123,22 +128,23 @@ Use the correct hook names: \`useScaffoldReadContract\`, \`useScaffoldWriteContr
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/YourCollectible.ts\`) verify:
+The grading tests verify:
 1. Contract deploys successfully
 2. \`mintItem()\` can mint an NFT and increases the owner's balance
 3. \`tokenOfOwnerByIndex()\` tracks tokens correctly
+
+Test location: ${solidityFramework === "hardhat" ? `\`packages/hardhat/test/YourCollectible.ts\`` : `\`packages/foundry/test/YourCollectible.t.sol\``}
 
 Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
-2. \`yarn generate\` to create deployer account
-3. Fund deployer with testnet ETH from a faucet
-4. \`yarn deploy\` to deploy contracts
-5. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
-6. \`yarn vercel\` to deploy frontend
-7. \`yarn verify --network sepolia\` to verify contract on Etherscan
+1. \`yarn generate\` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. ${solidityFramework === "hardhat" ? `Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` and run \`yarn deploy\`, or use \`yarn deploy --network sepolia\`` : `\`yarn deploy --network sepolia\``}
+4. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+5. \`yarn vercel\` to deploy frontend
+6. \`yarn verify --network sepolia\` to verify contract on Etherscan
 
 ## Code Style
 
@@ -147,7 +153,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`01_deploy_your_collectible.ts\`) |
+${solidityFramework === "hardhat" ? `| \`snake_case\` | Deploy files (e.g., \`01_deploy_your_collectible.ts\`) |` : `| \`UpperCamelCase\` | Deploy scripts (e.g., \`Deploy.s.sol\`) |`}
 
 ## Key Warnings
 
