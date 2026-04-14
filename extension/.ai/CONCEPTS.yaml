@@ -66,9 +66,9 @@ checkpoints:
       - question: "Why is it critical to zero out a user's balance before sending them ETH? What could happen if you sent the ETH first and then updated the balance?"
         concepts: ["reentrancy", "re-enter", "call again", "drain", "attack", "before", "state", "zero"]
         hint: "Think about what happens if the recipient is a smart contract that runs code when it receives ETH..."
-      - question: "What are the three steps of the Checks-Effects-Interactions pattern, and why does the order matter?"
-        concepts: ["checks", "effects", "interactions", "verify", "update state", "external call", "before", "order"]
-        hint: "Each step has a purpose — validating, changing your own state, and talking to the outside world. The danger is in doing them out of order."
+      - question: "What are the three steps of the Checks-Effects-Interactions pattern, in order?"
+        concepts: ["checks", "effects", "interactions", "verify", "update state", "external call"]
+        hint: "Each step has a purpose — validating, changing your own state, and talking to the outside world."
 
   - id: 4
     title: "State machines and thinking about edge cases"
@@ -86,6 +86,6 @@ checkpoints:
       - question: "After the deadline passes and not enough ETH was collected, why can't contributors just withdraw directly? Why does someone need to trigger the state change first?"
         concepts: ["state transition", "trigger", "someone", "can't auto-execute", "no automatic", "transaction", "enable"]
         hint: "Think about how smart contracts execute code — can they do anything on their own, without someone sending a transaction?"
-      - question: "What happens if someone sends ETH to the contract after the campaign has already succeeded and funds were forwarded? Why is this a problem?"
-        concepts: ["trapped", "stuck", "no way out", "already completed", "campaign over", "guard", "prevent"]
+      - question: "What happens if someone sends ETH to the contract after the campaign has already succeeded and funds were forwarded?"
+        concepts: ["trapped", "stuck", "no way out", "already completed", "campaign over"]
         hint: "Think about what mechanisms exist to move ETH out of the contract — and whether any of them still work after the campaign is done."
