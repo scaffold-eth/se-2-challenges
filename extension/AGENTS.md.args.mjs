@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -28,19 +28,24 @@ What you learn building this vendor scales directly to real protocols:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+This project uses **${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** as the smart contract framework.
 
 \`\`\`
 packages/
-  hardhat/
+  ${solidityFramework}/
     contracts/
       YourToken.sol          # ERC-20 token (Gold / GLD)
       Vendor.sol             # Token vending machine
-    deploy/
+${solidityFramework === "hardhat" ? `    deploy/
       00_deploy_your_token.ts
       01_deploy_vendor.ts    # Has SEND_TOKENS_TO_VENDOR toggle and FRONTEND_ADDRESS
     test/
-      Vendor.ts              # Checkpoint-based grading tests
+      Vendor.ts              # Checkpoint-based grading tests` : `    script/
+      Deploy.s.sol           # Foundry deploy script
+    test/
+      Vendor.t.sol           # Checkpoint-based grading tests`}
   nextjs/
     app/
       token-vendor/
@@ -55,7 +60,7 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local blockchain (Hardhat or Anvil)
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
@@ -64,10 +69,10 @@ yarn deploy --reset
 
 # Testing (checkpoint-based)
 yarn test                       # Run all challenge tests
-yarn test --grep "Checkpoint1"  # Test YourToken minting
-yarn test --grep "Checkpoint2"  # Test buyTokens
-yarn test --grep "Checkpoint3"  # Test withdraw (onlyOwner)
-yarn test --grep "Checkpoint4"  # Test sellTokens (approve + sell flow)
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint1"  # Test YourToken minting
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint2"  # Test buyTokens
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint3"  # Test withdraw (onlyOwner)
+yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "Checkpoint4"  # Test sellTokens (approve + sell flow)
 
 # Code quality
 yarn lint           # Lint both packages
@@ -136,10 +141,11 @@ Selling tokens back to the Vendor requires **two** transactions from the user:
 
 ## Deploy Scripts
 
-- **\`00_deploy_your_token.ts\`** - Deploys \`YourToken\`.
+${solidityFramework === "hardhat" ? `- **\`00_deploy_your_token.ts\`** - Deploys \`YourToken\`.
 - **\`01_deploy_vendor.ts\`** - Deploys \`Vendor\`. Has two toggles:
   - \`SEND_TOKENS_TO_VENDOR\` - when \`true\`, transfers 1000 tokens to the Vendor contract
-  - \`FRONTEND_ADDRESS\` - when set, sends tokens to a frontend wallet for testing (only used when \`SEND_TOKENS_TO_VENDOR\` is \`false\`)
+  - \`FRONTEND_ADDRESS\` - when set, sends tokens to a frontend wallet for testing (only used when \`SEND_TOKENS_TO_VENDOR\` is \`false\`)` : `- **\`DeployYourToken.s.sol\`** - Deploys both \`YourToken\` and \`Vendor\`. Contains commented-out lines for transferring 1000 tokens to the Vendor and transferring ownership — uncomment when ready for Checkpoint 2.
+- **\`Deploy.s.sol\`** - Main entry point that calls \`DeployYourToken\`.`}
 
 ## Frontend Architecture
 
@@ -186,24 +192,23 @@ Use **DaisyUI** classes for components (cards, buttons, badges, tables). The pro
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/Vendor.ts\`) are organized into four checkpoints:
+The grading tests (\`packages/${solidityFramework}/test/${solidityFramework === "hardhat" ? "Vendor.ts" : "Vendor.t.sol"}\`) are organized into four checkpoints:
 
 - **Checkpoint 1**: \`YourToken\` mints exactly 1000 tokens to the deployer
 - **Checkpoint 2**: \`buyTokens\` works correctly: sends ETH, receives tokens, emits \`BuyTokens\`
 - **Checkpoint 3**: \`withdraw\` is \`onlyOwner\`: non-owner reverts, owner receives ETH
 - **Checkpoint 4**: \`sellTokens\` works: approve + sell flow, emits \`SellTokens\`, handles errors
 
-Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`yarn test\` for all or \`yarn test ${solidityFramework === "foundry" ? '--match-test' : '--grep'} "CheckpointN"\` for specific checkpoints. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
-2. \`yarn generate\` to create deployer account
-3. Fund deployer with testnet ETH from a faucet
-4. \`yarn deploy\` to deploy contracts
-5. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
-6. \`yarn vercel\` to deploy frontend
-7. \`yarn verify --network sepolia\` to verify contracts on Etherscan
+1. \`yarn generate\` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. ${solidityFramework === "hardhat" ? `Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` and run \`yarn deploy\`, or use \`yarn deploy --network sepolia\`` : `\`yarn deploy --network sepolia\``}
+4. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+5. \`yarn vercel\` to deploy frontend
+6. \`yarn verify --network sepolia\` to verify contract(s) on Etherscan
 
 ## Code Style
 
@@ -212,7 +217,7 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_your_token.ts\`) |
+${solidityFramework === "hardhat" ? `| \`snake_case\` | Deploy files (e.g., \`00_deploy_your_token.ts\`) |` : `| \`UpperCamelCase\` | Deploy scripts (e.g., \`Deploy.s.sol\`) |`}
 
 ## Key Warnings
 
@@ -222,7 +227,6 @@ Run with \`yarn test\` for all or \`yarn test --grep "CheckpointN"\` for specifi
 - Tests check for custom errors and events by name, define them exactly as specified
 - Integer division truncation: use \`amount / tokensPerEth\` (not the other way around) when computing ETH from tokens
 - Use \`transfer\` for \`buyTokens\` (Vendor sends its own tokens) but \`transferFrom\` for \`sellTokens\` (Vendor pulls user's tokens)
-- The \`SEND_TOKENS_TO_VENDOR\` toggle in the deploy script must be \`true\` for Checkpoints 2–4
 - Prefer \`call\` over \`transfer\` for sending ETH (avoids gas limit issues)
 
 # Speedrun Ethereum AI-Guided mode

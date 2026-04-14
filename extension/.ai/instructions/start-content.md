@@ -29,6 +29,9 @@ Read the file `.ai/CHALLENGE.yaml` to understand:
 - All checkpoints with their context, questions, tasks, and code unlocks
 - Whether each checkpoint is a **concept checkpoint** (has `unlocks`) or a **code-writing checkpoint** (has `task`)
 
+### Step 1b: Resolve Framework-Specific Fields
+CHALLENGE.yaml `file:` and `test:` fields contain framework-specific values (e.g. `hardhat:` and `foundry:`). Detect which framework this project uses by checking which directory exists (`packages/hardhat/` vs `packages/foundry/`). Use the matching key for all `file:` and `test:` lookups throughout the challenge.
+
 ### Step 2: Apply Setup (if applicable)
 Check if CHALLENGE.yaml has a `setup.template` field:
 
@@ -270,7 +273,7 @@ The user will respond with one of:
 
 ### Phase 5: Validate with Tests
 
-Run the test command from `task.test` (e.g., `yarn test --grep "Checkpoint1"`).
+Run the test command from `task.test` (resolved for the detected framework, e.g., `yarn test --grep "Checkpoint1"` for Hardhat or `yarn test --match-test "Checkpoint1"` for Foundry).
 
 **If ALL tests pass:**
 ```
