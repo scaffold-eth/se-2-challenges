@@ -1,0 +1,119 @@
+name: "Tokenization"
+version: "1.0"
+description: "Understand NFTs and onchain ownership before you start coding"
+
+welcome_message: |
+  Before you write any code, let's get you grounded on what this challenge is actually about.
+  You're going to build an NFT contract — but first, let's understand what NFTs are, why they
+  matter beyond monkey JPEGs, and how ownership works on Ethereum. Once you've got the
+  concepts down, I'll help you set it up locally.
+
+completion_message: |
+  Nice. You now understand what makes tokens non-fungible, how real projects like ENS and
+  Uniswap use NFTs for real utility, how onchain ownership tracking works, and why metadata
+  lives on IPFS instead of a regular server. That's the foundation for everything you're
+  about to build. Let me know when you're ready to set up the challenge locally and I'll
+  walk you through it step by step.
+
+checkpoints:
+  - id: 1
+    title: "What is tokenization?"
+    context: |
+      Tokenization is like giving anything a digital passport you can carry in your wallet.
+      It proves who owns it, lets you hand it off in a click, and lets apps recognize it
+      automatically.
+
+      In this challenge you'll work with ERC-721 tokens — that's the NFT standard. NFT stands
+      for Non-Fungible Token. "Non-fungible" just means each one is unique. A dollar bill is
+      fungible — any dollar is the same as another. But an NFT is like a car title: two cars
+      might look identical, but they have different VINs, different owners, and different
+      histories. You can't just swap them and call it even.
+
+      On Ethereum, each NFT has a token ID (just a number, like a serial number) permanently
+      tied to a single owner address. The contract keeps a map of "token ID → owner" so
+      anyone can verify who owns what without asking a central authority.
+    questions:
+      - question: "What does 'non-fungible' mean? Why can't you swap one NFT for another like you can with ETH?"
+        concepts: ["unique", "not interchangeable", "one-of-a-kind", "different", "specific"]
+        hint: "Think about fungible things like dollars — any dollar is the same as another. But with NFTs, each one is..."
+      - question: "How does an NFT contract keep track of who owns what? What two pieces of information does it store for each token?"
+        concepts: ["token id", "owner", "address", "map", "serial number"]
+        hint: "The context compared token IDs to serial numbers. Each one is linked to..."
+
+  - id: 2
+    title: "NFTs beyond JPEGs — real-world composability"
+    context: |
+      "Wait, aren't NFTs just monkey JPEGs?" Not even close. The important thing about assets
+      on Ethereum is composability — once something is a token, any other smart contract can
+      interact with it.
+
+      Look at ENS (Ethereum Name Service). These are just NFTs, but they let you alias wallet
+      addresses with human-readable names like vitalik.eth. Same concept as domain names
+      replacing IP addresses, but for crypto wallets — and it goes further. You can attach
+      content hashes, social profiles, and more to an ENS name.
+
+      Or take Uniswap V3 — it uses NFTs to track each liquidity provider's position in a
+      trading pool. Not an image, not a collectible — a financial instrument represented as
+      a unique token.
+
+      Even completely speculative NFTs unlock composability. PunkStrategy built a protocol
+      where you can buy fractional exposure to CryptoPunks through a strategy that
+      automatically buys and relists them. That's only possible because they're tokens that
+      any contract can interact with.
+    questions:
+      - question: "The README mentions ENS and Uniswap V3 as examples. What do these show about NFTs beyond just being images?"
+        concepts: ["composability", "useful", "more than images", "real applications", "domain names", "liquidity"]
+        hint: "These examples show that NFTs aren't just pictures — they have real utility and can represent..."
+      - question: "What does 'composability' mean in the context of Ethereum tokens?"
+        concepts: ["interact", "other contracts", "plug in", "build on top", "permissionless", "any app"]
+        hint: "Once something is a token on Ethereum, what can other smart contracts do with it?"
+
+  - id: 3
+    title: "How onchain ownership actually works"
+    context: |
+      Here's the practical side: how does Ethereum know who owns what?
+
+      Every ERC-721 contract tracks ownership with a few key functions. `ownerOf(tokenId)`
+      tells you exactly who owns a specific token — it returns an address. `balanceOf(address)`
+      tells you how many tokens someone holds total.
+
+      Transfers are atomic — ownership moves from one address to another in a single
+      transaction. No middleman, no escrow period, no "pending" state. When a transfer
+      happens, the contract emits a Transfer event that anyone can see.
+
+      Only the owner (or someone they've approved) can transfer a token. You can approve
+      a single token to someone with `approve`, or give blanket permission with
+      `setApprovalForAll` — which is what marketplaces like OpenSea use so they can list
+      and sell your NFTs on your behalf.
+    questions:
+      - question: "If you want to know who owns token #5, what function would you call and what would it return?"
+        concepts: ["ownerOf", "address", "owner address", "tokenId"]
+        hint: "There's a specific function that takes a tokenId and returns the owner's..."
+      - question: "What does `balanceOf(address)` tell you? How is this different from `ownerOf(tokenId)`?"
+        concepts: ["how many", "count", "total tokens", "balanceOf counts", "ownerOf shows who"]
+        hint: "One tells you WHO owns a specific token, the other tells you HOW MANY tokens someone owns..."
+
+  - id: 4
+    title: "Where NFT images actually live — IPFS"
+    context: |
+      Here's a gotcha that surprises people: the NFT on the blockchain is just a number
+      (the token ID) and an owner address. The actual image, name, and attributes? Those
+      are stored off-chain in a JSON file, and the NFT just points to it via a URI.
+
+      So where does that JSON file live? In this challenge, it's on IPFS — the InterPlanetary
+      File System. Unlike a regular web server where one company controls the files, IPFS
+      is decentralized: content is distributed across many nodes, URLs are based on content
+      hashes (so they can't be secretly changed), and as long as anyone has the file, it's
+      accessible.
+
+      Why does this matter? If your NFT metadata lived on some startup's server and that
+      startup shut down, your NFT's image and name would just vanish. With IPFS, that
+      single point of failure goes away. The content-addressed URLs also mean nobody can
+      swap out your NFT's image without changing the hash — what you minted is what stays.
+    questions:
+      - question: "Why is IPFS better than a regular web server for storing NFT metadata?"
+        concepts: ["decentralized", "won't go down", "permanent", "distributed", "no single point of failure"]
+        hint: "What happens to your NFT's image if the company hosting it goes bankrupt?"
+      - question: "If the actual image isn't stored on the blockchain, what IS stored on-chain for each NFT?"
+        concepts: ["token id", "owner", "URI", "pointer", "reference", "address"]
+        hint: "The blockchain stores the ownership info and a link to the metadata, not the metadata itself..."
