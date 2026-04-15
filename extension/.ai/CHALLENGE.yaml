@@ -208,7 +208,7 @@ checkpoints:
               uint256 count = 0;
               for (uint256 i = 0; i < oracles.length; i++) {
                   (, uint256 timestamp) = oracles[i].getPrice();
-                  if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
+                  if (block.timestamp - timestamp < STALE_DATA_WINDOW) {
                       tempNodes[count] = address(oracles[i]);
                       count++;
                   }
@@ -262,7 +262,7 @@ checkpoints:
             uint256 count = 0;
             for (uint256 i = 0; i < oracles.length; i++) {
                 (, uint256 timestamp) = oracles[i].getPrice();
-                if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
+                if (block.timestamp - timestamp < STALE_DATA_WINDOW) {
                     tempNodes[count] = address(oracles[i]);
                     count++;
                 }

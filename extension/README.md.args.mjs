@@ -336,7 +336,7 @@ function getActiveOracleNodes() public view returns (address[] memory) {
 
     for (uint256 i = 0; i < oracles.length; i++) {
         (, uint256 timestamp) = oracles[i].getPrice();
-        if (timestamp > block.timestamp - STALE_DATA_WINDOW) {
+        if (block.timestamp - timestamp < STALE_DATA_WINDOW) {
             tempNodes[count] = address(oracles[i]);
             count++;
         }
