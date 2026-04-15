@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, Vm } from "forge-std/Test.sol";
 import { ORA } from "../contracts/01_Staking/OracleToken.sol";
 import { StakingOracle } from "../contracts/01_Staking/StakingOracle.sol";
 import { IStakingOracle } from "../contracts/01_Staking/IStakingOracle.sol";

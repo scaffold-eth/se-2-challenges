@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, Vm } from "forge-std/Test.sol";
 import { OptimisticOracle } from "../contracts/02_Optimistic/OptimisticOracle.sol";
 import { IOptimisticOracle } from "../contracts/02_Optimistic/IOptimisticOracle.sol";
 import { Decider } from "../contracts/02_Optimistic/Decider.sol";

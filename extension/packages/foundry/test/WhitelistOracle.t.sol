@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, Vm } from "forge-std/Test.sol";
 import { WhitelistOracle } from "../contracts/00_Whitelist/WhitelistOracle.sol";
 import { IWhitelistOracle } from "../contracts/00_Whitelist/IWhitelistOracle.sol";
 import { SimpleOracle } from "../contracts/00_Whitelist/SimpleOracle.sol";
