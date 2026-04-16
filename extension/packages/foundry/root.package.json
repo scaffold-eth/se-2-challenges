@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "simulate:whitelist": "yarn workspace @se-2/foundry simulate:whitelist",
+    "simulate:staking": "yarn workspace @se-2/foundry simulate:staking",
+    "simulate:optimistic": "yarn workspace @se-2/foundry simulate:optimistic"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "chain": "make setup-anvil-wallet && anvil --block-time 1",
+    "simulate:whitelist": "node scripts-js/simulate/runWhitelistOracleBots.js",
+    "simulate:staking": "node scripts-js/simulate/runStakingOracleBots.js",
+    "simulate:optimistic": "node scripts-js/simulate/runOptimisticBots.js"
+  },
+  "dependencies": {
+    "viem": "~2.21.54"
+  }
+}
