@@ -41,7 +41,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.12 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
+npx create-eth@2.0.13 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
 cd challenge-over-collateralized-lending
 ```
 
