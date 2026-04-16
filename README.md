@@ -50,7 +50,7 @@ Oracles are bridges between blockchains and the external world. They solve a fun
 
 ```sh
 
-npx create-eth@2.0.12 -e challenge-oracles challenge-oracles
+npx create-eth@2.0.13 -e challenge-oracles challenge-oracles
 
 cd challenge-oracles
 
