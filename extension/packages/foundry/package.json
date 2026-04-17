@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "chain": "make setup-anvil-wallet && anvil --block-time 1",
+    "simulate": "node scripts-js/simulate/marketSimulator.js"
+  },
+  "dependencies": {
+    "viem": "~2.21.54"
+  }
+}
