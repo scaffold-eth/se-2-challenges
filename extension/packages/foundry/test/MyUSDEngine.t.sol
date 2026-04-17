@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, Vm } from "forge-std/Test.sol";
 import { IMyUSDEngine } from "../contracts/IMyUSDEngine.sol";
 import { MyUSD } from "../contracts/MyUSD.sol";
 import { MyUSDEngine } from "../contracts/MyUSDEngine.sol";
@@ -46,7 +46,9 @@ contract MyUSDEngineTest is Test {
         dex = new DEX(address(myUSD));
         oracle = new Oracle(address(dex), ETH_PRICE);
         staking = new MyUSDStaking(address(myUSD), futureEngineAddress, address(rateController));
-        engine = IMyUSDEngine(address(new MyUSDEngine(address(oracle), address(myUSD), address(staking), address(rateController))));
+        engine = IMyUSDEngine(
+            address(new MyUSDEngine(address(oracle), address(myUSD), address(staking), address(rateController)))
+        );
 
         // Verify addresses match predictions
         assertEq(address(staking), futureStakingAddress, "Staking address mismatch");
@@ -76,16 +78,16 @@ contract MyUSDEngineTest is Test {
     }
 
     // ============================================================
-    // Collateral Operations
+    // Checkpoint 1: Collateral, Interest System & Minting
     // ============================================================
 
-    function test_Collateral_AllowAddingCollateral() public {
+    function test_Checkpoint1_AllowAddingCollateral() public {
         vm.prank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
         assertEq(engine.s_userCollateral(user1), COLLATERAL_AMOUNT);
     }
 
-    function test_Collateral_EmitCollateralAddedEvent() public {
+    function test_Checkpoint1_EmitCollateralAddedEvent() public {
         vm.prank(user1);
         vm.recordLogs();
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
@@ -100,7 +102,7 @@ contract MyUSDEngineTest is Test {
         assertTrue(found, "CollateralAdded event should be emitted");
     }
 
-    function test_Collateral_AllowWithdrawingWhenNoDebt() public {
+    function test_Checkpoint1_AllowWithdrawingWhenNoDebt() public {
         vm.startPrank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
         engine.withdrawCollateral(COLLATERAL_AMOUNT);
@@ -108,7 +110,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Collateral_PreventWithdrawingMoreThanDeposited() public {
+    function test_Checkpoint1_PreventWithdrawingMoreThanDeposited() public {
         vm.startPrank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -117,11 +119,9 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    // ============================================================
-    // Borrowing Operations
-    // ============================================================
+    // (Checkpoint 1 continued: Borrowing)
 
-    function test_Borrowing_AllowWhenSufficientlyCollateralized() public {
+    function test_Checkpoint1_AllowWhenSufficientlyCollateralized() public {
         vm.startPrank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -132,7 +132,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Borrowing_PreventWhenInsufficientlyCollateralized() public {
+    function test_Checkpoint1_PreventWhenInsufficientlyCollateralized() public {
         vm.startPrank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -143,7 +143,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Borrowing_EmitDebtSharesMintedEvent() public {
+    function test_Checkpoint1_EmitDebtSharesMintedEvent() public {
         vm.startPrank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -162,7 +162,7 @@ contract MyUSDEngineTest is Test {
     }
 
     // ============================================================
-    // Repayment Operations
+    // Checkpoint 3: Repaying Debt & Withdrawing Collateral
     // ============================================================
 
     function _setupBorrower() internal {
@@ -172,7 +172,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Repayment_AllowRepayingFullAmount() public {
+    function test_Checkpoint3_AllowRepayingFullAmount() public {
         _setupBorrower();
         assertTrue(engine.s_userDebtShares(user1) > 0);
 
@@ -183,7 +183,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Repayment_AllowPartialRepayment() public {
+    function test_Checkpoint3_AllowPartialRepayment() public {
         _setupBorrower();
 
         vm.startPrank(user1);
@@ -193,7 +193,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Repayment_AllowRepayingMoreThanBorrowed() public {
+    function test_Checkpoint3_AllowRepayingMoreThanBorrowed() public {
         _setupBorrower();
 
         vm.startPrank(user1);
@@ -205,7 +205,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Repayment_EmitDebtSharesBurnedEvent() public {
+    function test_Checkpoint3_EmitDebtSharesBurnedEvent() public {
         _setupBorrower();
 
         vm.startPrank(user1);
@@ -225,7 +225,7 @@ contract MyUSDEngineTest is Test {
     }
 
     // ============================================================
-    // Liquidation
+    // Checkpoint 4: Liquidation
     // ============================================================
 
     function _setupLiquidation() internal returns (uint256 borrowedAmount) {
@@ -248,7 +248,7 @@ contract MyUSDEngineTest is Test {
         myUSD.approve(address(engine), liquidatorAmount);
     }
 
-    function test_Liquidation_AllowWhenPositionUnsafe() public {
+    function test_Checkpoint4_AllowWhenPositionUnsafe() public {
         _setupLiquidation();
 
         // Drop ETH price by swapping ETH for MyUSD
@@ -264,7 +264,7 @@ contract MyUSDEngineTest is Test {
         assertTrue(user2.balance > beforeBalance);
     }
 
-    function test_Liquidation_PreventOnSafePositions() public {
+    function test_Checkpoint4_PreventOnSafePositions() public {
         _setupLiquidation();
 
         assertFalse(engine.isLiquidatable(user1));
@@ -274,7 +274,7 @@ contract MyUSDEngineTest is Test {
         engine.liquidate(user1);
     }
 
-    function test_Liquidation_EmitEvent() public {
+    function test_Checkpoint4_EmitEvent() public {
         _setupLiquidation();
 
         // Drop ETH price
@@ -295,15 +295,15 @@ contract MyUSDEngineTest is Test {
     }
 
     // ============================================================
-    // Borrow Rate Management
+    // Checkpoint 5: Borrow Rate Management
     // ============================================================
 
-    function test_BorrowRate_AllowRateControllerToSet() public {
+    function test_Checkpoint5_AllowRateControllerToSet() public {
         rateController.setBorrowRate(500);
         assertEq(engine.borrowRate(), 500);
     }
 
-    function test_BorrowRate_EmitBorrowRateUpdatedEvent() public {
+    function test_Checkpoint5_EmitBorrowRateUpdatedEvent() public {
         vm.recordLogs();
         rateController.setBorrowRate(300);
 
@@ -317,7 +317,7 @@ contract MyUSDEngineTest is Test {
         assertTrue(found, "BorrowRateUpdated event should be emitted");
     }
 
-    function test_BorrowRate_PreventNonRateController() public {
+    function test_Checkpoint5_PreventNonRateController() public {
         rateController.setBorrowRate(500);
 
         vm.prank(user1);
@@ -325,7 +325,7 @@ contract MyUSDEngineTest is Test {
         engine.setBorrowRate(500);
     }
 
-    function test_BorrowRate_PreventSettingBelowSavingsRate() public {
+    function test_Checkpoint5_PreventSettingBelowSavingsRate() public {
         rateController.setBorrowRate(400);
         rateController.setSavingsRate(300);
 
@@ -333,14 +333,14 @@ contract MyUSDEngineTest is Test {
         rateController.setBorrowRate(200);
     }
 
-    function test_BorrowRate_AllowSettingEqualToSavingsRate() public {
+    function test_Checkpoint5_AllowSettingEqualToSavingsRate() public {
         rateController.setBorrowRate(400);
         rateController.setSavingsRate(300);
         rateController.setBorrowRate(300);
         assertEq(engine.borrowRate(), 300);
     }
 
-    function test_BorrowRate_AllowSettingAboveSavingsRate() public {
+    function test_Checkpoint5_AllowSettingAboveSavingsRate() public {
         rateController.setBorrowRate(300);
         rateController.setSavingsRate(300);
         rateController.setBorrowRate(500);
@@ -348,10 +348,10 @@ contract MyUSDEngineTest is Test {
     }
 
     // ============================================================
-    // Interest Accrual
+    // Checkpoint 2: Interest Accrual & Borrow Rate
     // ============================================================
 
-    function test_Interest_NoAccrualWithZeroBorrowRate() public {
+    function test_Checkpoint2_NoAccrualWithZeroBorrowRate() public {
         _setupBorrower();
         uint256 initialDebt = engine.getCurrentDebtValue(user1);
         assertTrue(initialDebt > 0);
@@ -361,7 +361,7 @@ contract MyUSDEngineTest is Test {
         assertEq(finalDebt, initialDebt);
     }
 
-    function test_Interest_AccrueCorrectlyOverOneYear() public {
+    function test_Checkpoint2_AccrueCorrectlyOverOneYear() public {
         _setupBorrower();
         rateController.setBorrowRate(1000); // 10%
         uint256 initialDebt = engine.getCurrentDebtValue(user1);
@@ -372,7 +372,7 @@ contract MyUSDEngineTest is Test {
         assertApproxEqAbs(finalDebt, expectedDebt, 0.001 ether);
     }
 
-    function test_Interest_AccrueProportionallyOverPartialPeriod() public {
+    function test_Checkpoint2_AccrueProportionallyOverPartialPeriod() public {
         _setupBorrower();
         rateController.setBorrowRate(1200); // 12%
         uint256 initialDebt = engine.getCurrentDebtValue(user1);
@@ -383,7 +383,7 @@ contract MyUSDEngineTest is Test {
         assertApproxEqAbs(finalDebt, expectedDebt, 0.001 ether);
     }
 
-    function test_Interest_HandleMultipleAccrualPeriods() public {
+    function test_Checkpoint2_HandleMultipleAccrualPeriods() public {
         _setupBorrower();
         rateController.setBorrowRate(500); // 5%
         uint256 initialDebt = engine.getCurrentDebtValue(user1);
@@ -653,5 +653,5 @@ contract MyUSDEngineTest is Test {
         assertApproxEqAbs(finalBalance, expectedFinal, 0.001 ether);
     }
 
-    receive() external payable {}
+    receive() external payable { }
 }

@@ -303,7 +303,7 @@ Single-page dashboard layout with:
 
 The grading tests (\`packages/${solidityFramework}/test/${solidityFramework === "hardhat" ? "MyUSDEngine.ts" : "MyUSDEngine.t.sol"}\`) cover the following areas:
 
-- **Deployment** -- Verifies initial state: owner, DEX liquidity, oracle price, zero rates
+${solidityFramework === "hardhat" ? `- **Deployment** -- Verifies initial state: owner, DEX liquidity, oracle price, zero rates
 - **Collateral Operations** -- Add/withdraw collateral, events, insufficient collateral errors
 - **Borrowing Operations** -- Mint when collateralized, prevent over-borrowing, \`DebtSharesMinted\` event
 - **Repayment Operations** -- Full/partial repay, overpay handling, \`DebtSharesBurned\` event
@@ -313,7 +313,16 @@ The grading tests (\`packages/${solidityFramework}/test/${solidityFramework === 
 - **Savings Rate Management** -- Rate controller access, rate <= borrow rate constraint, \`SavingsRateUpdated\` event
 - **Staking Operations** -- Stake/withdraw MyUSD, events, zero amount / insufficient balance / insufficient allowance errors, multiple stakes
 - **Withdrawal Operations** -- Withdraw staked tokens, events, no balance error, withdrawal after partial time with no interest
-- **Savings Interest Accrual** -- Zero rate, 8% annual, partial periods, multiple rate changes
+- **Savings Interest Accrual** -- Zero rate, 8% annual, partial periods, multiple rate changes` : `- **Deployment** -- Verifies initial state: owner, DEX liquidity, oracle price, zero rates
+- **Checkpoint 1** -- Add/withdraw collateral, events, mint when collateralized, prevent over-borrowing, \`DebtSharesMinted\` event
+- **Checkpoint 2** -- Interest accrual: zero rate (no interest), 10% annual, partial periods (6 months), multiple rate changes
+- **Checkpoint 3** -- Full/partial repay, overpay handling, \`DebtSharesBurned\` event
+- **Checkpoint 4** -- Liquidation: unsafe positions liquidatable (after ETH price drop via DEX swap), safe positions protected, \`Liquidation\` event
+- **Checkpoint 5** -- Borrow rate management: rate controller access, rate >= savings rate constraint, \`BorrowRateUpdated\` event
+- **Savings Rate Management** -- Rate controller access, rate <= borrow rate constraint, \`SavingsRateUpdated\` event
+- **Staking Operations** -- Stake/withdraw MyUSD, events, zero amount / insufficient balance / insufficient allowance errors, multiple stakes
+- **Withdrawal Operations** -- Withdraw staked tokens, events, no balance error, withdrawal after partial time with no interest
+- **Savings Interest Accrual** -- Zero rate, 8% annual, partial periods, multiple rate changes`}
 
 Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
