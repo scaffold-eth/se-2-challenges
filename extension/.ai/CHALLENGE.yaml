@@ -135,7 +135,7 @@ checkpoints:
         foundry: "packages/foundry/contracts/Lending.sol"
       test:
         hardhat: "yarn test --grep 'Collateral Operations'"
-        foundry: "yarn test --match-test 'Collateral'"
+        foundry: "yarn test --match-test 'Checkpoint1'"
       hints:
         - "For `addCollateral`: it's just `s_userCollateral[msg.sender] += msg.value` after the validation check."
         - |
@@ -253,7 +253,7 @@ checkpoints:
         foundry: "packages/foundry/contracts/Lending.sol"
       test:
         hardhat: "yarn test --grep 'Collateral Operations'"
-        foundry: "yarn test --match-test 'Collateral'"
+        foundry: "yarn test --match-test 'Checkpoint1'"
       hints:
         - "`calculateCollateralValue` is a one-liner: `return (s_userCollateral[user] * i_cornDEX.currentPrice()) / 1e18;`"
         - |
@@ -397,7 +397,7 @@ checkpoints:
         foundry: "packages/foundry/contracts/Lending.sol"
       test:
         hardhat: "yarn test --grep 'Borrowing Operations|Repayment Operations|Collateral Operations'"
-        foundry: "yarn test --match-test 'Borrowing|Repayment|Collateral'"
+        foundry: "yarn test --match-test 'Checkpoint3'"
       hints:
         - "For `borrowCorn`: update mapping first, validate, then transfer. The order matters — `_validatePosition` checks the new state."
         - |
@@ -536,7 +536,7 @@ checkpoints:
         foundry: "packages/foundry/contracts/Lending.sol"
       test:
         hardhat: "yarn test --grep 'Liquidation'"
-        foundry: "yarn test --match-test 'Liquidation'"
+        foundry: "yarn test --match-test 'Checkpoint4'"
       hints:
         - "Check `isLiquidatable(user)` first. Then verify `i_corn.balanceOf(msg.sender) >= userDebt`. Use `transferFrom` to pull the CORN from the liquidator."
         - |
