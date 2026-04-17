@@ -149,14 +149,14 @@ yarn start          # Start Next.js frontend at http://localhost:3000
 yarn deploy --reset
 
 # Testing
-${solidityFramework === "hardhat" ? `yarn test           # Run all challenge tests` : `yarn foundry:test   # Run all challenge tests`}
+yarn test           # Run all challenge tests
 
-${solidityFramework === "hardhat" ? `# Simulation scripts (run after yarn chain + yarn deploy)
-yarn hardhat run scripts/runWhitelistOracleBots.ts    # Simulate whitelist oracle reporters
-yarn hardhat run scripts/runStakingOracleBots.ts      # Simulate staking oracle nodes
-yarn hardhat run scripts/runOptimisticBots.ts         # Simulate optimistic oracle participants
+# Simulation scripts (run after yarn chain + yarn deploy)
+yarn simulate:whitelist    # Simulate whitelist oracle reporters
+yarn simulate:staking      # Simulate staking oracle nodes
+yarn simulate:optimistic   # Simulate optimistic oracle participants
 
-` : ``}# Code quality
+# Code quality
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
@@ -175,9 +175,7 @@ yarn vercel         # Deploy frontend to Vercel
 yarn vercel --prod  # Redeploy to production URL
 \`\`\`
 
-${solidityFramework === "hardhat" ? `Note: The simulation bot scripts are defined in the hardhat package as \`simulate:whitelist\`, \`simulate:staking\`, and \`simulate:optimistic\`. Run them from the \`packages/hardhat\` directory or use the full \`yarn hardhat run\` commands shown above.
-
-` : ``}## Smart Contracts
+## Smart Contracts
 
 ### SimpleOracle.sol (Provided, DO NOT EDIT)
 
@@ -498,7 +496,7 @@ The grading tests cover the following areas:
 - **Checkpoint 2 (${solidityFramework === "hardhat" ? "StakingOracle.ts" : "StakingOracle.t.sol"})** -- ~40+ tests: node registration with validation, price reporting with bucket tracking, reward claiming, effective stake with inactivity penalties, bucket finalization (median recording), slashing mechanism (deviation detection >10%, reward distribution, node removal at zero stake, double-slash prevention, only past buckets), node exit with waiting period, outlier detection
 - **Checkpoints 4-6 (${solidityFramework === "hardhat" ? "OptimisticOracle.ts" : "OptimisticOracle.t.sol"})** -- ~50+ tests: deployment and constants, event assertion with validation, outcome proposal with bonding, outcome dispute, time window validation, undisputed/disputed reward claiming, refund claiming, dispute settlement by decider, state transitions, resolution queries
 
-Run with \`${solidityFramework === "hardhat" ? "yarn test" : "yarn foundry:test"}\`. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
