@@ -474,7 +474,20 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 yarn simulate
 ```
 
-This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
+This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running!
+
+<Tabs>
+<Tab label="Hardhat">
+
+You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
+
+</Tab>
+<Tab label="Foundry">
+
+You can check out `packages/foundry/scripts-js/simulate/marketSimulator.js` to adjust the default settings or change the logic on the bot accounts.
+
+</Tab>
+</Tabs>
 
 > 👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 

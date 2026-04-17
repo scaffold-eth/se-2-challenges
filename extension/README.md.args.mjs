@@ -432,7 +432,7 @@ ${solidityFramework === "hardhat" ? `> 💡 Since we added all those complex hel
 yarn simulate
 \`\`\`
 
-This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out \`packages/hardhat/scripts/marketSimulator.ts\` to adjust the default settings or change the logic on the bot accounts.
+This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out ${solidityFramework === "hardhat" ? `\`packages/hardhat/scripts/marketSimulator.ts\`` : `\`packages/foundry/scripts-js/simulate/marketSimulator.js\``} to adjust the default settings or change the logic on the bot accounts.
 
 >👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 
