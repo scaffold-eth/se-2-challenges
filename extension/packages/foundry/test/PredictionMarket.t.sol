@@ -45,8 +45,14 @@ contract PredictionMarketTest is Test {
             PERCENTAGE_LOCKED
         )));
 
-        yesToken = PredictionMarketToken(predictionMarket.i_yesToken());
-        noToken = PredictionMarketToken(predictionMarket.i_noToken());
+        // Tolerate missing i_yesToken/i_noToken selectors so Checkpoint 2 tests can run
+        // before the learner has implemented Checkpoint 3.
+        (bool yesOk, bytes memory yesData) =
+            address(predictionMarket).staticcall(abi.encodeWithSignature("i_yesToken()"));
+        (bool noOk, bytes memory noData) =
+            address(predictionMarket).staticcall(abi.encodeWithSignature("i_noToken()"));
+        if (yesOk && yesData.length == 32) yesToken = PredictionMarketToken(abi.decode(yesData, (address)));
+        if (noOk && noData.length == 32) noToken = PredictionMarketToken(abi.decode(noData, (address)));
     }
 
     // ============================================================
@@ -299,9 +305,11 @@ contract PredictionMarketTest is Test {
             owner, oracle, "Test Question 2", INITIAL_TOKEN_VALUE, INITIAL_PROBABILITY, PERCENTAGE_LOCKED
         )));
 
+        // Hoist token read before vm.prank — pm2.i_noToken() inline would consume the prank.
+        address pm2NoToken = pm2.i_noToken();
         vm.prank(oracle);
         vm.expectEmit(true, false, false, true);
-        emit IPredictionMarket.MarketReported(oracle, IPredictionMarket.Outcome.NO, pm2.i_noToken());
+        emit IPredictionMarket.MarketReported(oracle, IPredictionMarket.Outcome.NO, pm2NoToken);
         pm2.report(IPredictionMarket.Outcome.NO);
     }
 
@@ -427,14 +435,15 @@ contract PredictionMarketTest is Test {
     }
 
     function test_Checkpoint7_ProbabilityWithLiquidityChanges() public {
-        uint256 initialTokenAmount = (INITIAL_LIQUIDITY * PRECISION) / INITIAL_TOKEN_VALUE;
+        // Use live totalSupply() as the "tokens sold" reference. A frozen initialTokenAmount
+        // underflows after addLiquidity grows supply (JS BigInt masks this via signed arithmetic).
 
         // Add liquidity - probability should stay 50%
         vm.prank(owner);
         predictionMarket.addLiquidity{value: 10 ether}();
 
-        uint256 currentTokenSold = initialTokenAmount - yesToken.balanceOf(address(predictionMarket));
-        uint256 totalTokensSold = currentTokenSold + (initialTokenAmount - noToken.balanceOf(address(predictionMarket)));
+        uint256 currentTokenSold = yesToken.totalSupply() - yesToken.balanceOf(address(predictionMarket));
+        uint256 totalTokensSold = currentTokenSold + (noToken.totalSupply() - noToken.balanceOf(address(predictionMarket)));
         uint256 probability = (currentTokenSold * PRECISION) / totalTokensSold;
         assertEq(probability, PRECISION / 2);
 
@@ -442,8 +451,8 @@ contract PredictionMarketTest is Test {
         vm.prank(owner);
         predictionMarket.addLiquidity{value: 20 ether}();
 
-        currentTokenSold = initialTokenAmount - yesToken.balanceOf(address(predictionMarket));
-        totalTokensSold = currentTokenSold + (initialTokenAmount - noToken.balanceOf(address(predictionMarket)));
+        currentTokenSold = yesToken.totalSupply() - yesToken.balanceOf(address(predictionMarket));
+        totalTokensSold = currentTokenSold + (noToken.totalSupply() - noToken.balanceOf(address(predictionMarket)));
         probability = (currentTokenSold * PRECISION) / totalTokensSold;
         assertEq(probability, PRECISION / 2);
     }
