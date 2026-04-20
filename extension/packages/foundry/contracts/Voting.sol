@@ -90,7 +90,7 @@ contract Voting is Ownable {
     /**
      * @notice Casts a vote using a zero-knowledge proof
      * @dev Enforces single-use via `s_nullifierHashes`. Public inputs order must
-     *      match the circuit: root, nullifierHash, vote, depth. The `_vote`
+     *      match the circuit: nullifierHash, root, vote, depth. The `_vote`
      *      value is interpreted as: 1 => yes, any other value => no. Emits `VoteCast`.
      * @param _proof Ultra Honk proof bytes
      * @param _root Merkle root corresponding to the registered commitments tree
