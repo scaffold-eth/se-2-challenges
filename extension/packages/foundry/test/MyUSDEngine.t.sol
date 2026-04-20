@@ -102,7 +102,7 @@ contract MyUSDEngineTest is Test {
         assertTrue(found, "CollateralAdded event should be emitted");
     }
 
-    function test_Checkpoint1_AllowWithdrawingWhenNoDebt() public {
+    function test_Checkpoint3_AllowWithdrawingWhenNoDebt() public {
         vm.startPrank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
         engine.withdrawCollateral(COLLATERAL_AMOUNT);
@@ -110,7 +110,7 @@ contract MyUSDEngineTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint1_PreventWithdrawingMoreThanDeposited() public {
+    function test_Checkpoint3_PreventWithdrawingMoreThanDeposited() public {
         vm.startPrank(user1);
         engine.addCollateral{ value: COLLATERAL_AMOUNT }();
 
