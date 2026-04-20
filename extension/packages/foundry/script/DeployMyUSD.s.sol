@@ -53,11 +53,13 @@ contract DeployMyUSD is ScaffoldETHDeploy {
         console.logString(string.concat("MyUSDEngine deployed at: ", vm.toString(address(engine))));
         require(address(engine) == futureEngineAddress, "Engine address mismatch");
 
-        // Seed liquidity — localhost only (matches Hardhat's localhost guard)
+        // Seed liquidity — localhost only (matches Hardhat's localhost guard).
+        // `yarn chain` boots anvil with --balance 100_000_000_000 so the deployer
+        // has enough real ETH to fund a deep DEX and a large collateral position.
         if (block.chainid == 31337) {
-            uint256 ethCollateralAmount = 1000 ether;
-            uint256 ethDEXAmount = 100 ether;
-            uint256 myUSDAmount = DEFAULT_ETH_PRICE * 100;
+            uint256 ethCollateralAmount = 3e7 ether;
+            uint256 ethDEXAmount = 1e7 ether;
+            uint256 myUSDAmount = DEFAULT_ETH_PRICE * 1e7;
 
             engine.addCollateral{ value: ethCollateralAmount }();
             engine.mintMyUSD(myUSDAmount);

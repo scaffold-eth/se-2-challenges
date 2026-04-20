@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "chain": "make setup-anvil-wallet && anvil --balance 100000000000",
+    "simulate": "node scripts-js/simulate/marketSimulator.js",
+    "interest-rate-controller": "node scripts-js/simulate/interestRateController.js"
+  },
+  "dependencies": {
+    "blessed": "~0.1.81",
+    "blessed-contrib": "~4.11.0",
+    "viem": "~2.21.54"
+  }
+}
