@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import { Test, Vm } from "forge-std/Test.sol";
-import { Balloons } from "../contracts/Balloons.sol";
-import { DEX } from "../contracts/DEX.sol";
-import { IDEX } from "../contracts/IDEX.sol";
+import {Test, Vm} from "forge-std/Test.sol";
+import {Balloons} from "../contracts/Balloons.sol";
+import {DEX} from "../contracts/DEX.sol";
+import {IDEX} from "../contracts/IDEX.sol";
 
 contract DEXTest is Test {
     Balloons public balloons;
@@ -33,7 +33,7 @@ contract DEXTest is Test {
         balloons.transfer(user2, 10 ether);
         balloons.transfer(user3, 10 ether);
         balloons.approve(address(dex), 100 ether);
-        dex.init{ value: 5 ether }(5 ether);
+        dex.init{value: 5 ether}(5 ether);
         vm.stopPrank();
     }
 
@@ -46,7 +46,7 @@ contract DEXTest is Test {
 
         vm.startPrank(deployer);
         balloons.approve(address(dex), 100 ether);
-        dex.init{ value: 5 ether }(5 ether);
+        dex.init{value: 5 ether}(5 ether);
         vm.stopPrank();
 
         assertEq(dex.totalLiquidity(), 5 ether);
@@ -55,10 +55,10 @@ contract DEXTest is Test {
     function test_Checkpoint2_InitRevertsOnSecondCall() public {
         vm.startPrank(deployer);
         balloons.approve(address(dex), 100 ether);
-        dex.init{ value: 5 ether }(5 ether);
+        dex.init{value: 5 ether}(5 ether);
 
         vm.expectRevert(abi.encodeWithSelector(IDEX.DexAlreadyInitialized.selector));
-        dex.init{ value: 1 ether }(1 ether);
+        dex.init{value: 1 ether}(1 ether);
         vm.stopPrank();
     }
 
@@ -91,7 +91,7 @@ contract DEXTest is Test {
     function test_Checkpoint4_EthToTokenRevertsOnZeroEth() public {
         _initDex();
         vm.expectRevert(abi.encodeWithSelector(IDEX.InvalidEthAmount.selector));
-        dex.ethToToken{ value: 0 }();
+        dex.ethToToken{value: 0}();
     }
 
     function test_Checkpoint4_EthToTokenEmitsAndTransfers() public {
@@ -101,7 +101,7 @@ contract DEXTest is Test {
 
         vm.prank(user2);
         vm.recordLogs();
-        dex.ethToToken{ value: 1 ether }();
+        dex.ethToToken{value: 1 ether}();
 
         uint256 userBalAfter = balloons.balanceOf(user2);
         assertGt(userBalAfter, userBalBefore, "User should have more tokens after swap");
@@ -159,7 +159,7 @@ contract DEXTest is Test {
     function test_Checkpoint5_DepositRevertsOnZeroEth() public {
         _initDex();
         vm.expectRevert(abi.encodeWithSelector(IDEX.InvalidEthAmount.selector));
-        dex.deposit{ value: 0 }();
+        dex.deposit{value: 0}();
     }
 
     function test_Checkpoint5_DepositIncreasesLiquidityAndEmits() public {
@@ -173,7 +173,7 @@ contract DEXTest is Test {
         balloons.approve(address(dex), 100 ether);
 
         vm.recordLogs();
-        dex.deposit{ value: 5 ether }();
+        dex.deposit{value: 5 ether}();
         vm.stopPrank();
 
         uint256 liquidityEnd = dex.totalLiquidity();
@@ -197,7 +197,7 @@ contract DEXTest is Test {
         _initDex();
 
         vm.prank(user2);
-        vm.expectRevert(abi.encodeWithSelector(IDEX.InsufficientLiquidity.selector));
+        vm.expectRevert(abi.encodeWithSelector(IDEX.InsufficientLiquidity.selector, uint256(0), uint256(1 ether)));
         dex.withdraw(1 ether);
     }
 

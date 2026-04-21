@@ -11,7 +11,7 @@ interface IDEX {
     error DexAlreadyInitialized();
     error InvalidEthAmount();
     error InvalidTokenAmount();
-    error InsufficientLiquidity();
+    error InsufficientLiquidity(uint256 available, uint256 required);
 
     ////////////////
     /// Events /////
