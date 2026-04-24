@@ -57,7 +57,7 @@ Before you begin, you need to install the following tools:
 
 ```sh
 
-npx create-eth@2.0.13 -e challenge-oracles challenge-oracles
+npx create-eth@2.0.15 -e challenge-oracles challenge-oracles
 
 cd challenge-oracles
 
