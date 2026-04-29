@@ -49,7 +49,7 @@ Mark checkpoint "[checkpoint-id]" as completed with method "skipped". Set next c
 ```
 
 ### Step 7: Continue
-- If more checkpoints remain, present the next checkpoint's context (follow the teaching flow from `start-content.md`)
+- If more checkpoints remain, present the next checkpoint's context **VERBATIM** (follow the teaching flow from `start-content.md`)
 - If all checkpoints are complete, show the `completion_message` from CHALLENGE.yaml
 
 ## Important
