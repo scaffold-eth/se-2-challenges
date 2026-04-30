@@ -1,3 +1,1 @@
-export const extraProfileDefaults = `via_ir = true
-optimizer = true
-optimizer_runs = 200`;
+export const extraProfileDefaults = "via_ir = true";
