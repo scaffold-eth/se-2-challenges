@@ -1,6 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
 export const fullContentOverride = ({solidityFramework}) => {
-const isHardhat = solidityFramework === "hardhat";
 const isFoundry = solidityFramework === "foundry";
 const contractsDir = isFoundry ? "foundry" : "hardhat";
 
@@ -178,7 +177,7 @@ The core ZK voting contract. Inherits \`Ownable\`. Manages voter allowlist, comm
 #### Functions to Implement (by Checkpoint)
 
 **Checkpoint 2 -- Registration:**
-1. **\`register(uint256 _commitment) public\`** -- Called by allowlisted voters to register their commitment. Must check: voter is allowlisted and hasn't already registered (revert with \`Voting__NotAllowedToVote\`), commitment is unique (revert with \`Voting__CommitmentAlreadyAdded\`). Insert commitment into LeanIMT via \`s_tree._insert(_commitment)\`, mark voter as registered, mark commitment as used, emit \`NewLeaf\` with the tree index and commitment value.
+1. **\`register(uint256 _commitment) public\`** -- Called by allowlisted voters to register their commitment. Must check: voter is allowlisted and hasn't already registered (revert with \`Voting__NotAllowedToVote\`), commitment is unique (revert with \`Voting__CommitmentAlreadyAdded\`). Insert commitment into LeanIMT via \`s_tree.insert(_commitment)\`, mark voter as registered, mark commitment as used, emit \`NewLeaf\` with the tree index and commitment value.
 
 **Checkpoint 6 -- Voting:**
 2. **\`vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes32 _vote, bytes32 _depth) public\`** -- Verify ZK proof via \`s_verifier.verify()\`. Public inputs order passed to verifier: \`[_nullifierHash, _root, _vote, _depth]\`. Check: root is not \`bytes32(0)\` (revert with \`Voting__EmptyTree\`), root matches \`bytes32(s_tree.root())\` (revert with \`Voting__InvalidRoot\`), nullifier not already used (revert with \`Voting__NullifierHashAlreadyUsed\`), proof is valid (revert with \`Voting__InvalidProof\`). Mark nullifier as used. Increment \`s_yesVotes\` if \`_vote == bytes32(uint256(1))\`, otherwise increment \`s_noVotes\`. Emit \`VoteCast\` with nullifier hash, \`msg.sender\`, boolean vote, \`block.timestamp\`, and updated vote counts.
