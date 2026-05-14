@@ -168,6 +168,8 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 🎉 Excellent! Re-deploy your contract with \`yarn deploy --reset\`. We want to do a fresh deploy of all the contracts so that they each have correct constructor parameters. Now try out your methods from the front end and see if you need to make any changes.
 
+> 🧪 Run the tests for this checkpoint: \`${solidityFramework === "hardhat" ? `yarn test --grep "Collateral Operations"` : `yarn test --match-test "test_Collateral_"`}\`
+
 💰 Don't forget to give yourself some ETH from the faucet!
 
 ![faucet](https://github.com/user-attachments/assets/e8b8ac20-19fa-45d4-bc5a-8049ac04487e)
@@ -296,6 +298,8 @@ ${solidityFramework === "hardhat" ? `> 💡 Since we added all those complex hel
 
 🔄 Run \`yarn deploy --reset\` so you can play with borrowing and repaying on the front end. You can adjust the price of CORN by pressing the + and - buttons under CORN price in the top right corner. See how your open position's collateral value shifts as the price moves.
 
+> 🧪 Run the tests for this checkpoint: \`${solidityFramework === "hardhat" ? `yarn test --grep "Borrowing Operations|Repayment Operations"` : `yarn test --match-test "test_(Borrowing|Repayment)_"`}\`
+
 <details><summary>Solution Code</summary>
 
 \`\`\`solidity
@@ -409,6 +413,8 @@ ${solidityFramework === "hardhat" ? `> 💡 Since we added all those complex hel
 
 🔄 You know the drill. Run \`yarn deploy --reset\` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to \`localhost:3000\` so you can simulate multiple accounts. You can also borrow and then switch wallets and use the swap button in the CORN wallet (on the right side of the screen) to acquire some CORN. Now adjust the price using the price controls in the CORN price module and liquidate the borrower.
 
+> 🧪 Run the tests for this checkpoint: \`${solidityFramework === "hardhat" ? `yarn test --grep "Liquidation"` : `yarn test --match-test "test_Liquidation_"`}\`
+
 🫴 Notice how the borrower still has their borrowed CORN after they get liquidated. They get to keep their CORN since the liquidator paid their CORN debt back to the protocol on their behalf.
 
 ---
@@ -423,6 +429,8 @@ ${solidityFramework === "hardhat" ? `> 💡 Since we added all those complex hel
 ## Checkpoint 6: Final Touches and Simulation
 
 🔙 Throwback to the \`withdrawCollateral\` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a \`_validatePosition\` check to make sure that never happens. You should add it after the \`s_userCollateral\` mapping is updated so that it is checking the final state instead of the current state. Skip the check if they don't have any borrowed CORN.
+
+> 🧪 Run the tests for this checkpoint: \`${solidityFramework === "hardhat" ? `yarn test --grep "should prevent withdrawing collateral if it makes the position liquidatable"` : `yarn test --match-test "test_Withdraw_"`}\`
 
 🎉 Great work! Your contract has all the necessary functionality to help people get CORN loans.
 

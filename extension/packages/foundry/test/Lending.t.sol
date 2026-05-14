@@ -48,22 +48,22 @@ contract LendingTest is Test {
     }
 
     // ============================================================
-    // Checkpoint 1: Collateral Operations
+    // Collateral Operations
     // ============================================================
 
-    function test_Checkpoint1_AllowAddingCollateral() public {
+    function test_Collateral_AllowAddingCollateral() public {
         vm.prank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
         assertEq(lending.s_userCollateral(user1), COLLATERAL_AMOUNT);
     }
 
-    function test_Checkpoint1_RequireNonZeroValue() public {
+    function test_Collateral_RequireNonZeroValue() public {
         vm.prank(user1);
         vm.expectRevert(abi.encodeWithSelector(bytes4(keccak256("Lending__InvalidAmount()"))));
         lending.addCollateral{ value: 0 }();
     }
 
-    function test_Checkpoint1_EmitCollateralAddedEvent() public {
+    function test_Collateral_EmitCollateralAddedEvent() public {
         vm.prank(user1);
         vm.recordLogs();
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
@@ -78,7 +78,7 @@ contract LendingTest is Test {
         assertTrue(found, "CollateralAdded event should be emitted");
     }
 
-    function test_Checkpoint1_AllowWithdrawingWhenNoDebt() public {
+    function test_Collateral_AllowWithdrawingWhenNoDebt() public {
         vm.startPrank(user1);
         uint256 balanceInitial = user1.balance;
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
@@ -93,7 +93,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint1_PreventWithdrawingMoreThanDeposited() public {
+    function test_Collateral_PreventWithdrawingMoreThanDeposited() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -102,7 +102,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint1_PreventWithdrawingZero() public {
+    function test_Collateral_PreventWithdrawingZero() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -111,7 +111,11 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_PreventWithdrawIfMakesLiquidatable() public {
+    // ============================================================
+    // Withdraw Protection
+    // ============================================================
+
+    function test_Withdraw_PreventIfMakesLiquidatable() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
         lending.borrowCorn(BORROW_AMOUNT);
@@ -122,10 +126,10 @@ contract LendingTest is Test {
     }
 
     // ============================================================
-    // Checkpoint 3: Borrowing Operations
+    // Borrowing Operations
     // ============================================================
 
-    function test_Checkpoint3_AllowWhenSufficientlyCollateralized() public {
+    function test_Borrowing_AllowWhenSufficientlyCollateralized() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -136,7 +140,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_PreventWhenInsufficientlyCollateralized() public {
+    function test_Borrowing_PreventWhenInsufficientlyCollateralized() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -146,7 +150,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_PreventZeroBorrowAmount() public {
+    function test_Borrowing_PreventZeroBorrowAmount() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -155,7 +159,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_EmitAssetBorrowedEvent() public {
+    function test_Borrowing_EmitAssetBorrowedEvent() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
 
@@ -174,10 +178,10 @@ contract LendingTest is Test {
     }
 
     // ============================================================
-    // Checkpoint 3: Repayment Operations
+    // Repayment Operations
     // ============================================================
 
-    function test_Checkpoint3_AllowRepayingFullAmount() public {
+    function test_Repayment_AllowRepayingFullAmount() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
         lending.borrowCorn(BORROW_AMOUNT);
@@ -188,7 +192,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_AllowPartialRepayment() public {
+    function test_Repayment_AllowPartialRepayment() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
         lending.borrowCorn(BORROW_AMOUNT);
@@ -199,7 +203,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_PreventRepayingMoreThanBorrowed() public {
+    function test_Repayment_PreventRepayingMoreThanBorrowed() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
         lending.borrowCorn(BORROW_AMOUNT);
@@ -210,7 +214,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_PreventZeroRepayment() public {
+    function test_Repayment_PreventZeroRepayment() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
         lending.borrowCorn(BORROW_AMOUNT);
@@ -220,7 +224,7 @@ contract LendingTest is Test {
         vm.stopPrank();
     }
 
-    function test_Checkpoint3_EmitAssetRepaidEvent() public {
+    function test_Repayment_EmitAssetRepaidEvent() public {
         vm.startPrank(user1);
         lending.addCollateral{ value: COLLATERAL_AMOUNT }();
         lending.borrowCorn(BORROW_AMOUNT);
@@ -241,7 +245,7 @@ contract LendingTest is Test {
     }
 
     // ============================================================
-    // Checkpoint 4: Liquidation
+    // Liquidation
     // ============================================================
 
     function _setupLiquidation() internal {
@@ -256,7 +260,7 @@ contract LendingTest is Test {
         cornToken.approve(address(lending), BORROW_AMOUNT);
     }
 
-    function test_Checkpoint4_AllowWhenPositionUnsafe() public {
+    function test_Liquidation_AllowWhenPositionUnsafe() public {
         _setupLiquidation();
 
         // Drop price of ETH by swapping a large amount
@@ -275,7 +279,7 @@ contract LendingTest is Test {
         assertTrue(afterBalance > beforeBalance);
     }
 
-    function test_Checkpoint4_PreventOnSafePositions() public {
+    function test_Liquidation_PreventOnSafePositions() public {
         _setupLiquidation();
 
         assertFalse(lending.isLiquidatable(user1));
@@ -285,7 +289,7 @@ contract LendingTest is Test {
         lending.liquidate(user1);
     }
 
-    function test_Checkpoint4_RequireEnoughCorn() public {
+    function test_Liquidation_RequireEnoughCorn() public {
         _setupLiquidation();
 
         // Drop price
@@ -304,7 +308,7 @@ contract LendingTest is Test {
         lending.liquidate(user1);
     }
 
-    function test_Checkpoint4_EmitEvent() public {
+    function test_Liquidation_EmitEvent() public {
         _setupLiquidation();
 
         // Drop price
@@ -326,5 +330,5 @@ contract LendingTest is Test {
         assertTrue(found, "Liquidation event should be emitted");
     }
 
-    receive() external payable {}
+    receive() external payable { }
 }

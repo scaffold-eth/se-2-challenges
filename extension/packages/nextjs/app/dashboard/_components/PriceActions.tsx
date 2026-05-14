@@ -1,8 +1,9 @@
 import React from "react";
 import TooltipInfo from "./TooltipInfo";
+import { useWatchBalance } from "@scaffold-ui/hooks";
 import { formatEther, parseEther } from "viem";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { tokenName } from "~~/utils/constant";
 
 const PriceActions = () => {
@@ -10,6 +11,9 @@ const PriceActions = () => {
     contractName: "CornDEX",
     functionName: "currentPrice",
   });
+
+  const { data: cornDEXContract } = useDeployedContractInfo({ contractName: "CornDEX" });
+  const { data: dexBalance } = useWatchBalance({ address: cornDEXContract?.address });
 
   const { writeContractAsync } = useScaffoldWriteContract({ contractName: "MovePrice" });
 
@@ -23,11 +27,12 @@ const PriceActions = () => {
   const renderETHPrice = price ? Number(formatEther(price)).toFixed(2) : <div className="mr-1 skeleton w-10 h-4"></div>;
 
   const handleClick = async (isIncrease: boolean) => {
-    if (price === undefined) {
-      console.error("Price is undefined");
+    if (price === undefined || !dexBalance) {
+      console.error("Price or DEX balance is undefined");
       return;
     }
-    const amount = parseEther("50000");
+    // Swap 5% of the DEX's ETH reserve so each click produces a meaningful but bounded price move
+    const amount = dexBalance.value / 20n;
     const amountToSell = isIncrease ? amount : -amount * 1000n;
 
     try {

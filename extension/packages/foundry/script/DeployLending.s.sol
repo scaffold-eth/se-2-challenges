@@ -26,7 +26,9 @@ contract DeployLending is ScaffoldETHDeploy {
             corn.mintTo(deployer, 1_000_000 ether);
 
             // Give ETH and CORN to MovePrice contract for price manipulation testing
-            vm.deal(address(movePrice), 5000 ether);
+            // (vm.deal is a cheatcode and doesn't broadcast to the live node, so use a real transfer)
+            (bool sent,) = address(movePrice).call{value: 5000 ether}("");
+            require(sent, "Failed to fund MovePrice");
             corn.mintTo(address(movePrice), 5_000_000 ether);
 
             // Mint CORN to lending contract for borrowers
