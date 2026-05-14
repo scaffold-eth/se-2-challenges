@@ -188,13 +188,26 @@ The core ZK voting contract. Inherits \`Ownable\`. Manages voter allowlist, comm
 - **\`getVotingData() public view\`** -- Returns question, owner, vote counts, tree size/depth/root
 - **\`getVoterData(address _voter) public view\`** -- Returns voter allowlist and registration status
 
-### Verifier.sol (Interface, DO NOT EDIT)
+### Verifier.sol (Placeholder Interface -- REPLACED in Checkpoint 6)
+
+Through Checkpoints 1-5 this file holds only the \`IVerifier\` interface as a placeholder:
 
 \`\`\`solidity
 interface IVerifier {
     function verify(bytes calldata _proof, bytes32[] calldata _publicInputs) external view returns (bool);
 }
 \`\`\`
+
+**Checkpoint 6 step 1 -- file overwrite, NOT cross-package import:**
+Replace \`packages/${contractsDir}/contracts/Verifier.sol\` with the full \`HonkVerifier\` contract
+generated in Checkpoint 4 at \`packages/circuits/target/Verifier.sol\`.
+Do this by overwriting the file contents
+(e.g. \`cp packages/circuits/target/Verifier.sol packages/${contractsDir}/contracts/Verifier.sol\`).
+Do NOT try to import the generated file from its \`packages/circuits/target/\` location --
+cross-package imports from the circuits package do not resolve from the
+${isFoundry ? "Foundry deploy script" : "Hardhat package"} and there is no workaround.
+After replacement, the deploy script imports \`HonkVerifier\` from the same
+\`../contracts/Verifier.sol\` path it already uses.
 
 ### VerifierMock.sol (Testing Mock, DO NOT EDIT)
 
