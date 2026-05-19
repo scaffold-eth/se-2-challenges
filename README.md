@@ -36,13 +36,16 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 - [Node (v18 LTS)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (only if choosing Foundry as framework)
 
 📥 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.13 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
+npx create-eth@2.0.18 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
 cd challenge-over-collateralized-lending
 ```
+
+When prompted, choose your preferred framework (Hardhat or Foundry).
 
 > 💻 in the same terminal, start your local network (a blockchain emulator in your computer):
 
@@ -96,7 +99,18 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 - 💰 Lending ~ This is the contract that facilitates collateral depositing, loan creation and liquidation of loans in bad positions
 - 📊 MovePrice ~ This contract is only used for making large swaps in the DEX to change the asset ratio, changing the price reported by the DEX
 
+<Tabs>
+<Tab label="Hardhat">
+
 📁 `packages/hardhat/contracts/Lending.sol` Is where you will spend most of your time.
+
+</Tab>
+<Tab label="Foundry">
+
+📁 `packages/foundry/contracts/Lending.sol` Is where you will spend most of your time.
+
+</Tab>
+</Tabs>
 
 > 🖥️ Below is what your front-end will look like with no implementation code within your smart contracts yet. The buttons will likely break because there are no functions tied to them yet!
 
@@ -183,6 +197,19 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 </details>
 
 🎉 Excellent! Re-deploy your contract with `yarn deploy --reset`. We want to do a fresh deploy of all the contracts so that they each have correct constructor parameters. Now try out your methods from the front end and see if you need to make any changes.
+
+<Tabs>
+<Tab label="Hardhat">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --grep "Collateral Operations"`
+
+</Tab>
+<Tab label="Foundry">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --match-test "test_Collateral_"`
+
+</Tab>
+</Tabs>
 
 💰 Don't forget to give yourself some ETH from the faucet!
 
@@ -274,7 +301,6 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 ```
 
 </details>
-</details>
 
 ---
 
@@ -287,7 +313,18 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 ## Checkpoint 4: 🌽 Let's Borrow Some CORN!
 
+<Tabs>
+<Tab label="Hardhat">
+
 > 💡 Since we added all those complex helper functions in the last step it may be helpful to import "hardhat/console.sol" and use console.logs whenever you get stuck and want to know what is happening as you execute each function.
+
+</Tab>
+<Tab label="Foundry">
+
+> 💡 Since we added all those complex helper functions in the last step it may be helpful to import "forge-std/console2.sol" and use console2.log whenever you get stuck and want to know what is happening as you execute each function.
+
+</Tab>
+</Tabs>
 
 👀 Go to the `borrowCorn` function.
 
@@ -312,6 +349,19 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 📢 And finally, emit the `AssetRepaid` event.
 
 🔄 Run `yarn deploy --reset` so you can play with borrowing and repaying on the front end. You can adjust the price of CORN by pressing the + and - buttons under CORN price in the top right corner. See how your open position's collateral value shifts as the price moves.
+
+<Tabs>
+<Tab label="Hardhat">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --grep "Borrowing Operations|Repayment Operations"`
+
+</Tab>
+<Tab label="Foundry">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --match-test "test_(Borrowing|Repayment)_"`
+
+</Tab>
+</Tabs>
 
 <details><summary>Solution Code</summary>
 
@@ -427,6 +477,19 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 🔄 You know the drill. Run `yarn deploy --reset` so you can try liquidating on the front end. It may be useful to open a private browser tab and go to `localhost:3000` so you can simulate multiple accounts. You can also borrow and then switch wallets and use the swap button in the CORN wallet (on the right side of the screen) to acquire some CORN. Now adjust the price using the price controls in the CORN price module and liquidate the borrower.
 
+<Tabs>
+<Tab label="Hardhat">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --grep "Liquidation"`
+
+</Tab>
+<Tab label="Foundry">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --match-test "test_Liquidation_"`
+
+</Tab>
+</Tabs>
+
 🫴 Notice how the borrower still has their borrowed CORN after they get liquidated. They get to keep their CORN since the liquidator paid their CORN debt back to the protocol on their behalf.
 
 ---
@@ -442,6 +505,19 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 
 🔙 Throwback to the `withdrawCollateral` function. What happens when a borrower withdraws collateral exceeding the safe position ratio? You should add a `_validatePosition` check to make sure that never happens. You should add it after the `s_userCollateral` mapping is updated so that it is checking the final state instead of the current state. Skip the check if they don't have any borrowed CORN.
 
+<Tabs>
+<Tab label="Hardhat">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --grep "should prevent withdrawing collateral if it makes the position liquidatable"`
+
+</Tab>
+<Tab label="Foundry">
+
+> 🧪 Run the tests for this checkpoint: `yarn test --match-test "test_Withdraw_"`
+
+</Tab>
+</Tabs>
+
 🎉 Great work! Your contract has all the necessary functionality to help people get CORN loans.
 
 🍨 Now you get to see something real special. Run `yarn deploy --reset` as you usually do. Then run:
@@ -450,7 +526,20 @@ For this challenge we will not focus on the Lending aspect as much as the other 
 yarn simulate
 ```
 
-This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running! You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
+This command will spin up several bot accounts that start using your lending platform! Look at the front end and interact while they are running!
+
+<Tabs>
+<Tab label="Hardhat">
+
+You can check out `packages/hardhat/scripts/marketSimulator.ts` to adjust the default settings or change the logic on the bot accounts.
+
+</Tab>
+<Tab label="Foundry">
+
+You can check out `packages/foundry/scripts-js/simulate/marketSimulator.js` to adjust the default settings or change the logic on the bot accounts.
+
+</Tab>
+</Tabs>
 
 > 👇 Keep on going and try to tackle these optional gigachad side quests. The front end doesn't have any special components for using these side quests but you can use the Debug Tab to use them
 
@@ -578,6 +667,9 @@ contract FlashLoanLiquidator {
 
 </details>
 
+<Tabs>
+<Tab label="Hardhat">
+
 📋 Now you need to add your new contract to the deployment script. You can just add it beneath all the existing logic in `packages/hardhat/deploy/00_deploy_contracts.ts`.
 
 <details markdown='1'><summary>🚀 Deployment Code</summary>
@@ -598,6 +690,29 @@ const deployContracts: DeployFunction = async function (
 ```
 
 </details>
+
+</Tab>
+<Tab label="Foundry">
+
+📋 Add the import and deployment to `packages/foundry/script/DeployLending.s.sol`.
+
+<details markdown='1'><summary>🚀 Deployment Code</summary>
+
+```solidity
+// Add to imports
+import "../contracts/FlashLoanLiquidator.sol";
+
+// Inside the run() function, after existing deployments:
+FlashLoanLiquidator flashLoanLiquidator = new FlashLoanLiquidator(
+    address(lending), address(cornDEX), address(corn)
+);
+console.logString(string.concat("FlashLoanLiquidator deployed at: ", vm.toString(address(flashLoanLiquidator))));
+```
+
+</details>
+
+</Tab>
+</Tabs>
 
 🔄 Run `yarn deploy --reset`.
 
@@ -807,6 +922,9 @@ contract Leverage {
 
 👨‍💼 The `Leverage` contract has a `claimOwnership` and `withdraw` function so that you can claim ownership of the contract before opening the position because the position is actually owned by this contract.
 
+<Tabs>
+<Tab label="Hardhat">
+
 📝 Lastly, add the deploy logic to the deployment script. Add it beneath all the existing logic in `packages/hardhat/deploy/00_deploy_contracts.ts`.
 
 <details markdown='1'><summary>🚀 Deployment Code</summary>
@@ -828,13 +946,47 @@ const deployContracts: DeployFunction = async function (
 
 </details>
 
+</Tab>
+<Tab label="Foundry">
+
+📝 Add the import and deployment to `packages/foundry/script/DeployLending.s.sol`.
+
+<details markdown='1'><summary>🚀 Deployment Code</summary>
+
+```solidity
+// Add to imports
+import "../contracts/Leverage.sol";
+
+// Inside the run() function, after existing deployments:
+Leverage leverage = new Leverage(
+    address(lending), address(cornDEX), address(corn)
+);
+console.logString(string.concat("Leverage deployed at: ", vm.toString(address(leverage))));
+```
+
+</details>
+
+</Tab>
+</Tabs>
+
 🔄 Run `yarn deploy --reset` to redeploy your contract and the associated contracts with new constructor parameters.
 
 🚀 Try opening a leveraged position in the Debug tab and see how changing the reserve amount affects your tolerance to changes in the market. Leverage is powerful stuff that will blow up in your face if you aren't careful.
 
 ## Checkpoint 7: 💾 Deploy your contracts! 🛰
 
+<Tabs>
+<Tab label="Hardhat">
+
 📡 Edit the `defaultNetwork` to [your choice of public EVM networks](https://ethereum.org/en/developers/docs/networks/) in `packages/hardhat/hardhat.config.ts`
+
+</Tab>
+<Tab label="Foundry">
+
+📡 Choose [your preferred public EVM network](https://ethereum.org/en/developers/docs/networks/) for deployment.
+
+</Tab>
+</Tabs>
 
 🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
 
@@ -842,9 +994,20 @@ const deployContracts: DeployFunction = async function (
 
 ⛽️ You will need to send ETH to your **deployer address** with your wallet, or get it from a public faucet of your chosen network.
 
-🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
+🚀 Run `yarn deploy` to deploy your smart contract to a public network.
+
+<Tabs>
+<Tab label="Hardhat">
 
 > 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` **OR** you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
+
+</Tab>
+<Tab label="Foundry">
+
+> 💬 Hint: You can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -864,7 +1027,7 @@ const deployContracts: DeployFunction = async function (
 
 > 📋 Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallet's` are only available on `hardhat` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 `burner wallets` are only available on `localhost` . You can enable them on every chain by setting `burnerWalletMode: "allNetworks"` in your frontend config (`scaffold.config.ts` in `packages/nextjs/`)
 
 #### Configuration of Third-Party Services for Production-Grade Apps.
 
@@ -873,9 +1036,22 @@ This is great to complete your **Speedrun Ethereum**.
 
 🔑 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
+<Tabs>
+<Tab label="Hardhat">
+
 - 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 
 - 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+<Tab label="Foundry">
+
+- 🔷`ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+
+- 📃`ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: It's recommended to store env's for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -886,6 +1062,18 @@ This is great to complete your **Speedrun Ethereum**.
 ✅ Run the `yarn verify --network your_network` command to verify your contracts on etherscan 🛰
 
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
+
+---
+
+## AI-Guided Learning Mode (Optional)
+
+This challenge includes an interactive AI-guided learning mode. Instead of reading through the checkpoints above, you can have an AI guide you step-by-step through building the smart contract.
+
+**How to use it:**
+1. Open the project in Cursor or VS Code with Claude Code
+2. Type `/start` to begin the guided challenge
+3. The AI will teach concepts, ask questions, and give you coding tasks
+4. Say "check" to validate your code, "hint" for help, or use `/skip` to see solutions
 
 ---
 
