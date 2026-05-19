@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "chain": "anvil --code-size-limit 50000",
+    "fork": "anvil --fork-url ${1:-mainnet} --chain-id 31337 --code-size-limit 50000"
+  },
+  "dependencies": {
+    "@zk-kit/lean-imt.sol": "^2.0.1",
+    "poseidon-solidity": "^0.0.5"
+  }
+}

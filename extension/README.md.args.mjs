@@ -1,6 +1,10 @@
 export const skipQuickStart = true;
 
-export const extraContents = `# 🚩 Challenge: ZK Voting
+export const extraContents = ({solidityFramework}) => {
+const isFoundry = solidityFramework === "foundry";
+const contractsDir = isFoundry ? "foundry" : "hardhat";
+
+return `# 🚩 Challenge: ZK Voting
 
 ![readme-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/readme-zk.png)
 
@@ -90,7 +94,7 @@ If you are using vscode you may want to install the [Noir Language Support](http
 Then download the challenge to your computer and install dependencies by running:
 
 \`\`\`javascript
-npx create-eth@2.0.10 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
+npx create-eth@2.0.18 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
 cd challenge-zk-voting
 \`\`\`
 
@@ -165,7 +169,7 @@ Our contract will support three main functions:
 
 🔍 Next, switch to the **\`Debug Contracts\`** page. For now, you should see just one contract there — **\`Voting\`**.
 
-📁 The contract lives in **\`packages/hardhat/contracts/Voting.sol\`**
+📁 The contract lives in **\`packages/${contractsDir}/contracts/Voting.sol\`**
 
 🔍 Open it up and check out the placeholder functions. Each of them represents a key piece of the voting logic.
 If you can already explain what they’re supposed to do, you’re ahead of the game! 😎
@@ -370,7 +374,7 @@ Scroll down to the functions **\`getVotingData()\`** and **\`getVoterData(addres
 Then run:
 
 \`\`\`javascript
-yarn test --grep "Checkpoint2"
+yarn test ${isFoundry ? '--match-test' : '--grep'} "Checkpoint2"
 \`\`\`
 
 ### 🚀 Tests Passed? You’re Almost There!
@@ -379,12 +383,15 @@ Great job! If your tests are passing, you’re just one step away from deploymen
 
 Before deploying, make one important change:
 
-1. Open **\`00_deploy_your_voting_contract.ts\`**
+${isFoundry ? `1. Open **\`DeployVoting.s.sol\`**
+2. Set your address as the \`ownerAddress\`
+
+> 💡 In Foundry, library linking is handled automatically at compile time — no need to deploy PoseidonT3 or LeanIMT separately.` : `1. Open **\`00_deploy_your_voting_contract.ts\`**
 2. Set your address as the \`ownerAddress\`
 3. Uncomment deployment of both \`poseidon3\` and \`leanIMT\`
 4. Set LeanIMT library address (\`leanIMT.address\`) at line 62
 
-> 💡 **Poseidon3** is the hash function we use. More on that later.
+> 💡 **Poseidon3** is the hash function we use. More on that later.`}
 
 Once that’s done, you’re ready to deploy! 🔗
 
@@ -957,11 +964,14 @@ You’ve built the circuit, created the verifier contract — now it’s time to
 
 ### 🔹 Step 1: Bring in the Verifier Contract
 
-1. Replace the placeholder verifier contract **\`Verifier.sol\`** in **\`packages/hardhat/contracts\`** with the newly generated contract located in **\`packages/circuits/target\`**.
-2. Open **\`00_deploy_your_voting_contract.ts\`** and:
+1. Replace the placeholder verifier contract **\`Verifier.sol\`** in **\`packages/${contractsDir}/contracts\`** with the newly generated contract located in **\`packages/circuits/target\`**.
+${isFoundry ? `2. Open **\`DeployVoting.s.sol\`** and:
+   - Uncomment the verifier deployment
+   - Comment out the placeholder \`verifierAddress\`
+   - Update the constructor call to match your setup` : `2. Open **\`00_deploy_your_voting_contract.ts\`** and:
    - Uncomment the verifier deployment
    - Comment out the \`verifierAddress\`
-   - Update the \`args\` to match your setup
+   - Update the \`args\` to match your setup`}
 
 3. In **\`Voting.sol\`**:
    - At the top, import the verifier contract (just uncomment the existing line)
@@ -1122,7 +1132,7 @@ function vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes3
 Once implemented, run your tests to make sure everything works:
 
 \`\`\`javascript
-yarn test --grep "Checkpoint6"
+yarn test ${isFoundry ? '--match-test' : '--grep'} "Checkpoint6"
 \`\`\`
 
 ### **✅ Tests Passed? You're So Close!**
@@ -1799,9 +1809,9 @@ For **production-grade apps**, you should generate your own API keys to avoid hi
 
 Configure your keys here:
 
-- 🔷 **\`ALCHEMY_API_KEY\`** in \`packages/hardhat/.env\` and \`packages/nextjs/.env.local\` → [Get key from Alchemy](https://dashboard.alchemy.com/)
+- 🔷 **\`ALCHEMY_API_KEY\`** in \`packages/${contractsDir}/.env\` and \`packages/nextjs/.env.local\` → [Get key from Alchemy](https://dashboard.alchemy.com/)
 - 🔑 **\`NEXT_PUBLIC_PIMLICO_API_KEY\`** in \`packages/nextjs/.env.local\` → [Get key from Pimlico](https://dashboard.pimlico.io/)
-- 📃 **\`ETHERSCAN_API_KEY\`** in \`packages/hardhat/.env\` → [Get key from Etherscan](https://etherscan.io/myapikey)
+- 📃 **\`ETHERSCAN_API_KEY\`** in \`packages/${contractsDir}/.env\` → [Get key from Etherscan](https://etherscan.io/myapikey)
 
 > 💬 Hint: Store environment variables for **Next.js** in Vercel/system env config for live apps, and use \`.env.local\` for local testing.
 
@@ -1813,11 +1823,11 @@ Configure your keys here:
 
 ⛽️ You will need to send ETH to your deployer address with your wallet, or obtain it from a public faucet of your chosen network.
 
-> 🚨 Don’t forget to set the owner address inside the \`00_deploy_your_voting_contract.ts\`.
+> 🚨 Don’t forget to set the owner address inside the \`${isFoundry ? "DeployVoting.s.sol" : "00_deploy_your_voting_contract.ts"}\`.
 
 🚀 Run \`yarn deploy --network sepolia\` to deploy your smart contract to Sepolia.
 
-> 💬 Hint: You can set the defaultNetwork in hardhat.config.ts to sepolia OR you can yarn deploy --network sepolia.
+${isFoundry ? "> 💬 Hint: You can yarn deploy --network sepolia." : "> 💬 Hint: You can set the defaultNetwork in hardhat.config.ts to sepolia OR you can yarn deploy --network sepolia."}
 
 💻 Inside \`scaffold.config.ts\` change the \`targetNetwork\` to \`chains.sepolia\`. View your front-end at http://localhost:3000 and verify you see the correct network Sepolia.
 
@@ -1940,3 +1950,4 @@ This challenge is your **entry point into a new design space.** 💥
 
 **What will you build with Noir and ZK circuits? 🧪✨**
 `;
+};

@@ -1,11 +1,15 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({solidityFramework}) => {
+const isFoundry = solidityFramework === "foundry";
+const contractsDir = isFoundry ? "foundry" : "hardhat";
 
-## What is Speedrun Ethereum?
+return `# AGENTS.md
 
-[Speedrun Ethereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+## What is SpeedRunEthereum?
 
-**This extension is one of the Speedrun Ethereum challenges.** It covers **ZK Voting**.
+[SpeedRunEthereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
+
+**This extension is one of the SpeedRunEthereum challenges.** It covers **ZK Voting**.
 
 ## Challenge Overview
 
@@ -29,7 +33,7 @@ Real-world examples of the concepts in this challenge:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension (${isFoundry ? "Foundry" : "Hardhat"} flavor). When instantiated with \`create-eth\`, it produces a monorepo:
 
 \`\`\`
 packages/
@@ -37,7 +41,16 @@ packages/
     Nargo.toml               # Noir project configuration
     src/
       main.nr                # ZK circuit for membership proof (LEARNER IMPLEMENTS - Checkpoints 3-4)
-  hardhat/
+  ${isFoundry ? `foundry/
+    contracts/
+      Voting.sol             # Core voting contract (LEARNER IMPLEMENTS - Checkpoints 2, 6)
+      Verifier.sol           # IVerifier interface (provided)
+      mocks/
+        VerifierMock.sol     # Mock verifier for testing (provided)
+    script/
+      DeployVoting.s.sol     # Foundry deploy script (LEARNER MODIFIES - Checkpoints 2, 6)
+    test/
+      Voting.t.sol           # Checkpoint-based grading tests` : `hardhat/
     contracts/
       Voting.sol             # Core voting contract (LEARNER IMPLEMENTS - Checkpoints 2, 6)
       Verifier.sol           # IVerifier interface (provided)
@@ -46,7 +59,7 @@ packages/
     deploy/
       00_deploy_your_voting_contract.ts  # Deploy script (LEARNER MODIFIES - Checkpoints 2, 6)
     test/
-      Voting.ts              # Checkpoint-based grading tests
+      Voting.ts              # Checkpoint-based grading tests`}
   nextjs/
     app/
       voting/
@@ -77,8 +90,9 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
-yarn deploy         # Deploy contracts to local network
+${isFoundry ? `yarn chain          # Start local Anvil blockchain
+yarn deploy         # Deploy contracts to local network` : `yarn chain          # Start local Hardhat blockchain
+yarn deploy         # Deploy contracts to local network`}
 yarn start          # Start Next.js frontend at http://localhost:3000
 
 # Redeploy fresh (useful after contract changes)
@@ -163,7 +177,7 @@ The core ZK voting contract. Inherits \`Ownable\`. Manages voter allowlist, comm
 #### Functions to Implement (by Checkpoint)
 
 **Checkpoint 2 -- Registration:**
-1. **\`register(uint256 _commitment) public\`** -- Called by allowlisted voters to register their commitment. Must check: voter is allowlisted and hasn't already registered (revert with \`Voting__NotAllowedToVote\`), commitment is unique (revert with \`Voting__CommitmentAlreadyAdded\`). Insert commitment into LeanIMT via \`s_tree._insert(_commitment)\`, mark voter as registered, mark commitment as used, emit \`NewLeaf\` with the tree index and commitment value.
+1. **\`register(uint256 _commitment) public\`** -- Called by allowlisted voters to register their commitment. Must check: voter is allowlisted and hasn't already registered (revert with \`Voting__NotAllowedToVote\`), commitment is unique (revert with \`Voting__CommitmentAlreadyAdded\`). Insert commitment into LeanIMT via \`s_tree.insert(_commitment)\`, mark voter as registered, mark commitment as used, emit \`NewLeaf\` with the tree index and commitment value.
 
 **Checkpoint 6 -- Voting:**
 2. **\`vote(bytes memory _proof, bytes32 _nullifierHash, bytes32 _root, bytes32 _vote, bytes32 _depth) public\`** -- Verify ZK proof via \`s_verifier.verify()\`. Public inputs order passed to verifier: \`[_nullifierHash, _root, _vote, _depth]\`. Check: root is not \`bytes32(0)\` (revert with \`Voting__EmptyTree\`), root matches \`bytes32(s_tree.root())\` (revert with \`Voting__InvalidRoot\`), nullifier not already used (revert with \`Voting__NullifierHashAlreadyUsed\`), proof is valid (revert with \`Voting__InvalidProof\`). Mark nullifier as used. Increment \`s_yesVotes\` if \`_vote == bytes32(uint256(1))\`, otherwise increment \`s_noVotes\`. Emit \`VoteCast\` with nullifier hash, \`msg.sender\`, boolean vote, \`block.timestamp\`, and updated vote counts.
@@ -174,13 +188,26 @@ The core ZK voting contract. Inherits \`Ownable\`. Manages voter allowlist, comm
 - **\`getVotingData() public view\`** -- Returns question, owner, vote counts, tree size/depth/root
 - **\`getVoterData(address _voter) public view\`** -- Returns voter allowlist and registration status
 
-### Verifier.sol (Interface, DO NOT EDIT)
+### Verifier.sol (Placeholder Interface -- REPLACED in Checkpoint 6)
+
+Through Checkpoints 1-5 this file holds only the \`IVerifier\` interface as a placeholder:
 
 \`\`\`solidity
 interface IVerifier {
     function verify(bytes calldata _proof, bytes32[] calldata _publicInputs) external view returns (bool);
 }
 \`\`\`
+
+**Checkpoint 6 step 1 -- file overwrite, NOT cross-package import:**
+Replace \`packages/${contractsDir}/contracts/Verifier.sol\` with the full \`HonkVerifier\` contract
+generated in Checkpoint 4 at \`packages/circuits/target/Verifier.sol\`.
+Do this by overwriting the file contents
+(e.g. \`cp packages/circuits/target/Verifier.sol packages/${contractsDir}/contracts/Verifier.sol\`).
+Do NOT try to import the generated file from its \`packages/circuits/target/\` location --
+cross-package imports from the circuits package do not resolve from the
+${isFoundry ? "Foundry deploy script" : "Hardhat package"} and there is no workaround.
+After replacement, the deploy script imports \`HonkVerifier\` from the same
+\`../contracts/Verifier.sol\` path it already uses.
 
 ### VerifierMock.sol (Testing Mock, DO NOT EDIT)
 
@@ -214,7 +241,16 @@ The ZK circuit proves a voter knows a commitment in the Merkle tree without reve
 
 ## Deploy Script
 
-**\`00_deploy_your_voting_contract.ts\`** -- Deploys the Voting contract with constructor arguments: owner address, verifier address, and question string.
+${isFoundry ? `**\`DeployVoting.s.sol\`** -- Foundry deploy script that deploys the Voting contract with constructor arguments: owner address, verifier address, and question string.
+
+**Checkpoint 2 modifications:**
+- In Foundry, library linking is handled automatically at compile time when Voting.sol imports LeanIMT
+- No manual PoseidonT3 or LeanIMT deployment needed
+
+**Checkpoint 6 modifications:**
+- Deploy \`HonkVerifier\` contract (compiled from Noir circuit) instead of placeholder verifier address
+
+Deploy order: HonkVerifier -> Voting (passed HonkVerifier address)` : `**\`00_deploy_your_voting_contract.ts\`** -- Deploys the Voting contract with constructor arguments: owner address, verifier address, and question string.
 
 **Checkpoint 2 modifications:**
 - Deploy \`PoseidonT3\` library
@@ -224,7 +260,7 @@ The ZK circuit proves a voter knows a commitment in the Merkle tree without reve
 **Checkpoint 6 modifications:**
 - Deploy \`HonkVerifier\` contract (compiled from Noir circuit) instead of placeholder verifier address
 
-Deploy order: PoseidonT3 -> LeanIMT (linked to PoseidonT3) -> HonkVerifier -> Voting (linked to LeanIMT, passed HonkVerifier address)
+Deploy order: PoseidonT3 -> LeanIMT (linked to PoseidonT3) -> HonkVerifier -> Voting (linked to LeanIMT, passed HonkVerifier address)`}
 
 ## Frontend Architecture
 
@@ -247,7 +283,7 @@ Layout order: ShowVotersButton + AddVotersModal -> VotingStats -> CreateCommitme
 
 1. **CreateCommitment.tsx (Checkpoint 7)** -- Generate commitment from nullifier + secret using Poseidon hash, register on-chain via \`register()\`, save commitment data to localStorage
 2. **GenerateProof.tsx (Checkpoint 8)** -- Fetch circuit data from \`/api/circuit\`, build Merkle tree from on-chain \`NewLeaf\` events, generate ZK proof using Noir.js and UltraHonkBackend, save proof to localStorage
-3. **VoteWithBurnerHardhat.tsx (Checkpoint 9)** -- Create/load burner wallet from localStorage, submit vote transaction on local Hardhat network using burner for anonymity
+3. **VoteWithBurnerHardhat.tsx (Checkpoint 9)** -- Create/load burner wallet from localStorage, submit vote transaction on local ${isFoundry ? "Anvil" : "Hardhat"} network using burner for anonymity
 4. **VoteWithBurnerSepolia.tsx (Checkpoint 10)** -- Create ERC-4337 smart account via permissionless.js + Pimlico, submit gasless vote on Sepolia for anonymity
 
 ### Helper Components (Provided)
@@ -290,32 +326,37 @@ localStorage utilities scoped by contract address + user address:
 - **Commitment scheme**: \`commitment = poseidon_hash(nullifier, secret)\`. The nullifier is public (used to prevent double-voting via its hash), the secret is private (prevents others from computing your commitment)
 - **Lean Incremental Merkle Tree (LeanIMT)**: An append-only Merkle tree where each leaf is a voter's commitment. The ZK circuit proves a commitment exists in the tree without revealing which one. Uses \`@zk-kit/lean-imt.sol\` with \`LeanIMTData\` struct and \`_insert()\` method
 - **Nullifier pattern**: Each voter's nullifier hash is recorded on-chain when they vote. This prevents double-voting without revealing the voter's identity
-- **Burner wallets**: To prevent linking a vote to a voter's registered address, votes are submitted from disposable burner wallets (Hardhat) or ERC-4337 smart accounts (Sepolia)
+- **Burner wallets**: To prevent linking a vote to a voter's registered address, votes are submitted from disposable burner wallets (${isFoundry ? "Anvil" : "Hardhat"}) or ERC-4337 smart accounts (Sepolia)
 - **Circuit to Verifier flow**: Noir circuit is compiled to a verifier contract (HonkVerifier). The frontend generates proofs client-side using Noir.js + UltraHonkBackend, which are verified on-chain via \`IVerifier.verify()\`
 - **localStorage persistence**: Commitment data, proofs, and burner wallet keys are stored in localStorage scoped by contract address + user address
 - **Public inputs ordering**: The verifier expects public inputs as \`[nullifierHash, root, vote, depth]\` -- this order must match between the circuit, frontend proof generation, and on-chain verification
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/Voting.ts\`) cover the following areas:
+The grading tests (\`packages/${contractsDir}/test/${isFoundry ? "Voting.t.sol" : "Voting.ts"}\`) cover the following areas:
 
 - **Checkpoint 2 (Registration)** -- Allows only allowlisted voters to register, prevents duplicate commitments (\`Voting__CommitmentAlreadyAdded\`), prevents double registration (\`Voting__NotAllowedToVote\`), verifies leaf insertion into tree (size and root), emits correct \`NewLeaf\` event
 - **Checkpoint 6 (Voting)** -- Prevents double voting via nullifier reuse (\`Voting__NullifierHashAlreadyUsed\`), reverts on invalid proof (\`Voting__InvalidProof\`), increments yes/no vote counts correctly, emits \`VoteCast\` with correct fields, reverts on empty root (\`Voting__EmptyTree\`), reverts on invalid root (\`Voting__InvalidRoot\`)
 
 Tests use \`VerifierMock\` with configurable verification behavior. The mock's \`setExpectedInputs(nullifier, root, vote, depth)\` validates the exact public inputs array passed to \`verify()\`.
 
-Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
+Run with \`yarn test\`. These same tests are used by the SpeedRunEthereum autograder.
 
 ## Deployment Checklist (Testnet)
 
 1. Compile the Noir circuit with \`nargo compile\` and generate the HonkVerifier contract
-2. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
+${isFoundry ? `2. \`yarn generate\` to create deployer account
+3. Fund deployer with testnet ETH from a faucet
+4. \`yarn deploy\` to deploy contracts (HonkVerifier -> Voting)
+5. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
+6. \`yarn vercel\` to deploy frontend
+7. \`yarn verify --network sepolia\` to verify contracts on Etherscan` : `2. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
 3. \`yarn generate\` to create deployer account
 4. Fund deployer with testnet ETH from a faucet
 5. \`yarn deploy\` to deploy contracts (PoseidonT3 -> LeanIMT -> HonkVerifier -> Voting)
 6. Set \`targetNetwork\` to \`chains.sepolia\` in \`packages/nextjs/scaffold.config.ts\`
 7. \`yarn vercel\` to deploy frontend
-8. \`yarn verify --network sepolia\` to verify contracts on Etherscan
+8. \`yarn verify --network sepolia\` to verify contracts on Etherscan`}
 
 ## Code Style
 
@@ -324,7 +365,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_your_voting_contract.ts\`), Noir variables |
+| \`snake_case\` | ${isFoundry ? "Foundry deploy files (e.g., `DeployVoting.s.sol`)" : "Hardhat deploy files (e.g., `00_deploy_your_voting_contract.ts`)"}, Noir variables |
 
 ## Key Warnings
 
@@ -338,15 +379,15 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 - **Public inputs order matters**: The verifier expects \`[nullifierHash, root, vote, depth]\` in that exact order
 - **Vote value encoding**: \`bytes32(uint256(1))\` means yes, any other value means no -- use \`bytes32\` comparison
 - **Root validation**: Must check both that root is not \`bytes32(0)\` AND that it matches \`bytes32(s_tree.root())\`
-- **Deploy script modifications**: Checkpoint 2 needs PoseidonT3 + LeanIMT library deployment (linked to Voting); Checkpoint 6 needs HonkVerifier deployment (replace placeholder verifier address)
+${isFoundry ? `- **Deploy script modifications**: Checkpoint 6 needs HonkVerifier deployment (replace placeholder verifier address). Library linking is automatic in Foundry.` : `- **Deploy script modifications**: Checkpoint 2 needs PoseidonT3 + LeanIMT library deployment (linked to Voting); Checkpoint 6 needs HonkVerifier deployment (replace placeholder verifier address)`}
 - **Noir circuit**: Uses Poseidon BN254 hash functions (\`hash_1\` for single input, \`hash_2\` for two inputs) -- these are NOT the same as keccak256
 - **Siblings array**: The circuit uses a fixed-size array of 16 siblings for Merkle proofs regardless of actual tree depth
 - **getVotingData uncomment**: After implementing Checkpoint 2, uncomment the \`s_tree.size\`, \`s_tree.depth\`, and \`s_tree.root()\` lines in \`getVotingData()\`
 - **getVoterData uncomment**: After implementing Checkpoint 2, uncomment the \`s_hasRegistered[_voter]\` line in \`getVoterData()\`
 - \`proofStorage.ts\` scopes all localStorage by contract address + user address -- ensure correct scoping when testing
-- The deploy script uses nonce-based deployment -- if you add or remove deployments, ensure library linking is correct
+${isFoundry ? "" : `- The deploy script uses nonce-based deployment -- if you add or remove deployments, ensure library linking is correct`}
 
-# Speedrun Ethereum AI-Guided mode
+# SpeedRunEthereum AI-Guided mode
 
 This project has an interactive AI learning mode for blockchain development.
 
@@ -363,3 +404,4 @@ Run \`/start\` to begin. The AI will guide you through building a smart contract
 - \`extension/.ai/CHALLENGE.yaml\` — Challenge definition
 - \`.challenge-ai/progress.json\` — Your progress (auto-generated)
 `;
+};

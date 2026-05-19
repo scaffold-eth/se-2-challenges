@@ -5,7 +5,9 @@ difficulty: "advanced"
 estimated_time: "6 - 16 hours"
 
 setup:
-  file: "packages/hardhat/contracts/Voting.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/Voting.sol"
+    foundry: "packages/foundry/contracts/Voting.sol"
 
 welcome_message: |
   Welcome to the ZK Voting Challenge!
@@ -169,8 +171,12 @@ checkpoints:
         4. Check `getVotingData()` — you should see Merkle tree data (size, depth, root).
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Voting.sol"
-      test: "yarn test --grep 'Checkpoint2'"
+      file:
+        hardhat: "packages/hardhat/contracts/Voting.sol"
+        foundry: "packages/foundry/contracts/Voting.sol"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint2'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - "The two guard checks use existing state: `s_voters` (allowlist) and the new `s_hasRegistered` mapping."
         - |
@@ -719,8 +725,12 @@ checkpoints:
         4. Head to the **Voting** page — the full voting flow is now functional on the contract side!
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/Voting.sol"
-      test: "yarn test --grep 'Checkpoint6'"
+      file:
+        hardhat: "packages/hardhat/contracts/Voting.sol"
+        foundry: "packages/foundry/contracts/Voting.sol"
+      test:
+        hardhat: "yarn test --grep 'Checkpoint6'"
+        foundry: "yarn test --match-test 'Checkpoint6'"
       hints:
         - "Don't forget the setup steps: replace Verifier.sol, update the deploy script, uncomment the import, add the two state variables, and initialize `i_verifier` in the constructor."
         - |

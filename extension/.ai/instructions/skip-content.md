@@ -14,7 +14,10 @@ Read `.ai/CHALLENGE.yaml` and find the current checkpoint by its ID.
 
 - If the current checkpoint does NOT have a `task` field, tell the user:
   "This checkpoint doesn't have a coding task to skip. Say 'hint' if you need help with the current question."
-- If it has a `task` field, continue to Step 3
+- If it has a `task` field, continue to Step 2b
+
+### Step 2b: Resolve Framework-Specific Fields
+CHALLENGE.yaml `file:` and `test:` fields contain framework-specific values (e.g. `hardhat:` and `foundry:`). Detect which framework this project uses by checking which directory exists (`packages/hardhat/` vs `packages/foundry/`). Use the matching key for all `file:` and `test:` lookups throughout the skip flow.
 
 ### Step 3: Show the Solution
 Display the solution from `task.solution` with an explanation:
@@ -38,7 +41,7 @@ Read the current contract file (`task.file`) and apply the solution code:
 - Be careful to place code in the correct sections of the contract
 
 ### Step 5: Run Tests
-Execute the `task.test` command (e.g., `yarn test --grep "Checkpoint1"`) to verify the solution works.
+Execute the `task.test` command (resolved for the detected framework, e.g., `yarn test --grep "Checkpoint1"` for Hardhat or `yarn test --match-test "Checkpoint1"` for Foundry) to verify the solution works.
 - If tests pass: continue to Step 6
 - If tests fail: debug and fix (this shouldn't happen with correct solutions)
 
