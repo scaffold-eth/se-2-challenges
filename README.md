@@ -24,7 +24,7 @@
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.15 -e challenge-dex challenge-dex
+npx create-eth@2.0.18 -e challenge-dex challenge-dex
 ```
 
 > When prompted, choose your preferred Solidity framework: **Hardhat** or **Foundry**.
