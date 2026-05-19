@@ -75,15 +75,18 @@ Before you begin, you need to install the following tools:
 - [Node (>= v20.18.3)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
 - [Git](https://git-scm.com/downloads)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (only if choosing Foundry as framework)
 
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.13 -e challenge-prediction-markets challenge-prediction-markets
+npx create-eth@2.0.18 -e challenge-prediction-markets challenge-prediction-markets
 cd challenge-prediction-markets
 ```
 
-in the same terminal, start your local network (a blockchain emulator in your computer):
+When prompted, choose your preferred framework (Hardhat or Foundry).
+
+> Start your local network (a blockchain emulator in your computer):
 
 ```sh
 yarn chain
@@ -134,13 +137,28 @@ At its core, our prediction market has three essential parts:
 
 In our version, when you deploy the market, it spins up two ERC20 tokens — one for "Yes", one for "No".
 
+<Tabs>
+<Tab label="Hardhat">
+
 🧱 You’ll find the token logic in `packages/hardhat/contracts/PredictionMarketToken.sol`
+
+You’ll be working directly in `packages/hardhat/contracts/PredictionMarket.sol`.
+
+</Tab>
+<Tab label="Foundry">
+
+🧱 You’ll find the token logic in `packages/foundry/contracts/PredictionMarketToken.sol`
+
+You’ll be working directly in `packages/foundry/contracts/PredictionMarket.sol`.
+
+> **Note:** Screenshots in this guide show the Hardhat version, but the contract code and functionality are identical for Foundry.
+
+</Tab>
+</Tabs>
 
 This contract extends the standard ERC20 spec with custom minting and burning logic. There’s also a transfer restriction in place to prevent the market owner from moving tokens — more on why later 👀
 
 ### 🛠️ The Main Contract: PredictionMarket.sol
-
-You’ll be working directly in `packages/hardhat/contracts/PredictionMarket.sol`.
 
 Our protocol revolves around three roles:
 
@@ -241,7 +259,18 @@ Your contract will also need to track the following data throughout the life of 
 - **🏆 `s_ethCollateral`**: the total ETH backing the tokens — think of this as your prize pool
 - **💸 `s_lpTradingRevenue`** - tracks the fees earned from users buying/selling tokens — the LP’s reward
 
+<Tabs>
+<Tab label="Hardhat">
+
 > ❗️For easier testing, we set the oracle address to be the same as the liquidity provider during deployment (see `00_deploy_your_contract.ts`). Also, **double-check the parameter values** we're passing into the constructor, like `_question`, etc. (Hint: Add the first Hardhat account to your wallet or add your own account to interact as the oracle or contract owner. You can manually set your address in the deployment script or run `yarn account:import`.)
+
+</Tab>
+<Tab label="Foundry">
+
+> ❗️For easier testing, we set the oracle address to be the same as the liquidity provider during deployment (see `DeployPredictionMarket.s.sol`). Also, **double-check the parameter values** we're passing into the constructor, like `_question`, etc. (Hint: Add the first Anvil account to your wallet or add your own account to interact as the oracle or contract owner. You can manually set your address in the deployment script or run `yarn account:import`.)
+
+</Tab>
+</Tabs>
 
 > ⏰ 🚨 In a prediction market in production, you would typically include a time-based restriction, a **fixed end date** to ensure that outcomes can only be reported after the predicted event occurs. For simplicity and ease of testing, we omit this time component in this implementation.
 
@@ -342,9 +371,22 @@ constructor(
 
 Run the following command to check if you have implemented all variables and checks correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint2"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint2"
+```
+
+</Tab>
+</Tabs>
 
 > 🚨 Before we deploy the contract we need to finish implementing the constructor in the next Checkpoint 3.
 
@@ -525,9 +567,22 @@ constructor(
 
 Run the following command to check if you've implemented all variable and checks correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint3"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint3"
+```
+
+</Tab>
+</Tabs>
 
 ### ✅ Tests Passed? You're So Close!
 
@@ -650,9 +705,22 @@ function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner {
 
 Run the following command to check if you have implemented the functions correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint4"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint4"
+```
+
+</Tab>
+</Tabs>
 
 ## Checkpoint 5: 🔮 Let the oracle report
 
@@ -781,9 +849,22 @@ function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner predictionNo
 
 Run the following command to check if the report function for the oracle is implemented correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint5"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint5"
+```
+
+</Tab>
+</Tabs>
 
 ✅ Tests Passed? You’re Almost There!
 
@@ -797,7 +878,18 @@ But before you hit that deploy button, there’s one last tweak to make:
 
 Now head over to the oracle tab in the UI and report the outcome (after you watched the race of course:)) 🏎️ 🏁
 
+<Tabs>
+<Tab label="Hardhat">
+
 > 💡 Make sure you're connected with the correct oracle address — check `00_deploy_your_contract.ts` to find out which one is being used. (Hint: Add the first Hardhat account to your wallet or add your own account to interact as the oracle or contract owner. You can manually set your address in the deployment script or run `yarn account:import`.)
+
+</Tab>
+<Tab label="Foundry">
+
+> 💡 Make sure you're connected with the correct oracle address — check `DeployPredictionMarket.s.sol` to find out which one is being used. (Hint: Add the first Anvil account to your wallet or add your own account to interact as the oracle or contract owner. You can manually set your address in the deployment script or run `yarn account:import`.)
+
+</Tab>
+</Tabs>
 
 ![ch-6-oracle2](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-prediction-markets/extension/packages/nextjs/public/oracle2.png)
 
@@ -906,9 +998,22 @@ function resolveMarketAndWithdraw() external onlyOwner predictionReported return
 
 Run the following command to check if the `resolveMarketAndWithdraw` function is implemented correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint6"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint6"
+```
+
+</Tab>
+</Tabs>
 
 Make sure to redeploy the contract and report the outcome again using the Oracle tab.
 
@@ -1148,9 +1253,22 @@ function _calculateProbability(uint256 tokensSold, uint256 totalSold) private pu
 
 Run the following command to check if you have implemented all the functions correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint7"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint7"
+```
+
+</Tab>
+</Tabs>
 
 ## Checkpoint 8: 🔁💰 Buy and sell "Yes" or "No" Tokens for ETH
 
@@ -1347,9 +1465,22 @@ function sellTokensForEth(Outcome _outcome, uint256 _tradingAmount)
 
 Run the following command to check if you have implemented all the functions correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint8"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint8"
+```
+
+</Tab>
+</Tabs>
 
 And then run `yarn deploy` to test it in the front-end and see how the probability changes.
 
@@ -1452,9 +1583,22 @@ function redeemWinningTokens(uint256 _amount) external amountGreaterThanZero(_am
 
 Run the following command to check if you have implemented the last function for this challenge correctly.
 
+<Tabs>
+<Tab label="Hardhat">
+
 ```sh
 yarn test --grep "Checkpoint9"
 ```
+
+</Tab>
+<Tab label="Foundry">
+
+```sh
+yarn test --match-test "Checkpoint9"
+```
+
+</Tab>
+</Tabs>
 
 Then run `yarn deploy` to test it on the front-end. Make sure to purchase some winning tokens beforehand and report the race. After that, you should be able to redeem your desired amount.
 
@@ -1466,7 +1610,18 @@ You’ve now built the full loop: provide liquidity, trade shares, resolve the m
 
 ## Checkpoint 10: 💾 Deploy your contracts! 🛰
 
+<Tabs>
+<Tab label="Hardhat">
+
 📡 Edit the `defaultNetwork` to your choice of **Sepolia or Optimism Sepolia** in `packages/hardhat/hardhat.config.ts`
+
+</Tab>
+<Tab label="Foundry">
+
+📡 Choose your target network (**Sepolia or Optimism Sepolia**)
+
+</Tab>
+</Tabs>
 
 🔐 You will need to generate a **deployer address** using `yarn generate` This creates a mnemonic and saves it locally.
 
@@ -1476,9 +1631,22 @@ You’ve now built the full loop: provide liquidity, trade shares, resolve the m
 
 > 🚨🚨 **!!!Warning!!!** Before deploying, make sure to adjust the ETH amount in the constructor to suit your preferences. By default, the contract deploys with **1 ETH** and sets the token value to **0.01 ETH**. You might want to change this, for example, to **0.1 ETH** and **0.001 ETH,** depending on how much ETH you're willing to allocate. 🚨🚨
 
+<Tabs>
+<Tab label="Hardhat">
+
 🚀 Run `yarn deploy` to deploy your smart contract to a public network (selected in `hardhat.config.ts`)
 
-> 💬 Hint: You can set the `defaultNetwork` in hardhat.config.ts to sepolia or optimismSepolia OR you can yarn deploy --network sepolia or yarn deploy --network optimismSepolia.
+> 💬 Hint: You can set the `defaultNetwork` in `hardhat.config.ts` to `sepolia` or `optimismSepolia` OR you can `yarn deploy --network sepolia` or `yarn deploy --network optimismSepolia`.
+
+</Tab>
+<Tab label="Foundry">
+
+🚀 Run `yarn deploy --network sepolia` (or `yarn deploy --network optimismSepolia`) to deploy your smart contracts.
+
+> 💬 Hint: Foundry uses `forge script` under the hood. The `yarn deploy` command handles this for you.
+
+</Tab>
+</Tabs>
 
 💻 View your front-end at [http://localhost:3000](http://localhost:3000/) and verify you see the correct network.
 
@@ -1490,7 +1658,7 @@ You’ve now built the full loop: provide liquidity, trade shares, resolve the m
 
 > Follow the steps to deploy to Vercel. It'll give you a public URL.
 
-> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 burner wallets are only available on Hardhat. You can enable them on every chain by setting burnerWalletMode: "allNetworks" in your front-end config (scaffold.config.ts in packages/nextjs/)
+> 🦊 Since we have deployed to a public testnet, you will now need to connect using a wallet you own or use a burner wallet. By default 🔥 burner wallets are only available on localhost. You can enable them on every chain by setting burnerWalletMode: "allNetworks" in your front-end config (scaffold.config.ts in packages/nextjs/)
 
 **Configuration of Third-Party Services for Production-Grade Apps.**
 
@@ -1498,8 +1666,20 @@ By default, 🏗 Scaffold-ETH 2 provides predefined API keys for popular service
 
 For production-grade applications, it's recommended to obtain your own API keys (to prevent rate limiting issues). You can configure these at:
 
+<Tabs>
+<Tab label="Hardhat">
+
 - 🔷`ALCHEMY_API_KEY` variable in `packages/hardhat/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
 - 📃`ETHERSCAN_API_KEY` variable in `packages/hardhat/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+<Tab label="Foundry">
+
+- 🔷`ALCHEMY_API_KEY` variable in `packages/foundry/.env` and `packages/nextjs/.env.local`. You can create API keys from the [Alchemy dashboard](https://dashboard.alchemy.com/).
+- 📃`ETHERSCAN_API_KEY` variable in `packages/foundry/.env` with your generated API key. You can get your key [here](https://etherscan.io/myapikey).
+
+</Tab>
+</Tabs>
 
 > 💬 Hint: It's recommended to store envs for nextjs in Vercel/system env config for live apps and use .env.local for local testing.
 
@@ -1572,3 +1752,16 @@ But what makes this space exciting is that there’s no “one-size-fits-all” 
 We’d love to see what you build next. Share your ideas, your forks, your experiments. This is just the beginning. 💥
 
 What will your prediction market look like? Let us know! 🧪🔮
+
+## AI-Guided Learning Mode (Optional)
+
+This challenge supports an interactive AI learning mode. Instead of reading through all the checkpoints above, you can have an AI guide you through the challenge step by step.
+
+### Quick Start
+
+1. Open this project in [Claude Code](https://claude.ai/claude-code), Cursor, or another AI-enabled IDE
+2. Run `/start` in the AI chat
+3. The AI will teach you each concept and give you coding tasks
+4. Say **"check"** to validate your code, **"hint"** for help, or **"/skip"** to see the solution
+
+The AI uses the same checkpoint structure as this README but provides personalized guidance, answers questions, and runs tests for you.
