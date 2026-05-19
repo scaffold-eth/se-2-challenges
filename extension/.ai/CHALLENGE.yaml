@@ -5,7 +5,9 @@ difficulty: "advanced"
 estimated_time: "4 - 12 hours"
 
 setup:
-  file: "packages/hardhat/contracts/MyUSDEngine.sol"
+  file:
+    hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
+    foundry: "packages/foundry/contracts/MyUSDEngine.sol"
 
 welcome_message: |
   Welcome to the MyUSD Stablecoin Challenge!
@@ -189,8 +191,12 @@ checkpoints:
         5. The frontend should show your MyUSD balance and position ratio
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Borrowing Operations'"
+      file:
+        hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
+        foundry: "packages/foundry/contracts/MyUSDEngine.sol"
+      test:
+        hardhat: "yarn test --grep 'Borrowing Operations'"
+        foundry: "yarn test --match-test 'Checkpoint1'"
       hints:
         - "Start with addCollateral — it's just a validation, a mapping update, and an event emit."
         - |
@@ -402,8 +408,12 @@ checkpoints:
         > Fun fact: anyone can call `RateController.sol`'s methods — this was intentional so you can change rates from the frontend without special authorization.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Interest Accrual'"
+      file:
+        hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
+        foundry: "packages/foundry/contracts/MyUSDEngine.sol"
+      test:
+        hardhat: "yarn test --grep 'Interest Accrual'"
+        foundry: "yarn test --match-test 'Checkpoint2'"
       hints:
         - "It's just 3 lines: accrue interest, update the rate, emit the event."
         - |
@@ -501,8 +511,12 @@ checkpoints:
         3. Try withdrawing too much collateral while having debt — it should fail (unsafe position)
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Repayment Operations'"
+      file:
+        hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
+        foundry: "packages/foundry/contracts/MyUSDEngine.sol"
+      test:
+        hardhat: "yarn test --grep 'Repayment Operations'"
+        foundry: "yarn test --match-test 'Checkpoint3'"
       hints:
         - |
           For `repayUpTo`, the key is handling overpayment:
@@ -669,8 +683,12 @@ checkpoints:
         > Notice: the first account still has the MyUSD they originally minted. The liquidator paid the debt and claimed the collateral + bonus.
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Liquidation'"
+      file:
+        hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
+        foundry: "packages/foundry/contracts/MyUSDEngine.sol"
+      test:
+        hardhat: "yarn test --grep 'Liquidation'"
+        foundry: "yarn test --match-test 'Checkpoint4'"
       hints:
         - |
           `isLiquidatable` is the same check as `_validatePosition` but returns a bool instead of reverting:
@@ -830,8 +848,12 @@ checkpoints:
         3. Set a valid borrow rate that's above the savings rate — it should succeed
 
         Say **"check"** when you're ready!
-      file: "packages/hardhat/contracts/MyUSDEngine.sol"
-      test: "yarn test --grep 'Borrow Rate Management'"
+      file:
+        hardhat: "packages/hardhat/contracts/MyUSDEngine.sol"
+        foundry: "packages/foundry/contracts/MyUSDEngine.sol"
+      test:
+        hardhat: "yarn test --grep 'Borrow Rate Management'"
+        foundry: "yarn test --match-test 'Checkpoint5'"
       hints:
         - "You just need to add one line at the top of setBorrowRate: `if (newRate < i_staking.savingsRate()) revert Engine__InvalidBorrowRate();`"
         - |

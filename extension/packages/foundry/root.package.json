@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "simulate": "yarn workspace @se-2/foundry simulate",
+    "interest-rate-controller": "yarn workspace @se-2/foundry interest-rate-controller"
+  }
+}

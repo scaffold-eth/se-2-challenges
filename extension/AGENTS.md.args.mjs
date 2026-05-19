@@ -1,5 +1,5 @@
 // If this is passed it will override the full content of the AGENTS.md file
-export const fullContentOverride = `# AGENTS.md
+export const fullContentOverride = ({ solidityFramework }) => `# AGENTS.md
 
 ## What is Speedrun Ethereum?
 
@@ -29,11 +29,13 @@ Real-world examples of the concepts in this challenge:
 
 ## Project Structure
 
-This is a Scaffold-ETH 2 extension (Hardhat flavor). When instantiated with \`create-eth\`, it produces a monorepo:
+This is a Scaffold-ETH 2 extension. When instantiated with \`create-eth\`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+This project uses **${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"}** as the smart contract framework.
 
 \`\`\`
 packages/
-  hardhat/
+  ${solidityFramework}/
     contracts/
       MyUSDEngine.sol        # Core stablecoin engine (LEARNER IMPLEMENTS)
       MyUSD.sol              # ERC-20 stablecoin token (provided)
@@ -41,10 +43,12 @@ packages/
       Oracle.sol             # Price feed from DEX (provided)
       MyUSDStaking.sol       # Share-based staking for yield (provided)
       RateController.sol     # Proxy for setting borrow/savings rates (provided)
-    deploy/
-      00_deploy_contracts.ts # Single deploy script with nonce-based address prediction
-    test/
-      MyUSDEngine.ts         # Checkpoint-based grading tests
+    ${solidityFramework === "hardhat" ? `deploy/
+      00_deploy_contracts.ts # Single deploy script with nonce-based address prediction` : `script/
+      DeployMyUSD.s.sol`}
+    ${solidityFramework === "hardhat" ? `test/
+      MyUSDEngine.ts         # Checkpoint-based grading tests` : `test/
+      MyUSDEngine.t.sol`}
     scripts/
       fetchPriceFromUniswap.ts     # Fetches real ETH/DAI price from Uniswap V2 mainnet
       interestRateController.ts    # Automated rate controller for peg maintenance
@@ -79,7 +83,7 @@ packages/
 
 \`\`\`bash
 # Development workflow (run each in a separate terminal)
-yarn chain          # Start local Hardhat blockchain
+yarn chain          # Start local ${solidityFramework === "hardhat" ? "Hardhat" : "Foundry"} blockchain
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
 
@@ -236,7 +240,7 @@ Proxy contract that anyone can call to set rates:
 
 ## Deploy Script
 
-**\`00_deploy_contracts.ts\`** -- Single deploy script that handles all 6 contracts.
+**\`${solidityFramework === "hardhat" ? "00_deploy_contracts.ts" : "DeployMyUSD.s.sol"}\`** -- Single deploy script that handles all 6 contracts.
 
 Uses nonce-based address prediction (\`ethers.getCreateAddress\`) to solve circular dependencies:
 - RateController needs engine + staking addresses
@@ -293,12 +297,13 @@ Single-page dashboard layout with:
 - **Rate controller as peg mechanism**: Borrow rate creates sell pressure resistance (expensive to mint). Savings rate creates buy pressure (attractive to hold). The constraint \`borrowRate >= savingsRate\` ensures the system remains sustainable.
 - **Nonce-based address prediction**: The deploy script pre-calculates contract addresses using \`getCreateAddress\` with future nonces to resolve circular dependencies between contracts.
 - **Simulation scripts**: \`yarn simulate\` launches a terminal UI (blessed/blessed-contrib) with 5 simulated borrowers and 5 stakers performing leveraged borrowing and yield farming. \`yarn interest-rate-controller\` runs an automated binary-search algorithm to find optimal rates for peg maintenance.
+- **Console import**: Use \`${solidityFramework === "hardhat" ? "hardhat/console.sol" : "forge-std/console2.sol"}\` for debug logging in Solidity contracts.
 
 ## Testing
 
-The grading tests (\`packages/hardhat/test/MyUSDEngine.ts\`) cover the following areas:
+The grading tests (\`packages/${solidityFramework}/test/${solidityFramework === "hardhat" ? "MyUSDEngine.ts" : "MyUSDEngine.t.sol"}\`) cover the following areas:
 
-- **Deployment** -- Verifies initial state: owner, DEX liquidity, oracle price, zero rates
+${solidityFramework === "hardhat" ? `- **Deployment** -- Verifies initial state: owner, DEX liquidity, oracle price, zero rates
 - **Collateral Operations** -- Add/withdraw collateral, events, insufficient collateral errors
 - **Borrowing Operations** -- Mint when collateralized, prevent over-borrowing, \`DebtSharesMinted\` event
 - **Repayment Operations** -- Full/partial repay, overpay handling, \`DebtSharesBurned\` event
@@ -308,13 +313,22 @@ The grading tests (\`packages/hardhat/test/MyUSDEngine.ts\`) cover the following
 - **Savings Rate Management** -- Rate controller access, rate <= borrow rate constraint, \`SavingsRateUpdated\` event
 - **Staking Operations** -- Stake/withdraw MyUSD, events, zero amount / insufficient balance / insufficient allowance errors, multiple stakes
 - **Withdrawal Operations** -- Withdraw staked tokens, events, no balance error, withdrawal after partial time with no interest
-- **Savings Interest Accrual** -- Zero rate, 8% annual, partial periods, multiple rate changes
+- **Savings Interest Accrual** -- Zero rate, 8% annual, partial periods, multiple rate changes` : `- **Deployment** -- Verifies initial state: owner, DEX liquidity, oracle price, zero rates
+- **Checkpoint 1** -- Add/withdraw collateral, events, mint when collateralized, prevent over-borrowing, \`DebtSharesMinted\` event
+- **Checkpoint 2** -- Interest accrual: zero rate (no interest), 10% annual, partial periods (6 months), multiple rate changes
+- **Checkpoint 3** -- Full/partial repay, overpay handling, \`DebtSharesBurned\` event
+- **Checkpoint 4** -- Liquidation: unsafe positions liquidatable (after ETH price drop via DEX swap), safe positions protected, \`Liquidation\` event
+- **Checkpoint 5** -- Borrow rate management: rate controller access, rate >= savings rate constraint, \`BorrowRateUpdated\` event
+- **Savings Rate Management** -- Rate controller access, rate <= borrow rate constraint, \`SavingsRateUpdated\` event
+- **Staking Operations** -- Stake/withdraw MyUSD, events, zero amount / insufficient balance / insufficient allowance errors, multiple stakes
+- **Withdrawal Operations** -- Withdraw staked tokens, events, no balance error, withdrawal after partial time with no interest
+- **Savings Interest Accrual** -- Zero rate, 8% annual, partial periods, multiple rate changes`}
 
 Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autograder.
 
 ## Deployment Checklist (Testnet)
 
-1. Set \`defaultNetwork\` to \`sepolia\` in \`packages/hardhat/hardhat.config.ts\` (or use \`--network sepolia\`)
+1. ${solidityFramework === "hardhat" ? "Set `defaultNetwork` to `sepolia` in `packages/hardhat/hardhat.config.ts` (or use `--network sepolia`)" : "`yarn deploy --network sepolia`"}
 2. \`yarn generate\` to create deployer account
 3. Fund deployer with testnet ETH from a faucet
 4. \`yarn deploy\` to deploy contracts
@@ -329,7 +343,7 @@ Run with \`yarn test\`. These same tests are used by the Speedrun Ethereum autog
 | \`UpperCamelCase\` | Components, types, interfaces, contracts |
 | \`lowerCamelCase\` | Variables, functions, parameters |
 | \`CONSTANT_CASE\` | Constants, enum values |
-| \`snake_case\` | Hardhat deploy files (e.g., \`00_deploy_contracts.ts\`) |
+| ${solidityFramework === "hardhat" ? "`snake_case` | Deploy files" : "`UpperCamelCase` | Deploy scripts"} |
 
 ## Key Warnings
 
