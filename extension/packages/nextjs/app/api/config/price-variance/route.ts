@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-const CONFIG_PATH = path.join(process.cwd(), "..", "hardhat", "scripts", "oracle-bot", "config.json");
+const FOUNDRY_CONFIG_PATH = path.join(process.cwd(), "..", "foundry", "scripts-js", "oracle-bot", "config.json");
+const HARDHAT_CONFIG_PATH = path.join(process.cwd(), "..", "hardhat", "scripts", "oracle-bot", "config.json");
+const CONFIG_PATH = fs.existsSync(FOUNDRY_CONFIG_PATH) ? FOUNDRY_CONFIG_PATH : HARDHAT_CONFIG_PATH;
 
 export async function POST(request: Request) {
   try {
