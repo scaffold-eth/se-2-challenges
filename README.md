@@ -80,7 +80,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.15 -e challenge-prediction-markets challenge-prediction-markets
+npx create-eth@2.0.18 -e challenge-prediction-markets challenge-prediction-markets
 cd challenge-prediction-markets
 ```
 
