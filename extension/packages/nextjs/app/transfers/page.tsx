@@ -50,22 +50,10 @@ const Transfers: NextPage = () => {
                     <tr key={index}>
                       <th className="text-center">{event.args.tokenId?.toString()}</th>
                       <td>
-                        <Address
-                          address={event.args.from}
-                          chain={targetNetwork}
-                          blockExplorerAddressLink={
-                            targetNetwork.id === hardhat.id ? `/blockexplorer/address/${event.args.from}` : undefined
-                          }
-                        />
+                        <Address address={event.args.from} chain={targetNetwork} />
                       </td>
                       <td>
-                        <Address
-                          address={event.args.to}
-                          chain={targetNetwork}
-                          blockExplorerAddressLink={
-                            targetNetwork.id === hardhat.id ? `/blockexplorer/address/${event.args.to}` : undefined
-                          }
-                        />
+                        <Address address={event.args.to} chain={targetNetwork} />
                       </td>
                     </tr>
                   );

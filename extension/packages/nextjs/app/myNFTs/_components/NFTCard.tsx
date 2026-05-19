@@ -35,13 +35,7 @@ export const NFTCard = ({ nft }: { nft: Collectible }) => {
         </div>
         <div className="flex space-x-3 mt-1 items-center">
           <span className="text-lg font-semibold">Owner : </span>
-          <Address
-            address={nft.owner}
-            chain={targetNetwork}
-            blockExplorerAddressLink={
-              targetNetwork.id === hardhat.id ? `/blockexplorer/address/${nft.owner}` : undefined
-            }
-          />
+          <Address address={nft.owner} chain={targetNetwork} />
         </div>
         <div className="flex flex-col my-2 space-y-1">
           <span className="text-lg font-semibold mb-1">Transfer To: </span>
