@@ -106,7 +106,11 @@ export const EditableCell = ({ value, address, highlightColor = "" }: EditableCe
             <div className="flex items-center gap-2 h-full items-stretch">
               <span className="truncate">{value}</span>
               <div className="flex items-stretch gap-1">
-                <button className="px-2 text-sm bg-primary rounded cursor-pointer" onClick={startEditing} title="Edit price">
+                <button
+                  className="px-2 text-sm bg-primary rounded cursor-pointer"
+                  onClick={startEditing}
+                  title="Edit price"
+                >
                   <PencilIcon className="w-2.5 h-2.5" />
                 </button>
                 <button

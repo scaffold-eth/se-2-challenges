@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import type { NextPage } from "next";
-import { BuyOraWidget } from "~~/components/oracle/BuyOraWidget";
 import { BucketCountdown } from "~~/components/oracle/BucketCountdown";
+import { BuyOraWidget } from "~~/components/oracle/BuyOraWidget";
 import { NodesTable } from "~~/components/oracle/NodesTable";
 import { PriceWidget } from "~~/components/oracle/PriceWidget";
 import { TotalSlashedWidget } from "~~/components/oracle/TotalSlashedWidget";

@@ -1,10 +1,13 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import type { WhitelistOracle, SimpleOracle } from "../typechain-types";
+import { network } from "hardhat";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
+import type { WhitelistOracle, SimpleOracle } from "../types/ethers-contracts/index.js";
 
 describe("Checkpoint1", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+
   before(async () => {
+    ({ ethers } = await network.create());
     await ethers.provider.send("evm_setAutomine", [true]);
     await ethers.provider.send("evm_setIntervalMining", [0]);
   });
@@ -15,7 +18,7 @@ describe("Checkpoint1", function () {
     addr2: HardhatEthersSigner,
     addr3: HardhatEthersSigner,
     addr4: HardhatEthersSigner;
-  
+
   const contractAddress = process.env.CONTRACT_ADDRESS;
 
   if (contractAddress) {
@@ -26,7 +29,7 @@ describe("Checkpoint1", function () {
   beforeEach(async function () {
     [owner, addr1, addr2, addr3, addr4] = await ethers.getSigners();
     const WhitelistOracleFactory = await ethers.getContractFactory("WhitelistOracle");
-    whitelistOracle = await WhitelistOracleFactory.deploy();
+    whitelistOracle = (await WhitelistOracleFactory.deploy()) as unknown as WhitelistOracle;
   });
 
   it("Should deploy and set owner", async function () {
@@ -58,7 +61,7 @@ describe("Checkpoint1", function () {
     expect(newOracle0Address).to.not.equal(oracle1Address);
 
     // Should only have one oracle left
-    await expect(whitelistOracle.oracles(1)).to.be.reverted;
+    await expect(whitelistOracle.oracles(1)).to.be.revert(ethers);
   });
 
   it("Should emit OracleAdded event when an oracle is added", async function () {

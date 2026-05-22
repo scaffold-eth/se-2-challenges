@@ -34,9 +34,7 @@ export const TotalSlashedWidget = () => {
           {isLoading ? (
             <div className="animate-pulse h-10 bg-secondary rounded-md w-32" />
           ) : (
-            <div className="font-bold text-4xl">
-              {totalSlashedOraFormatted} ORA
-            </div>
+            <div className="font-bold text-4xl">{totalSlashedOraFormatted} ORA</div>
           )}
         </div>
       </div>

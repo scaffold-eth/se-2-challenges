@@ -1,28 +1,33 @@
-import { ethers } from "hardhat";
-import { WhitelistOracle } from "../typechain-types";
-import hre from "hardhat";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap";
-import { sleep } from "./utils";
+import { network } from "hardhat";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap.js";
+import { sleep } from "./utils.js";
 
-async function getAllOracles() {
-  const [deployer] = await ethers.getSigners();
-  const whitelistContract = await ethers.getContract<WhitelistOracle>("WhitelistOracle", deployer.address);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-  const oracleAddresses = [];
+function loadDeploymentAddress(name: string): string {
+  const path = join(__dirname, "..", "deployments", "default", `${name}.json`);
+  return JSON.parse(readFileSync(path, "utf8")).address as string;
+}
+
+async function getAllOracles(ethers: Awaited<ReturnType<typeof network.connect>>["ethers"]) {
+  const whitelistAddress = loadDeploymentAddress("WhitelistOracle");
+  const whitelistContract = await ethers.getContractAt("WhitelistOracle", whitelistAddress);
+
+  const oracleAddresses: string[] = [];
   let index = 0;
-
   try {
     while (true) {
-      const oracle = await whitelistContract.oracles(index);
+      const oracle: string = await whitelistContract.oracles(index);
       oracleAddresses.push(oracle);
       index++;
     }
   } catch {
-    // When we hit an out-of-bounds error, we've found all oracles
     console.log(`Found ${oracleAddresses.length} oracles`);
   }
-
   return oracleAddresses;
 }
 
@@ -37,15 +42,13 @@ function getRandomPrice(basePrice: bigint): bigint {
   return basePrice + offset;
 }
 
-const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
+const runCycle = async (ethers: Awaited<ReturnType<typeof network.connect>>["ethers"], basePrice: bigint) => {
   try {
-    const accounts = await hre.viem.getWalletClients();
-    const simpleOracleFactory = await ethers.getContractFactory("SimpleOracle");
-    const publicClient = await hre.viem.getPublicClient();
+    const [deployer] = await ethers.getSigners();
 
-    const blockNumber = await publicClient.getBlockNumber();
+    const blockNumber = await ethers.provider.getBlockNumber();
     console.log(`\n[Block ${blockNumber}] Starting new whitelist oracle cycle...`);
-    const oracleAddresses = await getAllOracles();
+    const oracleAddresses = await getAllOracles(ethers);
     if (oracleAddresses.length === 0) {
       console.log("No oracles found");
       return;
@@ -60,12 +63,9 @@ const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
       const randomPrice = getRandomPrice(basePrice);
       console.log(`Setting price for oracle at ${oracleAddress} to ${randomPrice}`);
 
-      await accounts[0].writeContract({
-        address: oracleAddress as `0x${string}`,
-        abi: simpleOracleFactory.interface.fragments,
-        functionName: "setPrice",
-        args: [randomPrice],
-      });
+      const simpleOracle = await ethers.getContractAt("SimpleOracle", oracleAddress, deployer);
+      const tx = await simpleOracle.setPrice(randomPrice);
+      await tx.wait();
     }
   } catch (error) {
     console.error("Error in oracle cycle:", error);
@@ -75,10 +75,11 @@ const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
 
 async function run() {
   console.log("Starting whitelist oracle bots...");
+  const { ethers } = await network.connect();
   const basePrice = await fetchPriceFromUniswap();
 
   while (true) {
-    await runCycle(hre, basePrice);
+    await runCycle(ethers, basePrice);
     await sleep(4000);
   }
 }
@@ -88,7 +89,6 @@ run().catch(error => {
   process.exitCode = 1;
 });
 
-// Handle process termination signals
 process.on("SIGINT", async () => {
   console.log("\nReceived SIGINT (Ctrl+C). Cleaning up...");
   process.exit(0);
@@ -99,13 +99,11 @@ process.on("SIGTERM", async () => {
   process.exit(0);
 });
 
-// Handle uncaught exceptions
 process.on("uncaughtException", async error => {
   console.error("Uncaught Exception:", error);
   process.exit(1);
 });
 
-// Handle unhandled promise rejections
 process.on("unhandledRejection", async (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
   process.exit(1);
