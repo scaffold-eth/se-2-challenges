@@ -1,29 +1,24 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { ethers } from "hardhat/";
-import { DiceGame } from "../typechain-types/";
+import { artifacts, deployScript } from "../rocketh/deploy.js";
+import { parseEther, formatEther } from "viem";
 
-const deployDiceGame: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
+export default deployScript(
+  async env => {
+    const { deployer } = env.namedAccounts;
 
-  await deploy("DiceGame", {
-    from: deployer,
-    value: String(ethers.parseEther("0.05")),
-    log: true,
-  });
+    const diceGame = await env.deploy("DiceGame", {
+      account: deployer,
+      artifact: artifacts.DiceGame,
+      args: [],
+      value: parseEther("0.05"),
+    });
 
-  // Simple example on how get the deployed dice game contract
-  const diceGame: DiceGame = await ethers.getContract("DiceGame");
+    console.log("Deployed Dice Game Contract Address", diceGame.address);
 
-  const diceGameAddress = await diceGame.getAddress();
-
-  console.log("Deployed Dice Game Contract Address", diceGameAddress);
-
-  const balance = await ethers.provider.getBalance(diceGameAddress);
-  console.log("Deployed Dice Game Contract Balance", ethers.formatEther(balance.toString()));
-};
-
-export default deployDiceGame;
-
-deployDiceGame.tags = ["DiceGame"];
+    const balanceHex = (await env.network.provider.request({
+      method: "eth_getBalance",
+      params: [diceGame.address, "latest"],
+    })) as `0x${string}`;
+    console.log("Deployed Dice Game Contract Balance", formatEther(BigInt(balanceHex)));
+  },
+  { tags: ["DiceGame"] },
+);

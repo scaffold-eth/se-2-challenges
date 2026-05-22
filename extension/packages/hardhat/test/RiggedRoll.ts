@@ -1,24 +1,30 @@
-import hre from "hardhat";
+import { network } from "hardhat";
 import { expect } from "chai";
 // import { parseEther } from "ethers";
-import { DiceGame, RiggedRoll, RiggedRoll__factory } from "../typechain-types";
-import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-
-const { ethers } = hre;
+import type { DiceGame, RiggedRoll, RiggedRoll__factory } from "../types/ethers-contracts/index.js";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
 
 describe("🚩 Challenge: 🎲 Dice Game", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+  let provider: Awaited<ReturnType<typeof network.create>>["ethers"]["provider"];
+
   let diceGame: DiceGame;
   let riggedRoll: RiggedRoll;
   let deployer: HardhatEthersSigner;
-  const { provider } = ethers;
 
   const rollAmountString = "0.002";
-  const rollAmount = ethers.parseEther(rollAmountString);
+  let rollAmount: bigint;
+
+  before(async function () {
+    ({ ethers } = await network.create());
+    provider = ethers.provider;
+    rollAmount = ethers.parseEther(rollAmountString);
+  });
 
   async function deployContracts() {
     [deployer] = await ethers.getSigners();
     const DiceGame = await ethers.getContractFactory("DiceGame");
-    diceGame = await DiceGame.deploy();
+    diceGame = (await DiceGame.deploy()) as unknown as DiceGame;
 
     const contractAddress = process.env.CONTRACT_ADDRESS;
     let contractArtifact;
@@ -29,8 +35,8 @@ describe("🚩 Challenge: 🎲 Dice Game", function () {
     }
 
     const diceGameAddress = await diceGame.getAddress();
-    const RiggedRoll = (await ethers.getContractFactory(contractArtifact)) as RiggedRoll__factory;
-    riggedRoll = await RiggedRoll.deploy(diceGameAddress);
+    const RiggedRoll = (await ethers.getContractFactory(contractArtifact)) as unknown as RiggedRoll__factory;
+    riggedRoll = (await RiggedRoll.deploy(diceGameAddress)) as unknown as RiggedRoll;
   }
 
   async function fundRiggedContract() {
