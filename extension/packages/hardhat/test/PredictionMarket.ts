@@ -1,10 +1,11 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { PredictionMarket } from "../typechain-types";
+import { network } from "hardhat";
+import type { PredictionMarket } from "../types/ethers-contracts/index.js";
 
 describe("📈📉🏎️ Prediction Markets Challenge", function () {
   // We define a fixture to reuse the same setup in every test.
 
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
   let predictionMarket: PredictionMarket;
   let owner: any;
   let oracle: any;
@@ -16,6 +17,7 @@ describe("📈📉🏎️ Prediction Markets Challenge", function () {
     contractArtifact = "contracts/PredictionMarket.sol:PredictionMarket";
   }
   before(async () => {
+    ({ ethers } = await network.create());
     [owner, oracle] = await ethers.getSigners();
     const predictionMarketFactory = await ethers.getContractFactory(contractArtifact);
     predictionMarket = (await predictionMarketFactory.deploy(
@@ -26,7 +28,7 @@ describe("📈📉🏎️ Prediction Markets Challenge", function () {
       50,
       20,
       { value: ethers.parseEther("10") },
-    )) as PredictionMarket;
+    )) as unknown as PredictionMarket;
     await predictionMarket.waitForDeployment();
   });
 
