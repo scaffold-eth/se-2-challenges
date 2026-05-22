@@ -8,12 +8,18 @@
 //   yarn test --grep "Checkpoint5"
 //
 
-import { ethers } from "hardhat";
+import { network } from "hardhat";
 import { expect } from "chai";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { Balloons, DEX } from "../typechain-types";
+import { anyValue } from "@nomicfoundation/hardhat-ethers-chai-matchers/withArgs";
+import type { Balloons, DEX } from "../types/ethers-contracts/index.js";
 
 describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+
+  before(async function () {
+    ({ ethers } = await network.create());
+  });
+
   const contractAddress = process.env.CONTRACT_ADDRESS;
   const getDexArtifact = () => {
     if (contractAddress) return `contracts/download-${contractAddress}.sol:DEX`;
@@ -24,11 +30,11 @@ describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
     const [deployer, user2, user3] = await ethers.getSigners();
 
     const BalloonsFactory = await ethers.getContractFactory("Balloons");
-    const balloons = (await BalloonsFactory.deploy()) as Balloons;
+    const balloons = (await BalloonsFactory.deploy()) as unknown as Balloons;
     await balloons.waitForDeployment();
 
     const DexFactory = await ethers.getContractFactory(getDexArtifact());
-    const dex = (await DexFactory.deploy(await balloons.getAddress())) as DEX;
+    const dex = (await DexFactory.deploy(await balloons.getAddress())) as unknown as DEX;
     await dex.waitForDeployment();
 
     return {
