@@ -1,131 +1,151 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { Contract } from "ethers";
-import { fetchPriceFromUniswap } from "../scripts/fetchPriceFromUniswap";
+import { artifacts, deployScript } from "../rocketh/deploy.js";
+import { parseEther, getContractAddress } from "viem";
+import { fetchPriceFromUniswap } from "../scripts/fetchPriceFromUniswap.js";
 
 /**
- * Deploys a contract named "YourContract" using the deployer account and
- * constructor arguments set to the deployer address
+ * Deploys "RateController", "MyUSD", "DEX", "Oracle", "MyUSDStaking" and "MyUSDEngine" using the deployer account.
  *
- * @param hre HardhatRuntimeEnvironment object.
+ * On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
+ *
+ * When deploying to live networks (e.g `yarn deploy --network sepolia`), the deployer account
+ * should have sufficient balance to pay for the gas fees for contract creation.
+ *
+ * You can generate a random account with `yarn generate` or `yarn account:import` to import your
+ * existing PK which will fill DEPLOYER_PRIVATE_KEY_ENCRYPTED in the .env file (used in hardhat.config.ts).
+ * Run `yarn account` to check the deployer balance on every network.
  */
-const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  /*
-    On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
+export default deployScript(
+  async env => {
+    const { deployer } = env.namedAccounts;
 
-    When deploying to live networks (e.g `yarn deploy --network sepolia`), the deployer account
-    should have sufficient balance to pay for the gas fees for contract creation.
+    const ethPrice = await fetchPriceFromUniswap();
 
-    You can generate a random account with `yarn generate` or `yarn account:import` to import your
-    existing PK which will fill DEPLOYER_PRIVATE_KEY_ENCRYPTED in the .env file (then used on hardhat.config.ts)
-    You can run the `yarn account` command to check your balance in every network.
-  */
-  const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
+    // Add the account that you want to be the owner of your contracts when deployment is complete
+    const CONTRACT_OWNER = deployer; // Change this if you want to update the rates with a different account than the deployer
 
-  const ethPrice = await fetchPriceFromUniswap();
+    // Get the deployer's current nonce
+    const nonceHex = (await env.network.provider.request({
+      method: "eth_getTransactionCount",
+      params: [deployer, "pending"],
+    })) as `0x${string}`;
+    const deployerNonce = Number(BigInt(nonceHex));
 
-  // Add the account that you want to be the owner of your contracts when deployment is complete
-  const CONTRACT_OWNER = deployer; // Change this if you want to update the rates with a different account than the deployer
+    // Calculate future addresses based on nonce
+    const futureStakingAddress = getContractAddress({
+      from: deployer,
+      nonce: BigInt(deployerNonce + 4), // +4 because it will be our fifth deployment (after MyUSD, DEX, Oracle, RateController)
+    });
 
-  // Get the deployer's current nonce
-  const deployerNonce = await hre.ethers.provider.getTransactionCount(deployer);
+    const futureEngineAddress = getContractAddress({
+      from: deployer,
+      nonce: BigInt(deployerNonce + 5), // +5 because it will be our sixth deployment (after MyUSD, DEX, Oracle, Staking, RateController)
+    });
 
-  // Calculate future addresses based on nonce
-  const futureStakingAddress = hre.ethers.getCreateAddress({
-    from: deployer,
-    nonce: deployerNonce + 4, // +4 because it will be our fifth deployment (after MyUSD, DEX, Oracle, RateController)
-  });
+    const rateController = await env.deploy("RateController", {
+      account: deployer,
+      artifact: artifacts.RateController,
+      args: [futureEngineAddress, futureStakingAddress],
+    });
 
-  const futureEngineAddress = hre.ethers.getCreateAddress({
-    from: deployer,
-    nonce: deployerNonce + 5, // +5 because it will be our sixth deployment (after MyUSD, DEX, Oracle, Staking, RateController)
-  });
+    const stablecoin = await env.deploy("MyUSD", {
+      account: deployer,
+      artifact: artifacts.MyUSD,
+      args: [futureEngineAddress, futureStakingAddress],
+    });
 
-  await deploy("RateController", {
-    from: deployer,
-    args: [futureEngineAddress, futureStakingAddress],
-    log: true,
-  });
-  const rateController = await hre.ethers.getContract<Contract>("RateController", deployer);
+    const DEX = await env.deploy("DEX", {
+      account: deployer,
+      artifact: artifacts.DEX,
+      args: [stablecoin.address],
+    });
 
-  await deploy("MyUSD", {
-    from: deployer,
-    args: [futureEngineAddress, futureStakingAddress],
-    log: true,
-  });
-  const stablecoin = await hre.ethers.getContract<Contract>("MyUSD", deployer);
+    const oracle = await env.deploy("Oracle", {
+      account: deployer,
+      artifact: artifacts.Oracle,
+      args: [DEX.address, ethPrice],
+    });
 
-  await deploy("DEX", {
-    from: deployer,
-    args: [stablecoin.target],
-    log: true,
-  });
-  const DEX = await hre.ethers.getContract<Contract>("DEX", deployer);
+    const staking = await env.deploy("MyUSDStaking", {
+      account: deployer,
+      artifact: artifacts.MyUSDStaking,
+      args: [stablecoin.address, futureEngineAddress, rateController.address],
+    });
 
-  await deploy("Oracle", {
-    from: deployer,
-    args: [DEX.target, ethPrice],
-    log: true,
-  });
-  const oracle = await hre.ethers.getContract<Contract>("Oracle", deployer);
+    // Finally deploy the engine at the predicted address
+    const engine = await env.deploy("MyUSDEngine", {
+      account: deployer,
+      artifact: artifacts.MyUSDEngine,
+      args: [oracle.address, stablecoin.address, staking.address, rateController.address],
+    });
 
-  await deploy("MyUSDStaking", {
-    from: deployer,
-    args: [stablecoin.target, futureEngineAddress, rateController.target],
-    log: true,
-  });
-  const staking = await hre.ethers.getContract<Contract>("MyUSDStaking", deployer);
-
-  // Finally deploy the engine at the predicted address
-  await deploy("MyUSDEngine", {
-    from: deployer,
-    args: [oracle.target, stablecoin.target, staking.target, rateController.target],
-    log: true,
-  });
-  const engine = await hre.ethers.getContract<Contract>("MyUSDEngine", deployer);
-
-  if (engine.target !== futureEngineAddress) {
-    throw new Error(
-      "Engine address does not match predicted address, did you add transactions above this line that would skew the nonce set for 'futureEngineAddress'?",
-    );
-  }
-
-  if (hre.network.name === "localhost") {
-    // Set deployer ETH balance
-    await hre.ethers.provider.send("hardhat_setBalance", [
-      deployer,
-      `0x${hre.ethers.parseEther("100000000000000000000").toString(16)}`,
-    ]);
-
-    // The deployer is going to provide liquidity to the DEX so that we can swap tokens
-    // First they will borrow stablecoins and then provide liquidity to the DEX
-    // We will make the deployer account deposit a tone of collateral so they are rarely at risk of liquidation
-    const ethCollateralAmount = hre.ethers.parseEther("10000000000000000000");
-    // Set initial price of stablecoin (as determined by DEX liquidity)
-    const ethDEXAmount = hre.ethers.parseEther("10000000");
-    const myUSDAmount = ethPrice * 10000000n;
-
-    const GAS_LIMIT = 500000;
-
-    // Borrow stablecoins
-    await engine.addCollateral({ value: ethCollateralAmount, gasLimit: GAS_LIMIT });
-    await engine.mintMyUSD(myUSDAmount, { gasLimit: GAS_LIMIT });
-
-    const confirmedBalance = await stablecoin.balanceOf(deployer);
-    // Don't add DEX liquidity if the deployer account doesn't have the stablecoins
-    if (confirmedBalance == myUSDAmount) {
-      // Approve DEX to use tokens and initialize DEX
-      await stablecoin.approve(DEX.target, myUSDAmount, { gasLimit: GAS_LIMIT });
-      await DEX.init(myUSDAmount, { value: ethDEXAmount, gasLimit: GAS_LIMIT });
+    if (engine.address.toLowerCase() !== futureEngineAddress.toLowerCase()) {
+      throw new Error(
+        "Engine address does not match predicted address, did you add transactions above this line that would skew the nonce set for 'futureEngineAddress'?",
+      );
     }
 
-    // Set the owner of the engine and staking contracts
-    if (CONTRACT_OWNER !== deployer) {
-      await engine.transferOwnership(CONTRACT_OWNER);
-      await staking.transferOwnership(CONTRACT_OWNER);
-    }
-  }
-};
+    if (env.name === "default" || env.name === "localhost") {
+      // Set deployer ETH balance
+      await env.network.provider.request({
+        method: "hardhat_setBalance",
+        params: [deployer, `0x${parseEther("100000000000000000000").toString(16)}`],
+      });
 
-export default deployContracts;
+      // The deployer is going to provide liquidity to the DEX so that we can swap tokens
+      // First they will borrow stablecoins and then provide liquidity to the DEX
+      // We will make the deployer account deposit a tone of collateral so they are rarely at risk of liquidation
+      const ethCollateralAmount = parseEther("10000000000000000000");
+      // Set initial price of stablecoin (as determined by DEX liquidity)
+      const ethDEXAmount = parseEther("10000000");
+      const myUSDAmount = ethPrice * 10000000n;
+
+      // Borrow stablecoins
+      await env.execute(engine, {
+        functionName: "addCollateral",
+        args: [],
+        value: ethCollateralAmount,
+        account: deployer,
+      });
+      await env.execute(engine, {
+        functionName: "mintMyUSD",
+        args: [myUSDAmount],
+        account: deployer,
+      });
+
+      const confirmedBalance = (await env.read(stablecoin, {
+        functionName: "balanceOf",
+        args: [deployer],
+      })) as bigint;
+      // Don't add DEX liquidity if the deployer account doesn't have the stablecoins
+      if (confirmedBalance === myUSDAmount) {
+        // Approve DEX to use tokens and initialize DEX
+        await env.execute(stablecoin, {
+          functionName: "approve",
+          args: [DEX.address, myUSDAmount],
+          account: deployer,
+        });
+        await env.execute(DEX, {
+          functionName: "init",
+          args: [myUSDAmount],
+          value: ethDEXAmount,
+          account: deployer,
+        });
+      }
+
+      // Set the owner of the engine and staking contracts
+      if (CONTRACT_OWNER !== deployer) {
+        await env.execute(engine, {
+          functionName: "transferOwnership",
+          args: [CONTRACT_OWNER],
+          account: deployer,
+        });
+        await env.execute(staking, {
+          functionName: "transferOwnership",
+          args: [CONTRACT_OWNER],
+          account: deployer,
+        });
+      }
+    }
+  },
+  { tags: ["MyUSDEngine"] },
+);

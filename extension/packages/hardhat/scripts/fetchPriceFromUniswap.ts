@@ -1,43 +1,78 @@
-import { ethers } from "hardhat";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { config } from "hardhat";
+import { createPublicClient, http, zeroAddress } from "viem";
+import { mainnet } from "viem/chains";
 
 const UNISWAP_V2_PAIR_ABI = [
-  "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
-  "function token0() external view returns (address)",
-  "function token1() external view returns (address)",
-];
+  {
+    inputs: [],
+    name: "getReserves",
+    outputs: [
+      { internalType: "uint112", name: "reserve0", type: "uint112" },
+      { internalType: "uint112", name: "reserve1", type: "uint112" },
+      { internalType: "uint32", name: "blockTimestampLast", type: "uint32" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "token0",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "token1",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
 
-const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
-const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-const UNISWAP_V2_FACTORY = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-const mainnet = config.networks.mainnet;
-const MAINNET_RPC = "url" in mainnet ? mainnet.url : "";
+const UNISWAP_V2_FACTORY_ABI = [
+  {
+    inputs: [
+      { internalType: "address", name: "tokenA", type: "address" },
+      { internalType: "address", name: "tokenB", type: "address" },
+    ],
+    name: "getPair",
+    outputs: [{ internalType: "address", name: "pair", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F" as const;
+const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" as const;
+const UNISWAP_V2_FACTORY = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f" as const;
+
+const providerApiKey = process.env.ALCHEMY_API_KEY || "IZYEU2cWBgnFmgiTAgpWD";
+const MAINNET_RPC = `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`;
 
 export const fetchPriceFromUniswap = async (): Promise<bigint> => {
   try {
-    const provider = new ethers.JsonRpcProvider(MAINNET_RPC);
-    const tokenAddress = WETH_ADDRESS; // Always use WETH for mainnet
+    const client = createPublicClient({ chain: mainnet, transport: http(MAINNET_RPC) });
+    const tokenAddress = WETH_ADDRESS;
 
-    // Get pair address from Uniswap V2 Factory
-    const factory = new ethers.Contract(
-      UNISWAP_V2_FACTORY,
-      ["function getPair(address tokenA, address tokenB) external view returns (address pair)"],
-      provider,
-    );
-
-    const pairAddress = await factory.getPair(tokenAddress, DAI_ADDRESS);
-    if (pairAddress === ethers.ZeroAddress) {
+    const pairAddress = (await client.readContract({
+      address: UNISWAP_V2_FACTORY,
+      abi: UNISWAP_V2_FACTORY_ABI,
+      functionName: "getPair",
+      args: [tokenAddress, DAI_ADDRESS],
+    })) as `0x${string}`;
+    if (pairAddress === zeroAddress) {
       throw new Error("No liquidity pair found");
     }
 
-    const pairContract = new ethers.Contract(pairAddress, UNISWAP_V2_PAIR_ABI, provider);
-    const [reserves, token0Address] = await Promise.all([pairContract.getReserves(), pairContract.token0()]);
+    const [reserves, token0Address] = await Promise.all([
+      client.readContract({ address: pairAddress, abi: UNISWAP_V2_PAIR_ABI, functionName: "getReserves" }),
+      client.readContract({ address: pairAddress, abi: UNISWAP_V2_PAIR_ABI, functionName: "token0" }),
+    ]);
 
-    // Determine which reserve is token and which is DAI
-    const isToken0 = token0Address.toLowerCase() === tokenAddress.toLowerCase();
+    const isToken0 = (token0Address as string).toLowerCase() === tokenAddress.toLowerCase();
     const tokenReserve = isToken0 ? reserves[0] : reserves[1];
     const daiReserve = isToken0 ? reserves[1] : reserves[0];
 

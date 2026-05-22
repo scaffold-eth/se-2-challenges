@@ -2,13 +2,15 @@
 // This script executes when you run 'yarn test'
 //
 
-import { ethers } from "hardhat";
+import { network } from "hardhat";
 import { expect } from "chai";
-import { MyUSD, DEX, MyUSDEngine, Oracle, MyUSDStaking, RateController } from "../typechain-types";
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
-import { fetchPriceFromUniswap } from "../scripts/fetchPriceFromUniswap";
+import type { MyUSD, DEX, MyUSDEngine, Oracle, MyUSDStaking, RateController } from "../types/ethers-contracts/index.js";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
+import { fetchPriceFromUniswap } from "../scripts/fetchPriceFromUniswap.js";
 
 describe("🚩 Stablecoin Challenge 🤓", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+
   const contractAddress = process.env.CONTRACT_ADDRESS;
   let myUSDToken: MyUSD;
   let dex: DEX;
@@ -16,12 +18,18 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
   let oracle: Oracle;
   let staking: MyUSDStaking;
   let rateController: RateController;
-  let owner: SignerWithAddress;
-  let user1: SignerWithAddress;
-  let user2: SignerWithAddress;
+  let owner: HardhatEthersSigner;
+  let user1: HardhatEthersSigner;
+  let user2: HardhatEthersSigner;
 
-  const collateralAmount = ethers.parseEther("10");
-  const borrowAmount = ethers.parseEther("5000");
+  let collateralAmount: bigint;
+  let borrowAmount: bigint;
+
+  before(async function () {
+    ({ ethers } = await network.create());
+    collateralAmount = ethers.parseEther("10");
+    borrowAmount = ethers.parseEther("5000");
+  });
 
   beforeEach(async function () {
     await ethers.provider.send("hardhat_reset", []);
@@ -51,29 +59,29 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
 
     // Deploy RateController first
     const RateControllerFactory = await ethers.getContractFactory("RateController");
-    rateController = await RateControllerFactory.deploy(futureEngineAddress, futureStakingAddress);
+    rateController = (await RateControllerFactory.deploy(futureEngineAddress, futureStakingAddress)) as unknown as RateController;
 
     // Deploy MyUSD with future addresses
     const MyUSDFactory = await ethers.getContractFactory("MyUSD");
-    myUSDToken = await MyUSDFactory.deploy(futureEngineAddress, futureStakingAddress);
+    myUSDToken = (await MyUSDFactory.deploy(futureEngineAddress, futureStakingAddress)) as unknown as MyUSD;
 
     // Deploy DEX
     const DEXFactory = await ethers.getContractFactory("DEX");
-    dex = await DEXFactory.deploy(await myUSDToken.getAddress());
+    dex = (await DEXFactory.deploy(await myUSDToken.getAddress())) as unknown as DEX;
 
     const ethPrice = await fetchPriceFromUniswap();
 
     // Deploy Oracle
     const OracleFactory = await ethers.getContractFactory("Oracle");
-    oracle = await OracleFactory.deploy(await dex.getAddress(), ethPrice);
+    oracle = (await OracleFactory.deploy(await dex.getAddress(), ethPrice)) as unknown as Oracle;
 
     // Deploy MyUSDStaking
     const MyUSDStakingFactory = await ethers.getContractFactory("MyUSDStaking");
-    staking = await MyUSDStakingFactory.deploy(
+    staking = (await MyUSDStakingFactory.deploy(
       await myUSDToken.getAddress(),
       futureEngineAddress,
       await rateController.getAddress(),
-    );
+    )) as unknown as MyUSDStaking;
 
     // Finally deploy the MyUSDEngine at the predicted address
     const MyUSDEngineFactory = await ethers.getContractFactory(contractArtifact);
@@ -82,7 +90,7 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
       await myUSDToken.getAddress(),
       await staking.getAddress(),
       await rateController.getAddress(),
-    )) as MyUSDEngine;
+    )) as unknown as MyUSDEngine;
 
     // Verify addresses match predictions
     expect(await myUSDEngine.getAddress()).to.equal(futureEngineAddress);
