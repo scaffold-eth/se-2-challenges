@@ -29,7 +29,7 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
   });
 
   beforeEach(async function () {
-    await provider.request({ method: "hardhat_reset", params: [] });
+    ({ ethers, provider } = await network.create());
     [owner, user1, user2] = await ethers.getSigners();
 
     const Corn = await ethers.getContractFactory("Corn");
