@@ -25,14 +25,10 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
   let collateralAmount: bigint;
   let borrowAmount: bigint;
 
-  before(async function () {
+  beforeEach(async function () {
     ({ ethers } = await network.create());
     collateralAmount = ethers.parseEther("10");
     borrowAmount = ethers.parseEther("5000");
-  });
-
-  beforeEach(async function () {
-    await ethers.provider.send("hardhat_reset", []);
     [owner, user1, user2] = await ethers.getSigners();
 
     // For SRE Auto-grader - use the the downloaded contract instead of default contract
@@ -59,7 +55,10 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
 
     // Deploy RateController first
     const RateControllerFactory = await ethers.getContractFactory("RateController");
-    rateController = (await RateControllerFactory.deploy(futureEngineAddress, futureStakingAddress)) as unknown as RateController;
+    rateController = (await RateControllerFactory.deploy(
+      futureEngineAddress,
+      futureStakingAddress,
+    )) as unknown as RateController;
 
     // Deploy MyUSD with future addresses
     const MyUSDFactory = await ethers.getContractFactory("MyUSD");
@@ -434,8 +433,8 @@ describe("🚩 Stablecoin Challenge 🤓", function () {
     });
 
     it("Should prevent setting borrow rate below savings rate", async function () {
-      await rateController.setSavingsRate(0);
-      expect(await rateController.setBorrowRate(300)).to.be.revertedWithCustomError(
+      await rateController.setSavingsRate(350);
+      await expect(rateController.setBorrowRate(300)).to.be.revertedWithCustomError(
         myUSDEngine,
         "Engine__InvalidBorrowRate",
       );

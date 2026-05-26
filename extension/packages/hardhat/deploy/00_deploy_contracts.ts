@@ -88,7 +88,7 @@ export default deployScript(
       // Set deployer ETH balance
       await env.network.provider.request({
         method: "hardhat_setBalance",
-        params: [deployer, `0x${parseEther("100000000000000000000").toString(16)}`],
+        params: [deployer, `0x${parseEther("100000000000000000000").toString(16)}`] as never,
       });
 
       // The deployer is going to provide liquidity to the DEX so that we can swap tokens
