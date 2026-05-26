@@ -45,7 +45,7 @@ export default deployScript(
     // Only set up contract state on local network
     if (env.name === "default" || env.name === "localhost") {
       // Give ETH and CORN to the move price contract
-      await env.network.provider.request({
+      await env.network.provider.request<{ params: [`0x${string}`, `0x${string}`]; result: null }>({
         method: "hardhat_setBalance",
         params: [movePrice.address, `0x${parseEther("10000000000000000000000").toString(16)}`],
       });
@@ -66,7 +66,7 @@ export default deployScript(
         args: [deployer, parseEther("1000000000000")],
         account: deployer,
       });
-      await env.network.provider.request({
+      await env.network.provider.request<{ params: [`0x${string}`, `0x${string}`]; result: null }>({
         method: "hardhat_setBalance",
         params: [deployer, `0x${parseEther("100000000000").toString(16)}`],
       });
