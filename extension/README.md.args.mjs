@@ -53,7 +53,7 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
-> 👩‍💻 Restart \`yarn chain\` and then run \`yarn deploy\` whenever you want to deploy new or updated contracts to your local network. If you haven't made any contract changes, you can run \`yarn deploy --reset\` for a completely fresh deploy.
+> 👩‍💻 Restart \`yarn chain\` and then rerun \`yarn deploy\` whenever you want to deploy contract changes to the frontend. Run \`yarn deploy --reset\` for a completely fresh deploy, even when contracts are unchanged.
 
 ---
 
