@@ -108,7 +108,7 @@ yarn start
 
 📱 Open [http://localhost:3000](http://localhost:3000/) to see the app.
 
-> 👩‍💻 Rerun yarn deploy whenever you want to deploy new contracts to the front-end. If you haven't made any contract changes, you can run yarn deploy --reset for a completely fresh deploy.
+> 👩‍💻 Rerun `yarn deploy` whenever you want to deploy contract changes to the frontend. Run `yarn deploy --reset` for a completely fresh deploy, even when contracts are unchanged.
 
 Head to the **`Debug Contracts`** tab and you should find a smart contract named **`PredictionMarket`**. This is our main contract and the one we'll be working on throughout the challenge. Since we haven't implemented any functions yet, they all shouldn't work, nor will you see all the necessary state variables.
 
