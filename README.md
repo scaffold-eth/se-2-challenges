@@ -53,7 +53,7 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
-> 👩‍💻 Rerun `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
+> 👩‍💻 Rerun `yarn deploy` whenever you want to deploy contract changes to the frontend. Run `yarn deploy --reset` for a completely fresh deploy, even when contracts are unchanged.
 
 🔏 Now you are ready to edit your smart contract `CrowdFund.sol` in your contracts directory
 
