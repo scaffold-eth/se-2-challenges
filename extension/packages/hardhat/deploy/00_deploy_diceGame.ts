@@ -9,6 +9,12 @@ export default deployScript(
       account: deployer,
       artifact: artifacts.DiceGame,
       args: [],
+    });
+
+    // env.deploy ignores `value`; fund the contract separately (DiceGame has receive())
+    await env.tx({
+      account: deployer,
+      to: diceGame.address,
       value: parseEther("0.05"),
     });
 
