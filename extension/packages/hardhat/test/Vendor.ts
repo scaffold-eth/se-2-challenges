@@ -66,7 +66,7 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
       const { deployer, user, yourToken } = await deployYourTokenFixture();
 
       const amount = ethers.parseEther("10");
-      await expect(yourToken.transfer(user.address, amount)).to.not.be.reverted;
+      await expect(yourToken.transfer(user.address, amount)).to.not.be.revert(ethers);
 
       expect(await yourToken.balanceOf(user.address)).to.equal(amount);
       expect(await yourToken.balanceOf(deployer.address)).to.equal(INITIAL_SUPPLY - amount);
@@ -130,7 +130,7 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
       const { user, yourTokenAddress } = await deployYourTokenFixture();
       const { vendor } = await deployVendorFixture(yourTokenAddress);
 
-      await expect(vendor.connect(user).withdraw()).to.be.reverted;
+      await expect(vendor.connect(user).withdraw()).to.be.revert(ethers);
     });
 
     it("Checkpoint3: withdraw sends all ETH in Vendor to the owner", async function () {
