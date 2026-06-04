@@ -4,12 +4,12 @@
 
 import { network } from "hardhat";
 import { expect } from "chai";
+import { parseEther } from "ethers";
 import type { Corn, CornDEX, Lending } from "../types/ethers-contracts/index.js";
 import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
 
 describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
   let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
-  let provider: Awaited<ReturnType<typeof network.create>>["provider"];
 
   const contractAddress = process.env.CONTRACT_ADDRESS;
   let cornToken: Corn;
@@ -19,17 +19,11 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
   let user1: HardhatEthersSigner;
   let user2: HardhatEthersSigner;
 
-  let collateralAmount: bigint;
-  let borrowAmount: bigint;
-
-  before(async function () {
-    ({ ethers, provider } = await network.create());
-    collateralAmount = ethers.parseEther("10");
-    borrowAmount = ethers.parseEther("5000");
-  });
+  const collateralAmount = parseEther("10");
+  const borrowAmount = parseEther("5000");
 
   beforeEach(async function () {
-    ({ ethers, provider } = await network.create());
+    ({ ethers } = await network.create());
     [owner, user1, user2] = await ethers.getSigners();
 
     const Corn = await ethers.getContractFactory("Corn");

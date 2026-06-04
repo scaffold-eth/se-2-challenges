@@ -9,6 +9,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const { ethers } = await network.create();
 
+// This script only runs against the local chain: it reads contract addresses
+// from the `default` deployments folder written by the local `yarn deploy`.
 function loadDeployment(name: string): { address: string; abi: any } {
   const path = join(__dirname, `../deployments/default/${name}.json`);
   return JSON.parse(readFileSync(path, "utf8"));
@@ -298,7 +300,11 @@ async function main() {
   const cornDep = loadDeployment("Corn");
   const cornDEXDep = loadDeployment("CornDEX");
 
-  const movePriceContract = new ethers.Contract(movePriceDep.address, movePriceDep.abi, deployer) as unknown as MovePrice;
+  const movePriceContract = new ethers.Contract(
+    movePriceDep.address,
+    movePriceDep.abi,
+    deployer,
+  ) as unknown as MovePrice;
   const lending = new ethers.Contract(lendingDep.address, lendingDep.abi, deployer) as unknown as Lending;
   const corn = new ethers.Contract(cornDep.address, cornDep.abi, deployer) as unknown as Corn;
   const cornDEX = new ethers.Contract(cornDEXDep.address, cornDEXDep.abi, deployer) as unknown as CornDEX;
