@@ -97,17 +97,21 @@ contract DEXTest is Test {
     function test_Checkpoint4_EthToTokenEmitsAndTransfers() public {
         _initDex();
 
+        uint256 xInput = 1 ether;
+        uint256 xReserves = address(dex).balance;
+        uint256 yReserves = balloons.balanceOf(address(dex));
+        uint256 expectedYOutput = dex.price(xInput, xReserves, yReserves);
+
         uint256 userBalBefore = balloons.balanceOf(user2);
 
         vm.prank(user2);
         vm.recordLogs();
-        dex.ethToToken{ value: 1 ether }();
+        dex.ethToToken{ value: xInput }();
 
         uint256 userBalAfter = balloons.balanceOf(user2);
-        assertGt(userBalAfter, userBalBefore, "User should have more tokens after swap");
+        assertEq(userBalAfter, userBalBefore + expectedYOutput, "ethToToken should match expected output");
 
-        // DEX should have 6 ETH after swap
-        assertEq(address(dex).balance, 6 ether, "DEX should have 6 ETH after swap");
+        assertEq(address(dex).balance, xReserves + xInput, "DEX ETH should increase by swap input");
 
         // Check EthToTokenSwap event was emitted
         Vm.Log[] memory entries = vm.getRecordedLogs();
