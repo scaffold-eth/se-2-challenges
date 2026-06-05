@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@rocketh/deploy": "patch:@rocketh/deploy@npm%3A0.19.7#~/.yarn/patches/@rocketh-deploy-npm-0.19.7-80ebb5f207.patch"
+  }
+}
