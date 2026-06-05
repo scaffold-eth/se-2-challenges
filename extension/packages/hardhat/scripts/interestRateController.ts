@@ -1,14 +1,5 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { network } from "hardhat";
-import type {
-  DEX,
-  RateController,
-  MyUSDStaking,
-  MyUSDEngine,
-  Oracle,
-} from "../types/ethers-contracts/index.js";
+import type { DEX, RateController, MyUSDStaking, MyUSDEngine, Oracle } from "../types/ethers-contracts/index.js";
 import {
   DEX__factory,
   RateController__factory,
@@ -16,20 +7,11 @@ import {
   MyUSDEngine__factory,
   Oracle__factory,
 } from "../types/ethers-contracts/index.js";
+import { createDeploymentReader } from "./deployments.js";
 
 const { ethers, networkName } = await network.create();
 
-const deploymentsDir = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "deployments",
-  networkName,
-);
-
-function getDeployedAddress(name: string): string {
-  const filePath = path.join(deploymentsDir, `${name}.json`);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")).address;
-}
+const getDeployedAddress = createDeploymentReader(networkName);
 
 // --- Config ---
 const TARGET_PRICE = 1;
@@ -164,7 +146,10 @@ function checkPegHit(direction: "UP" | "DOWN" | "FLAT"): boolean {
 async function main() {
   const [deployer] = await ethers.getSigners();
   const dex: DEX = DEX__factory.connect(getDeployedAddress("DEX"), deployer);
-  const rateController: RateController = RateController__factory.connect(getDeployedAddress("RateController"), deployer);
+  const rateController: RateController = RateController__factory.connect(
+    getDeployedAddress("RateController"),
+    deployer,
+  );
   const engine: MyUSDEngine = MyUSDEngine__factory.connect(getDeployedAddress("MyUSDEngine"), deployer);
   const staking: MyUSDStaking = MyUSDStaking__factory.connect(getDeployedAddress("MyUSDStaking"), deployer);
   const oracle: Oracle = Oracle__factory.connect(getDeployedAddress("Oracle"), deployer);

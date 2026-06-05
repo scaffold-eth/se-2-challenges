@@ -57,12 +57,12 @@ export const fetchPriceFromUniswap = async (): Promise<bigint> => {
     const client = createPublicClient({ chain: mainnet, transport: http(MAINNET_RPC) });
     const tokenAddress = WETH_ADDRESS;
 
-    const pairAddress = (await client.readContract({
+    const pairAddress = await client.readContract({
       address: UNISWAP_V2_FACTORY,
       abi: UNISWAP_V2_FACTORY_ABI,
       functionName: "getPair",
       args: [tokenAddress, DAI_ADDRESS],
-    })) as `0x${string}`;
+    });
     if (pairAddress === zeroAddress) {
       throw new Error("No liquidity pair found");
     }
@@ -72,7 +72,7 @@ export const fetchPriceFromUniswap = async (): Promise<bigint> => {
       client.readContract({ address: pairAddress, abi: UNISWAP_V2_PAIR_ABI, functionName: "token0" }),
     ]);
 
-    const isToken0 = (token0Address as string).toLowerCase() === tokenAddress.toLowerCase();
+    const isToken0 = token0Address.toLowerCase() === tokenAddress.toLowerCase();
     const tokenReserve = isToken0 ? reserves[0] : reserves[1];
     const daiReserve = isToken0 ? reserves[1] : reserves[0];
 

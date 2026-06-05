@@ -86,9 +86,11 @@ export default deployScript(
 
     if (env.name === "default" || env.name === "localhost") {
       // Set deployer ETH balance
-      await env.network.provider.request({
+      // hardhat_setBalance is not part of the provider's typed RPC schema, so we
+      // override the schema to type the params for this single call.
+      await env.network.provider.request<{ params: [string, string]; result: null }>({
         method: "hardhat_setBalance",
-        params: [deployer, `0x${parseEther("100000000000000000000").toString(16)}`] as never,
+        params: [deployer, `0x${parseEther("100000000000000000000").toString(16)}`],
       });
 
       // The deployer is going to provide liquidity to the DEX so that we can swap tokens

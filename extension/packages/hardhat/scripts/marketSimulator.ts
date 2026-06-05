@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { HDNodeWallet } from "ethers";
 import { network } from "hardhat";
 import type { DEX, MyUSDEngine, MyUSD, MyUSDStaking, Oracle } from "../types/ethers-contracts/index.js";
@@ -14,20 +11,11 @@ import {
 } from "../types/ethers-contracts/index.js";
 import blessed from "blessed";
 import contrib from "blessed-contrib";
+import { createDeploymentReader } from "./deployments.js";
 
 const { ethers, networkName } = await network.create();
 
-const deploymentsDir = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "deployments",
-  networkName,
-);
-
-function getDeployedAddress(name: string): string {
-  const filePath = path.join(deploymentsDir, `${name}.json`);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")).address;
-}
+const getDeployedAddress = createDeploymentReader(networkName);
 
 // Account types and preferences
 interface BorrowerProfile {
