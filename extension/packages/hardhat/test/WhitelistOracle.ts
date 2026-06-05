@@ -29,7 +29,7 @@ describe("Checkpoint1", function () {
   beforeEach(async function () {
     [owner, addr1, addr2, addr3, addr4] = await ethers.getSigners();
     const WhitelistOracleFactory = await ethers.getContractFactory("WhitelistOracle");
-    whitelistOracle = (await WhitelistOracleFactory.deploy()) as unknown as WhitelistOracle;
+    whitelistOracle = (await WhitelistOracleFactory.deploy()) as WhitelistOracle;
   });
 
   it("Should deploy and set owner", async function () {

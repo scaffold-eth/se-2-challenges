@@ -78,8 +78,7 @@ describe("Checkpoint2 - StakingOracle", function () {
     await oraToken.waitForDeployment();
 
     const StakingOracleFactory = await ethers.getContractFactory("StakingOracle");
-    // TypeChain types update on compile; keep test TS-safe even before regeneration.
-    oracle = (await (StakingOracleFactory as any).deploy(await oraToken.getAddress())) as unknown as StakingOracle;
+    oracle = (await StakingOracleFactory.deploy(await oraToken.getAddress())) as StakingOracle;
     await oracle.waitForDeployment();
 
     // StakingOracle must own the ORA token to mint rewards

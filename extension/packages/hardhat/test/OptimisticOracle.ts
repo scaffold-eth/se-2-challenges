@@ -45,11 +45,11 @@ describe("OptimisticOracle", function () {
 
     // Deploy OptimisticOracle with temporary decider (owner)
     const OptimisticOracleFactory = await ethers.getContractFactory(contractArtifact);
-    optimisticOracle = (await OptimisticOracleFactory.deploy(owner.address)) as unknown as OptimisticOracle;
+    optimisticOracle = (await OptimisticOracleFactory.deploy(owner.address)) as OptimisticOracle;
 
     // Deploy Decider
     const DeciderFactory = await ethers.getContractFactory("Decider");
-    deciderContract = (await DeciderFactory.deploy(optimisticOracle.target)) as unknown as Decider;
+    deciderContract = (await DeciderFactory.deploy(optimisticOracle.target)) as Decider;
 
     // Set the decider in the oracle
     await optimisticOracle.setDecider(deciderContract.target);

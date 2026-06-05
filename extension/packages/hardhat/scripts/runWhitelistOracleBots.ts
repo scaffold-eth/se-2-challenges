@@ -8,20 +8,39 @@ import { sleep } from "./utils.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-function loadDeploymentAddress(name: string): string {
+type ViemConnection = Awaited<ReturnType<typeof network.connect>>["viem"];
+
+function loadDeployment(name: string): { address: `0x${string}`; abi: any } {
   const path = join(__dirname, "..", "deployments", "default", `${name}.json`);
-  return JSON.parse(readFileSync(path, "utf8")).address as string;
+  const json = JSON.parse(readFileSync(path, "utf8"));
+  return { address: json.address as `0x${string}`, abi: json.abi };
 }
 
-async function getAllOracles(ethers: Awaited<ReturnType<typeof network.connect>>["ethers"]) {
-  const whitelistAddress = loadDeploymentAddress("WhitelistOracle");
-  const whitelistContract = await ethers.getContractAt("WhitelistOracle", whitelistAddress);
+const simpleOracleAbi = [
+  {
+    type: "function",
+    name: "setPrice",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "_newPrice", type: "uint256" }],
+    outputs: [],
+  },
+] as const;
 
-  const oracleAddresses: string[] = [];
-  let index = 0;
+async function getAllOracles(viem: ViemConnection): Promise<`0x${string}`[]> {
+  const publicClient = await viem.getPublicClient();
+  const whitelist = loadDeployment("WhitelistOracle");
+
+  const oracleAddresses: `0x${string}`[] = [];
+  // The public oracles(uint256) getter reverts once index passes the end of the array, ending the loop.
+  let index = 0n;
   try {
     while (true) {
-      const oracle: string = await whitelistContract.oracles(index);
+      const oracle = (await publicClient.readContract({
+        address: whitelist.address,
+        abi: whitelist.abi,
+        functionName: "oracles",
+        args: [index],
+      })) as `0x${string}`;
       oracleAddresses.push(oracle);
       index++;
     }
@@ -42,13 +61,14 @@ function getRandomPrice(basePrice: bigint): bigint {
   return basePrice + offset;
 }
 
-const runCycle = async (ethers: Awaited<ReturnType<typeof network.connect>>["ethers"], basePrice: bigint) => {
+const runCycle = async (viem: ViemConnection, basePrice: bigint) => {
   try {
-    const [deployer] = await ethers.getSigners();
+    const publicClient = await viem.getPublicClient();
+    const [walletClient] = await viem.getWalletClients();
 
-    const blockNumber = await ethers.provider.getBlockNumber();
+    const blockNumber = await publicClient.getBlockNumber();
     console.log(`\n[Block ${blockNumber}] Starting new whitelist oracle cycle...`);
-    const oracleAddresses = await getAllOracles(ethers);
+    const oracleAddresses = await getAllOracles(viem);
     if (oracleAddresses.length === 0) {
       console.log("No oracles found");
       return;
@@ -63,9 +83,13 @@ const runCycle = async (ethers: Awaited<ReturnType<typeof network.connect>>["eth
       const randomPrice = getRandomPrice(basePrice);
       console.log(`Setting price for oracle at ${oracleAddress} to ${randomPrice}`);
 
-      const simpleOracle = await ethers.getContractAt("SimpleOracle", oracleAddress, deployer);
-      const tx = await simpleOracle.setPrice(randomPrice);
-      await tx.wait();
+      const hash = await walletClient.writeContract({
+        address: oracleAddress,
+        abi: simpleOracleAbi,
+        functionName: "setPrice",
+        args: [randomPrice],
+      });
+      await publicClient.waitForTransactionReceipt({ hash });
     }
   } catch (error) {
     console.error("Error in oracle cycle:", error);
@@ -75,11 +99,11 @@ const runCycle = async (ethers: Awaited<ReturnType<typeof network.connect>>["eth
 
 async function run() {
   console.log("Starting whitelist oracle bots...");
-  const { ethers } = await network.connect();
+  const { viem } = await network.connect();
   const basePrice = await fetchPriceFromUniswap();
 
   while (true) {
-    await runCycle(ethers, basePrice);
+    await runCycle(viem, basePrice);
     await sleep(4000);
   }
 }
