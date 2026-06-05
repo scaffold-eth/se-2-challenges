@@ -50,7 +50,7 @@ const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" as const;
 const UNISWAP_V2_FACTORY = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f" as const;
 
 const providerApiKey = process.env.ALCHEMY_API_KEY || "IZYEU2cWBgnFmgiTAgpWD";
-const MAINNET_RPC = `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`;
+const MAINNET_RPC = `https://eth-mainnet.g.alchemy.com/v2/${providerApiKey}`;
 
 export const fetchPriceFromUniswap = async (): Promise<bigint> => {
   try {
