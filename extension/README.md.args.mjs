@@ -55,7 +55,7 @@ yarn start
 
 Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
 
-1. Open this project in **Claude Code** or **Cursor**
+1. Open this project in an AI coding tool like **Claude Code** or **Cursor**
 2. Run the \`/start\` command
 3. The AI tutor will teach you each concept, then give you a coding task
 4. You write the code, say **"check"**, and the AI runs the tests
