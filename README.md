@@ -128,6 +128,21 @@ yarn start
 
 ---
 
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in an AI coding tool like **Claude Code** or **Cursor**
+2. Run the `/start` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **`/skip`** if you want the AI to show you the solution
+6. Your progress is saved — use `/start` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
 ## Checkpoint 1: 🗳️🔒 Structure of the Challenge and Voting Contract
 
 ### **💬 What you’ll build**
@@ -2076,15 +2091,3 @@ But this is just the beginning. The same **commitment + nullifier** pattern that
 This challenge is your **entry point into a new design space.** 💥
 
 **What will you build with Noir and ZK circuits? 🧪✨**
-
-## AI-Guided Learning Mode (Optional)
-
-This challenge supports an interactive AI learning mode. Instead of reading instructions above, you can let an AI guide you step by step.
-
-**How to use:**
-1. Open a terminal in the project root
-2. Run `/start` to begin the guided challenge
-3. The AI will teach concepts and give you coding tasks
-4. Say `check` to validate your code, `hint` for help, or `/skip` to skip a task
-
-> Note: If you chose Foundry as your framework, the screenshots in this README show the Hardhat version, but the contract logic and challenge flow are identical.
