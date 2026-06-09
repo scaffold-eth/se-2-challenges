@@ -34,25 +34,33 @@ export default deployScript(
     //   args: [],
     // });
 
-    // const leanIMT = await deploy("LeanIMT", {
-    //   account: deployer,
-    //   artifact: artifacts.LeanIMT,
-    //   args: [],
-    //   libraries: {
-    //     PoseidonT3: poseidon3.address,
+    // const leanIMT = await deploy(
+    //   "LeanIMT",
+    //   {
+    //     account: deployer,
+    //     artifact: artifacts.LeanIMT,
+    //     args: [],
     //   },
-    // });
+    //   {
+    //     libraries: {
+    //       PoseidonT3: poseidon3.address,
+    //     },
+    //   },
+    // );
 
-    await deploy("Voting", {
-      account: deployer,
-      artifact: artifacts.Voting,
-      /// checkpoint 6 //////
-      args: [ownerAddress, verifierAddress, "Should we build zk apps?"],
-      libraries: {
-        /// checkpoint 2 //////
-        LeanIMT: leanIMTAddress,
+    await deploy(
+      "Voting",
+      {
+        account: deployer,
+        artifact: artifacts.Voting,
+        args: [ownerAddress, verifierAddress, "Should we build zk apps?"],
       },
-    });
+      {
+        libraries: {
+          LeanIMT: leanIMTAddress,
+        },
+      },
+    );
   },
   // Tags are useful if you have multiple deploy files and only want to run one of them.
   // e.g. yarn deploy --tags YourVotingContract
