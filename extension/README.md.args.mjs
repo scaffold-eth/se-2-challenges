@@ -113,6 +113,21 @@ Head to the **\`Debug Contracts\`** tab and you should find a smart contract nam
 
 ---
 
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in an AI coding tool like **Claude Code** or **Cursor**
+2. Run the \`/start\` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **\`/skip\`** if you want the AI to show you the solution
+6. Your progress is saved — use \`/start\` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
 ## Checkpoint 1: 🔭 The Structure of the protocol 📺
 
 At its core, our prediction market has three essential parts:
@@ -1574,17 +1589,4 @@ But what makes this space exciting is that there’s no “one-size-fits-all” 
 We’d love to see what you build next. Share your ideas, your forks, your experiments. This is just the beginning. 💥
 
 What will your prediction market look like? Let us know! 🧪🔮
-
-## AI-Guided Learning Mode (Optional)
-
-This challenge supports an interactive AI learning mode. Instead of reading through all the checkpoints above, you can have an AI guide you through the challenge step by step.
-
-### Quick Start
-
-1. Open this project in [Claude Code](https://claude.ai/claude-code), Cursor, or another AI-enabled IDE
-2. Run \`/start\` in the AI chat
-3. The AI will teach you each concept and give you coding tasks
-4. Say **"check"** to validate your code, **"hint"** for help, or **"/skip"** to see the solution
-
-The AI uses the same checkpoint structure as this README but provides personalized guidance, answers questions, and runs tests for you.
 `;
