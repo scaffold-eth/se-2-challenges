@@ -97,6 +97,21 @@ yarn start
 
 ---
 
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in an AI coding tool like **Claude Code** or **Cursor**
+2. Run the `/start` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **`/skip`** if you want the AI to show you the solution
+6. Your progress is saved — use `/start` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
 ## Checkpoint 1: 🏛️ Whitelist Oracle Overview
 
 🔍 Let's start with the simplest of the three oracle designs we'll cover: the Whitelist Oracle. This design uses a centralized authority to control which data sources can provide information, making it simple and fast but requiring trust.
@@ -2211,18 +2226,3 @@ Oracles are fundamental infrastructure for the decentralized web. They enable sm
 🚀 As you continue your blockchain development journey, you'll encounter many variations and combinations of these patterns. Understanding the fundamental trade-offs will help you choose the right oracle design for your specific use case.
 
 🧠 Remember: the best oracle is the one that provides the right balance of security, speed, flexibility and cost for your application's needs!
-
-## 🤖 AI-Guided Learning Mode (Optional)
-
-This challenge supports an interactive AI learning mode. Instead of working through the checkpoints on your own, you can have an AI guide you step-by-step.
-
-### Quick Start
-Run `/start` in your AI-enabled IDE (Cursor, VS Code with Claude, etc.) to begin.
-
-### Commands
-- `/start` — Begin or resume the challenge
-- `/skip` — Skip current task (AI writes + explains the solution)
-- `hint` — Get contextual help anytime
-- `check` — Validate your current code
-
-> 📝 Your progress is saved automatically in `.challenge-ai/progress.json`.
