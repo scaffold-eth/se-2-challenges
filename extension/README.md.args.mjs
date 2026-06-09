@@ -66,6 +66,21 @@ yarn start
 
 ---
 
+## 🤖 AI-Guided Learning Mode (Optional)
+
+Want an interactive tutor that teaches you the concepts while you code? This challenge supports **AI-guided learning mode**!
+
+1. Open this project in an AI coding tool like **Claude Code** or **Cursor**
+2. Run the \`/start\` command
+3. The AI tutor will teach you each concept, then give you a coding task
+4. You write the code, say **"check"**, and the AI runs the tests
+5. Say **"hint"** for help, or **\`/skip\`** if you want the AI to show you the solution
+6. Your progress is saved — use \`/start\` to resume anytime
+
+The AI won't just give you the answers — it teaches first, then has you implement the code yourself. Tests validate your work, and the AI helps you debug if something doesn't pass.
+
+---
+
 ## Checkpoint 1: 💳🌽 Lending Contract
 
 A lending platform needs these three primary functions:
@@ -892,16 +907,6 @@ This is great to complete your **Speedrun Ethereum**.
 👉 Search this address on [Sepolia Etherscan](https://sepolia.etherscan.io/) (or [Optimism Sepolia Etherscan](https://sepolia-optimism.etherscan.io/) if you deployed to OP Sepolia) to get the URL you submit to 🏃‍♀️[SpeedRunEthereum.com](https://speedrunethereum.com).
 
 ---
-
-## AI-Guided Learning Mode (Optional)
-
-This challenge includes an interactive AI-guided learning mode. Instead of reading through the checkpoints above, you can have an AI guide you step-by-step through building the smart contract.
-
-**How to use it:**
-1. Open the project in Cursor or VS Code with Claude Code
-2. Type \`/start\` to begin the guided challenge
-3. The AI will teach concepts, ask questions, and give you coding tasks
-4. Say "check" to validate your code, "hint" for help, or use \`/skip\` to see solutions
 
 > 🏃 Head to your next challenge [here](https://speedrunethereum.com).
 
