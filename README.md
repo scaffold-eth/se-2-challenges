@@ -69,7 +69,7 @@ cd challenge-tokenization
 
 Want an interactive tutor that teaches you the concepts as you go? This challenge supports **AI-guided learning mode**!
 
-1. Open this project in **Claude Code** or **Cursor**
+1. Open this project in an AI coding tool like **Claude Code** or **Cursor**
 2. Run the `/start` command
 3. The AI teaches each concept, then asks questions to check your understanding
 4. Answer correctly and the AI adds the corresponding code to your contract — building it up piece by piece
