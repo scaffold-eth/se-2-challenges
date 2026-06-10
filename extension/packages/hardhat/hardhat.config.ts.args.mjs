@@ -12,8 +12,8 @@ export const configOverrides = {
         },
       },
     ],
+    npmFilesToBuild: ["poseidon-solidity/PoseidonT3.sol", "@zk-kit/lean-imt.sol/LeanIMT.sol"],
   },
-  npmFilesToBuild: ["poseidon-solidity/PoseidonT3.sol", "@zk-kit/lean-imt.sol/LeanIMT.sol"],
   networks: {
     hardhat: {
       allowUnlimitedContractSize: true,

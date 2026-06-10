@@ -328,7 +328,7 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/circuits/src/main.nr"
-      test: "cd extension/packages/circuits && nargo check 2>&1 | grep -v warning && echo 'Circuit check passed!'"
+      test: "cd packages/circuits && nargo check 2>&1 | grep -v warning && echo 'Circuit check passed!'"
       hints:
         - "`hash_1` takes an array of one element: `hash_1([nullifier])`. `hash_2` takes an array of two: `hash_2([nullifier, secret])`."
         - |
@@ -447,7 +447,7 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/circuits/src/main.nr"
-      test: "cd extension/packages/circuits && nargo check 2>&1 | grep -v warning && echo 'Circuit check passed!'"
+      test: "cd packages/circuits && nargo check 2>&1 | grep -v warning && echo 'Circuit check passed!'"
       hints:
         - "Don't forget to uncomment BOTH the import at the top AND the function parameters. The parameters are commented out below the `////// Checkpoint 4 //////` comment in the function signature."
         - |
@@ -586,7 +586,7 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/circuits/src/main.nr"
-      test: "test -s extension/packages/circuits/target/Verifier.sol && grep -q 'function verify' extension/packages/circuits/target/Verifier.sol && echo 'Verifier contract generated!'"
+      test: "test -s packages/circuits/target/Verifier.sol && grep -q 'function verify' packages/circuits/target/Verifier.sol && echo 'Verifier contract generated!'"
       hints:
         - "Make sure you `cd packages/circuits` first. All three commands must be run from that directory."
         - |
@@ -913,7 +913,7 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx"
-      test: "grep -q 'Fr.random' extension/packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx && grep -q 'poseidon2' extension/packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx && echo 'Commitment generation check passed!'"
+      test: "grep -q 'Fr.random' packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx && grep -q 'poseidon2' packages/nextjs/app/voting/_challengeComponents/CreateCommitment.tsx && echo 'Commitment generation check passed!'"
       hints:
         - "Cast `Fr.random()` to BigInt: `const nullifier = BigInt(Fr.random().toString());`. Use `toHex(value, { size: 32 })` for the hex conversion."
         - |
@@ -1083,7 +1083,7 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx"
-      test: "grep -q 'new Noir' extension/packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx && grep -q 'UltraHonkBackend' extension/packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx && echo 'Proof generation check passed!'"
+      test: "grep -q 'new Noir' packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx && grep -q 'UltraHonkBackend' packages/nextjs/app/voting/_challengeComponents/GenerateProof.tsx && echo 'Proof generation check passed!'"
       hints:
         - 'Events are emitted newest-last. Reverse the leaves array before inserting into the tree: `leaves.reverse()`. Pad siblings to 16 with `"0"`.'
         - |
@@ -1247,7 +1247,7 @@ checkpoints:
 
         Say **"check"** when you're ready!
       file: "packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx"
-      test: "grep -q 'generatePrivateKey' extension/packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx && grep -q 'viemContract.write.vote' extension/packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx && echo 'Burner wallet check passed!'"
+      test: "grep -q 'generatePrivateKey' packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx && grep -q 'viemContract.write.vote' packages/nextjs/app/voting/_challengeComponents/VoteWithBurnerHardhat.tsx && echo 'Burner wallet check passed!'"
       hints:
         - "`generatePrivateKey()` from `viem/accounts` creates a random private key. `privateKeyToAccount(pk)` derives the address from it."
         - |

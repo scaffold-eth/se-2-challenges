@@ -16,7 +16,7 @@ import {
 } from "~~/utils/proofStorage";
 
 ////// Checkpoint 9 //////
-// import {  parseEther, createTestClient } from "viem";
+// import { createTestClient, parseEther } from "viem";
 // import { generatePrivateKey } from "viem/accounts";
 
 type LocalProofData = {
