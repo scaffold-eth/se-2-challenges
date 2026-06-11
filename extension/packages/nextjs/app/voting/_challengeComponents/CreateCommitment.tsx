@@ -111,7 +111,7 @@ export const CreateCommitment = ({ leafEvents = [] }: CreateCommitmentProps) => 
   };
 
   return (
-    <div className="bg-base-100 shadow rounded-xl p-6 space-y-5">
+    <div className="bg-base-100 shadow p-6 space-y-5">
       <div className="space-y-1 text-center">
         <h2 className="text-2xl font-bold">Register for this vote</h2>
         <p className="text-sm opacity-70">Generate your anonymous identifier and insert it into the Merkle tree.</p>

@@ -66,7 +66,7 @@ const VoterStatus = ({ address }: { address: string }) => {
   const hasRegistered = voterData?.[1];
 
   return (
-    <div className="flex items-center justify-between p-3 border border-base-300 rounded-lg">
+    <div className="flex items-center justify-between p-3 border border-base-300">
       <div className="flex-1">
         <Address address={address as `0x${string}`} />
       </div>

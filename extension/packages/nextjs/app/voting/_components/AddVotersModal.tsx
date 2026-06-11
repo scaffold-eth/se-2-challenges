@@ -118,7 +118,7 @@ export const AddVotersModal = () => {
 
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {voters.map((voter, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 border border-base-300 rounded-lg">
+                    <div key={index} className="flex items-center gap-3 p-3 border border-base-300">
                       <div className="flex-1">
                         <AddressInput
                           placeholder="Voter Address (0x...)"
