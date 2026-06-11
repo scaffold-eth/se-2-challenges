@@ -46,7 +46,7 @@ const PriceActions = () => {
   };
 
   return (
-    <div className="absolute mt-10 right-5 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl">
+    <div className="absolute mt-10 right-5 bg-base-100 w-fit border-base-300 border shadow-md">
       <div className="w-[150px] py-5 flex flex-col items-center gap-2 indicator">
         <TooltipInfo top={3} right={3} infoText="Use these controls to simulate price changes" />
         <div className="flex items-center gap-1">

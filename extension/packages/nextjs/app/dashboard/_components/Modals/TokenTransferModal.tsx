@@ -74,7 +74,7 @@ export const TokenTransferModal = ({ tokenBalance, connectedAddress, modalId }: 
                 placeholder="Amount"
                 disableMultiplyBy1e18
               />
-              <button className="h-10 btn btn-primary btn-sm px-2 rounded-full" onClick={handleSend} disabled={loading}>
+              <button className="h-10 btn btn-primary btn-sm px-2" onClick={handleSend} disabled={loading}>
                 {!loading ? (
                   <BanknotesIcon className="h-6 w-6" />
                 ) : (

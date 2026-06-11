@@ -43,7 +43,7 @@ const TokenActions = () => {
           </label>
           <div className="text-lg font-semibold">
             <span
-              className={`transition bg-transparent ${showAnimation ? "bg-warning rounded-xs animate-pulse-fast" : ""}`}
+              className={`transition bg-transparent ${showAnimation ? "bg-warning animate-pulse-fast" : ""}`}
             >
               {tokenBalance} {tokenName}
             </span>
