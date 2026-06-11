@@ -49,7 +49,7 @@ const TokenVendor: NextPage = () => {
   return (
     <>
       <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
+        <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary p-6 mt-24 w-full max-w-lg">
           <div className="text-xl">
             Your token balance:{" "}
             <div className="inline-flex items-center justify-center">
@@ -73,7 +73,7 @@ const TokenVendor: NextPage = () => {
         </div>
 
         {/* Buy Tokens */}
-        {/* <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
+        {/* <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary p-6 mt-8 w-full max-w-lg">
           <div className="text-xl">Buy tokens</div>
           <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
 
@@ -101,7 +101,7 @@ const TokenVendor: NextPage = () => {
         </div> */}
 
         {!!yourTokenBalance && (
-          <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
+          <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary p-6 mt-8 w-full max-w-lg">
             <div className="text-xl">Transfer tokens</div>
             <div className="w-full flex flex-col space-y-2">
               <AddressInput placeholder="to address" value={toAddress} onChange={value => setToAddress(value)} />
@@ -133,7 +133,7 @@ const TokenVendor: NextPage = () => {
 
         {/* Sell Tokens */}
         {/* {!!yourTokenBalance && (
-          <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
+          <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary p-6 mt-8 w-full max-w-lg">
             <div className="text-xl">Sell tokens</div>
             <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
 
