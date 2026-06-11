@@ -113,7 +113,7 @@ const Dex: NextPage = () => {
       </h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pt-10 content-start">
         <div className="px-5 py-5 space-y-6 min-w-0">
-          <div className="bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-8">
+          <div className="bg-base-100 shadow-lg shadow-secondary border-8 border-secondary p-8">
             <div className="flex flex-col text-center">
               <span className="text-3xl font-semibold mb-2">DEX Contract</span>
               <span className="block text-2xl mb-2 mx-auto">
@@ -263,7 +263,7 @@ const Dex: NextPage = () => {
             </div>
           </div>
 
-          <div className="space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl py-5 p-8">
+          <div className="space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary py-5 p-8">
             <div className="flex flex-col text-center mt-2 mb-4 px-4">
               <span className="block text-3xl font-semibold mb-2">Balloons</span>
               <span className="mx-auto">
@@ -321,7 +321,7 @@ const Dex: NextPage = () => {
                 {balanceOfWrite === undefined ? (
                   <h1></h1>
                 ) : (
-                  <span className="font-bold bg-primary px-3 rounded-2xl">
+                  <span className="font-bold bg-primary px-3">
                     BAL Balance: {parseFloat(formatEther(balanceOfWrite || 0n)).toFixed(4)}
                   </span>
                 )}

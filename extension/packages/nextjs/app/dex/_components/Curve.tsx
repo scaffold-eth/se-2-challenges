@@ -530,12 +530,12 @@ export const Curve: FC<ICurveProps> = (props: ICurveProps) => {
   ]);
 
   return (
-    <div className="rounded-2xl bg-base-100 shadow-lg shadow-secondary border border-base-300 p-4">
+    <div className="bg-base-100 shadow-lg shadow-secondary border border-base-300 p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="font-semibold text-base-content">AMM Curve</div>
         <div className="text-sm text-base-content/60">x · y = k</div>
       </div>
-      <div style={{ width: props.width, height: props.height }} className="rounded-xl overflow-hidden bg-base-200">
+      <div style={{ width: props.width, height: props.height }} className="overflow-hidden bg-base-200">
         <canvas ref={ref} />
       </div>
     </div>
