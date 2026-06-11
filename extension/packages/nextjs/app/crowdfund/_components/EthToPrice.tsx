@@ -25,7 +25,7 @@ export const ETHToPrice = ({ value, className = "" }: TBalanceProps) => {
     return (
       <div className="animate-pulse flex space-x-4">
         <div className="flex items-center space-y-6">
-          <div className="h-5 w-12 bg-slate-300 rounded"></div>
+          <div className="h-5 w-12 bg-slate-300"></div>
         </div>
       </div>
     );
