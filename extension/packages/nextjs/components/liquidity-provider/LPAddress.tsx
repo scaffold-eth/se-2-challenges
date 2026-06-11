@@ -18,7 +18,7 @@ export function LPAddress() {
 
   if (!owner)
     return (
-      <div className="flex flex-col bg-base-100 p-4 rounded-xl">
+      <div className="flex flex-col bg-base-100 p-4">
         <h3 className="text-xl font-medium">Prediction Market Info</h3>
         <p className="text-base-content">No prediction market found</p>
       </div>

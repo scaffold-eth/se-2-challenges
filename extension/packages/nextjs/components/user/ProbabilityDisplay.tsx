@@ -54,7 +54,7 @@ export function ProbabilityDisplay({
   const probability = calculateProbability(token1Reserve, token2Reserve);
 
   return (
-    <div className="bg-base-200 p-4 rounded-lg text-center">
+    <div className="bg-base-200 p-4 text-center">
       <h3
         className={clsx("text-lg font-semibold mb-2", {
           "text-green-500": isReported && winningOption === "Yes",
