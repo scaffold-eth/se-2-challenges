@@ -53,7 +53,7 @@ export const TimeLeft = ({ startTime, endTime }: { startTime: bigint; endTime: b
     <div className="w-full space-y-1">
       <div className={ended || duration < 60 ? "text-error" : ""}>{displayText}</div>
       <div
-        className={`w-full h-1 bg-base-300 rounded-full overflow-hidden transition-opacity ${now > start ? "opacity-100" : "opacity-0"}`}
+        className={`w-full h-1 bg-base-300 overflow-hidden transition-opacity ${now > start ? "opacity-100" : "opacity-0"}`}
       >
         <div className="h-full bg-error transition-all" style={{ width: `${progressPercent}%` }} />
       </div>

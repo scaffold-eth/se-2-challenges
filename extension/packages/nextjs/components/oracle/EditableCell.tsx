@@ -99,18 +99,18 @@ export const EditableCell = ({ value, address, highlightColor = "" }: EditableCe
                 type={"text"}
                 value={editValue}
                 onChange={e => setEditValue(e.target.value)}
-                className="w-full text-sm bg-secondary rounded-md"
+                className="w-full text-sm bg-secondary"
               />
             </div>
           ) : (
             <div className="flex items-center gap-2 h-full items-stretch">
               <span className="truncate">{value}</span>
               <div className="flex items-stretch gap-1">
-                <button className="px-2 text-sm bg-primary rounded cursor-pointer" onClick={startEditing} title="Edit price">
+                <button className="px-2 text-sm bg-primary cursor-pointer" onClick={startEditing} title="Edit price">
                   <PencilIcon className="w-2.5 h-2.5" />
                 </button>
                 <button
-                  className="px-2 text-sm bg-secondary rounded cursor-pointer disabled:opacity-50"
+                  className="px-2 text-sm bg-secondary cursor-pointer disabled:opacity-50"
                   onClick={() => {
                     if (isRefreshing) return;
                     setIsRefreshing(true);
@@ -133,10 +133,10 @@ export const EditableCell = ({ value, address, highlightColor = "" }: EditableCe
         <div className="w-[30%] items-stretch justify-start pl-2">
           {isEditing && (
             <div className="flex items-stretch gap-1 w-full h-full">
-              <button onClick={handleSubmit} className="px-2 text-sm bg-primary rounded cursor-pointer">
+              <button onClick={handleSubmit} className="px-2 text-sm bg-primary cursor-pointer">
                 ✓
               </button>
-              <button onClick={handleCancel} className="px-2 text-sm bg-secondary rounded cursor-pointer">
+              <button onClick={handleCancel} className="px-2 text-sm bg-secondary cursor-pointer">
                 ✕
               </button>
             </div>

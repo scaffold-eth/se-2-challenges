@@ -69,7 +69,7 @@ export const ConfigSlider = ({ nodeAddress, endpoint, label }: ConfigSliderProps
         onChange={e => handleChange(parseFloat(e.target.value))}
         onMouseUp={handleFinalChange}
         onTouchEnd={handleFinalChange}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+        className="w-full h-2 bg-gray-200 appearance-none cursor-pointer dark:bg-gray-700"
       />
       <div className="text-xs font-medium text-neutral dark:text-neutral-content mt-1 text-center">
         {(localValue * 100).toFixed(0)}% {label}

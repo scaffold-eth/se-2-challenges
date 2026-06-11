@@ -28,11 +28,11 @@ export const TotalSlashedWidget = () => {
   return (
     <div className="flex flex-col gap-2 h-full">
       <h2 className="text-xl font-bold">Total Slashed</h2>
-      <div className="bg-base-100 rounded-lg p-4 relative w-full h-full min-h-[140px]">
+      <div className="bg-base-100 p-4 relative w-full h-full min-h-[140px]">
         <TooltipInfo top={0} right={0} infoText={tooltipText} className="tooltip-left" />
         <div className="flex flex-col gap-1 h-full items-center justify-center">
           {isLoading ? (
-            <div className="animate-pulse h-10 bg-secondary rounded-md w-32" />
+            <div className="animate-pulse h-10 bg-secondary w-32" />
           ) : (
             <div className="font-bold text-4xl">
               {totalSlashedOraFormatted} ORA

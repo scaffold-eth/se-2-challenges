@@ -146,7 +146,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
                 </label>
                 <div className="flex gap-2 items-start">
                   <div className="flex-1">
-                    <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
+                    <div className="flex border-2 border-base-300 bg-base-200 text-accent">
                       <textarea
                         name="description"
                         value={description}

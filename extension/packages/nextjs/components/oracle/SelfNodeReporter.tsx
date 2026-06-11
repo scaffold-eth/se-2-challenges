@@ -148,7 +148,7 @@ export const SelfNodeReporter = () => {
   };
 
   return (
-    <div className="bg-base-100 rounded-lg p-4 relative">
+    <div className="bg-base-100 p-4 relative">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold">My Node</h2>

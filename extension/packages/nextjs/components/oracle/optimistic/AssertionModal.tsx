@@ -36,7 +36,7 @@ const formatTimestamp = (timestamp: bigint | string | number) => {
 
 const Description = ({ assertion }: { assertion: AssertionWithIdAndState }) => {
   return (
-    <div className="bg-base-200 p-4 rounded-lg space-y-2 mb-4">
+    <div className="bg-base-200 p-4 space-y-2 mb-4">
       <div>
         <span className="font-bold">AssertionId:</span> {assertion.assertionId}
       </div>
@@ -154,7 +154,7 @@ export const AssertionModal = () => {
             {openAssertion.state === 1 && (
               <>
                 {/* Proposed Outcome Section */}
-                <div className="rounded-lg p-4">
+                <div className="p-4">
                   <div className="flex justify-center mb-4">
                     <span className="font-medium">Propose Outcome</span>
                   </div>
@@ -192,7 +192,7 @@ export const AssertionModal = () => {
               </>
             )}
             {openAssertion.state === 2 && (
-              <div className="rounded-lg p-4">
+              <div className="p-4">
                 <div className="flex justify-center mb-4">
                   <span className="font-medium">Submit Dispute</span>
                 </div>
@@ -217,7 +217,7 @@ export const AssertionModal = () => {
               </div>
             )}
             {openAssertion.state === 3 && (
-              <div className="rounded-lg p-4">
+              <div className="p-4">
                 <div className="flex flex-col items-center gap-2 mb-4">
                   <span className="text-2xl font-medium">Impersonate Decider</span>
                   <span className="font-medium">Resolve Answer to</span>

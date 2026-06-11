@@ -54,7 +54,7 @@ export const BuyOraWidget = () => {
   };
 
   return (
-    <div className="bg-base-100 rounded-lg p-4 border border-base-300 shadow-sm w-full md:w-auto">
+    <div className="bg-base-100 p-4 border border-base-300 shadow-sm w-full md:w-auto">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="text-sm font-semibold">Buy ORA</div>
