@@ -164,7 +164,7 @@ export const TokenSwapModal = ({ tokenBalance, connectedAddress, ETHprice, modal
                   {sellToken === "MyUSD" ? "ETH" : "MyUSD"}
                 </span>
               </div>
-              <button className="h-10 btn btn-primary btn-sm px-2 rounded-full" onClick={handleSwap} disabled={loading}>
+              <button className="h-10 btn btn-primary btn-sm px-2" onClick={handleSwap} disabled={loading}>
                 {!loading ? (
                   <ArrowsRightLeftIcon className="h-6 w-6" />
                 ) : (

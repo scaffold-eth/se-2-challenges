@@ -86,7 +86,7 @@ const SideButtons: React.FC = () => {
 
   return (
     <div
-      className="absolute top-[120px] right-0 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl"
+      className="absolute top-[120px] right-0 bg-base-100 w-fit border-base-300 border shadow-md"
       onMouseEnter={handleContainerEnter}
       onMouseLeave={handleContainerLeave}
     >
