@@ -124,16 +124,22 @@ describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
     it("Checkpoint4: ethToToken emits EthToTokenSwap and transfers tokens", async function () {
       const { user2, balloons, dex, dexAddress } = await deployInitializedFixture();
 
+      const xInput = ethers.parseEther("1");
+      const xReserves = await ethers.provider.getBalance(dexAddress);
+      const yReserves = await balloons.balanceOf(dexAddress);
+      const expectedYOutput = await dex.price(xInput, xReserves, yReserves);
+
       const userBalBefore = await balloons.balanceOf(user2.address);
-      const tx = dex.connect(user2).ethToToken({ value: ethers.parseEther("1") });
-      await expect(tx).to.emit(dex, "EthToTokenSwap").withArgs(user2.address, anyValue, ethers.parseEther("1"));
+      const tx = dex.connect(user2).ethToToken({ value: xInput });
+      await expect(tx)
+        .to.emit(dex, "EthToTokenSwap")
+        .withArgs(user2.address, expectedYOutput, xInput);
       await tx;
 
       const userBalAfter = await balloons.balanceOf(user2.address);
-      expect(userBalAfter).to.be.gt(userBalBefore);
+      expect(userBalAfter).to.equal(userBalBefore + expectedYOutput);
 
-      // DEX should have more ETH after swap.
-      expect(await ethers.provider.getBalance(dexAddress)).to.equal(ethers.parseEther("6"));
+      expect(await ethers.provider.getBalance(dexAddress)).to.equal(xReserves + xInput);
     });
 
     it("Checkpoint4: tokenToEth reverts on 0 tokens with InvalidTokenAmount", async function () {
