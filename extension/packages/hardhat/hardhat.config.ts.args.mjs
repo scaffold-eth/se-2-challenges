@@ -1,8 +1,9 @@
 export const preContent = `
-import "@nomicfoundation/hardhat-viem";
+import hardhatViem from "@nomicfoundation/hardhat-viem";
 `;
 
 export const configOverrides = {
+    plugins: '$$[hardhatToolbox, hardhatViem, HardhatDeploy]$$',
     networks: {
       hardhat: {
         mining: {

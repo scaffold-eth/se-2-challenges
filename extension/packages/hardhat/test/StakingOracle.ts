@@ -1,11 +1,14 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { mine } from "@nomicfoundation/hardhat-network-helpers";
-import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import type { StakingOracle, ORA } from "../typechain-types";
+import { network } from "hardhat";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
+import type { StakingOracle, ORA } from "../types/ethers-contracts/index.js";
 
 describe("Checkpoint2 - StakingOracle", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+  let networkHelpers: Awaited<ReturnType<typeof network.create>>["networkHelpers"];
+
   before(async () => {
+    ({ ethers, networkHelpers } = await network.create());
     await ethers.provider.send("evm_setAutomine", [true]);
     await ethers.provider.send("evm_setIntervalMining", [0]);
   });
@@ -20,7 +23,6 @@ describe("Checkpoint2 - StakingOracle", function () {
   let node6: HardhatEthersSigner;
   let slasher: HardhatEthersSigner;
 
-
   const contractAddress = process.env.CONTRACT_ADDRESS;
 
   if (contractAddress) {
@@ -30,7 +32,7 @@ describe("Checkpoint2 - StakingOracle", function () {
 
   async function mineBuckets(count: number) {
     const bucketWindow = Number(await oracle.BUCKET_WINDOW());
-    await mine(bucketWindow * count);
+    await networkHelpers.mine(bucketWindow * count);
   }
 
   async function moveToFreshBucket() {
@@ -39,7 +41,7 @@ describe("Checkpoint2 - StakingOracle", function () {
     const bucketWindow = Number(await oracle.BUCKET_WINDOW());
     const blockNum = await ethers.provider.getBlockNumber();
     const toNext = (bucketWindow - (blockNum % bucketWindow)) % bucketWindow; // 0..bucketWindow-1
-    await mine(toNext + 1);
+    await networkHelpers.mine(toNext + 1);
   }
 
   async function oracleAddr() {
@@ -72,12 +74,11 @@ describe("Checkpoint2 - StakingOracle", function () {
   beforeEach(async function () {
     [node1, node2, node3, node4, node5, node6, slasher] = await ethers.getSigners();
     const ORAFactory = await ethers.getContractFactory("ORA");
-    oraToken = (await ORAFactory.deploy()) as ORA;
+    oraToken = (await ORAFactory.deploy()) as unknown as ORA;
     await oraToken.waitForDeployment();
 
     const StakingOracleFactory = await ethers.getContractFactory("StakingOracle");
-    // TypeChain types update on compile; keep test TS-safe even before regeneration.
-    oracle = (await (StakingOracleFactory as any).deploy(await oraToken.getAddress())) as StakingOracle;
+    oracle = (await StakingOracleFactory.deploy(await oraToken.getAddress())) as StakingOracle;
     await oracle.waitForDeployment();
 
     // StakingOracle must own the ORA token to mint rewards

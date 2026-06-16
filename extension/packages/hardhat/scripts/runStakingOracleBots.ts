@@ -1,8 +1,26 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import hre from "hardhat";
-import { sleep, getConfig } from "./utils";
-import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap";
+import { network } from "hardhat";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { sleep, getConfig } from "./utils.js";
+import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap.js";
 import { parseEther } from "viem";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+type ViemConnection = Awaited<ReturnType<typeof network.connect>>["viem"];
+let _viem: ViemConnection;
+
+function loadDeployment(name: string): { address: `0x${string}`; abi: any; deployedBlock: bigint } {
+  const path = join(__dirname, "..", "deployments", "default", `${name}.json`);
+  const json = JSON.parse(readFileSync(path, "utf8"));
+  return {
+    address: json.address as `0x${string}`,
+    abi: json.abi,
+    deployedBlock: json.receipt?.blockNumber ? BigInt(json.receipt.blockNumber) : 0n,
+  };
+}
 
 const oraTokenAbi = [
   {
@@ -44,7 +62,7 @@ const oraTokenAbi = [
   },
 ] as const;
 
-type WalletClient = Awaited<ReturnType<typeof hre.viem.getWalletClients>>[number];
+type WalletClient = Awaited<ReturnType<ViemConnection["getWalletClients"]>>[number];
 
 const normalizeNodeInfo = (raw: any) => {
   const zero = 0n;
@@ -97,23 +115,12 @@ const stringToBool = (value: string | undefined | null): boolean => {
 // Feature flag: enable automatic slashing when the AUTO_SLASH environment variable is truthy
 const AUTO_SLASH: boolean = stringToBool(process.env.AUTO_SLASH);
 
-const getStakingOracleDeployment = async (runtime: HardhatRuntimeEnvironment) => {
-  const deployment = await runtime.deployments.get("StakingOracle");
-  return {
-    address: deployment.address as `0x${string}`,
-    abi: deployment.abi,
-    deployedBlock: deployment.receipt?.blockNumber ? BigInt(deployment.receipt.blockNumber) : 0n,
-  } as const;
-};
+const getStakingOracleDeployment = () => loadDeployment("StakingOracle");
 
-const getActiveNodeWalletClients = async (
-  runtime: HardhatRuntimeEnvironment,
-  stakingAddress: `0x${string}`,
-  stakingAbi: any,
-): Promise<WalletClient[]> => {
-  const accounts = await runtime.viem.getWalletClients();
+const getActiveNodeWalletClients = async (stakingAddress: `0x${string}`, stakingAbi: any): Promise<WalletClient[]> => {
+  const accounts = await _viem.getWalletClients();
   // Filter to only those that are registered (firstBucket != 0)
-  const publicClient = await runtime.viem.getPublicClient();
+  const publicClient = await _viem.getPublicClient();
   const nodeClients: WalletClient[] = [];
   for (const client of accounts) {
     try {
@@ -135,12 +142,11 @@ const getActiveNodeWalletClients = async (
 };
 
 const findNodeIndex = async (
-  runtime: HardhatRuntimeEnvironment,
   stakingAddress: `0x${string}`,
   stakingAbi: any,
   nodeAddress: `0x${string}`,
 ): Promise<number | null> => {
-  const publicClient = await runtime.viem.getPublicClient();
+  const publicClient = await _viem.getPublicClient();
   // Iterate indices until out-of-bounds revert
   try {
     const addresses = (await publicClient.readContract({
@@ -155,7 +161,7 @@ const findNodeIndex = async (
 };
 
 const getReportIndexForNode = async (
-  publicClient: Awaited<ReturnType<typeof hre.viem.getPublicClient>>,
+  publicClient: Awaited<ReturnType<ViemConnection["getPublicClient"]>>,
   stakingAddress: `0x${string}`,
   stakingAbi: any,
   bucketNumber: bigint,
@@ -185,11 +191,11 @@ const getReportIndexForNode = async (
   return null;
 };
 
-const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
+const runCycle = async () => {
   try {
-    const { address, abi, deployedBlock } = await getStakingOracleDeployment(runtime);
-    const publicClient = await runtime.viem.getPublicClient();
-    const allWalletClients = await runtime.viem.getWalletClients();
+    const { address, abi, deployedBlock } = getStakingOracleDeployment();
+    const publicClient = await _viem.getPublicClient();
+    const allWalletClients = await _viem.getWalletClients();
     const blockNumber = await publicClient.getBlockNumber();
     console.log(`\n[Block ${blockNumber}] Starting new oracle cycle...`);
 
@@ -244,7 +250,7 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
     const cfg = getConfig();
 
     // 1) Reporting: each node only once per bucket
-    const nodeWalletClients = await getActiveNodeWalletClients(runtime, address, abi);
+    const nodeWalletClients = await getActiveNodeWalletClients(address, abi);
     // Ensure we have an initial price (set once at startup in run())
     if (currentPrice === null) {
       currentPrice = await fetchPriceFromUniswap();
@@ -388,7 +394,7 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
           // Use the first wallet (deployer) to slash
           const slasher = allWalletClients[0];
           for (const nodeAddr of outliers) {
-            const index = await findNodeIndex(runtime, address, abi, nodeAddr);
+            const index = await findNodeIndex(address, abi, nodeAddr);
             if (index === null) {
               console.warn(`Index not found for node ${nodeAddr}, skipping slashing.`);
               continue;
@@ -457,15 +463,16 @@ const runCycle = async (runtime: HardhatRuntimeEnvironment) => {
 
 const run = async () => {
   console.log("Starting oracle bot system...");
+  ({ viem: _viem } = await network.connect());
   // Fetch Uniswap price once at startup; subsequent cycles will base price on on-chain reports
   currentPrice = await fetchPriceFromUniswap();
   console.log(`Initial base price from Uniswap: ${currentPrice}`);
 
   // Spin up nodes (fund + approve + register) for local testing if they aren't registered yet.
   try {
-    const { address, abi } = await getStakingOracleDeployment(hre);
-    const publicClient = await hre.viem.getPublicClient();
-    const accounts = await hre.viem.getWalletClients();
+    const { address, abi } = getStakingOracleDeployment();
+    const publicClient = await _viem.getPublicClient();
+    const accounts = await _viem.getWalletClients();
     // Mirror deploy script: use accounts[1..10] as oracle nodes
     const nodeAccounts = accounts.slice(1, 11);
     const deployerClient = accounts[0];
@@ -654,7 +661,7 @@ const run = async () => {
     console.warn("Node registration step failed:", (err as Error).message);
   }
   while (true) {
-    await runCycle(hre);
+    await runCycle();
     await sleep(12000);
   }
 };

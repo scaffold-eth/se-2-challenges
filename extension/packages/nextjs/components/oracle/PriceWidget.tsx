@@ -90,11 +90,11 @@ export const PriceWidget = ({ contractName }: PriceWidgetProps) => {
               <div className="animate-pulse">
                 <div className="h-10 bg-secondary rounded-md w-32"></div>
               </div>
-              ) : hasValidPrice ? (
-                <span>{`$${parseFloat(formatEther(currentPrice)).toFixed(2)}`}</span>
-              ) : (
-                <div className="text-error text-xl">No fresh price</div>
-              )}
+            ) : hasValidPrice ? (
+              <span>{`$${parseFloat(formatEther(currentPrice)).toFixed(2)}`}</span>
+            ) : (
+              <div className="text-error text-xl">No fresh price</div>
+            )}
           </div>
         </div>
       </div>

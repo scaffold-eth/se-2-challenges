@@ -1,10 +1,13 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { OptimisticOracle, Decider } from "../typechain-types";
-import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import { network } from "hardhat";
+import type { OptimisticOracle, Decider } from "../types/ethers-contracts/index.js";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
 
 describe("OptimisticOracle", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+
   before(async () => {
+    ({ ethers } = await network.create());
     await ethers.provider.send("evm_setAutomine", [true]);
     await ethers.provider.send("evm_setIntervalMining", [0]);
   });
@@ -46,7 +49,7 @@ describe("OptimisticOracle", function () {
 
     // Deploy Decider
     const DeciderFactory = await ethers.getContractFactory("Decider");
-    deciderContract = await DeciderFactory.deploy(optimisticOracle.target);
+    deciderContract = (await DeciderFactory.deploy(optimisticOracle.target)) as Decider;
 
     // Set the decider in the oracle
     await optimisticOracle.setDecider(deciderContract.target);
