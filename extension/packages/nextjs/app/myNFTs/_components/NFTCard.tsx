@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Collectible } from "./MyHoldings";
 import { Address, AddressInput } from "@scaffold-ui/components";
-import { hardhat } from "viem/chains";
 import { useScaffoldWriteContract, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 export const NFTCard = ({ nft }: { nft: Collectible }) => {
