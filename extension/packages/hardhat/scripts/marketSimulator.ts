@@ -1,7 +1,20 @@
 import { HDNodeWallet, parseEther } from "ethers";
-import hre from "hardhat";
-import { CornDEX, Lending, Corn, MovePrice } from "../typechain-types";
-const ethers = hre.ethers;
+import { network } from "hardhat";
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+import type { CornDEX, Lending, Corn, MovePrice } from "../types/ethers-contracts/index.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const { ethers } = await network.create();
+
+// This script only runs against the local chain: it reads contract addresses
+// from the `default` deployments folder written by the local `yarn deploy`.
+function loadDeployment(name: string): { address: string; abi: any } {
+  const path = join(__dirname, `../deployments/default/${name}.json`);
+  return JSON.parse(readFileSync(path, "utf8"));
+}
 
 interface SimulatedAccount {
   wallet: HDNodeWallet;
@@ -63,6 +76,7 @@ async function simulateMarketActions(
   movePrice: MovePrice,
   lending: Lending,
   corn: Corn,
+  cornDEX: CornDEX,
   accounts: SimulatedAccount[],
   deployer: any,
 ) {
@@ -105,7 +119,7 @@ async function simulateMarketActions(
       }
 
       // 5. Check for and perform liquidations
-      await checkAndPerformLiquidations(lending, corn, accounts);
+      await checkAndPerformLiquidations(lending, corn, cornDEX, accounts);
     } catch (error) {
       console.error("Error in market simulation interval");
       if (process.env.DEBUG) {
@@ -136,8 +150,8 @@ async function simulateBorrowing(lending: Lending, accounts: SimulatedAccount[])
       await lendingWithAccount.borrowCorn(maxBorrowAmount);
       console.log(
         `Account ${randomAccount.wallet.address} borrowed ${ethers.formatEther(maxBorrowAmount)} CORN ` +
-          `(${aggressiveBorrower ? "aggressive" : "conservative"}, ` +
-          `${((Number(maxBorrowAmount) * 100) / Number(collateralValue)).toFixed(1)}% of collateral)`,
+        `(${aggressiveBorrower ? "aggressive" : "conservative"}, ` +
+        `${((Number(maxBorrowAmount) * 100) / Number(collateralValue)).toFixed(1)}% of collateral)`,
       );
     } catch (error) {
       if (process.env.DEBUG) {
@@ -166,8 +180,8 @@ async function simulateAddCollateral(lending: Lending, accounts: SimulatedAccoun
 
         console.log(
           `Account ${randomAccount.wallet.address} added ${ethers.formatEther(amountToAdd)} ETH as collateral ` +
-            `(${percentage.toFixed(1)}% of available balance, ` +
-            `total collateral: ${ethers.formatEther(currentCollateral + amountToAdd)} ETH)`,
+          `(${percentage.toFixed(1)}% of available balance, ` +
+          `total collateral: ${ethers.formatEther(currentCollateral + amountToAdd)} ETH)`,
         );
       } catch (error) {
         if (process.env.DEBUG) {
@@ -178,9 +192,12 @@ async function simulateAddCollateral(lending: Lending, accounts: SimulatedAccoun
   }
 }
 
-async function checkAndPerformLiquidations(lending: Lending, corn: Corn, accounts: SimulatedAccount[]) {
-  const cornDEX = await ethers.getContract<CornDEX>("CornDEX");
-
+async function checkAndPerformLiquidations(
+  lending: Lending,
+  corn: Corn,
+  cornDEX: CornDEX,
+  accounts: SimulatedAccount[],
+) {
   const filter = lending.filters.CollateralAdded();
   const events = await lending.queryFilter(filter);
   const users = [...new Set(events.map(event => event.args[0]))];
@@ -195,18 +212,18 @@ async function checkAndPerformLiquidations(lending: Lending, corn: Corn, account
     if (!isLiquidatable) continue;
 
     const liquidators = accounts.filter(account => account.wallet.address.toLowerCase() !== user.toLowerCase());
-    
+
     const liquidatorsWithBalance = await Promise.all(
       liquidators.map(async account => {
         const cornBalance = await corn.balanceOf(account.wallet.address);
         return { account, hasEnough: cornBalance >= amountBorrowed };
-      })
+      }),
     );
 
     const eligibleLiquidators = liquidatorsWithBalance
       .filter(({ hasEnough }) => hasEnough)
       .map(({ account }) => account);
-      
+
     if (eligibleLiquidators.length === 0) {
       const randomAccount = accounts[Math.floor(Math.random() * accounts.length)];
       if (randomAccount.wallet.address.toLowerCase() !== user.toLowerCase()) {
@@ -277,14 +294,25 @@ async function checkAndPerformLiquidations(lending: Lending, corn: Corn, account
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  const movePriceContract = await ethers.getContract<MovePrice>("MovePrice", deployer);
-  const lending = await ethers.getContract<Lending>("Lending", deployer);
-  const corn = await ethers.getContract<Corn>("Corn", deployer);
+
+  const movePriceDep = loadDeployment("MovePrice");
+  const lendingDep = loadDeployment("Lending");
+  const cornDep = loadDeployment("Corn");
+  const cornDEXDep = loadDeployment("CornDEX");
+
+  const movePriceContract = new ethers.Contract(
+    movePriceDep.address,
+    movePriceDep.abi,
+    deployer,
+  ) as unknown as MovePrice;
+  const lending = new ethers.Contract(lendingDep.address, lendingDep.abi, deployer) as unknown as Lending;
+  const corn = new ethers.Contract(cornDep.address, cornDep.abi, deployer) as unknown as Corn;
+  const cornDEX = new ethers.Contract(cornDEXDep.address, cornDEXDep.abi, deployer) as unknown as CornDEX;
 
   const accounts = await setupAccounts();
 
   // Start the combined market simulation
-  await simulateMarketActions(movePriceContract, lending, corn, accounts, deployer);
+  await simulateMarketActions(movePriceContract, lending, corn, cornDEX, accounts, deployer);
 
   // Keep the script running
   process.stdin.resume();

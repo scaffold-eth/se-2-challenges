@@ -2,32 +2,35 @@
 // This script executes when you run 'yarn test'
 //
 
-import { ethers } from "hardhat";
+import { network } from "hardhat";
 import { expect } from "chai";
-import { Corn, CornDEX, Lending } from "../typechain-types";
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
+import { parseEther } from "ethers";
+import type { Corn, CornDEX, Lending } from "../types/ethers-contracts/index.js";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
 
 describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+
   const contractAddress = process.env.CONTRACT_ADDRESS;
   let cornToken: Corn;
   let cornDEX: CornDEX;
   let lending: Lending;
-  let owner: SignerWithAddress;
-  let user1: SignerWithAddress;
-  let user2: SignerWithAddress;
+  let owner: HardhatEthersSigner;
+  let user1: HardhatEthersSigner;
+  let user2: HardhatEthersSigner;
 
-  const collateralAmount = ethers.parseEther("10");
-  const borrowAmount = ethers.parseEther("5000");
+  const collateralAmount = parseEther("10");
+  const borrowAmount = parseEther("5000");
 
   beforeEach(async function () {
-    await ethers.provider.send("hardhat_reset", []);
+    ({ ethers } = await network.create());
     [owner, user1, user2] = await ethers.getSigners();
 
     const Corn = await ethers.getContractFactory("Corn");
-    cornToken = await Corn.deploy();
+    cornToken = (await Corn.deploy()) as unknown as Corn;
 
     const CornDEX = await ethers.getContractFactory("CornDEX");
-    cornDEX = await CornDEX.deploy(await cornToken.getAddress());
+    cornDEX = (await CornDEX.deploy(await cornToken.getAddress())) as unknown as CornDEX;
 
     await cornToken.mintTo(owner.address, ethers.parseEther("1000000"));
     await cornToken.approve(cornDEX.target, ethers.parseEther("1000000"));
@@ -42,7 +45,7 @@ describe("💳🌽 Over-collateralized Lending Challenge 🤓", function () {
     }
 
     const Lending = await ethers.getContractFactory(contractArtifact);
-    lending = (await Lending.deploy(cornDEX.target, cornToken.target)) as Lending;
+    lending = (await Lending.deploy(cornDEX.target, cornToken.target)) as unknown as Lending;
     await cornToken.mintTo(lending.target, ethers.parseEther("10000000000000000000000"));
   });
 
