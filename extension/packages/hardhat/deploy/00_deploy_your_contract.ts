@@ -1,77 +1,57 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { Contract } from "ethers";
-import { ethers } from "hardhat";
+import { artifacts, deployScript } from "../rocketh/deploy.js";
+import { parseEther } from "viem";
 import * as fs from "fs";
+
 /**
- * Deploys a contract named "YourContract" using the deployer account and
- * constructor arguments set to the deployer address
+ * Deploys a contract named "PredictionMarket" using the deployer account.
  *
- * @param hre HardhatRuntimeEnvironment object.
+ * On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
+ *
+ * When deploying to live networks (e.g `yarn deploy --network sepolia`), the deployer account
+ * should have sufficient balance to pay for the gas fees for contract creation.
+ *
+ * You can generate a random account with `yarn generate` or `yarn account:import` to import your
+ * existing PK which will fill DEPLOYER_PRIVATE_KEY_ENCRYPTED in the .env file (used in hardhat.config.ts).
+ * Run `yarn account` to check the deployer balance on every network.
  */
-const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  /*
-    On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
+export default deployScript(
+  async env => {
+    const { deployer } = env.namedAccounts;
 
-    When deploying to live networks (e.g `yarn deploy --network sepolia`), the deployer account
-    should have sufficient balance to pay for the gas fees for contract creation.
+    const question = "Will the green car win the race?";
+    const initialLiquidity = parseEther("1");
+    const initialTokenValue = parseEther("0.01");
+    const initialProbability = 50;
+    const percentageLocked = 10;
+    const liquidityProvider = deployer;
+    const oracle = deployer;
 
-    You can generate a random account with `yarn generate` or `yarn account:import` to import your
-    existing PK which will fill DEPLOYER_PRIVATE_KEY_ENCRYPTED in the .env file (then used on hardhat.config.ts)
-    You can run the `yarn account` command to check your balance in every network.
-  */
-  const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
+    const predictionMarket = await env.deploy("PredictionMarket", {
+      account: deployer,
+      artifact: artifacts.PredictionMarket,
+      args: [liquidityProvider, oracle, question, initialTokenValue, initialProbability, percentageLocked],
+      value: initialLiquidity,
+    });
 
-  const question = "Will the green car win the race?";
-  const initialLiquidity = ethers.parseEther("1");
-  const initialTokenValue = ethers.parseEther("0.01");
-  const initialProbability = 50;
-  const percentageLocked = 10;
-  const liquidityProvider = deployer;
-  const oracle = deployer;
+    console.log("PredictionMarket deployed to:", predictionMarket.address);
 
-  await deploy("PredictionMarket", {
-    from: deployer,
-    // Contract constructor arguments
-    args: [liquidityProvider, oracle, question, initialTokenValue, initialProbability, percentageLocked],
-    log: true,
-    value: initialLiquidity.toString(),
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
-  });
-
-  // Get the deployed contract to interact with it after deploying.
-  const predictionMarket = await hre.ethers.getContract<Contract>("PredictionMarket", deployer);
-  console.log("PredictionMarket deployed to:", await predictionMarket.getAddress());
-
-  // Get the deployed contract's address and ABI for the YES and NO tokens and copy them to the deployments directory
-  if (predictionMarket.i_yesToken && predictionMarket.i_noToken) {
+    // Get the deployed contract's address and ABI for the YES and NO tokens and copy them to the deployments directory
     try {
-      const { abi } = JSON.parse(
-        fs.readFileSync("./artifacts/contracts/PredictionMarketToken.sol/PredictionMarketToken.json").toString(),
-      );
-
-      const i_yesToken = await predictionMarket.i_yesToken();
-      const i_noToken = await predictionMarket.i_noToken();
+      const i_yesToken = (await env.read(predictionMarket, { functionName: "i_yesToken" })) as `0x${string}`;
+      const i_noToken = (await env.read(predictionMarket, { functionName: "i_noToken" })) as `0x${string}`;
+      const abi = artifacts.PredictionMarketToken.abi;
       const yesToken = { address: i_yesToken, abi };
       const noToken = { address: i_noToken, abi };
 
-      const chainDir = `./deployments/${hre.network.name}`;
+      const chainDir = `./deployments/${env.name}`;
       fs.writeFileSync(`${chainDir}/PredictionMarketTokenYes.json`, JSON.stringify(yesToken, null, 2));
       fs.writeFileSync(`${chainDir}/PredictionMarketTokenNo.json`, JSON.stringify(noToken, null, 2));
       console.log("Token JSON files written successfully");
     } catch (error) {
       console.error("Error handling token files:", error);
     }
-  } else {
-    console.log("No Yes, No token contracts deployed yet");
-  }
-};
-
-export default deployYourContract;
-
-// Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["PredictionMarket"];
+  },
+  // Tags are useful if you have multiple deploy files and only want to run one of them.
+  // e.g. yarn deploy --tags PredictionMarket
+  { tags: ["PredictionMarket"] },
+);
