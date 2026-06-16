@@ -1,0 +1,26 @@
+diff --git a/dist/index.js b/dist/index.js
+index 451d69f2199a28fbbc7084dae3371a736efb6b95..abaa582f7b2c2eed62dce66b2ac5861bd870c595 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -259,7 +259,7 @@ export function deploy(env) {
+             maxFeePerGas,
+             maxPriorityFeePerGas,
+             // gasPrice: viemArgs.gasPrice && `0x${viemArgs.gasPrice.toString(16)}` as `0x${string}`,
+-            // value: `0x${viemArgs.value?.toString(16)}` as `0x${string}`,
++            ...(viemArgs.value !== undefined && { value: `0x${viemArgs.value.toString(16)}` }),
+             // nonce: viemArgs.nonce && (`0x${viemArgs.nonce.toString(16)}` as `0x${string}`),
+         };
+         let expectedAddress = undefined;
+diff --git a/src/index.ts b/src/index.ts
+index f86a31e2b13fb8208c14668e4994683af591d8bb..538145b931ba06cf9a45f85388fa89d73efa7e9c 100644
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -393,7 +393,7 @@ export function deploy(env: Environment): <TAbi extends Abi>(
+ 			maxFeePerGas,
+ 			maxPriorityFeePerGas,
+ 			// gasPrice: viemArgs.gasPrice && `0x${viemArgs.gasPrice.toString(16)}` as `0x${string}`,
+-			// value: `0x${viemArgs.value?.toString(16)}` as `0x${string}`,
++			...(viemArgs.value !== undefined && { value: `0x${viemArgs.value.toString(16)}` as `0x${string}` }),
+ 			// nonce: viemArgs.nonce && (`0x${viemArgs.nonce.toString(16)}` as `0x${string}`),
+ 		};
+ 
