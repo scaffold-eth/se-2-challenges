@@ -1,33 +1,28 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { ethers } from "hardhat/";
-import { DiceGame, RiggedRoll } from "../typechain-types";
+import { deployScript } from "../rocketh/deploy.js";
 
-const deployRiggedRoll: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
+export default deployScript(
+  async env => {
+    const diceGame = env.get("DiceGame");
+    const diceGameAddress = diceGame.address;
 
-  const diceGame: DiceGame = await ethers.getContract("DiceGame");
-  const diceGameAddress = await diceGame.getAddress();
+    // Uncomment to deploy RiggedRoll contract
+    // const riggedRoll = await env.deploy("RiggedRoll", {
+    //   account: env.namedAccounts.deployer,
+    //   artifact: artifacts.RiggedRoll,
+    //   args: [diceGameAddress],
+    // });
 
-  // Uncomment to deploy RiggedRoll contract
-  // await deploy("RiggedRoll", {
-  //   from: deployer,
-  //   log: true,
-  //   args: [diceGameAddress],
-  //   autoMine: true,
-  // });
-
-  // const riggedRoll: RiggedRoll = await ethers.getContract("RiggedRoll", deployer);
-
-  // Please replace the text "Your Address" with your own address.
-  // try {
-  //   await riggedRoll.transferOwnership("Your Address");
-  // } catch (err) {
-  //   console.log(err);
-  // }
-};
-
-export default deployRiggedRoll;
-
-deployRiggedRoll.tags = ["RiggedRoll"];
+    // Please replace the text "Your Address" with your own address.
+    // try {
+    //   await env.execute(riggedRoll, {
+    //     functionName: "transferOwnership",
+    //     args: ["Your Address"],
+    //     account: env.namedAccounts.deployer,
+    //   });
+    // } catch (err) {
+    //   console.log(err);
+    // }
+    void diceGameAddress;
+  },
+  { tags: ["RiggedRoll"] },
+);
