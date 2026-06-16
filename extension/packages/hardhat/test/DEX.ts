@@ -8,12 +8,18 @@
 //   yarn test --grep "Checkpoint5"
 //
 
-import { ethers } from "hardhat";
+import { network } from "hardhat";
 import { expect } from "chai";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { Balloons, DEX } from "../typechain-types";
+import { anyValue } from "@nomicfoundation/hardhat-ethers-chai-matchers/withArgs";
+import type { Balloons, DEX } from "../types/ethers-contracts/index.js";
 
 describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+
+  before(async function () {
+    ({ ethers } = await network.create());
+  });
+
   const contractAddress = process.env.CONTRACT_ADDRESS;
   const getDexArtifact = () => {
     if (contractAddress) return `contracts/download-${contractAddress}.sol:DEX`;
@@ -24,11 +30,11 @@ describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
     const [deployer, user2, user3] = await ethers.getSigners();
 
     const BalloonsFactory = await ethers.getContractFactory("Balloons");
-    const balloons = (await BalloonsFactory.deploy()) as Balloons;
+    const balloons = (await BalloonsFactory.deploy()) as unknown as Balloons;
     await balloons.waitForDeployment();
 
     const DexFactory = await ethers.getContractFactory(getDexArtifact());
-    const dex = (await DexFactory.deploy(await balloons.getAddress())) as DEX;
+    const dex = (await DexFactory.deploy(await balloons.getAddress())) as unknown as DEX;
     await dex.waitForDeployment();
 
     return {
@@ -62,8 +68,9 @@ describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
       expect(await dex.totalLiquidity()).to.equal(0);
 
       await balloons.approve(dexAddress, ethers.parseEther("100"));
-      await expect(dex.init(ethers.parseEther("5"), { value: ethers.parseEther("5"), gasLimit: 200000 })).to.not.be
-        .reverted;
+      await expect(dex.init(ethers.parseEther("5"), { value: ethers.parseEther("5"), gasLimit: 200000 })).to.not.revert(
+        ethers,
+      );
 
       expect(await dex.totalLiquidity()).to.equal(ethers.parseEther("5"));
     });
@@ -91,20 +98,20 @@ describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
     it("Checkpoint3: calculates price correctly (includes 0.3% fee)", async function () {
       const { dex } = await deployFixture();
 
-        let xInput = ethers.parseEther("1");
-        let xReserves = ethers.parseEther("5");
-        let yReserves = ethers.parseEther("5");
+      let xInput = ethers.parseEther("1");
+      let xReserves = ethers.parseEther("5");
+      let yReserves = ethers.parseEther("5");
       let yOutput = await dex.price(xInput, xReserves, yReserves);
-        expect(
-          yOutput.toString(),
+      expect(
+        yOutput.toString(),
         "Check your price function's calculations. Don't forget the 0.3% fee (997/1000).",
-        ).to.equal("831248957812239453");
+      ).to.equal("831248957812239453");
 
-        xInput = ethers.parseEther("1");
-        xReserves = ethers.parseEther("10");
-        yReserves = ethers.parseEther("15");
+      xInput = ethers.parseEther("1");
+      xReserves = ethers.parseEther("10");
+      yReserves = ethers.parseEther("15");
       yOutput = await dex.price(xInput, xReserves, yReserves);
-        expect(yOutput.toString()).to.equal("1359916340820223697");
+      expect(yOutput.toString()).to.equal("1359916340820223697");
     });
   });
 
@@ -204,4 +211,3 @@ describe("🚩 Challenge: ⚖️ 🪙 DEX", function () {
     });
   });
 });
-
