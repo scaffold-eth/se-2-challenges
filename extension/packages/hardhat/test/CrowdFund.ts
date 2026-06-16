@@ -1,13 +1,20 @@
 //
 // This script executes when you run 'yarn test'
 //
-import { ethers, network } from "hardhat";
+import { network } from "hardhat";
 import { expect } from "chai";
-import { FundingRecipient, CrowdFund } from "../typechain-types";
+import type { FundingRecipient, CrowdFund } from "../types/ethers-contracts/index.js";
 
 describe("🚩 Challenge: 📣 Crowdfunding App", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+  let provider: Awaited<ReturnType<typeof network.create>>["provider"];
+
   let fundingRecipient: FundingRecipient;
   let crowdFundContract: CrowdFund;
+
+  before(async function () {
+    ({ ethers, provider } = await network.create());
+  });
 
   describe("CrowdFund", function () {
     const contractAddress = process.env.CONTRACT_ADDRESS;
@@ -22,10 +29,10 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
 
     const deployContracts = async () => {
       const FundingRecipientFactory = await ethers.getContractFactory("FundingRecipient");
-      fundingRecipient = (await FundingRecipientFactory.deploy()) as FundingRecipient;
+      fundingRecipient = (await FundingRecipientFactory.deploy()) as unknown as FundingRecipient;
 
       const CrowdFundFactory = await ethers.getContractFactory(contractArtifact);
-      crowdFundContract = (await CrowdFundFactory.deploy(await fundingRecipient.getAddress())) as CrowdFund;
+      crowdFundContract = (await CrowdFundFactory.deploy(await fundingRecipient.getAddress())) as unknown as CrowdFund;
     };
 
     describe("Checkpoint 1: 🤝 Contributing 💵", function () {
@@ -139,7 +146,7 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
 
         const writeStorageAt = async (slot: bigint, value: string) => {
           const slotHex = ethers.zeroPadValue(ethers.toBeHex(slot), 32);
-          await network.provider.send("hardhat_setStorageAt", [target, slotHex, value]);
+          await provider.request({ method: "hardhat_setStorageAt", params: [target, slotHex, value] });
         };
 
         const hexToBytes32 = (hex: string) => {
@@ -265,8 +272,8 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
         const t1 = await crowdFundContract.timeLeft();
         expect(Number(t1)).to.be.greaterThan(0);
 
-        await network.provider.send("evm_increaseTime", [5]);
-        await network.provider.send("evm_mine");
+        await provider.request({ method: "evm_increaseTime", params: [5] });
+        await provider.request({ method: "evm_mine" });
 
         const t2 = await crowdFundContract.timeLeft();
         expect(Number(t2)).to.be.lessThan(Number(t1));
@@ -283,8 +290,8 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
         const amount = ethers.parseEther("1");
         await crowdFundContract.contribute({ value: amount });
 
-        await network.provider.send("evm_increaseTime", [72 * 3600]);
-        await network.provider.send("evm_mine");
+        await provider.request({ method: "evm_increaseTime", params: [72 * 3600] });
+        await provider.request({ method: "evm_mine" });
 
         const timeLeft2 = await crowdFundContract.timeLeft();
         expect(
@@ -316,8 +323,8 @@ describe("🚩 Challenge: 📣 Crowdfunding App", function () {
           value: ethers.parseEther("0.001"),
         });
 
-        await network.provider.send("evm_increaseTime", [72 * 3600]);
-        await network.provider.send("evm_mine");
+        await provider.request({ method: "evm_increaseTime", params: [72 * 3600] });
+        await provider.request({ method: "evm_mine" });
 
         await crowdFundContract.execute();
 
