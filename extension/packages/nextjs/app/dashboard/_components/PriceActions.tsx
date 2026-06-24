@@ -55,10 +55,10 @@ const PriceActions = () => {
         <span className="flex items-center text-xs">{renderPrice} ETH</span>
         <span className="flex items-center text-xs">{renderETHPrice} CORN/ETH</span>
         <div className="flex gap-2">
-          <button onClick={() => handleClick(false)} className="btn btn-circle btn-xs">
+          <button onClick={() => handleClick(false)} className="btn btn-square btn-xs">
             <MinusIcon className="h-3 w-3" />
           </button>
-          <button onClick={() => handleClick(true)} className="btn btn-circle btn-xs">
+          <button onClick={() => handleClick(true)} className="btn btn-square btn-xs">
             <PlusIcon className="h-3 w-3" />
           </button>
         </div>
