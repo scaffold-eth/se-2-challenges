@@ -5,6 +5,6 @@
         "simulate:optimistic": "hardhat run scripts/runOptimisticBots.ts"
     },
     "dependencies": {
-        "@nomicfoundation/hardhat-viem": "^2.0.6"
+        "@nomicfoundation/hardhat-viem": "^3.0.7"
     }
 }

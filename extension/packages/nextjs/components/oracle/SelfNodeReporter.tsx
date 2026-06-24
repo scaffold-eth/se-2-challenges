@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { erc20Abi, formatEther, parseEther } from "viem";
 import { useAccount, usePublicClient, useReadContract, useWriteContract } from "wagmi";
 import TooltipInfo from "~~/components/TooltipInfo";
@@ -68,9 +68,7 @@ export const SelfNodeReporter = () => {
   const stakingAddress = stakingDeployment?.address as `0x${string}` | undefined;
   const { writeContractAsync: writeErc20 } = useWriteContract();
 
-  const isRegistered = useMemo(() => {
-    return Boolean(firstBucket && firstBucket > 0n);
-  }, [firstBucket]);
+  const isRegistered = Boolean(firstBucket && firstBucket > 0n);
 
   // Fetch last reported price using helper view: getSlashedStatus(address, bucket)
   const { data: addressDataAtBucket } = useScaffoldReadContract({

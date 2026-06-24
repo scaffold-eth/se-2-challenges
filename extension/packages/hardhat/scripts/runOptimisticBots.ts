@@ -1,11 +1,66 @@
-import { deployments, ethers } from "hardhat";
-import hre from "hardhat";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { getRandomQuestion, sleep } from "./utils";
-import { WalletClient } from "@nomicfoundation/hardhat-viem/types";
-import { Deployment } from "hardhat-deploy/types";
-import { zeroAddress } from "viem";
-import { OptimisticOracle } from "../typechain-types";
+import { network } from "hardhat";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { parseEther, zeroAddress } from "viem";
+import { getRandomQuestion, sleep } from "./utils.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+type ViemConnection = Awaited<ReturnType<typeof network.connect>>["viem"];
+type WalletClient = Awaited<ReturnType<ViemConnection["getWalletClients"]>>[number];
+type Deployment = { address: `0x${string}`; abi: any };
+type OptimisticOracleReader = {
+  nextAssertionId(): Promise<bigint>;
+  assertions(id: bigint): Promise<{
+    asserter: `0x${string}`;
+    proposer: `0x${string}`;
+    disputer: `0x${string}`;
+    proposedOutcome: boolean;
+    resolvedOutcome: boolean;
+    reward: bigint;
+    bond: bigint;
+    startTime: bigint;
+    endTime: bigint;
+    claimed: boolean;
+    winner: `0x${string}`;
+    description: string;
+  }>;
+};
+
+let _viem: ViemConnection;
+
+function loadDeployment(name: string): Deployment {
+  const path = join(__dirname, "..", "deployments", "default", `${name}.json`);
+  const json = JSON.parse(readFileSync(path, "utf8"));
+  return { address: json.address as `0x${string}`, abi: json.abi };
+}
+
+function makeOptimisticReader(deployment: Deployment): OptimisticOracleReader {
+  return {
+    async nextAssertionId() {
+      const publicClient = await _viem.getPublicClient();
+      const value = await publicClient.readContract({
+        address: deployment.address,
+        abi: deployment.abi,
+        functionName: "nextAssertionId",
+        args: [],
+      });
+      return BigInt(String(value));
+    },
+    async assertions(id: bigint) {
+      const publicClient = await _viem.getPublicClient();
+      const raw = (await publicClient.readContract({
+        address: deployment.address,
+        abi: deployment.abi,
+        functionName: "getAssertion",
+        args: [id],
+      })) as any;
+      return raw;
+    },
+  };
+}
 
 const isHalfTimePassed = (assertion: any, currentTimestamp: bigint) => {
   const startTime: bigint = assertion.startTime;
@@ -32,11 +87,11 @@ const canPropose = (assertion: any, currentTimestamp: bigint) => {
 
 const createAssertions = async (
   optimisticDeployment: Deployment,
-  optimisticOracle: OptimisticOracle,
+  optimisticOracle: OptimisticOracleReader,
   otherAccounts: WalletClient[],
   accountToAssertionIds: Record<string, bigint[]>,
 ) => {
-  const minReward = ethers.parseEther("0.01");
+  const minReward = parseEther("0.01");
   let nextAssertionId = await optimisticOracle.nextAssertionId();
 
   for (const account of otherAccounts) {
@@ -65,7 +120,7 @@ const proposeAssertions = async (
   falseResponder: WalletClient,
   randomResponder: WalletClient,
   optimisticDeployment: Deployment,
-  optimisticOracle: OptimisticOracle,
+  optimisticOracle: OptimisticOracleReader,
   currentTimestamp: bigint,
   otherAccounts: WalletClient[],
   accountToAssertionIds: Record<string, bigint[]>,
@@ -118,7 +173,7 @@ const disputeAssertions = async (
   trueResponder: WalletClient,
   falseResponder: WalletClient,
   optimisticDeployment: Deployment,
-  optimisticOracle: OptimisticOracle,
+  optimisticOracle: OptimisticOracleReader,
   currentTimestamp: bigint,
   accountToAssertionIds: Record<string, bigint[]>,
   otherAccounts: WalletClient[],
@@ -162,20 +217,16 @@ const disputeAssertions = async (
 
 let currentAction = 0;
 
-const runCycle = async (
-  hre: HardhatRuntimeEnvironment,
-  accountToAssertionIds: Record<string, bigint[]>,
-  accounts: WalletClient[],
-) => {
+const runCycle = async (accountToAssertionIds: Record<string, bigint[]>, accounts: WalletClient[]) => {
   try {
     const trueResponder = accounts[0];
     const falseResponder = accounts[1];
     const randomResponder = accounts[2];
     const otherAccounts = accounts.slice(3);
 
-    const optimisticDeployment = await deployments.get("OptimisticOracle");
-    const optimisticOracle = await ethers.getContractAt("OptimisticOracle", optimisticDeployment.address);
-    const publicClient = await hre.viem.getPublicClient();
+    const optimisticDeployment = loadDeployment("OptimisticOracle");
+    const optimisticOracle = makeOptimisticReader(optimisticDeployment);
+    const publicClient = await _viem.getPublicClient();
 
     // get current timestamp
     const latestBlock = await publicClient.getBlock();
@@ -217,14 +268,15 @@ const runCycle = async (
 
 async function run() {
   console.log("Starting optimistic oracle bots...");
+  ({ viem: _viem } = await network.connect());
   const accountToAssertionIds: Record<string, bigint[]> = {};
 
-  const accounts = (await hre.viem.getWalletClients()).slice(0, 8);
+  const accounts = (await _viem.getWalletClients()).slice(0, 8);
   for (const account of accounts) {
     accountToAssertionIds[account.account.address] = [];
   }
   while (true) {
-    await runCycle(hre, accountToAssertionIds, accounts);
+    await runCycle(accountToAssertionIds, accounts);
     await sleep(3000);
   }
 }

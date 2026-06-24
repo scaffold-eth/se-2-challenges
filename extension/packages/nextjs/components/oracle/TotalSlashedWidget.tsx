@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import TooltipInfo from "~~/components/TooltipInfo";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
@@ -9,19 +8,13 @@ export const TotalSlashedWidget = () => {
     watch: true,
   });
 
-  const totalSlashedWei = useMemo(() => {
-    if (!slashedEvents) return 0n;
-    return slashedEvents.reduce((acc: bigint, current) => {
-      const amount = (current?.args?.amount as bigint | undefined) ?? 0n;
-      return acc + amount;
-    }, 0n);
-  }, [slashedEvents]);
+  const totalSlashedWei = (slashedEvents ?? []).reduce((acc: bigint, current) => {
+    const amount = (current?.args?.amount as bigint | undefined) ?? 0n;
+    return acc + amount;
+  }, 0n);
 
-  const totalSlashedOraFormatted = useMemo(() => {
-    // ORA uses 18 decimals (same as ETH), but we intentionally display whole tokens only.
-    const wholeOra = totalSlashedWei / 10n ** 18n;
-    return new Intl.NumberFormat("en-US").format(wholeOra);
-  }, [totalSlashedWei]);
+  // ORA uses 18 decimals (same as ETH), but we intentionally display whole tokens only.
+  const totalSlashedOraFormatted = new Intl.NumberFormat("en-US").format(totalSlashedWei / 10n ** 18n);
 
   const tooltipText = "Aggregated ORA slashed across all nodes. Sums the amount from every NodeSlashed event.";
 
@@ -34,9 +27,7 @@ export const TotalSlashedWidget = () => {
           {isLoading ? (
             <div className="animate-pulse h-10 bg-secondary w-32" />
           ) : (
-            <div className="font-bold text-4xl">
-              {totalSlashedOraFormatted} ORA
-            </div>
+            <div className="font-bold text-4xl">{totalSlashedOraFormatted} ORA</div>
           )}
         </div>
       </div>

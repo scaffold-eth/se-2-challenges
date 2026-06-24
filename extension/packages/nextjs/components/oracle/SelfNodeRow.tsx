@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Address } from "@scaffold-ui/components";
 import { erc20Abi, formatEther, maxUint256, parseEther } from "viem";
 import { useAccount, usePublicClient, useReadContract, useWriteContract } from "wagmi";
@@ -118,14 +118,13 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
   }, [claimedReportCount, rewardPerReport]);
 
   // Track previous staked amount to determine up/down changes for highlight
-  const prevStakedAmountRef = useRef<bigint | undefined>(undefined);
-  const prevStakedAmount = prevStakedAmountRef.current;
+  const [prevStakedAmount, setPrevStakedAmount] = useState<bigint | undefined>(undefined);
   let stakeHighlightColor = "";
   if (prevStakedAmount !== undefined && stakedAmount !== undefined && stakedAmount !== prevStakedAmount) {
     stakeHighlightColor = stakedAmount > prevStakedAmount ? "bg-success" : "bg-error";
   }
   useEffect(() => {
-    prevStakedAmountRef.current = stakedAmount;
+    setPrevStakedAmount(stakedAmount);
   }, [stakedAmount]);
 
   // Deviation for current bucket vs previous bucket average

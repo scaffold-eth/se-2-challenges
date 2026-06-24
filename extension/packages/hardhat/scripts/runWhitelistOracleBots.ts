@@ -1,28 +1,52 @@
-import { ethers } from "hardhat";
-import { WhitelistOracle } from "../typechain-types";
-import hre from "hardhat";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap";
-import { sleep } from "./utils";
+import { network } from "hardhat";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { fetchPriceFromUniswap } from "./fetchPriceFromUniswap.js";
+import { sleep } from "./utils.js";
 
-async function getAllOracles() {
-  const [deployer] = await ethers.getSigners();
-  const whitelistContract = await ethers.getContract<WhitelistOracle>("WhitelistOracle", deployer.address);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-  const oracleAddresses = [];
-  let index = 0;
+type ViemConnection = Awaited<ReturnType<typeof network.connect>>["viem"];
 
+function loadDeployment(name: string): { address: `0x${string}`; abi: any } {
+  const path = join(__dirname, "..", "deployments", "default", `${name}.json`);
+  const json = JSON.parse(readFileSync(path, "utf8"));
+  return { address: json.address as `0x${string}`, abi: json.abi };
+}
+
+const simpleOracleAbi = [
+  {
+    type: "function",
+    name: "setPrice",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "_newPrice", type: "uint256" }],
+    outputs: [],
+  },
+] as const;
+
+async function getAllOracles(viem: ViemConnection): Promise<`0x${string}`[]> {
+  const publicClient = await viem.getPublicClient();
+  const whitelist = loadDeployment("WhitelistOracle");
+
+  const oracleAddresses: `0x${string}`[] = [];
+  // The public oracles(uint256) getter reverts once index passes the end of the array, ending the loop.
+  let index = 0n;
   try {
     while (true) {
-      const oracle = await whitelistContract.oracles(index);
+      const oracle = (await publicClient.readContract({
+        address: whitelist.address,
+        abi: whitelist.abi,
+        functionName: "oracles",
+        args: [index],
+      })) as `0x${string}`;
       oracleAddresses.push(oracle);
       index++;
     }
   } catch {
-    // When we hit an out-of-bounds error, we've found all oracles
     console.log(`Found ${oracleAddresses.length} oracles`);
   }
-
   return oracleAddresses;
 }
 
@@ -37,15 +61,14 @@ function getRandomPrice(basePrice: bigint): bigint {
   return basePrice + offset;
 }
 
-const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
+const runCycle = async (viem: ViemConnection, basePrice: bigint) => {
   try {
-    const accounts = await hre.viem.getWalletClients();
-    const simpleOracleFactory = await ethers.getContractFactory("SimpleOracle");
-    const publicClient = await hre.viem.getPublicClient();
+    const publicClient = await viem.getPublicClient();
+    const [walletClient] = await viem.getWalletClients();
 
     const blockNumber = await publicClient.getBlockNumber();
     console.log(`\n[Block ${blockNumber}] Starting new whitelist oracle cycle...`);
-    const oracleAddresses = await getAllOracles();
+    const oracleAddresses = await getAllOracles(viem);
     if (oracleAddresses.length === 0) {
       console.log("No oracles found");
       return;
@@ -60,12 +83,13 @@ const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
       const randomPrice = getRandomPrice(basePrice);
       console.log(`Setting price for oracle at ${oracleAddress} to ${randomPrice}`);
 
-      await accounts[0].writeContract({
-        address: oracleAddress as `0x${string}`,
-        abi: simpleOracleFactory.interface.fragments,
+      const hash = await walletClient.writeContract({
+        address: oracleAddress,
+        abi: simpleOracleAbi,
         functionName: "setPrice",
         args: [randomPrice],
       });
+      await publicClient.waitForTransactionReceipt({ hash });
     }
   } catch (error) {
     console.error("Error in oracle cycle:", error);
@@ -75,10 +99,11 @@ const runCycle = async (hre: HardhatRuntimeEnvironment, basePrice: bigint) => {
 
 async function run() {
   console.log("Starting whitelist oracle bots...");
+  const { viem } = await network.connect();
   const basePrice = await fetchPriceFromUniswap();
 
   while (true) {
-    await runCycle(hre, basePrice);
+    await runCycle(viem, basePrice);
     await sleep(4000);
   }
 }
@@ -88,7 +113,6 @@ run().catch(error => {
   process.exitCode = 1;
 });
 
-// Handle process termination signals
 process.on("SIGINT", async () => {
   console.log("\nReceived SIGINT (Ctrl+C). Cleaning up...");
   process.exit(0);
@@ -99,13 +123,11 @@ process.on("SIGTERM", async () => {
   process.exit(0);
 });
 
-// Handle uncaught exceptions
 process.on("uncaughtException", async error => {
   console.error("Uncaught Exception:", error);
   process.exit(1);
 });
 
-// Handle unhandled promise rejections
 process.on("unhandledRejection", async (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
   process.exit(1);

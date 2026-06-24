@@ -40,7 +40,10 @@ export const StakingEditableCell = ({
     functionName: "getCurrentBucketNumber",
   }) as { data: bigint | undefined };
 
-  const previousBucket = useMemo(() => (currentBucket && currentBucket > 0n ? currentBucket - 1n : 0n), [currentBucket]);
+  const previousBucket = useMemo(
+    () => (currentBucket && currentBucket > 0n ? currentBucket - 1n : 0n),
+    [currentBucket],
+  );
 
   const { data: prevBucketAverage } = useScaffoldReadContract({
     contractName: "StakingOracle",
