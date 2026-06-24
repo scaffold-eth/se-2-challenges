@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable react-hooks/purity */
 import React from "react";
 
 interface RaceEffectsProps {
