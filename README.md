@@ -57,6 +57,8 @@ yarn start
 
 📱 Open http://localhost:3000 to see the app.
 
+> _Note: the UI in screenshots may differ slightly from the current version._
+
 > 👩‍💻 Rerun `yarn deploy` whenever you want to deploy contract changes to the frontend. Run `yarn deploy --reset` for a completely fresh deploy, even when contracts are unchanged.
 
 ---
