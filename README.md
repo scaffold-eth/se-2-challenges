@@ -106,6 +106,8 @@ yarn start
 
 📱 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
+> _Note: the UI in screenshots may differ slightly from the current version._
+
 ---
 
 ⚠️ We've disabled Cursor auto-suggestions (Tab completions and predictions) via `.vscode/settings.json` to reduce distractions while you code. AI chat and agent features are still enabled, and we've included `AGENTS.md` and `CLAUDE.md` files with project context to help AI assistants understand the codebase.
