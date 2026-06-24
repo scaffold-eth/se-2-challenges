@@ -1,7 +1,17 @@
-import hre from "hardhat";
-import { DEX, RateController, MyUSDStaking, MyUSDEngine, Oracle } from "../typechain-types";
+import { network } from "hardhat";
+import type { DEX, RateController, MyUSDStaking, MyUSDEngine, Oracle } from "../types/ethers-contracts/index.js";
+import {
+  DEX__factory,
+  RateController__factory,
+  MyUSDStaking__factory,
+  MyUSDEngine__factory,
+  Oracle__factory,
+} from "../types/ethers-contracts/index.js";
+import { createDeploymentReader } from "./deployments.js";
 
-const ethers = hre.ethers;
+const { ethers, networkName } = await network.create();
+
+const getDeployedAddress = createDeploymentReader(networkName);
 
 // --- Config ---
 const TARGET_PRICE = 1;
@@ -135,11 +145,14 @@ function checkPegHit(direction: "UP" | "DOWN" | "FLAT"): boolean {
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  const dex = await ethers.getContract<DEX>("DEX", deployer);
-  const rateController = await ethers.getContract<RateController>("RateController", deployer);
-  const engine = await ethers.getContract<MyUSDEngine>("MyUSDEngine", deployer);
-  const staking = await ethers.getContract<MyUSDStaking>("MyUSDStaking", deployer);
-  const oracle = await ethers.getContract<Oracle>("Oracle", deployer);
+  const dex: DEX = DEX__factory.connect(getDeployedAddress("DEX"), deployer);
+  const rateController: RateController = RateController__factory.connect(
+    getDeployedAddress("RateController"),
+    deployer,
+  );
+  const engine: MyUSDEngine = MyUSDEngine__factory.connect(getDeployedAddress("MyUSDEngine"), deployer);
+  const staking: MyUSDStaking = MyUSDStaking__factory.connect(getDeployedAddress("MyUSDStaking"), deployer);
+  const oracle: Oracle = Oracle__factory.connect(getDeployedAddress("Oracle"), deployer);
   const ethPrice = await oracle.getETHUSDPrice();
 
   const startBorrowRate = await engine.borrowRate();
@@ -235,7 +248,7 @@ async function main() {
         const { newRate, newState } = getNextRate(borrowState, direction, isPriceStable);
         logChange(
           `Price ${currentPriceEth.toFixed(6)} ${currentPriceEth > TARGET_PRICE ? "above" : "below"} peg, ` +
-            `adjusting borrow rate to ${newRate}bps [${newState.searchBounds.low}, ${newState.searchBounds.high}]`,
+          `adjusting borrow rate to ${newRate}bps [${newState.searchBounds.low}, ${newState.searchBounds.high}]`,
         );
         await rateController.setBorrowRate(newRate);
         Object.assign(borrowState, newState);
@@ -253,7 +266,7 @@ async function main() {
           const boundedRate = Math.min(Math.max(newRate, SAVINGS_RATE_MIN), maximumRate);
           logChange(
             `Price ${currentPriceEth.toFixed(6)} ${currentPriceEth > TARGET_PRICE ? "above" : "below"} peg, ` +
-              `adjusting savings rate to ${boundedRate}bps [${newState.searchBounds.low}, ${maximumRate}]`,
+            `adjusting savings rate to ${boundedRate}bps [${newState.searchBounds.low}, ${maximumRate}]`,
           );
           await rateController.setSavingsRate(boundedRate);
           Object.assign(savingsState, newState);

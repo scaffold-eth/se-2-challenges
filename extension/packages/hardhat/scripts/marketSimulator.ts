@@ -1,10 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { HDNodeWallet } from "ethers";
-import hre from "hardhat";
-import { DEX, MyUSDEngine, MyUSD, MyUSDStaking, Oracle } from "../typechain-types";
-import * as blessed from "blessed";
-import * as contrib from "blessed-contrib";
-const ethers = hre.ethers;
+import { network } from "hardhat";
+import type { DEX, MyUSDEngine, MyUSD, MyUSDStaking, Oracle } from "../types/ethers-contracts/index.js";
+import {
+  DEX__factory,
+  MyUSDEngine__factory,
+  MyUSD__factory,
+  MyUSDStaking__factory,
+  Oracle__factory,
+} from "../types/ethers-contracts/index.js";
+import blessed from "blessed";
+import contrib from "blessed-contrib";
+import { createDeploymentReader } from "./deployments.js";
+
+const { ethers, networkName } = await network.create();
+
+const getDeployedAddress = createDeploymentReader(networkName);
 
 // Account types and preferences
 interface BorrowerProfile {
@@ -171,7 +182,7 @@ function getBorrowerStatus(
   const rateFactor =
     1 -
     (Math.min(currentBorrowRate, borrower.maxAcceptableRate) / borrower.maxAcceptableRate) *
-      (borrower.rateSensitivity / 100);
+    (borrower.rateSensitivity / 100);
 
   const borrowingWillingness = (borrower.debtTolerance / 100) * rateFactor;
 
@@ -273,9 +284,9 @@ async function updateUI(
     try {
       systemInfoBox.setContent(
         `MyUSD Price: {yellow-fg}${myUSDPriceInUSD.toFixed(6)}{/yellow-fg}  |  ` +
-          `ETH Price: {cyan-fg}${ethToMyUSDPriceNum.toFixed(1)} MyUSD{/cyan-fg} | ` +
-          `Savings Rate: {cyan-fg}${savingsRate > 0 ? savingsRate / 100 : 0}% {/cyan-fg}  |  ` +
-          `Borrow Rate: {magenta-fg}${borrowRate > 0 ? borrowRate / 100 : 0}% {/magenta-fg}`,
+        `ETH Price: {cyan-fg}${ethToMyUSDPriceNum.toFixed(1)} MyUSD{/cyan-fg} | ` +
+        `Savings Rate: {cyan-fg}${savingsRate > 0 ? savingsRate / 100 : 0}% {/cyan-fg}  |  ` +
+        `Borrow Rate: {magenta-fg}${borrowRate > 0 ? borrowRate / 100 : 0}% {/magenta-fg}`,
       );
     } catch (error: any) {
       console.log(`Error updating system info: ${error}`);
@@ -451,7 +462,7 @@ async function simulateBorrowing(
 
           logActivity(
             `Borrower ${borrower.wallet.address.slice(0, 6)}... repaid ${ethers.formatEther(amountToBurn).slice(0, 6)} MyUSD ` +
-              `(keeping ${ethers.formatEther(amountToKeep).slice(0, 6)} MyUSD)`,
+            `(keeping ${ethers.formatEther(amountToKeep).slice(0, 6)} MyUSD)`,
           );
         } catch (error: any) {
           logActivity(`Failed to repay debt for ${borrower.wallet.address.slice(0, 6)}...`);
@@ -470,7 +481,7 @@ async function simulateBorrowing(
 
             logActivity(
               `Borrower ${borrower.wallet.address.slice(0, 6)}... swapped ${ethers.formatEther(safeEthToSwap).slice(0, 6)} ETH for MyUSD ` +
-                `to repay debt (rate: ${currentBorrowRate} > ${borrower.maxAcceptableRate})`,
+              `to repay debt (rate: ${currentBorrowRate} > ${borrower.maxAcceptableRate})`,
             );
             continue;
           } catch (error: any) {
@@ -486,7 +497,7 @@ async function simulateBorrowing(
       const rateFactor =
         1 -
         (Math.min(currentBorrowRate, borrower.maxAcceptableRate) / borrower.maxAcceptableRate) *
-          (borrower.rateSensitivity / 100);
+        (borrower.rateSensitivity / 100);
 
       // Higher tolerance + lower rate sensitivity = more borrowing
       const borrowingWillingness = (borrower.debtTolerance / 100) * rateFactor;
@@ -583,7 +594,7 @@ async function executeBorrowing(
 
     logActivity(
       `Borrower ${borrower.wallet.address.slice(0, 6)}... leveraged borrowed ${ethers.formatEther(borrowAmount).slice(0, 6)} MyUSD ` +
-        `(rate: ${currentBorrowRate} bps, willingness: ${(borrowingWillingness * 100).toFixed(1)}%)`,
+      `(rate: ${currentBorrowRate} bps, willingness: ${(borrowingWillingness * 100).toFixed(1)}%)`,
     );
   } catch (error: any) {
     logActivity(`Leveraged borrowing failed for ${borrower.wallet.address.slice(0, 6)}... Error: ${error}`);
@@ -617,7 +628,7 @@ async function simulateStaking(
 
           logActivity(
             `Staker ${staker.wallet.address.slice(0, 6)}... unstaked ALL shares ` +
-              `(rate: ${currentSavingsRate} bps < min rate: ${staker.minAcceptableRate} bps)`,
+            `(rate: ${currentSavingsRate} bps < min rate: ${staker.minAcceptableRate} bps)`,
           );
         }
       } catch (error: any) {
@@ -637,7 +648,7 @@ async function simulateStaking(
 
             logActivity(
               `Staker ${staker.wallet.address.slice(0, 6)}... sold ALL MyUSD (${ethers.formatEther(sellableBalance).slice(0, 6)}) for ETH ` +
-                `(rate too low: ${currentSavingsRate} < ${staker.minAcceptableRate} bps)`,
+              `(rate too low: ${currentSavingsRate} < ${staker.minAcceptableRate} bps)`,
             );
           }
         } catch (error: any) {
@@ -685,7 +696,7 @@ async function simulateStaking(
           await stakingWithStaker.stake(amountToStake);
           logActivity(
             `Staker ${staker.wallet.address.slice(0, 6)}... staked ${ethers.formatEther(amountToStake).slice(0, 6)} MyUSD ` +
-              `(rate: ${currentSavingsRate} bps, willingness: ${(stakingWillingness * 100).toFixed(1)}%)`,
+            `(rate: ${currentSavingsRate} bps, willingness: ${(stakingWillingness * 100).toFixed(1)}%)`,
           );
         } catch (error: any) {
           logActivity(`Failed to stake for ${staker.wallet.address.slice(0, 6)}...`);
@@ -754,12 +765,12 @@ async function main() {
     logActivity("Initializing simulator...");
 
     const [deployer] = await ethers.getSigners();
-    const dex = await ethers.getContract<DEX>("DEX", deployer);
-    const oracle = await ethers.getContract<Oracle>("Oracle", deployer);
+    const dex: DEX = DEX__factory.connect(getDeployedAddress("DEX"), deployer);
+    const oracle: Oracle = Oracle__factory.connect(getDeployedAddress("Oracle"), deployer);
     const ethPrice = await oracle.getETHUSDPrice();
-    const engine = await ethers.getContract<MyUSDEngine>("MyUSDEngine", deployer);
-    const myUSD = await ethers.getContract<MyUSD>("MyUSD", deployer);
-    const staking = await ethers.getContract<MyUSDStaking>("MyUSDStaking", deployer);
+    const engine: MyUSDEngine = MyUSDEngine__factory.connect(getDeployedAddress("MyUSDEngine"), deployer);
+    const myUSD: MyUSD = MyUSD__factory.connect(getDeployedAddress("MyUSD"), deployer);
+    const staking: MyUSDStaking = MyUSDStaking__factory.connect(getDeployedAddress("MyUSDStaking"), deployer);
 
     logActivity("Connected to deployed contracts");
     const accounts = await setupAccounts();
