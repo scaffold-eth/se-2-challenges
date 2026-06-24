@@ -136,7 +136,7 @@ export const AssertionModal = () => {
           <input className="h-0 w-0 absolute top-0 left-0" />
 
           {/* Close button */}
-          <button onClick={closeAssertionModal} className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
+          <button onClick={closeAssertionModal} className="btn btn-ghost btn-sm btn-square absolute right-3 top-3">
             ✕
           </button>
 

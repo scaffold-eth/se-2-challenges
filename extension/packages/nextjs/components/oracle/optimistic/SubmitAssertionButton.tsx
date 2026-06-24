@@ -115,7 +115,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
           <input className="h-0 w-0 absolute top-0 left-0" />
 
           {/* Close button */}
-          <button onClick={handleClose} className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
+          <button onClick={handleClose} className="btn btn-ghost btn-sm btn-square absolute right-3 top-3">
             ✕
           </button>
 
