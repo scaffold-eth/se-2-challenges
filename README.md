@@ -173,6 +173,8 @@ Our contract will support three main functions:
 
 📱 Open [http://localhost:3000](http://localhost:3000/) to spin up your app.
 
+> _Note: the UI in screenshots may differ slightly from the current version._
+
 🖥️ Head over to the **Voting** page and take a look at the frontend you’ll soon bring to life.
 
 ![overview-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/overview-zk.png)
