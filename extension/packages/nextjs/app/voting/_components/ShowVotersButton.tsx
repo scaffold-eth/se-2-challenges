@@ -114,7 +114,7 @@ const ShowVotersModal = ({
           </h3>
           <label
             htmlFor="show-voters-modal"
-            className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3"
+            className="btn btn-ghost btn-sm btn-square absolute right-3 top-3"
             onClick={() => onClose()}
           >
             ✕
