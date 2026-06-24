@@ -19,6 +19,10 @@ export const postContent = `
   --color-warning: #ffcf72;
   --color-error: #ff8863;
 
+  --radius-field: 0rem;
+  --radius-box: 0rem;
+  --radius-selector: 0rem;
+
   /* tooltip tail width */
   --tt-tailw: 6px;
 }
@@ -43,6 +47,10 @@ export const postContent = `
   --color-success: #34eeb6;
   --color-warning: #ffcf72;
   --color-error: #ff8863;
+
+  --radius-field: 0rem;
+  --radius-box: 0rem;
+  --radius-selector: 0rem;
 
   --tt-tailw: 6px;
   --tt-bg: var(--color-primary); /* if you need a tooltip bg override */
