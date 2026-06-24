@@ -2,12 +2,9 @@
 // this script executes when you run 'yarn harhat:test'
 //
 
-import hre from "hardhat";
+import { network } from "hardhat";
 import { expect } from "chai";
-import { impersonateAccount, stopImpersonatingAccount } from "@nomicfoundation/hardhat-network-helpers";
-import { Vendor, YourToken } from "../typechain-types";
-
-const { ethers } = hre;
+import type { Vendor, YourToken } from "../types/ethers-contracts/index.js";
 
 describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
   // NOTE: The README expects tests grouped by checkpoint so you can run:
@@ -15,6 +12,9 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
   //   yarn test --grep "Checkpoint2"
   //   yarn test --grep "Checkpoint3"
   //   yarn test --grep "Checkpoint4"
+
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+  let networkHelpers: Awaited<ReturnType<typeof network.create>>["networkHelpers"];
 
   const contractAddress = process.env.CONTRACT_ADDRESS;
 
@@ -29,19 +29,24 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
   };
 
   const TOKENS_PER_ETH = 100n;
-  const INITIAL_SUPPLY = ethers.parseEther("1000");
+  let INITIAL_SUPPLY: bigint;
+
+  before(async function () {
+    ({ ethers, networkHelpers } = await network.create());
+    INITIAL_SUPPLY = ethers.parseEther("1000");
+  });
 
   async function deployYourTokenFixture() {
     const [deployer, user] = await ethers.getSigners();
     const YourTokenFactory = await ethers.getContractFactory(getYourTokenArtifact());
-    const yourToken = (await YourTokenFactory.deploy()) as YourToken;
+    const yourToken = (await YourTokenFactory.deploy()) as unknown as YourToken;
     await yourToken.waitForDeployment();
     return { deployer, user, yourToken, yourTokenAddress: await yourToken.getAddress() };
   }
 
   async function deployVendorFixture(yourTokenAddress: string) {
     const VendorFactory = await ethers.getContractFactory(getVendorArtifact());
-    const vendor = (await VendorFactory.deploy(yourTokenAddress)) as Vendor;
+    const vendor = (await VendorFactory.deploy(yourTokenAddress)) as unknown as Vendor;
     await vendor.waitForDeployment();
     return { vendor, vendorAddress: await vendor.getAddress() };
   }
@@ -61,7 +66,7 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
       const { deployer, user, yourToken } = await deployYourTokenFixture();
 
       const amount = ethers.parseEther("10");
-      await expect(yourToken.transfer(user.address, amount)).to.not.be.reverted;
+      await expect(yourToken.transfer(user.address, amount)).to.not.be.revert(ethers);
 
       expect(await yourToken.balanceOf(user.address)).to.equal(amount);
       expect(await yourToken.balanceOf(deployer.address)).to.equal(INITIAL_SUPPLY - amount);
@@ -125,7 +130,7 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
       const { user, yourTokenAddress } = await deployYourTokenFixture();
       const { vendor } = await deployVendorFixture(yourTokenAddress);
 
-      await expect(vendor.connect(user).withdraw()).to.be.reverted;
+      await expect(vendor.connect(user).withdraw()).to.be.revert(ethers);
     });
 
     it("Checkpoint3: withdraw sends all ETH in Vendor to the owner", async function () {
@@ -170,7 +175,7 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
 
       const vendorEthBefore = await ethers.provider.getBalance(vendorAddress);
 
-      await impersonateAccount(vendorAddress);
+      await networkHelpers.impersonateAccount(vendorAddress);
       try {
         const vendorAsOwner = await ethers.getSigner(vendorAddress);
         // Use a simulation call (no gas is paid from vendorAddress), otherwise the tx gas would
@@ -179,7 +184,7 @@ describe("🚩 Challenge: 🏵 Token Vendor 🤖", function () {
           .to.be.revertedWithCustomError(vendor, "EthTransferFailed")
           .withArgs(vendorAddress, vendorEthBefore);
       } finally {
-        await stopImpersonatingAccount(vendorAddress);
+        await networkHelpers.stopImpersonatingAccount(vendorAddress);
       }
     });
   });
