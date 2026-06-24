@@ -4,5 +4,5 @@
 // Default args:
 export const preContent = "";
 export const extraConfigTypeName = "";
-export const configOverrides = { targetNetworks: [], onlyLocalBurnerWallet: false };
+export const configOverrides = { targetNetworks: [], burnerWalletMode: "allNetworks" };
 export const skipLocalChainInTargetNetworks = false;

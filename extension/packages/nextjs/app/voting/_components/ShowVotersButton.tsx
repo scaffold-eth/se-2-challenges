@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { EyeIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { Address } from "@scaffold-ui/components";
+import { EyeIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export const ShowVotersButton = () => {

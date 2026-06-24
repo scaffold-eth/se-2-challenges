@@ -6,7 +6,6 @@ import { useState } from "react";
 // // @ts-ignore
 // import { Noir } from "@noir-lang/noir_js";
 // import { LeanIMT } from "@zk-kit/lean-imt";
-// import { encodeAbiParameters, toHex } from "viem";
 // import { poseidon1, poseidon2 } from "poseidon-lite";
 import { useAccount } from "wagmi";
 import { useDeployedContractInfo, useScaffoldReadContract } from "~~/hooks/scaffold-eth";

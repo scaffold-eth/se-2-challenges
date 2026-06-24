@@ -3,8 +3,8 @@
 import { useState } from "react";
 ////// Checkpoint 7 //////
 // import { Fr } from "@aztec/bb.js";
-// import { toHex } from "viem";
 // import { poseidon2 } from "poseidon-lite";
+// import { toHex } from "viem";
 import { useAccount } from "wagmi";
 import { useDeployedContractInfo, useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useChallengeState } from "~~/services/store/challengeStore";

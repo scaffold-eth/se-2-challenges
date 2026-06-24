@@ -1,9 +1,15 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import type { Voting } from "../typechain-types";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+import { network } from "hardhat";
+import type { Voting } from "../types/ethers-contracts/index.js";
+import { anyValue } from "@nomicfoundation/hardhat-ethers-chai-matchers/withArgs";
 
 describe("🗳️ ZK Voting Challenge", function () {
+  let ethers: Awaited<ReturnType<typeof network.create>>["ethers"];
+
+  before(async function () {
+    ({ ethers } = await network.create());
+  });
+
   let contractArtifact = "";
   if (process.env.CONTRACT_ADDRESS) {
     contractArtifact = `contracts/download-${process.env.CONTRACT_ADDRESS}.sol:Voting`;
@@ -25,10 +31,14 @@ describe("🗳️ ZK Voting Challenge", function () {
       await leanIMT.waitForDeployment();
 
       const VotingFactory = await ethers.getContractFactory(contractArtifact, {
-        libraries: { "@zk-kit/lean-imt.sol/LeanIMT.sol:LeanIMT": await leanIMT.getAddress() },
+        libraries: { LeanIMT: await leanIMT.getAddress() },
       });
       const verifierZero = "0x0000000000000000000000000000000000000000";
-      const voting = (await VotingFactory.deploy(owner.address, verifierZero, "Should we build zk apps?")) as Voting;
+      const voting = (await VotingFactory.deploy(
+        owner.address,
+        verifierZero,
+        "Should we build zk apps?",
+      )) as unknown as Voting;
       await voting.waitForDeployment();
 
       return { voting, owner, alice, bob };
@@ -52,7 +62,7 @@ describe("🗳️ ZK Voting Challenge", function () {
       await voting.connect(owner).addVoters([alice.address, bob.address], [true, true]);
 
       const duplicateCommitment = 222n;
-      await expect(voting.connect(alice).register(duplicateCommitment)).to.not.be.reverted;
+      await expect(voting.connect(alice).register(duplicateCommitment)).to.not.be.revert(ethers);
       await expect(voting.connect(bob).register(duplicateCommitment))
         .to.be.revertedWithCustomError(voting, "Voting__CommitmentAlreadyAdded")
         .withArgs(duplicateCommitment);
@@ -63,7 +73,7 @@ describe("🗳️ ZK Voting Challenge", function () {
 
       await voting.connect(owner).addVoters([alice.address], [true]);
 
-      await expect(voting.connect(alice).register(333n)).to.not.be.reverted;
+      await expect(voting.connect(alice).register(333n)).to.not.be.revert(ethers);
       await expect(voting.connect(alice).register(444n)).to.be.revertedWithCustomError(
         voting,
         "Voting__NotAllowedToVote",
@@ -115,9 +125,13 @@ describe("🗳️ ZK Voting Challenge", function () {
       await verifier.waitForDeployment();
 
       const VotingFactory = await ethers.getContractFactory(contractArtifact, {
-        libraries: { "@zk-kit/lean-imt.sol/LeanIMT.sol:LeanIMT": await leanIMT.getAddress() },
+        libraries: { LeanIMT: await leanIMT.getAddress() },
       });
-      const voting = (await VotingFactory.deploy(owner.address, await verifier.getAddress(), "Question?")) as Voting;
+      const voting = (await VotingFactory.deploy(
+        owner.address,
+        await verifier.getAddress(),
+        "Question?",
+      )) as unknown as Voting;
       await voting.waitForDeployment();
 
       // allowlist and register a voter to set a non-zero root

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Address } from "@scaffold-ui/components";
 import { createSmartAccountClient } from "permissionless";
 import { toSafeSmartAccount } from "permissionless/accounts";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
@@ -9,7 +10,6 @@ import { EntryPointVersion, entryPoint07Address } from "viem/account-abstraction
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import { useAccount } from "wagmi";
-import { Address } from "@scaffold-ui/components";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useChallengeState } from "~~/services/store/challengeStore";
 import {

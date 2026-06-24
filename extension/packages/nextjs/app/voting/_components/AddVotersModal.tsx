@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { AddressInput } from "@scaffold-ui/components";
 import { useAccount } from "wagmi";
 import { PlusIcon, TrashIcon, UserPlusIcon } from "@heroicons/react/24/outline";
-import { AddressInput } from "@scaffold-ui/components";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type VoterEntry = {
