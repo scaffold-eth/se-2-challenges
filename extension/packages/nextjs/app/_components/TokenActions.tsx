@@ -62,11 +62,11 @@ const TokenActions = () => {
             </span>
           </span>
           <div className="flex gap-2">
-            <label htmlFor={`${transferModalId}`} className="btn btn-primary btn-circle btn-xs">
+            <label htmlFor={`${transferModalId}`} className="btn btn-primary btn-square btn-xs">
               <PaperAirplaneIcon className="h-3 w-3" />
             </label>
             {ConnectedChain?.id === hardhat.id && (
-              <label htmlFor={`${swapModalId}`} className="btn btn-primary btn-circle btn-xs">
+              <label htmlFor={`${swapModalId}`} className="btn btn-primary btn-square btn-xs">
                 <ArrowsRightLeftIcon className="h-3 w-3" />
               </label>
             )}
