@@ -4,7 +4,7 @@
 
 # Introduction
 
-🔮 This challenge will guide you through building and understanding a simple prediction market, where users can buy and sell ERC20 outcome shares based on the result of an event. You'll step into three roles: liquidity provider, oracle, and user. The event? A car race between a green and a red car! 🏎️🏁
+🔮 This Speedrun Ethereum challenge will guide you through building and understanding a simple prediction market, where users can buy and sell ERC20 outcome shares based on the result of an event. You'll step into three roles: liquidity provider, oracle, and user. The event? A car race between a green and a red car! 🏎️🏁
 
 We'll guide you through the fundamental Solidity functions and explore how a fully on-chain prediction market could be structured.
 
