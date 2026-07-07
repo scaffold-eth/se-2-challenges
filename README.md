@@ -2,7 +2,7 @@
 
 ![readme-4](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-dex/extension/packages/nextjs/public/hero.png)
 
-💵 Build an exchange that swaps ETH to tokens and tokens to ETH. 💰 This is possible because the smart contract holds reserves of both assets and has a price function based on the ratio of the reserves. Liquidity providers are issued a token that represents their share of the reserves and fees.
+💵 In this Speedrun Ethereum challenge, you'll build an exchange that swaps ETH to tokens and tokens to ETH. 💰 This is possible because the smart contract holds reserves of both assets and has a price function based on the ratio of the reserves. Liquidity providers are issued a token that represents their share of the reserves and fees.
 
 🧮 You'll implement a minimal constant-product market maker (like Uniswap v2): the DEX holds reserves of both assets and uses a pricing curve \(x * y = k\). You'll add trading and liquidity provisioning, then try it out in the frontend UI.
 
