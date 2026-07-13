@@ -2,7 +2,7 @@
 
 ![readme-stablecoin](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-stablecoins/extension/packages/nextjs/public/hero.png)
 
-🪙 Build your own decentralized stablecoin! In this challenge, you'll build the core engine for **MyUSD**, a crypto-backed stablecoin designed to maintain a peg to $1 USD.
+🪙 Build your own decentralized stablecoin! In this Speedrun Ethereum challenge, you'll build the core engine for **MyUSD**, a crypto-backed stablecoin designed to maintain a peg to $1 USD.
 
 You'll get to wear the hat of a DeFi protocol that wants to maintain price stability while also increasing adoption of your stablecoin product, diving deep into concepts like **collateralization, minting, burning, interest rates,** and **liquidations** – all crucial components of a robust stablecoin system.
 
