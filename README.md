@@ -56,7 +56,7 @@ Before you begin, you need to install the following tools:
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.20 -e challenge-tokenization challenge-tokenization
+npx create-eth@2.0.22 -e challenge-tokenization challenge-tokenization
 ```
 
 > When prompted, choose your preferred Solidity framework: **Hardhat** or **Foundry**.
@@ -105,6 +105,8 @@ yarn start
 ```
 
 📱 Open [http://localhost:3000](http://localhost:3000) to see the app.
+
+> _Note: the UI in screenshots may differ slightly from the current version._
 
 ---
 

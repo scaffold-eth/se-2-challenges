@@ -44,7 +44,7 @@ const IpfsUpload: NextPage = () => {
 
         {mounted && (
           <LazyReactJson
-            style={{ padding: "1rem", borderRadius: "0.75rem" }}
+            style={{ padding: "1rem" }}
             src={yourJSON}
             theme="solarized"
             enableClipboard={false}
