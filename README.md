@@ -2,7 +2,7 @@
 
 ![readme-1](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-crowdfunding/extension/packages/nextjs/public/hero.png)
 
-🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code, not each other.
+🦸 A superpower of Ethereum is allowing you, the builder, to create a simple set of rules that an adversarial group of players can use to work together. In this Speedrun Ethereum challenge, you create a decentralized application where users can coordinate a group funding effort. If the users cooperate, the money is collected in a second smart contract. If they defect, the worst that can happen is everyone gets their money back. The users only have to trust the code, not each other.
 
 🌟 The final deliverable is deploying a Dapp that lets users send ether to a contract and then fund the cause if the conditions are met, then `yarn vercel` your app to a public webserver. Submit the url on [SpeedrunEthereum.com](https://speedrunethereum.com)!
 
