@@ -2,7 +2,7 @@
 
 ![readme-zk](https://raw.githubusercontent.com/scaffold-eth/se-2-challenges/challenge-zk-voting/extension/packages/nextjs/public/readme-zk.png)
 
-Create a private, Sybil-resistant voting system where anyone can prove they’re eligible and vote exactly once **without revealing who they are**. You’ll use **zero-knowledge proofs** to keep votes unlinkable to identities, while keeping results publicly verifiable on-chain.
+Create a private, Sybil-resistant voting system where anyone can prove they’re eligible and vote exactly once **without revealing who they are**. In this Speedrun Ethereum challenge, you’ll use **zero-knowledge proofs** to keep votes unlinkable to identities, while keeping results publicly verifiable on-chain.
 
 <details>
 <summary><b>❓ Wondering how ZK voting works?</b></summary>
