@@ -12,7 +12,7 @@ export const extraContents = ({solidityFramework}) => `# 🚩 Challenge: 🎟 To
 
 🎫 Tokenize unique items:
 
-👷‍♀️ You'll compile and deploy your first smart contracts. Then, you'll use a template NextJS app full of important Ethereum components and hooks. Finally, you'll deploy a non-fungible token to a public network where you can send it to anyone! 🚀
+👷‍♀️ In this Speedrun Ethereum challenge, you'll compile and deploy your first smart contracts. Then, you'll use a template NextJS app full of important Ethereum components and hooks. Finally, you'll deploy a non-fungible token to a public network where you can send it to anyone! 🚀
 
 🌟 The final deliverable is an app that lets users mint and transfer NFTs and understand onchain ownership. Deploy your contracts to a testnet, then build and upload your app to a public web server. Submit the url on [SpeedRunEthereum.com](https://speedrunethereum.com)!
 
