@@ -47,7 +47,7 @@ export const TokenTransferModal = ({ tokenBalance, connectedAddress, modalId }: 
           <h3 className="text-xl font-bold mb-3">Send {tokenName}</h3>
           <div className="absolute top-3 right-3 flex items-center space-x-2">
             <TooltipInfo top={0} right={0} infoText={`Here you can send ${tokenName} to another address`} />
-            <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle">
+            <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-square">
               ✕
             </label>
           </div>
@@ -78,7 +78,7 @@ export const TokenTransferModal = ({ tokenBalance, connectedAddress, modalId }: 
                 placeholder="Amount"
                 disableMultiplyBy1e18
               />
-              <button className="h-10 btn btn-primary btn-sm px-2 rounded-full" onClick={handleSend} disabled={loading}>
+              <button className="h-10 btn btn-primary btn-sm px-2" onClick={handleSend} disabled={loading}>
                 {!loading ? (
                   <BanknotesIcon className="h-6 w-6" />
                 ) : (

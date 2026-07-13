@@ -112,7 +112,7 @@ export const TokenSwapModal = ({ tokenBalance, connectedAddress, ETHprice, modal
           <h3 className="text-xl font-bold mb-3">Simple Swap</h3>
           <div className="absolute top-3 right-3 flex items-center space-x-2">
             <TooltipInfo top={0} right={0} infoText={`Here you can swap ${tokenName} for ETH and vice versa`} />
-            <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle">
+            <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-square">
               ✕
             </label>
           </div>
@@ -145,7 +145,7 @@ export const TokenSwapModal = ({ tokenBalance, connectedAddress, ETHprice, modal
                 </span>
               </div>
               <div className="flex justify-center">
-                <button className="btn btn-circle btn-sm" onClick={handleChangeSellToken}>
+                <button className="btn btn-square btn-sm" onClick={handleChangeSellToken}>
                   <ArrowDownIcon className="h-4 w-4 my-0" />
                 </button>
               </div>
@@ -164,7 +164,7 @@ export const TokenSwapModal = ({ tokenBalance, connectedAddress, ETHprice, modal
                   {sellToken === "MyUSD" ? "ETH" : "MyUSD"}
                 </span>
               </div>
-              <button className="h-10 btn btn-primary btn-sm px-2 rounded-full" onClick={handleSwap} disabled={loading}>
+              <button className="h-10 btn btn-primary btn-sm px-2" onClick={handleSwap} disabled={loading}>
                 {!loading ? (
                   <ArrowsRightLeftIcon className="h-6 w-6" />
                 ) : (

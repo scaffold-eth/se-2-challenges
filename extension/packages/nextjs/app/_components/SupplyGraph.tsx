@@ -46,7 +46,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
     const total = payload.find(p => p.dataKey === "totalSupply")?.value || 0;
 
     return (
-      <div className="bg-base-200 border border-base-300 rounded-lg px-3 my-0 shadow-lg">
+      <div className="bg-base-200 border border-base-300 px-3 my-0 shadow-lg">
         <p className="font-semibold text-sm mt-2 mb-1">Block {label}</p>
         <p className="text-sm my-0">
           <span style={{ color: ORANGE_COLOR }}>●</span> Total: {formatDisplayValue(total)} MyUSD

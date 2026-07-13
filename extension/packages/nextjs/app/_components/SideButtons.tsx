@@ -28,7 +28,7 @@ const SideButton: React.FC<{
   const Icon = config.icon;
   return (
     <button
-      className={`btn btn-circle btn-primary transition-transform duration-300 hover:scale-110 ${isHovered ? "ring-2 ring-primary" : ""}`}
+      className={`btn btn-square btn-primary transition-transform duration-300 hover:scale-110 ${isHovered ? "ring-2 ring-primary" : ""}`}
       onMouseEnter={() => onHover(config.id)}
     >
       <Icon className="h-6 w-6" />
@@ -86,7 +86,7 @@ const SideButtons: React.FC = () => {
 
   return (
     <div
-      className="absolute top-[120px] right-0 bg-base-100 w-fit border-base-300 border shadow-md rounded-xl"
+      className="absolute top-[120px] right-0 bg-base-100 w-fit border-base-300 border shadow-md"
       onMouseEnter={handleContainerEnter}
       onMouseLeave={handleContainerLeave}
     >

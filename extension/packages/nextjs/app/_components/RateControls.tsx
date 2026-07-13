@@ -44,10 +44,10 @@ const RateInput: React.FC<RateInputProps> = ({
       <div className="flex mx-2 w-1/5 gap-1">
         {isEditing ? (
           <>
-            <label className="btn btn-sm btn-circle" onClick={() => onSave(newValue)}>
+            <label className="btn btn-sm btn-square" onClick={() => onSave(newValue)}>
               <CheckIcon className="h-3 w-3" />
             </label>
-            <label className="btn btn-sm btn-circle" onClick={onCancel}>
+            <label className="btn btn-sm btn-square" onClick={onCancel}>
               <XMarkIcon className="h-3 w-3" />
             </label>
           </>
