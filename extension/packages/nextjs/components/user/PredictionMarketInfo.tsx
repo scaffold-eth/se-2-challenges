@@ -35,7 +35,7 @@ export function PredictionMarketInfo() {
   return (
     <div className="card bg-base-100 w-full shadow-xl indicator">
       <div className="card-body">
-        <div className="bg-base-200 py-4 px-6 rounded-lg">
+        <div className="bg-base-200 py-4 px-6">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-base-content text-xl font-bold">{question}</p>

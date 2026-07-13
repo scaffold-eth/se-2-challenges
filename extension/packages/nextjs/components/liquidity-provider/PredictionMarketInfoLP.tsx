@@ -112,7 +112,7 @@ export function PredictionMarketInfoLP() {
           {!isReported ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Yes Token */}
-              <div className="bg-base-200 p-4 rounded-lg border-4 border-green-500">
+              <div className="bg-base-200 p-4 border-4 border-green-500">
                 <h2 className="text-2xl font-semibold mb-2">&quot;{yesOutcome}&quot; Token</h2>
                 <h3 className="text-lg mb-2">
                   Total Supply:
@@ -162,7 +162,7 @@ export function PredictionMarketInfoLP() {
               </div>
 
               {/* No Token */}
-              <div className="bg-base-200 p-4 rounded-lg border-4 border-red-500">
+              <div className="bg-base-200 p-4 border-4 border-red-500">
                 <h2 className="text-2xl font-semibold mb-2">&quot;{noOutcome}&quot; Token</h2>
                 <h3 className="text-lg mb-2">
                   Total Supply:
@@ -208,7 +208,7 @@ export function PredictionMarketInfoLP() {
               </div>
             </div>
           ) : (
-            <div className="bg-base-200 p-4 rounded-lg">
+            <div className="bg-base-200 p-4">
               <h2 className="text-2xl font-semibold mb-2">Oracle reported: {winningOption}</h2>
               <h3 className="text-lg mb-2">
                 Value of {winningOption} tokens held by prediction market:{" "}

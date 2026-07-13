@@ -34,7 +34,7 @@ const RaceEffects: React.FC<RaceEffectsProps> = ({ isRacing }) => {
         {Array.from({ length: 15 }).map((_, index) => (
           <div
             key={index}
-            className="absolute rounded-full bg-gray-300 opacity-40"
+            className="absolute bg-gray-300 opacity-40"
             style={{
               top: `${50 + (Math.random() * 40 - 20)}%`,
               left: `${Math.random() * 100}%`,

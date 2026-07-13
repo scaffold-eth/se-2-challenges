@@ -244,7 +244,7 @@ const RaceTrack: React.FC = () => {
             </div>
           </div>
 
-          <div className="rounded-lg overflow-hidden">
+          <div className="overflow-hidden">
             <Image
               src={resolvedTheme === "dark" ? BackgroundImageDark : BackgroundImage}
               alt="Mountain Background"

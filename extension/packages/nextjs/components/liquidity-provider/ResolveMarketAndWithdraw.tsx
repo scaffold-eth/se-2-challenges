@@ -62,7 +62,7 @@ export function ResolveMarketAndWithdraw() {
     <div className="card bg-base-100 w-full shadow-xl indicator">
       <div className="card-body">
         {!isLiquidityProvider ? (
-          <div className="max-w-6xl mx-auto bg-base-100 rounded-xl">
+          <div className="max-w-6xl mx-auto bg-base-100">
             <p className="text-xl font-bold text-center">❗️ Only the liquidity provider can resolve the market</p>
           </div>
         ) : (

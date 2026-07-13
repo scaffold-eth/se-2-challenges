@@ -63,7 +63,7 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
 
   if (!owner)
     return (
-      <div className="max-w-lg mx-auto p-4 bg-white rounded-xl shadow-lg space-y-4">
+      <div className="max-w-lg mx-auto p-4 bg-white shadow-lg space-y-4">
         <h2 className="text-lg font-semibold text-center">No prediction market found</h2>
       </div>
     );
@@ -117,12 +117,12 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
               defaultChecked
             />
             <div role="tabpanel" className="tab-content pt-4">
-              <div className={`bg-${colorScheme}-50 rounded-lg`}>
+              <div className={`bg-${colorScheme}-50`}>
                 <div className="space-y-4">
                   <input
                     type="number"
                     placeholder="Amount to buy"
-                    className={`input input-bordered input-sm w-full rounded-md placeholder-${colorScheme}-500 dark:placeholder-white dark:placeholder-opacity-70`}
+                    className={`input input-bordered input-sm w-full placeholder-${colorScheme}-500 dark:placeholder-white dark:placeholder-opacity-70`}
                     onChange={e => setInputBuyAmount(BigInt(e.target.value))}
                   />
 
@@ -185,7 +185,7 @@ export function PredictionBuySellShare({ optionIndex, colorScheme }: { optionInd
                   <input
                     type="number"
                     placeholder="Amount to sell"
-                    className={`input input-bordered input-sm w-full rounded-md placeholder-${colorScheme}-500 dark:placeholder-white dark:placeholder-opacity-70`}
+                    className={`input input-bordered input-sm w-full placeholder-${colorScheme}-500 dark:placeholder-white dark:placeholder-opacity-70`}
                     onChange={e => setInputSellAmount(BigInt(e.target.value))}
                   />
 
