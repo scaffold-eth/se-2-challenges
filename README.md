@@ -41,7 +41,7 @@ Deploy your contracts to a testnet then build and upload your app to a public we
 📥 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.20 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
+npx create-eth@2.0.22 -e challenge-over-collateralized-lending challenge-over-collateralized-lending
 cd challenge-over-collateralized-lending
 ```
 
@@ -68,6 +68,8 @@ yarn start
 ```
 
 📱 Open http://localhost:3000 to see the app.
+
+> _Note: the UI in screenshots may differ slightly from the current version._
 
 > 👩‍💻 Restart `yarn chain` and then rerun `yarn deploy` whenever you want to deploy contract changes to the frontend. Run `yarn deploy --reset` for a completely fresh deploy, even when contracts are unchanged.
 

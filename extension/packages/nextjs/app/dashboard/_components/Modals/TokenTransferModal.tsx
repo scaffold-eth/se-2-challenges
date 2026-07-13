@@ -44,7 +44,7 @@ export const TokenTransferModal = ({ tokenBalance, connectedAddress, modalId }: 
           {/* dummy input to capture event onclick on modal box */}
           <input className="h-0 w-0 absolute top-0 left-0" />
           <h3 className="text-xl font-bold mb-3">Send {tokenName}</h3>
-          <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
+          <label htmlFor={`${modalId}`} className="btn btn-ghost btn-sm btn-square absolute right-3 top-3">
             ✕
           </label>
           <div className="space-y-2">
@@ -74,7 +74,7 @@ export const TokenTransferModal = ({ tokenBalance, connectedAddress, modalId }: 
                 placeholder="Amount"
                 disableMultiplyBy1e18
               />
-              <button className="h-10 btn btn-primary btn-sm px-2 rounded-full" onClick={handleSend} disabled={loading}>
+              <button className="h-10 btn btn-primary btn-sm px-2" onClick={handleSend} disabled={loading}>
                 {!loading ? (
                   <BanknotesIcon className="h-6 w-6" />
                 ) : (
