@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@scaffold-ui/components": "0.1.11",
-    "@scaffold-ui/debug-contracts": "0.1.10",
-    "@scaffold-ui/hooks": "0.1.8"
-  }
-}

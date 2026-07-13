@@ -24,7 +24,7 @@
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.20 -e challenge-dex challenge-dex
+npx create-eth@2.0.22 -e challenge-dex challenge-dex
 ```
 
 > When prompted, choose your preferred Solidity framework: **Hardhat** or **Foundry**.
@@ -54,6 +54,8 @@ yarn start
 ```
 
 📱 Open http://localhost:3000 to see the app.
+
+> _Note: the UI in screenshots may differ slightly from the current version._
 
 > 👩‍💻 Rerun `yarn deploy` whenever you want to deploy contract changes to the frontend. Run `yarn deploy --reset` for a completely fresh deploy, even when contracts are unchanged.
 
