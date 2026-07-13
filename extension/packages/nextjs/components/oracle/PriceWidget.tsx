@@ -77,18 +77,18 @@ export const PriceWidget = ({ contractName }: PriceWidgetProps) => {
   return (
     <div className="flex flex-col gap-2 h-full">
       <h2 className="text-xl font-bold">Current Price</h2>
-      <div className="bg-base-100 rounded-lg p-4 w-full flex justify-center items-center relative h-full min-h-[140px]">
+      <div className="bg-base-100 p-4 w-full flex justify-center items-center relative h-full min-h-[140px]">
         <TooltipInfo
           top={0}
           right={0}
           className="tooltip-left"
           infoText="Displays the median price. If no oracle nodes have reported prices in the last 24 seconds, it will display 'No fresh price'. Color highlighting indicates how big of a change there was in the price."
         />
-        <div className={`rounded-lg transition-colors duration-1000 ${highlight ? highlightColor : ""}`}>
+        <div className={`transition-colors duration-1000 ${highlight ? highlightColor : ""}`}>
           <div className="font-bold h-10 text-4xl flex items-center justify-center gap-4">
             {showBucketLoading ? (
               <div className="animate-pulse">
-                <div className="h-10 bg-secondary rounded-md w-32"></div>
+                <div className="h-10 bg-secondary w-32"></div>
               </div>
             ) : hasValidPrice ? (
               <span>{`$${parseFloat(formatEther(currentPrice)).toFixed(2)}`}</span>

@@ -7,13 +7,13 @@ const LoadingRow = () => {
   return (
     <tr>
       <td className="animate-pulse">
-        <div className="h-8 bg-secondary rounded w-32"></div>
+        <div className="h-8 bg-secondary w-32"></div>
       </td>
       <td className="animate-pulse">
-        <div className="h-8 bg-secondary rounded w-20"></div>
+        <div className="h-8 bg-secondary w-20"></div>
       </td>
       <td className="animate-pulse">
-        <div className="h-8 bg-secondary rounded w-24"></div>
+        <div className="h-8 bg-secondary w-24"></div>
       </td>
     </tr>
   );
@@ -71,7 +71,7 @@ export const WhitelistTable = () => {
           <AddOracleButton />
         </div>
       </div>
-      <div className="bg-base-100 rounded-lg p-4 relative">
+      <div className="bg-base-100 p-4 relative">
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>

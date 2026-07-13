@@ -4,7 +4,7 @@ import { ProposedRow } from "./ProposedRow";
 
 export const ProposedTable = ({ assertions }: OOTableProps) => {
   return (
-    <div className="bg-base-100 rounded-lg shadow-lg overflow-x-auto">
+    <div className="bg-base-100 shadow-lg overflow-x-auto">
       <table className="w-full table-auto [&_th]:px-6 [&_th]:py-4 [&_td]:px-6 [&_td]:py-4">
         {/* Header */}
         <thead>

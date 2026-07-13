@@ -41,7 +41,7 @@ export const AssertedRow = ({ assertionId, state }: { assertionId: number; state
 
       {/* Chevron Column */}
       <td>
-        <div className="w-6 h-6 rounded-full border-error border flex items-center justify-center hover:bg-base-200 group-hover:bg-error transition-colors mx-auto">
+        <div className="w-6 h-6 border-error border flex items-center justify-center hover:bg-base-200 group-hover:bg-error transition-colors mx-auto">
           <ChevronRightIcon className="w-4 h-4 text-error group-hover:text-white stroke-2 transition-colors" />
         </div>
       </td>

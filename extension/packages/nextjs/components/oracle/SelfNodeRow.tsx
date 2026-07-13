@@ -213,7 +213,7 @@ export const SelfNodeRow = ({ isStale, bucketNumber }: SelfNodeRowProps) => {
               <div className="flex items-center gap-2 h-full items-stretch">
                 <span>{stakedAmountFormatted}</span>
                 <button
-                  className="px-2 text-sm bg-primary rounded cursor-pointer"
+                  className="px-2 text-sm bg-primary cursor-pointer"
                   onClick={handleAddStake}
                   title="Add 1000 ORA"
                 >

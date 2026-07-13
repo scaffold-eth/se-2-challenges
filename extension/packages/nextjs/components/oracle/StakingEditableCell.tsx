@@ -123,7 +123,7 @@ export const StakingEditableCell = ({
                 type="text"
                 value={editValue}
                 onChange={e => setEditValue(e.target.value)}
-                className="w-full text-sm bg-secondary rounded-md"
+                className="w-full text-sm bg-secondary"
               />
             </div>
           ) : (
@@ -132,7 +132,7 @@ export const StakingEditableCell = ({
               {canEdit && (
                 <div className="flex items-stretch gap-1">
                   <button
-                    className="px-2 text-sm bg-primary rounded disabled:opacity-50 cursor-pointer"
+                    className="px-2 text-sm bg-primary disabled:opacity-50 cursor-pointer"
                     onClick={startEditing}
                     disabled={!canEdit || disabled}
                     title="Edit price"
@@ -140,7 +140,7 @@ export const StakingEditableCell = ({
                     <PencilIcon className="w-2.5 h-2.5" />
                   </button>
                   <button
-                    className="px-2 text-sm bg-secondary rounded disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="px-2 text-sm bg-secondary disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     onClick={() => {
                       if (isRefreshing || !hasPrevAvg || disabled) return;
                       setIsRefreshing(true);
@@ -162,10 +162,10 @@ export const StakingEditableCell = ({
         <div className="shrink-0 items-stretch justify-start pl-2">
           {isEditing && (
             <div className="flex items-stretch gap-1 w-full h-full">
-              <button onClick={handleSubmit} className="px-2 text-sm bg-primary rounded cursor-pointer">
+              <button onClick={handleSubmit} className="px-2 text-sm bg-primary cursor-pointer">
                 ✓
               </button>
-              <button onClick={handleCancel} className="px-2 text-sm bg-secondary rounded cursor-pointer">
+              <button onClick={handleCancel} className="px-2 text-sm bg-secondary cursor-pointer">
                 ✕
               </button>
             </div>

@@ -17,7 +17,7 @@ import { notification } from "~~/utils/scaffold-eth";
 const LoadingRow = ({ colCount = 5 }: { colCount?: number }) => (
   <tr>
     <td colSpan={colCount} className="animate-pulse">
-      <div className="h-8 bg-secondary rounded w-full" />
+      <div className="h-8 bg-secondary w-full" />
     </td>
   </tr>
 );
@@ -408,7 +408,7 @@ export const NodesTable = ({
             <span>
               <TooltipInfo infoText={tooltipText} />
             </span>
-            <span className="text-xs bg-base-100 px-2 py-1 rounded-full opacity-70">
+            <span className="text-xs bg-base-100 px-2 py-1 opacity-70">
               Min Stake: {minimumStakeFormatted} ORA
             </span>
           </div>
@@ -547,7 +547,7 @@ export const NodesTable = ({
             )}
           </div>
         </div>
-        <div className="bg-base-100 rounded-lg p-4 relative">
+        <div className="bg-base-100 p-4 relative">
           <div className="overflow-x-auto">
             <div
               key={animateKey}
@@ -643,7 +643,7 @@ export const NodesTable = ({
       {editingNode && (
         <div
           style={{ position: "fixed", top: editingNode.pos.top, left: editingNode.pos.left, zIndex: 60, minWidth: 220 }}
-          className="mt-2 p-3 bg-base-200 rounded shadow-lg border"
+          className="mt-2 p-3 bg-base-200 shadow-lg border"
         >
           <div className="flex flex-col gap-2">
             <ConfigSlider

@@ -68,7 +68,7 @@ export const BucketCountdown = () => {
   return (
     <div className="flex flex-col gap-2 h-full">
       <h2 className="text-xl font-bold">Bucket Countdown</h2>
-      <div className="bg-base-100 rounded-lg p-4 w-full flex justify-center items-center relative h-full min-h-[140px]">
+      <div className="bg-base-100 p-4 w-full flex justify-center items-center relative h-full min-h-[140px]">
         <TooltipInfo
           top={0}
           right={0}

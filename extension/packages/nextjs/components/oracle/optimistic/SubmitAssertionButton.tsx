@@ -115,7 +115,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
           <input className="h-0 w-0 absolute top-0 left-0" />
 
           {/* Close button */}
-          <button onClick={handleClose} className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
+          <button onClick={handleClose} className="btn btn-ghost btn-sm btn-square absolute right-3 top-3">
             ✕
           </button>
 
@@ -146,7 +146,7 @@ const SubmitAssertionModal = ({ isOpen, onClose }: SubmitAssertionModalProps) =>
                 </label>
                 <div className="flex gap-2 items-start">
                   <div className="flex-1">
-                    <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
+                    <div className="flex border-2 border-base-300 bg-base-200 text-accent">
                       <textarea
                         name="description"
                         value={description}
