@@ -160,7 +160,7 @@ export const GenerateProof = ({ leafEvents = [] }: CreateCommitmentProps) => {
   };
 
   return (
-    <div className="bg-base-100 shadow rounded-xl p-6 space-y-5">
+    <div className="bg-base-100 shadow p-6 space-y-5">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold text-center"> Generate ZK proof off-chain </h2>
         <p className="text-sm opacity-70">

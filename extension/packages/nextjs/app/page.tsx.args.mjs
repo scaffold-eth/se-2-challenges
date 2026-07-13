@@ -12,7 +12,7 @@ export const description = `
           width="727"
           height="231"
           alt="ZK Voting challenge banner"
-          className="rounded-xl border-4 border-primary"
+          className="border-4 border-primary"
         />
         <div className="max-w-3xl">
           <p className="text-center text-lg mt-8">

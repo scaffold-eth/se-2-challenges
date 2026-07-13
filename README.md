@@ -89,7 +89,7 @@ If you are using vscode you may want to install the [Noir Language Support](http
 Then download the challenge to your computer and install dependencies by running:
 
 ```sh
-npx create-eth@2.0.20 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
+npx create-eth@2.0.22 -e scaffold-eth/se-2-challenges:challenge-zk-voting challenge-zk-voting
 cd challenge-zk-voting
 ```
 
@@ -172,6 +172,8 @@ Our contract will support three main functions:
 ### 👀 Explore the Frontend
 
 📱 Open [http://localhost:3000](http://localhost:3000/) to spin up your app.
+
+> _Note: the UI in screenshots may differ slightly from the current version._
 
 🖥️ Head over to the **Voting** page and take a look at the frontend you’ll soon bring to life.
 

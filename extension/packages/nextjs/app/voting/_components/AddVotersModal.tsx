@@ -107,7 +107,7 @@ export const AddVotersModal = () => {
               {/* dummy input to capture event onclick on modal box */}
               <input className="h-0 w-0 absolute top-0 left-0" />
               <h3 className="text-xl font-bold mb-3">Add Voters</h3>
-              <label htmlFor="add-voters-modal" className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3">
+              <label htmlFor="add-voters-modal" className="btn btn-ghost btn-sm btn-square absolute right-3 top-3">
                 ✕
               </label>
 
@@ -118,7 +118,7 @@ export const AddVotersModal = () => {
 
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {voters.map((voter, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 border border-base-300 rounded-lg">
+                    <div key={index} className="flex items-center gap-3 p-3 border border-base-300">
                       <div className="flex-1">
                         <AddressInput
                           placeholder="Voter Address (0x...)"
@@ -152,7 +152,7 @@ export const AddVotersModal = () => {
 
                       <button
                         onClick={() => removeVoterEntry(index)}
-                        className="btn btn-ghost btn-sm btn-circle"
+                        className="btn btn-ghost btn-sm btn-square"
                         disabled={voters.length === 1}
                       >
                         <TrashIcon className="h-4 w-4" />

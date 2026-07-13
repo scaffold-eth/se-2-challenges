@@ -145,7 +145,7 @@ export const VoteWithBurnerSepolia = ({ contractAddress }: { contractAddress?: `
   }, [contractAddress, contractInfo?.address, userAddress, proofData, setProofData]);
 
   return (
-    <div className="bg-base-100 shadow rounded-xl p-6 space-y-4">
+    <div className="bg-base-100 shadow p-6 space-y-4">
       <div className="space-y-1 text-center">
         <h2 className="text-2xl font-bold">Vote</h2>
         <p className="text-sm opacity-70">

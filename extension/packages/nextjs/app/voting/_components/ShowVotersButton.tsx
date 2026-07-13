@@ -66,7 +66,7 @@ const VoterStatus = ({ address }: { address: string }) => {
   const hasRegistered = voterData?.[1];
 
   return (
-    <div className="flex items-center justify-between p-3 border border-base-300 rounded-lg">
+    <div className="flex items-center justify-between p-3 border border-base-300">
       <div className="flex-1">
         <Address address={address as `0x${string}`} />
       </div>
@@ -114,7 +114,7 @@ const ShowVotersModal = ({
           </h3>
           <label
             htmlFor="show-voters-modal"
-            className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3"
+            className="btn btn-ghost btn-sm btn-square absolute right-3 top-3"
             onClick={() => onClose()}
           >
             ✕
