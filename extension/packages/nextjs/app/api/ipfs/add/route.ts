@@ -1,11 +1,11 @@
 "use server";
 
-import { ipfsClient } from "~~/utils/tokenization/ipfs";
+import { addToIPFS } from "~~/utils/tokenization/ipfs";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const res = await ipfsClient.add(JSON.stringify(body));
+    const res = await addToIPFS(body);
     return Response.json(res);
   } catch (error) {
     console.log("Error adding to ipfs", error);

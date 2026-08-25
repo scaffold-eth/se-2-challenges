@@ -87,6 +87,21 @@ yarn deploy
 yarn start
 \`\`\`
 
+### 🌐 IPFS setup (required)
+
+NFT metadata is stored on [IPFS](https://ipfs.tech/), which needs a pinning service. Create a free account at [Pinata](https://pinata.cloud), then:
+
+1. **API Keys → New Key** → enable **Admin** (or at minimum \`pinJSONToIPFS\`) → copy the **JWT**
+2. **Gateways** → copy your gateway domain (e.g. \`your-gateway.mypinata.cloud\`)
+3. Create \`packages/nextjs/.env.local\`:
+
+\`\`\`sh
+PINATA_JWT=<your JWT>
+NEXT_PUBLIC_PINATA_GATEWAY=<your gateway domain>
+\`\`\`
+
+4. Restart \`yarn start\` so the new env vars are picked up.
+
 📱 Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 > _Note: the UI in screenshots may differ slightly from the current version._

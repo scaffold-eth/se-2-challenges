@@ -29,6 +29,7 @@ const MyNFTs: NextPage = () => {
     const notificationId = notification.loading("Uploading to IPFS");
     try {
       const uploadedItem = await addToIPFS(currentTokenMetaData);
+      if (!uploadedItem?.path) throw new Error("IPFS upload failed, not minting");
 
       // First remove previous loading notification and then show success notification
       notification.remove(notificationId);

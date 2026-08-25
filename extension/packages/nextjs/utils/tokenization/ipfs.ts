@@ -1,35 +1,22 @@
-import { create } from "kubo-rpc-client";
+const PINATA_JWT = process.env.PINATA_JWT;
+const PINATA_GATEWAY = process.env.NEXT_PUBLIC_PINATA_GATEWAY;
 
-const PROJECT_ID = "2GajDLTC6y04qsYsoDRq9nGmWwK";
-const PROJECT_SECRET = "48c62c6b3f82d2ecfa2cbe4c90f97037";
-const PROJECT_ID_SECRECT = `${PROJECT_ID}:${PROJECT_SECRET}`;
-
-export const ipfsClient = create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-  headers: {
-    Authorization: `Basic ${Buffer.from(PROJECT_ID_SECRECT).toString("base64")}`,
-  },
-});
+export async function addToIPFS(body: unknown) {
+  if (!PINATA_JWT) throw new Error("PINATA_JWT is not set, see .env.example");
+  const res = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${PINATA_JWT}` },
+    body: JSON.stringify({ pinataContent: body }),
+  });
+  if (!res.ok) throw new Error(`Pinata pin failed: ${res.status} ${await res.text()}`);
+  const { IpfsHash } = await res.json();
+  // ponytail: callers only use `path` (the CID)
+  return { path: IpfsHash };
+}
 
 export async function getNFTMetadataFromIPFS(ipfsHash: string) {
-  for await (const file of ipfsClient.get(ipfsHash)) {
-    // The file is of type unit8array so we need to convert it to string
-    const content = new TextDecoder().decode(file);
-    // Remove any leading/trailing whitespace
-    const trimmedContent = content.trim();
-    // Find the start and end index of the JSON object
-    const startIndex = trimmedContent.indexOf("{");
-    const endIndex = trimmedContent.lastIndexOf("}") + 1;
-    // Extract the JSON object string
-    const jsonObjectString = trimmedContent.slice(startIndex, endIndex);
-    try {
-      const jsonObject = JSON.parse(jsonObjectString);
-      return jsonObject;
-    } catch (error) {
-      console.log("Error parsing JSON:", error);
-      return undefined;
-    }
-  }
+  if (!PINATA_GATEWAY) throw new Error("NEXT_PUBLIC_PINATA_GATEWAY is not set, see .env.example");
+  const res = await fetch(`https://${PINATA_GATEWAY}/ipfs/${ipfsHash}`);
+  if (!res.ok) throw new Error(`IPFS fetch failed: ${res.status}`);
+  return res.json();
 }
