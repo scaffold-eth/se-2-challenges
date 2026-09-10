@@ -27,19 +27,27 @@ const MyNFTs: NextPage = () => {
     const tokenIdCounterNumber = Number(tokenIdCounter);
     const currentTokenMetaData = nftsMetadata[tokenIdCounterNumber % nftsMetadata.length];
     const notificationId = notification.loading("Uploading to IPFS");
+
+    let uploadedItem;
     try {
-      const uploadedItem = await addToIPFS(currentTokenMetaData);
-
-      // First remove previous loading notification and then show success notification
+      uploadedItem = await addToIPFS(currentTokenMetaData);
+    } catch (error) {
       notification.remove(notificationId);
-      notification.success("Metadata uploaded to IPFS");
+      notification.error("Error uploading to IPFS");
+      console.error(error);
+      return;
+    }
 
+    // First remove previous loading notification and then show success notification
+    notification.remove(notificationId);
+    notification.success("Metadata uploaded to IPFS");
+
+    try {
       await writeContractAsync({
         functionName: "mintItem",
         args: [connectedAddress, uploadedItem.path],
       });
     } catch (error) {
-      notification.remove(notificationId);
       console.error(error);
     }
   };

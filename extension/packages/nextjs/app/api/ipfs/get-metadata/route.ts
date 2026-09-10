@@ -7,6 +7,7 @@ export async function POST(request: Request) {
     return Response.json(res);
   } catch (error) {
     console.log("Error getting metadata from ipfs", error);
-    return Response.json({ error: "Error getting metadata from ipfs" });
+    const message = error instanceof Error ? error.message : "Error getting metadata from ipfs";
+    return Response.json({ error: message }, { status: 500 });
   }
 }

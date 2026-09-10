@@ -1,35 +1,23 @@
-import { create } from "kubo-rpc-client";
+// IPFS pinning goes through the SpeedRunEthereum proxy, so this challenge needs no IPFS credentials.
+const IPFS_API_URL = "https://speedrunethereum.com/api/ipfs";
 
-const PROJECT_ID = "2GajDLTC6y04qsYsoDRq9nGmWwK";
-const PROJECT_SECRET = "48c62c6b3f82d2ecfa2cbe4c90f97037";
-const PROJECT_ID_SECRECT = `${PROJECT_ID}:${PROJECT_SECRET}`;
+const request = async (path: string, init?: RequestInit) => {
+  const res = await fetch(`${IPFS_API_URL}${path}`, init);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error ?? `IPFS request failed: ${res.status}`);
+  return data;
+};
 
-export const ipfsClient = create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-  headers: {
-    Authorization: `Basic ${Buffer.from(PROJECT_ID_SECRECT).toString("base64")}`,
-  },
-});
+export async function addToIPFS(metadata: object) {
+  const { cid } = await request("/pin", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(metadata),
+  });
+  // Callers read the CID from `path`
+  return { path: cid as string };
+}
 
 export async function getNFTMetadataFromIPFS(ipfsHash: string) {
-  for await (const file of ipfsClient.get(ipfsHash)) {
-    // The file is of type unit8array so we need to convert it to string
-    const content = new TextDecoder().decode(file);
-    // Remove any leading/trailing whitespace
-    const trimmedContent = content.trim();
-    // Find the start and end index of the JSON object
-    const startIndex = trimmedContent.indexOf("{");
-    const endIndex = trimmedContent.lastIndexOf("}") + 1;
-    // Extract the JSON object string
-    const jsonObjectString = trimmedContent.slice(startIndex, endIndex);
-    try {
-      const jsonObject = JSON.parse(jsonObjectString);
-      return jsonObject;
-    } catch (error) {
-      console.log("Error parsing JSON:", error);
-      return undefined;
-    }
-  }
+  return request(`/${ipfsHash}`);
 }
