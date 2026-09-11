@@ -28,7 +28,7 @@ const IpfsUpload: NextPage = () => {
       setUploadedIpfsPath(uploadedItem.path);
     } catch (error) {
       notification.remove(notificationId);
-      notification.error("Error uploading to IPFS");
+      notification.error(`Error uploading to IPFS: ${error instanceof Error ? error.message : error}`);
       console.log(error);
     } finally {
       setLoading(false);

@@ -2,9 +2,17 @@
 const IPFS_API_URL = "https://speedrunethereum.com/api/ipfs";
 
 const request = async (path: string, init?: RequestInit) => {
-  const res = await fetch(`${IPFS_API_URL}${path}`, init);
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error ?? `IPFS request failed: ${res.status}`);
+  let res: Response;
+  try {
+    res = await fetch(`${IPFS_API_URL}${path}`, { ...init, signal: AbortSignal.timeout(30_000) });
+  } catch (error) {
+    if (error instanceof Error && error.name === "TimeoutError")
+      throw new Error("SpeedRunEthereum IPFS proxy timed out");
+    throw error;
+  }
+  // A non-JSON answer (e.g. a Vercel error page) must not hide the status code
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(data?.error ?? `SpeedRunEthereum IPFS proxy responded ${res.status}`);
   return data;
 };
 
@@ -19,5 +27,5 @@ export async function addToIPFS(metadata: object) {
 }
 
 export async function getNFTMetadataFromIPFS(ipfsHash: string) {
-  return request(`/${ipfsHash}`);
+  return request(`/${encodeURIComponent(ipfsHash.trim())}`);
 }

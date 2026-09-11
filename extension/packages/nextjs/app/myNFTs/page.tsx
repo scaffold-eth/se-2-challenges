@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { MyHoldings } from "./_components";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
@@ -13,6 +14,7 @@ const MyNFTs: NextPage = () => {
   const { address: connectedAddress, isConnected, isConnecting } = useAccount();
 
   const { writeContractAsync } = useScaffoldWriteContract({ contractName: "YourCollectible" });
+  const [isMinting, setIsMinting] = useState(false);
 
   const { data: tokenIdCounter } = useScaffoldReadContract({
     contractName: "YourCollectible",
@@ -26,6 +28,7 @@ const MyNFTs: NextPage = () => {
 
     const tokenIdCounterNumber = Number(tokenIdCounter);
     const currentTokenMetaData = nftsMetadata[tokenIdCounterNumber % nftsMetadata.length];
+    setIsMinting(true);
     const notificationId = notification.loading("Uploading to IPFS");
 
     let uploadedItem;
@@ -33,8 +36,9 @@ const MyNFTs: NextPage = () => {
       uploadedItem = await addToIPFS(currentTokenMetaData);
     } catch (error) {
       notification.remove(notificationId);
-      notification.error("Error uploading to IPFS");
+      notification.error(`Error uploading to IPFS: ${error instanceof Error ? error.message : error}`);
       console.error(error);
+      setIsMinting(false);
       return;
     }
 
@@ -49,6 +53,8 @@ const MyNFTs: NextPage = () => {
       });
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsMinting(false);
     }
   };
 
@@ -65,7 +71,7 @@ const MyNFTs: NextPage = () => {
         {!isConnected || isConnecting ? (
           <RainbowKitCustomConnectButton />
         ) : (
-          <button className="btn btn-secondary" onClick={handleMintItem}>
+          <button className="btn btn-secondary" onClick={handleMintItem} disabled={isMinting}>
             Mint NFT
           </button>
         )}

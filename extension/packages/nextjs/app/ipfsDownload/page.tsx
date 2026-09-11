@@ -27,7 +27,7 @@ const IpfsDownload: NextPage = () => {
       setYourJSON(metaData);
     } catch (error) {
       notification.remove(notificationId);
-      notification.error("Error downloading from IPFS");
+      notification.error(`Error downloading from IPFS: ${error instanceof Error ? error.message : error}`);
       console.log(error);
     } finally {
       setLoading(false);
