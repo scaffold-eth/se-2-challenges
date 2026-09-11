@@ -60,7 +60,7 @@ ${solidityFramework === "hardhat" ? `    deploy/
     utils/tokenization/
       nftsMetadata.ts        # Predefined NFT metadata (Buffalo, Zebra, Rhino, etc.)
       ipfs-fetch.ts          # IPFS upload/download helpers via API routes
-      ipfs.ts
+      ipfs.ts                # Pins/reads metadata via the SpeedRunEthereum IPFS proxy (no credentials needed)
     app/api/ipfs/            # API routes for IPFS pinning
 \`\`\`
 
@@ -123,7 +123,7 @@ Use the correct hook names: \`useScaffoldReadContract\`, \`useScaffoldWriteContr
 - **Next.js App Router** (not Pages Router) - pages are at \`app/<route>/page.tsx\`
 - **Import alias**: use \`~~\` for nextjs package imports (e.g., \`import { ... } from "~~/hooks/scaffold-eth"\`)
 - After \`yarn deploy\`, contract ABIs auto-generate to \`packages/nextjs/contracts/deployedContracts.ts\`
-- IPFS operations go through Next.js API routes (\`/api/ipfs/add\`, \`/api/ipfs/get-metadata\`), not direct IPFS calls
+- IPFS operations go through Next.js API routes (\`/api/ipfs/add\`, \`/api/ipfs/get-metadata\`), which call the SpeedRunEthereum pinning proxy (\`https://speedrunethereum.com/api/ipfs\`). No IPFS credentials or env vars are needed
 - Burner wallets are available on localhost only by default. For testnet, users connect MetaMask or enable burner wallets via \`burnerWalletMode: "allNetworks"\` in \`scaffold.config.ts\`
 
 ## Testing

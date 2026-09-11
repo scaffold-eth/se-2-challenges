@@ -1,13 +1,15 @@
-const fetchFromApi = ({ path, method, body }: { path: string; method: string; body?: object }) => {
-  return fetch(path, {
+const fetchFromApi = async ({ path, method, body }: { path: string; method: string; body?: object }) => {
+  const response = await fetch(path, {
     method,
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
-  })
-    .then(response => response.json())
-    .catch(error => console.error("Error:", error));
+  });
+  // A non-JSON answer must not hide the status code
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(data?.error ?? `Request failed: ${response.status}`);
+  return data;
 };
 
 export const addToIPFS = (yourJSON: object) => fetchFromApi({ path: "/api/ipfs/add", method: "Post", body: yourJSON });

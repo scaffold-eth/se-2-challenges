@@ -49,7 +49,14 @@ export const MyHoldings = () => {
 
           const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
 
-          const nftMetadata: NFTMetaData = await getMetadataFromIPFS(ipfsHash);
+          // Keep the card (and its transfer form) even if the metadata can't be loaded
+          let nftMetadata: NFTMetaData | undefined;
+          try {
+            nftMetadata = await getMetadataFromIPFS(ipfsHash);
+          } catch (e) {
+            notification.error(`Error fetching metadata for token #${tokenId}: ${e instanceof Error ? e.message : e}`);
+            console.log(e);
+          }
 
           collectibleUpdate.push({
             id: parseInt(tokenId.toString()),
