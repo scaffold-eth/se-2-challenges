@@ -1,4 +1,4 @@
-import { deployScript } from "../rocketh/deploy.js";
+import { artifacts, deployScript } from "../rocketh/deploy.js";
 
 export default deployScript(
   async env => {
@@ -23,6 +23,7 @@ export default deployScript(
     //   console.log(err);
     // }
     void diceGameAddress;
+    void artifacts;
   },
   { tags: ["RiggedRoll"] },
 );
