@@ -98,11 +98,11 @@ Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/cre
 
 ### 2. Follow the steps to create an extension
 
-1. Clone the [create-eth repo](https://github.com/scaffold-eth/create-eth) and cd into it.
+1. Clone the [Scaffold-ETH 2 repo](https://github.com/scaffold-eth/scaffold-eth-2), which holds the create-eth CLI, and cd into it.
 
 ```bash
-    git clone https://github.com/scaffold-eth/create-eth
-    cd create-eth
+    git clone https://github.com/scaffold-eth/scaffold-eth-2
+    cd scaffold-eth-2
 ```
 
 #### Setting up things in externalExtensions:
@@ -125,7 +125,7 @@ Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/cre
 
 6. Commit those changes as an initial commit: `git add . && git commit -m "fill template"`.
 
-#### Commands to be run in create-eth repo:
+#### Commands to be run in the scaffold-eth-2 repo:
 
 1. Build the create-eth cli
 
@@ -139,11 +139,11 @@ Go to [SE-2 Extensions Documentation](https://docs.scaffoldeth.io/extensions/cre
     yarn cli ../<my-challenge-name> -e <my-challenge-name> --dev
 ```
 
-3. This will create the full instance outside of create-eth repo with <my-challenge-name>
+3. This will create the full instance outside of the scaffold-eth-2 repo with <my-challenge-name>
 
 4. Tinker in that instance, adding any new files your challenge will use and then committing those changes
 
-5. Run this in create-eth to copy all the changes to you extension:
+5. Run this in scaffold-eth-2 to copy all the changes to you extension:
 
 ```bash
     yarn create-extension ../<my-challenge-name>
